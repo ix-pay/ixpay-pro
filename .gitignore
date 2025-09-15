@@ -1,0 +1,57 @@
+# Go项目默认忽略规则
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# 依赖和中间文件
+vendor/
+bin/
+obj/
+
+# 日志文件
+logs/
+*.log
+
+# 配置文件
+configs/local.yaml
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE相关文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统相关文件
+.DS_Store
+Thumbs.db
+
+# Coverage related files
+coverage.out
+coverage.html
+*.coverprofile
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build related files
+build/
+.output/
+
+# Misc
+.cache/
+.temp/
+.tmp/
+
+# Debug
+*.debug

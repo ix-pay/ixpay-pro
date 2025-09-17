@@ -1,0 +1,54 @@
+server:
+  host: "0.0.0.0"
+  port: "8586"
+  read_timeout: 5
+  write_timeout: 10
+  idle_timeout: 120
+  captcha_time_out: 60 # 验证码超时时间，单位秒
+  open_captcha: true # 开启验证码 ，true开启，false关闭
+  machine_id: "1" # 机器码，用于生成唯一的ID
+
+postgres:
+  host: "127.0.0.1"
+  port: "5432"
+  user: "magic"
+  password: "magic@520"
+  dbname: "ixpay-pro"
+  sslmode: "disable"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime: 30
+
+redis:
+  address: "127.0.0.1:6379"
+  password: ""
+  db: 0
+  dial_timeout: 5
+  read_timeout: 3
+  write_timeout: 3
+  pool_size: 10
+  pre_key: "ixpay-pro:"
+
+jwt:
+  secret_key: "your-secret-key-here"
+  access_token_expire: 15m
+  refresh_token_expire: 720h
+
+logging:
+  level: "info"
+  format: "json"
+  file_path: "logs/app.log"
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+
+wechat:
+  app_id: "your-wechat-app-id"
+  app_secret: "your-wechat-app-secret"
+  mch_id: "your-wechat-mch-id"
+  api_key: "your-wechat-api-key"
+  notify_url: "http://your-server.com/api/v1/pay/notify"
+
+swagger:
+  enabled: true
+  path: "/swagger"

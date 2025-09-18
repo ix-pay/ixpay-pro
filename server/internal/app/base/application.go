@@ -1,7 +1,11 @@
 package base
 
 import (
+	"time"
+
 	baseapi "github.com/ix-pay/ixpay-pro/internal/app/base/api/v1"
+	"github.com/ix-pay/ixpay-pro/internal/app/base/domain/model"
+	"github.com/ix-pay/ixpay-pro/internal/app/base/migrations"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
@@ -19,6 +23,7 @@ type AppBase struct {
 	authController *baseapi.AuthController
 	userController *baseapi.UserController
 	taskController *baseapi.TaskController
+	userRepo       model.UserRepository
 }
 
 // NewAppBase 创建应用程序实例
@@ -30,6 +35,7 @@ func NewAppBase(
 	authController *baseapi.AuthController,
 	userController *baseapi.UserController,
 	taskController *baseapi.TaskController,
+	userRepo model.UserRepository,
 ) (*AppBase, error) {
 	// 执行数据库迁移，创建所有需要的表
 	// if err := db.Migrate(log); err != nil {
@@ -46,6 +52,7 @@ func NewAppBase(
 		authController: authController,
 		userController: userController,
 		taskController: taskController,
+		userRepo:       userRepo,
 	}
 	return app, nil
 }
@@ -77,10 +84,47 @@ func (a *AppBase) initializePermissions() {
 	}
 }
 
+// initializeSeedData 初始化种子数据
+func (a *AppBase) initializeSeedData() {
+	a.logger.Info("初始化种子数据")
+
+	// 检查admin用户是否存在
+	_, err := a.userRepo.GetByUsername("admin")
+	if err == nil {
+		a.logger.Info("Admin用户已存在，跳过创建")
+		return
+	}
+
+	// admin用户不存在，创建admin用户
+	// 创建密码哈希（使用默认密码'admin123'）
+	passwordHash := "$argon2id$v=19$m=65536,t=1,p=2$K0VYVVRtWXhkVXk3$vW5IqE4+ZgXc0V0t9tGtPq2sLzXjK5Yg" // admin123的哈希
+
+	adminUser := &model.User{
+		Username:     "admin",
+		PasswordHash: passwordHash,
+		Nickname:     "系统管理员",
+		Email:        "admin@ixpay.com",
+		Role:         "admin",
+		Status:       1,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	// 保存admin用户
+	if err := a.userRepo.Create(adminUser); err != nil {
+		a.logger.Error("创建admin用户失败", "error", err)
+	} else {
+		a.logger.Info("创建admin用户成功")
+	}
+}
+
 // 初始化基础应用
 func (a *AppBase) Init(router *gin.Engine) {
 	a.logger.Info("初始化基础应用")
 	a.router = router
+
+	// 执行数据库迁移
+	migrations.MigrateDatabase(a.db, a.logger)
 
 	// 设置中间件
 	a.setupMiddleware()
@@ -90,5 +134,8 @@ func (a *AppBase) Init(router *gin.Engine) {
 
 	// 初始化权限
 	a.initializePermissions()
+
+	// 初始化种子数据
+	a.initializeSeedData()
 
 }

@@ -73,7 +73,7 @@ func InitializeApp() (*Application, error) {
 	baseapiAuthController := baseapi.NewAuthController(userService, loggerLogger)
 	userController := baseapi.NewUserController(userService, loggerLogger)
 	taskController := baseapi.NewTaskController(taskManager, loggerLogger)
-	appBase, err := base.NewAppBase(loggerLogger, postgresDB, jwtAuth, permissionManager, baseapiAuthController, userController, taskController)
+	appBase, err := base.NewAppBase(loggerLogger, postgresDB, jwtAuth, permissionManager, baseapiAuthController, userController, taskController, userRepository)
 	if err != nil {
 		return nil, err
 	}

@@ -8,9 +8,7 @@
       <!-- 登录头部 -->
       <div class="login-header">
         <div class="login-logo">
-          <el-icon :size="48" class="login-logo-icon">
-            <component is="Lock" />
-          </el-icon>
+          <img src="@/assets/ixpay.png" alt="IxPay Pro Logo" class="login-logo-image" />
         </div>
         <h1>欢迎登录</h1>
         <p class="login-subtitle">IxPay Pro 支付管理系统</p>
@@ -34,7 +32,7 @@
           <!-- 验证码输入框 -->
           <el-form-item v-if="formData.openCaptcha" prop="captcha" class="login-form-item">
             <div class="captcha-container">
-              <el-input v-model="formData.captcha" placeholder="请输入验证码" maxLength="4" prefix-icon="Shield" size="large"
+              <el-input v-model="formData.captcha" placeholder="请输入验证码" maxLength="4" prefix-icon="Lock" size="large"
                 class="captcha-input" clearable :validate-event="false" />
               <div class="captcha-image-wrapper">
                 <img v-if="picPath" class="captcha-image" :src="picPath" alt="验证码" @click="refreshCaptcha"
@@ -333,8 +331,10 @@ watch(() => [formData.username, formData.password], () => {
   justify-content: center;
 }
 
-.login-logo-icon {
-  color: #667eea;
+.login-logo-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
   animation: pulse 2s infinite;
 }
 

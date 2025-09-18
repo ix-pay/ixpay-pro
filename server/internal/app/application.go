@@ -42,11 +42,6 @@ func NewApplication(
 	appWX *wx.AppWX,
 	appBase *base.AppBase,
 ) (*Application, error) {
-	// 执行数据库迁移，创建所有需要的表
-	if err := db.Migrate(log); err != nil {
-		log.Error("Failed to migrate database", "error", err)
-		return nil, err
-	}
 
 	// 创建路由引擎
 	router := gin.New()

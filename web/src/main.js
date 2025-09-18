@@ -4,6 +4,8 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 
 import 'element-plus/dist/index.css'
+// 引入全局样式
+import '@/styles/global.scss'
 
 import run from '@/core/ixpay-pro.js'
 import auth from '@/directive/auth'

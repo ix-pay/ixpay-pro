@@ -19,7 +19,14 @@ export const useUserStore = defineStore('user', () => {
   })
 
   const setUserInfo = (val) => {
-    userInfo.value = val
+    // 确保authority字段存在并初始化
+    const userData = {
+      ...val,
+      authority: val.authority || {
+        defaultRouter: 'index' // 设置默认路由，避免登录后无法跳转
+      }
+    }
+    userInfo.value = userData
     if (val.originSetting) {
       Object.keys(appStore.config).forEach((key) => {
         if (val.originSetting[key] !== undefined) {
@@ -27,7 +34,6 @@ export const useUserStore = defineStore('user', () => {
         }
       })
     }
-    console.log(appStore.config)
   }
 
   const NeedInit = async () => {

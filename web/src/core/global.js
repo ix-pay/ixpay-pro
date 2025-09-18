@@ -1,12 +1,13 @@
 import config from './config'
 
 // 统一导入el-icon图标
-import * as ElIconModules from '@element-plus/icons-vue'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
 
 export const register = (app) => {
   // 统一注册el-icon图标
-  for (const iconName in ElIconModules) {
-    app.component(iconName, ElIconModules[iconName])
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
   }
   app.config.globalProperties.$IXPAY_PRO = config
 }

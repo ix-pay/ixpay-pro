@@ -39,7 +39,6 @@ type UserService interface {
 	Captcha() (string, string, int, bool, error) // 生成验证码
 	Register(username, password, email string) (*User, error)
 	Login(username, password string) (*User, string, string, error) // 返回用户信息和令牌
-	WechatLogin(code string) (*User, string, string, error)         // 微信登录
 	GetUserInfo(userID uint) (*User, error)
 	UpdateUserInfo(user *User) error
 	ChangePassword(userID uint, oldPassword, newPassword string) error

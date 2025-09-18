@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ix-pay/ixpay-pro/internal/app/controller"
+	"github.com/ix-pay/ixpay-pro/internal/app/base"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx"
 	"github.com/ix-pay/ixpay-pro/internal/config"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
@@ -21,15 +22,14 @@ import (
 
 // Application 应用程序结构
 type Application struct {
-	router            *gin.Engine
-	db                *database.PostgresDB
-	auth              *auth.JWTAuth
-	permissions       *auth.PermissionManager
-	logger            logger.Logger
-	server            *http.Server
-	userController    *controller.UserController
-	paymentController *controller.PaymentController
-	taskController    *controller.TaskController
+	router      *gin.Engine
+	db          *database.PostgresDB
+	auth        *auth.JWTAuth
+	permissions *auth.PermissionManager
+	logger      logger.Logger
+	server      *http.Server
+	appWX       *wx.AppWX
+	appBase     *base.AppBase
 }
 
 // NewApplication 创建应用程序实例
@@ -39,9 +39,8 @@ func NewApplication(
 	db *database.PostgresDB,
 	auth *auth.JWTAuth,
 	permissions *auth.PermissionManager,
-	userController *controller.UserController,
-	paymentController *controller.PaymentController,
-	taskController *controller.TaskController,
+	appWX *wx.AppWX,
+	appBase *base.AppBase,
 ) (*Application, error) {
 	// 执行数据库迁移，创建所有需要的表
 	if err := db.Migrate(log); err != nil {
@@ -59,14 +58,13 @@ func NewApplication(
 
 	// 创建应用实例
 	app := &Application{
-		router:            router,
-		db:                db,
-		auth:              auth,
-		permissions:       permissions,
-		logger:            log,
-		userController:    userController,
-		paymentController: paymentController,
-		taskController:    taskController,
+		router:      router,
+		db:          db,
+		auth:        auth,
+		permissions: permissions,
+		logger:      log,
+		appWX:       appWX,
+		appBase:     appBase,
 	}
 
 	// 设置中间件
@@ -75,8 +73,8 @@ func NewApplication(
 	// 设置路由
 	app.setupRoutes()
 
-	// 初始化权限
-	app.initializePermissions()
+	app.appBase.Init(router)
+	app.appWX.Init(router)
 
 	// 创建HTTP服务器
 	app.server = &http.Server{
@@ -104,35 +102,6 @@ func (a *Application) setupMiddleware() {
 }
 
 // setupRoutes 方法在routes.go文件中定义
-
-// initializePermissions 初始化权限
-func (a *Application) initializePermissions() {
-	// 定义系统权限
-	permissions := []auth.Permission{
-		// 用户路由权限
-		{Path: "/api/v1/user/info", Method: "GET", Roles: []string{"user", "admin"}, WechatGrant: true},
-
-		// 支付路由权限
-		{Path: "/api/v1/payment", Method: "POST", Roles: []string{"user", "admin"}, WechatGrant: true},
-		{Path: "/api/v1/payment/:id", Method: "GET", Roles: []string{"user", "admin"}, WechatGrant: true},
-		{Path: "/api/v1/payment", Method: "GET", Roles: []string{"user", "admin"}, WechatGrant: true},
-		{Path: "/api/v1/payment/:id/cancel", Method: "PUT", Roles: []string{"user", "admin"}, WechatGrant: true},
-
-		// 任务路由权限（需要admin角色）
-		{Path: "/api/v1/task", Method: "POST", Roles: []string{"admin"}, WechatGrant: false},
-		{Path: "/api/v1/task/:id", Method: "DELETE", Roles: []string{"admin"}, WechatGrant: false},
-		{Path: "/api/v1/task/:id/start", Method: "POST", Roles: []string{"admin"}, WechatGrant: false},
-		{Path: "/api/v1/task/:id/stop", Method: "POST", Roles: []string{"admin"}, WechatGrant: false},
-		{Path: "/api/v1/task/:id/retry", Method: "POST", Roles: []string{"admin"}, WechatGrant: false},
-		{Path: "/api/v1/task", Method: "GET", Roles: []string{"admin"}, WechatGrant: false},
-		{Path: "/api/v1/task/:id", Method: "GET", Roles: []string{"admin"}, WechatGrant: false},
-	}
-
-	// 缓存权限数据
-	if err := a.permissions.CachePermissions(permissions); err != nil {
-		a.logger.Error("Failed to cache permissions", "error", err)
-	}
-}
 
 // Start 启动HTTP服务器
 func (a *Application) Start() error {

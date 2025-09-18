@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/ix-pay/ixpay-pro/internal/config"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 // JWTAuth 提供JWT认证功能

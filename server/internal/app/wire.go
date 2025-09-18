@@ -4,14 +4,13 @@
 package app
 
 import (
-	"github.com/ix-pay/ixpay-pro/internal/app/controller"
+	"github.com/ix-pay/ixpay-pro/internal/app/base"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx"
 	"github.com/ix-pay/ixpay-pro/internal/config"
-	"github.com/ix-pay/ixpay-pro/internal/domain/service"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/redis"
-	"github.com/ix-pay/ixpay-pro/internal/infrastructure/repository"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/snowflake"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/task"
 
@@ -34,20 +33,6 @@ var ProviderSet = wire.NewSet(
 	auth.NewPermissionManager,
 	task.NewTaskManager,
 
-	// 仓库层
-	repository.NewUserRepository,
-	repository.NewPaymentRepository,
-
-	// 服务层
-	service.NewWechatService,
-	service.NewPaymentService,
-	service.NewUserService,
-
-	// 控制器层
-	controller.NewUserController,
-	controller.NewPaymentController,
-	controller.NewTaskController,
-
 	// 应用层
 	NewApplication,
 )
@@ -55,6 +40,11 @@ var ProviderSet = wire.NewSet(
 // InitializeApp 初始化应用程序
 // wire会根据ProviderSet自动生成依赖注入代码
 func InitializeApp() (*Application, error) {
-	wire.Build(ProviderSet)
+	wire.Build(
+		ProviderSet,
+		base.ProviderSetBase,
+		wx.ProviderSetWX,
+	)
+
 	return nil, nil
 }

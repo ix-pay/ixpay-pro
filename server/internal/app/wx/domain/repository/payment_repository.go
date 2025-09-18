@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/ix-pay/ixpay-pro/internal/domain/model"
+	wxmodel "github.com/ix-pay/ixpay-pro/internal/app/wx/domain/model"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
 )
 
@@ -11,15 +11,15 @@ type PaymentRepository struct {
 }
 
 // NewPaymentRepository 创建支付仓库实例
-func NewPaymentRepository(db *database.PostgresDB) model.PaymentRepository {
+func NewPaymentRepository(db *database.PostgresDB) wxmodel.PaymentRepository {
 	return &PaymentRepository{
 		db: db,
 	}
 }
 
 // GetByID 根据ID获取支付记录
-func (r *PaymentRepository) GetByID(id uint) (*model.Payment, error) {
-	var payment model.Payment
+func (r *PaymentRepository) GetByID(id uint) (*wxmodel.Payment, error) {
+	var payment wxmodel.Payment
 	result := r.db.Preload("WechatPayInfo").First(&payment, id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -28,8 +28,8 @@ func (r *PaymentRepository) GetByID(id uint) (*model.Payment, error) {
 }
 
 // GetByOrderID 根据订单ID获取支付记录
-func (r *PaymentRepository) GetByOrderID(orderID string) (*model.Payment, error) {
-	var payment model.Payment
+func (r *PaymentRepository) GetByOrderID(orderID string) (*wxmodel.Payment, error) {
+	var payment wxmodel.Payment
 	result := r.db.Preload("WechatPayInfo").Where("order_id = ?", orderID).First(&payment)
 	if result.Error != nil {
 		return nil, result.Error
@@ -38,8 +38,8 @@ func (r *PaymentRepository) GetByOrderID(orderID string) (*model.Payment, error)
 }
 
 // GetByTransactionID 根据交易ID获取支付记录
-func (r *PaymentRepository) GetByTransactionID(transactionID string) (*model.Payment, error) {
-	var payment model.Payment
+func (r *PaymentRepository) GetByTransactionID(transactionID string) (*wxmodel.Payment, error) {
+	var payment wxmodel.Payment
 	result := r.db.Preload("WechatPayInfo").Where("transaction_id = ?", transactionID).First(&payment)
 	if result.Error != nil {
 		return nil, result.Error
@@ -48,31 +48,31 @@ func (r *PaymentRepository) GetByTransactionID(transactionID string) (*model.Pay
 }
 
 // Create 创建支付记录
-func (r *PaymentRepository) Create(payment *model.Payment) error {
+func (r *PaymentRepository) Create(payment *wxmodel.Payment) error {
 	return r.db.Create(payment).Error
 }
 
 // Update 更新支付记录
-func (r *PaymentRepository) Update(payment *model.Payment) error {
+func (r *PaymentRepository) Update(payment *wxmodel.Payment) error {
 	return r.db.Save(payment).Error
 }
 
 // Delete 删除支付记录
 func (r *PaymentRepository) Delete(id uint) error {
 	// 先删除相关的微信支付信息
-	if err := r.db.Where("payment_id = ?", id).Delete(&model.WechatPayInfo{}).Error; err != nil {
+	if err := r.db.Where("payment_id = ?", id).Delete(&wxmodel.WechatPayInfo{}).Error; err != nil {
 		return err
 	}
 	// 再删除支付记录
-	return r.db.Delete(&model.Payment{}, id).Error
+	return r.db.Delete(&wxmodel.Payment{}, id).Error
 }
 
 // ListByUser 获取用户的支付记录列表
-func (r *PaymentRepository) ListByUser(userID uint, page, pageSize int) ([]*model.Payment, int64, error) {
-	var payments []*model.Payment
+func (r *PaymentRepository) ListByUser(userID uint, page, pageSize int) ([]*wxmodel.Payment, int64, error) {
+	var payments []*wxmodel.Payment
 	var total int64
 
-	query := r.db.Model(&model.Payment{}).Where("user_id = ?", userID).Preload("WechatPayInfo")
+	query := r.db.Model(&wxmodel.Payment{}).Where("user_id = ?", userID).Preload("WechatPayInfo")
 
 	// 获取总数
 	if err := query.Count(&total).Error; err != nil {
@@ -88,11 +88,11 @@ func (r *PaymentRepository) ListByUser(userID uint, page, pageSize int) ([]*mode
 }
 
 // ListByStatus 获取指定状态的支付记录列表
-func (r *PaymentRepository) ListByStatus(status model.PaymentStatus, page, pageSize int) ([]*model.Payment, int64, error) {
-	var payments []*model.Payment
+func (r *PaymentRepository) ListByStatus(status wxmodel.PaymentStatus, page, pageSize int) ([]*wxmodel.Payment, int64, error) {
+	var payments []*wxmodel.Payment
 	var total int64
 
-	query := r.db.Model(&model.Payment{}).Where("status = ?", status).Preload("WechatPayInfo")
+	query := r.db.Model(&wxmodel.Payment{}).Where("status = ?", status).Preload("WechatPayInfo")
 
 	// 获取总数
 	if err := query.Count(&total).Error; err != nil {

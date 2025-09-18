@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # 生成wire依赖注入代码
-RUN go run github.com/google/wire/cmd/wire ./internal/app
+RUN go run github.com/google/wire/cmd/wire ./app
 
 # 构建应用程序
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ixpay-pro .

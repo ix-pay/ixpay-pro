@@ -1,6 +1,114 @@
 basePath: /
 definitions:
-  baseRes.Response:
+  github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 30
+        minLength: 6
+        type: string
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.CaptchaResponse:
+    properties:
+      captchaId:
+        type: string
+      captchaLength:
+        type: integer
+      openCaptcha:
+        type: boolean
+      picPath:
+        type: string
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.LoginResponse:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse'
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_request.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXLoginResponse:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXUserInfoResponse'
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXUserInfoResponse:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response:
     properties:
       code:
         type: integer
@@ -8,7 +116,7 @@ definitions:
       msg:
         type: string
     type: object
-  controller.AddTaskRequest:
+  internal_app_base_api_v1.AddTaskRequest:
     properties:
       description:
         type: string
@@ -30,7 +138,30 @@ definitions:
     - task_id
     - type
     type: object
-  controller.CreatePaymentRequest:
+  internal_app_base_api_v1.TaskResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      expression:
+        type: string
+      last_run_at:
+        type: string
+      max_retries:
+        type: integer
+      next_run_at:
+        type: string
+      retry_count:
+        type: integer
+      status:
+        type: string
+      task_id:
+        type: string
+      type:
+        type: string
+    type: object
+  internal_app_wx_api_v1.CreatePaymentRequest:
     properties:
       amount:
         type: number
@@ -53,7 +184,7 @@ definitions:
     - order_id
     - payment_method
     type: object
-  controller.PaymentResponse:
+  internal_app_wx_api_v1.PaymentResponse:
     properties:
       amount:
         type: number
@@ -82,109 +213,6 @@ definitions:
         description: 微信支付相关参数
         type: object
     type: object
-  controller.TaskResponse:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      expression:
-        type: string
-      last_run_at:
-        type: string
-      max_retries:
-        type: integer
-      next_run_at:
-        type: string
-      retry_count:
-        type: integer
-      status:
-        type: string
-      task_id:
-        type: string
-      type:
-        type: string
-    type: object
-  request.LoginRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  request.RefreshTokenRequest:
-    properties:
-      refresh_token:
-        type: string
-    required:
-    - refresh_token
-    type: object
-  request.RegisterRequest:
-    properties:
-      email:
-        type: string
-      password:
-        maxLength: 30
-        minLength: 6
-        type: string
-      username:
-        maxLength: 50
-        minLength: 3
-        type: string
-    required:
-    - email
-    - password
-    - username
-    type: object
-  request.WechatLoginRequest:
-    properties:
-      code:
-        type: string
-    required:
-    - code
-    type: object
-  response.CaptchaResponse:
-    properties:
-      captchaId:
-        type: string
-      captchaLength:
-        type: integer
-      openCaptcha:
-        type: boolean
-      picPath:
-        type: string
-    type: object
-  response.LoginResponse:
-    properties:
-      accessToken:
-        type: string
-      refreshToken:
-        type: string
-      user:
-        $ref: '#/definitions/response.UserInfoResponse'
-    type: object
-  response.UserInfoResponse:
-    properties:
-      avatar:
-        type: string
-      email:
-        type: string
-      id:
-        type: integer
-      nickname:
-        type: string
-      phone:
-        type: string
-      role:
-        type: string
-      status:
-        type: integer
-      username:
-        type: string
-    type: object
 host: 127.0.0.1:8586
 info:
   contact:
@@ -210,10 +238,10 @@ paths:
           description: 生成验证码,返回包括随机数id,base64,验证码长度,是否开启验证码
           schema:
             allOf:
-            - $ref: '#/definitions/baseRes.Response'
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.CaptchaResponse'
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.CaptchaResponse'
                 msg:
                   type: string
               type: object
@@ -231,7 +259,7 @@ paths:
         name: login
         required: true
         schema:
-          $ref: '#/definitions/request.LoginRequest'
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.LoginRequest'
       produces:
       - application/json
       responses:
@@ -239,10 +267,10 @@ paths:
           description: 登录成功，包含用户信息和令牌
           schema:
             allOf:
-            - $ref: '#/definitions/baseRes.Response'
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.LoginResponse'
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.LoginResponse'
                 msg:
                   type: string
               type: object
@@ -266,7 +294,7 @@ paths:
         name: refresh
         required: true
         schema:
-          $ref: '#/definitions/request.RefreshTokenRequest'
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_request.RefreshTokenRequest'
       produces:
       - application/json
       responses:
@@ -274,10 +302,10 @@ paths:
           description: 刷新成功，包含新的令牌
           schema:
             allOf:
-            - $ref: '#/definitions/baseRes.Response'
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.LoginResponse'
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXLoginResponse'
                 msg:
                   type: string
               type: object
@@ -307,7 +335,7 @@ paths:
         name: register
         required: true
         schema:
-          $ref: '#/definitions/request.RegisterRequest'
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.RegisterRequest'
       produces:
       - application/json
       responses:
@@ -315,10 +343,10 @@ paths:
           description: 注册成功
           schema:
             allOf:
-            - $ref: '#/definitions/baseRes.Response'
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.UserInfoResponse'
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse'
                 msg:
                   type: string
               type: object
@@ -329,41 +357,6 @@ paths:
               type: string
             type: object
       summary: 用户注册
-      tags:
-      - 基础服务
-  /v1/auth/wechat-login:
-    post:
-      consumes:
-      - application/json
-      description: 用户通过微信code进行登录
-      parameters:
-      - description: 微信登录请求参数
-        in: body
-        name: wechat
-        required: true
-        schema:
-          $ref: '#/definitions/request.WechatLoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 登录成功，包含用户信息和令牌
-          schema:
-            allOf:
-            - $ref: '#/definitions/baseRes.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/response.LoginResponse'
-                msg:
-                  type: string
-              type: object
-        "400":
-          description: 请求参数错误
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: 微信登录
       tags:
       - 基础服务
   /v1/pay/notify/wechat:
@@ -415,7 +408,7 @@ paths:
         name: payment
         required: true
         schema:
-          $ref: '#/definitions/controller.CreatePaymentRequest'
+          $ref: '#/definitions/internal_app_wx_api_v1.CreatePaymentRequest'
       produces:
       - application/json
       responses:
@@ -423,7 +416,7 @@ paths:
           description: 支付创建成功
           schema:
             additionalProperties:
-              $ref: '#/definitions/controller.PaymentResponse'
+              $ref: '#/definitions/internal_app_wx_api_v1.PaymentResponse'
             type: object
         "400":
           description: 请求参数错误
@@ -466,7 +459,7 @@ paths:
           description: 支付详情
           schema:
             additionalProperties:
-              $ref: '#/definitions/controller.PaymentResponse'
+              $ref: '#/definitions/internal_app_wx_api_v1.PaymentResponse'
             type: object
         "400":
           description: 无效的支付ID
@@ -515,7 +508,7 @@ paths:
           description: 取消后的支付详情
           schema:
             additionalProperties:
-              $ref: '#/definitions/controller.PaymentResponse'
+              $ref: '#/definitions/internal_app_wx_api_v1.PaymentResponse'
             type: object
         "400":
           description: 无效的支付ID
@@ -559,7 +552,7 @@ paths:
           schema:
             additionalProperties:
               items:
-                $ref: '#/definitions/controller.TaskResponse'
+                $ref: '#/definitions/internal_app_base_api_v1.TaskResponse'
               type: array
             type: object
         "401":
@@ -589,7 +582,7 @@ paths:
         name: task
         required: true
         schema:
-          $ref: '#/definitions/controller.AddTaskRequest'
+          $ref: '#/definitions/internal_app_base_api_v1.AddTaskRequest'
       produces:
       - application/json
       responses:
@@ -597,7 +590,7 @@ paths:
           description: 任务添加成功
           schema:
             additionalProperties:
-              $ref: '#/definitions/controller.TaskResponse'
+              $ref: '#/definitions/internal_app_base_api_v1.TaskResponse'
             type: object
         "400":
           description: 请求参数错误
@@ -688,7 +681,7 @@ paths:
           description: 任务详情
           schema:
             additionalProperties:
-              $ref: '#/definitions/controller.TaskResponse'
+              $ref: '#/definitions/internal_app_base_api_v1.TaskResponse'
             type: object
         "401":
           description: 未授权
@@ -854,10 +847,10 @@ paths:
           description: 用户信息
           schema:
             allOf:
-            - $ref: '#/definitions/baseRes.Response'
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.UserInfoResponse'
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse'
                 msg:
                   type: string
               type: object

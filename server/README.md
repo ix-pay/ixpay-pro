@@ -80,8 +80,11 @@ go run github.com/google/wire/cmd/wire ./internal/app
 ## API文档
 
 应用启动后，可以通过以下URL访问Swagger API文档：
+```bash
+swag init -g internal/main.go --output docs --parseDependency --parseInternal
 ```
-swag init -g main.go --output docs --parseDependency --parseInternal
+```bash
+go run internal/main.go
 ```
 ```
 http://127.0.0.1:8586/swagger/index.html
@@ -157,16 +160,16 @@ vim configs/config.yaml  # 或使用您喜欢的编辑器
 
 ```bash
 # 开发模式
-ENV=development go run main.go
+ENV=development go run internal/main.go
 
 # 生产模式
-ENV=production go run main.go
+ENV=production go run internal/main.go
 ```
 
 #### 3. 构建应用
 
 ```bash
-go build -o ixpay-pro ./main.go
+go build -o ixpay-pro ./internal/main.go
 ```
 
 ## 主要API端点

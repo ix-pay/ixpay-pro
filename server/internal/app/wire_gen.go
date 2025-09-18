@@ -8,14 +8,19 @@ package app
 
 import (
 	"github.com/google/wire"
-	"github.com/ix-pay/ixpay-pro/internal/app/controller"
+	"github.com/ix-pay/ixpay-pro/internal/app/base"
+	"github.com/ix-pay/ixpay-pro/internal/app/base/api/v1"
+	repository2 "github.com/ix-pay/ixpay-pro/internal/app/base/domain/repository"
+	service2 "github.com/ix-pay/ixpay-pro/internal/app/base/domain/service"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx/api/v1"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx/domain/repository"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx/domain/service"
 	"github.com/ix-pay/ixpay-pro/internal/config"
-	"github.com/ix-pay/ixpay-pro/internal/domain/service"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/redis"
-	"github.com/ix-pay/ixpay-pro/internal/infrastructure/repository"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/snowflake"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/task"
 )
@@ -47,20 +52,32 @@ func InitializeApp() (*Application, error) {
 		return nil, err
 	}
 	permissionManager := auth.NewPermissionManager(redisClient, loggerLogger)
-	userRepository := repository.NewUserRepository(postgresDB)
-	wechatService := service.NewWechatService(configConfig, loggerLogger)
+	wxUserRepository := repository.NewWXUserRepository(postgresDB)
+	wxAuthSessionRepository := repository.NewWXAuthSessionRepository(postgresDB)
+	wxAuthService := service.NewWXAuthService(configConfig, jwtAuth, loggerLogger, wxUserRepository, wxAuthSessionRepository)
+	authController := wxapi.NewAuthController(wxAuthService, loggerLogger)
+	paymentRepository := repository.NewPaymentRepository(postgresDB)
+	taskManager := task.NewTaskManager(loggerLogger)
+	paymentService := service.NewPaymentService(paymentRepository, loggerLogger, wxAuthService, taskManager)
+	paymentController := wxapi.NewPaymentController(paymentService, loggerLogger)
+	appWX, err := wx.NewAppWX(loggerLogger, postgresDB, jwtAuth, permissionManager, authController, paymentController)
+	if err != nil {
+		return nil, err
+	}
+	userRepository := repository2.NewUserRepository(postgresDB)
 	snowflakeSnowflake, err := snowflake.SetupSnowflake(configConfig)
 	if err != nil {
 		return nil, err
 	}
-	userService := service.NewUserService(userRepository, jwtAuth, configConfig, loggerLogger, wechatService, redisClient, snowflakeSnowflake)
-	userController := controller.NewUserController(userService, loggerLogger)
-	paymentRepository := repository.NewPaymentRepository(postgresDB)
-	taskManager := task.NewTaskManager(loggerLogger)
-	paymentService := service.NewPaymentService(paymentRepository, loggerLogger, wechatService, taskManager)
-	paymentController := controller.NewPaymentController(paymentService, loggerLogger)
-	taskController := controller.NewTaskController(taskManager, loggerLogger)
-	application, err := NewApplication(configConfig, loggerLogger, postgresDB, jwtAuth, permissionManager, userController, paymentController, taskController)
+	userService := service2.NewUserService(userRepository, jwtAuth, configConfig, loggerLogger, redisClient, snowflakeSnowflake)
+	baseapiAuthController := baseapi.NewAuthController(userService, loggerLogger)
+	userController := baseapi.NewUserController(userService, loggerLogger)
+	taskController := baseapi.NewTaskController(taskManager, loggerLogger)
+	appBase, err := base.NewAppBase(loggerLogger, postgresDB, jwtAuth, permissionManager, baseapiAuthController, userController, taskController)
+	if err != nil {
+		return nil, err
+	}
+	application, err := NewApplication(configConfig, loggerLogger, postgresDB, jwtAuth, permissionManager, appWX, appBase)
 	if err != nil {
 		return nil, err
 	}
@@ -70,4 +87,4 @@ func InitializeApp() (*Application, error) {
 // wire.go:
 
 // 定义依赖注入的提供者
-var ProviderSet = wire.NewSet(config.LoadConfig, logger.NewLogger, database.NewPostgresDB, redis.NewRedisClient, auth.NewJWTAuth, snowflake.SetupSnowflake, auth.NewPermissionManager, task.NewTaskManager, repository.NewUserRepository, repository.NewPaymentRepository, service.NewWechatService, service.NewPaymentService, service.NewUserService, controller.NewUserController, controller.NewPaymentController, controller.NewTaskController, NewApplication)
+var ProviderSet = wire.NewSet(config.LoadConfig, logger.NewLogger, database.NewPostgresDB, redis.NewRedisClient, auth.NewJWTAuth, snowflake.SetupSnowflake, auth.NewPermissionManager, task.NewTaskManager, NewApplication)

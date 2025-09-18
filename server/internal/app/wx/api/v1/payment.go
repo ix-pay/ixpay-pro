@@ -1,11 +1,12 @@
-package controller
+package wxapi
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/ix-pay/ixpay-pro/internal/domain/model"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx/domain/model"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
+	"github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -93,7 +94,7 @@ func (c *PaymentController) CreatePayment(ctx *gin.Context) {
 	)
 	if err != nil {
 		c.log.Error("Create payment failed", "error", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		baseRes.FailWithMessage("创建支付失败", ctx)
 		return
 	}
 
@@ -139,19 +140,21 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 	payment, err := c.service.GetPayment(uint(paymentID))
 	if err != nil {
 		c.log.Error("Get payment failed", "error", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		baseRes.FailWithMessage("查询支付失败", ctx)
 		return
 	}
 
 	// 检查权限：用户只能查看自己的支付记录
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.log.Error("Unauthorized")
+		baseRes.NoAuth("未授权", ctx)
 		return
 	}
 
 	if payment.UserID != userID.(uint) {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		c.log.Error("Permission denied")
+		baseRes.NoAuth("无权限", ctx)
 		return
 	}
 
@@ -170,7 +173,7 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 		UpdatedAt:     payment.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": response})
+	baseRes.OkWithDetailed(response, "查询支付成功", ctx)
 }
 
 // GetUserPayments 获取用户支付列表
@@ -187,19 +190,21 @@ func (c *PaymentController) GetUserPayments(ctx *gin.Context) {
 	// 从上下文中获取用户ID（实际未使用）
 	_, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.log.Error("Unauthorized")
+		baseRes.NoAuth("未授权", ctx)
 		return
 	}
 
 	// 由于service中没有GetUserPayments方法，返回空列表
 	// 实际实现应该在service层添加这个方法
 	c.log.Error("GetUserPayments method not implemented in service")
-	ctx.JSON(http.StatusOK, gin.H{
-		"data":  []PaymentResponse{},
-		"total": 0,
-		"page":  1,
-		"size":  10,
-	})
+	response := baseRes.PageResult{
+		List:     []PaymentResponse{},
+		Total:    0,
+		Page:     1,
+		PageSize: 10,
+	}
+	baseRes.OkWithDetailed(response, "查询支付成功", ctx)
 }
 
 // CancelPayment 取消支付
@@ -219,14 +224,16 @@ func (c *PaymentController) GetUserPayments(ctx *gin.Context) {
 func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	paymentID, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid payment ID"})
+		c.log.Error("Invalid payment ID", "error", err)
+		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
 
 	// 从上下文中获取用户ID
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.log.Error("Unauthorized")
+		baseRes.NoAuth("未授权", ctx)
 		return
 	}
 
@@ -234,7 +241,7 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	payment, err := c.service.GetPayment(uint(paymentID))
 	if err != nil {
 		c.log.Error("Get payment failed", "error", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
 
@@ -248,7 +255,7 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	err = c.service.CancelPayment(uint(paymentID))
 	if err != nil {
 		c.log.Error("Cancel payment failed", "error", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel payment"})
+		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
 
@@ -256,7 +263,7 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	payment, err = c.service.GetPayment(uint(paymentID))
 	if err != nil {
 		c.log.Error("Get payment after cancel failed", "error", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
 
@@ -275,7 +282,7 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 		UpdatedAt:     payment.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": response})
+	baseRes.OkWithDetailed(response, "取消支付成功", ctx)
 }
 
 // HandleWechatPayNotify 处理微信支付通知

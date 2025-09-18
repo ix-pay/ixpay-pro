@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ix-pay/ixpay-pro/internal/domain/model"
+	"github.com/ix-pay/ixpay-pro/internal/app/wx/domain/model"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/task"
 )
@@ -15,12 +15,12 @@ import (
 type PaymentService struct {
 	repo        model.PaymentRepository
 	log         logger.Logger
-	wechatSvc   *WechatService
+	wechatSvc   model.WXAuthService
 	taskManager *task.TaskManager
 }
 
 // NewPaymentService 创建支付服务实例
-func NewPaymentService(repo model.PaymentRepository, log logger.Logger, wechatSvc *WechatService, taskManager *task.TaskManager) model.PaymentService {
+func NewPaymentService(repo model.PaymentRepository, log logger.Logger, wechatSvc model.WXAuthService, taskManager *task.TaskManager) model.PaymentService {
 	return &PaymentService{
 		repo:        repo,
 		log:         log,
@@ -125,7 +125,7 @@ func (s *PaymentService) CreateWechatPayment(userID uint, orderID string, amount
 	}
 
 	// 生成微信支付参数
-	payParams, err := s.wechatSvc.GenerateWechatPayParams(orderID, amount, description)
+	payParams, err := s.wechatSvc.GenerateWXAuthPayParams(orderID, amount, description)
 	if err != nil {
 		s.log.Error("Failed to generate WeChat pay params", "error", err)
 		return nil, err
@@ -160,7 +160,7 @@ func (s *PaymentService) CreateWechatPayment(userID uint, orderID string, amount
 // HandleWechatPayNotify 处理微信支付通知
 func (s *PaymentService) HandleWechatPayNotify(notifyData []byte) (*model.Payment, error) {
 	// 处理微信支付通知
-	response, err := s.wechatSvc.HandleWechatPayNotify(notifyData)
+	response, err := s.wechatSvc.HandleWXAuthPayNotify(notifyData)
 	if err != nil {
 		s.log.Error("Failed to handle WeChat pay notify", "error", err)
 		return nil, err

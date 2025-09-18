@@ -43,13 +43,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/baseRes.Response"
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.CaptchaResponse"
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.CaptchaResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -82,7 +82,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.LoginRequest"
+                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.LoginRequest"
                         }
                     }
                 ],
@@ -92,13 +92,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/baseRes.Response"
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.LoginResponse"
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.LoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -140,7 +140,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.RefreshTokenRequest"
+                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_request.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -150,13 +150,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/baseRes.Response"
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.LoginResponse"
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXLoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -207,7 +207,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.RegisterRequest"
+                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.RegisterRequest"
                         }
                     }
                 ],
@@ -217,71 +217,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/baseRes.Response"
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.UserInfoResponse"
-                                        },
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/auth/wechat-login": {
-            "post": {
-                "description": "用户通过微信code进行登录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "基础服务"
-                ],
-                "summary": "微信登录",
-                "parameters": [
-                    {
-                        "description": "微信登录请求参数",
-                        "name": "wechat",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.WechatLoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "登录成功，包含用户信息和令牌",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/baseRes.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/response.LoginResponse"
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -387,7 +329,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.CreatePaymentRequest"
+                            "$ref": "#/definitions/internal_app_wx_api_v1.CreatePaymentRequest"
                         }
                     }
                 ],
@@ -397,7 +339,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/controller.PaymentResponse"
+                                "$ref": "#/definitions/internal_app_wx_api_v1.PaymentResponse"
                             }
                         }
                     },
@@ -464,7 +406,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/controller.PaymentResponse"
+                                "$ref": "#/definitions/internal_app_wx_api_v1.PaymentResponse"
                             }
                         }
                     },
@@ -540,7 +482,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/controller.PaymentResponse"
+                                "$ref": "#/definitions/internal_app_wx_api_v1.PaymentResponse"
                             }
                         }
                     },
@@ -609,7 +551,7 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/definitions/controller.TaskResponse"
+                                    "$ref": "#/definitions/internal_app_base_api_v1.TaskResponse"
                                 }
                             }
                         }
@@ -658,7 +600,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.AddTaskRequest"
+                            "$ref": "#/definitions/internal_app_base_api_v1.AddTaskRequest"
                         }
                     }
                 ],
@@ -668,7 +610,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/controller.TaskResponse"
+                                "$ref": "#/definitions/internal_app_base_api_v1.TaskResponse"
                             }
                         }
                     },
@@ -744,7 +686,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/controller.TaskResponse"
+                                "$ref": "#/definitions/internal_app_base_api_v1.TaskResponse"
                             }
                         }
                     },
@@ -1068,13 +1010,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/baseRes.Response"
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.UserInfoResponse"
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1107,7 +1049,170 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "baseRes.Response": {
+        "github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_request.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.CaptchaResponse": {
+            "type": "object",
+            "properties": {
+                "captchaId": {
+                    "type": "string"
+                },
+                "captchaLength": {
+                    "type": "integer"
+                },
+                "openCaptcha": {
+                    "type": "boolean"
+                },
+                "picPath": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_base_domain_model_response.UserInfoResponse": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_request.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXLoginResponse": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXUserInfoResponse"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_app_wx_domain_model_response.WXUserInfoResponse": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response": {
             "type": "object",
             "properties": {
                 "code": {
@@ -1119,7 +1224,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.AddTaskRequest": {
+        "internal_app_base_api_v1.AddTaskRequest": {
             "type": "object",
             "required": [
                 "task_id",
@@ -1150,7 +1255,42 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.CreatePaymentRequest": {
+        "internal_app_base_api_v1.TaskResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "last_run_at": {
+                    "type": "string"
+                },
+                "max_retries": {
+                    "type": "integer"
+                },
+                "next_run_at": {
+                    "type": "string"
+                },
+                "retry_count": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "task_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_app_wx_api_v1.CreatePaymentRequest": {
             "type": "object",
             "required": [
                 "amount",
@@ -1183,7 +1323,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.PaymentResponse": {
+        "internal_app_wx_api_v1.PaymentResponse": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -1223,161 +1363,6 @@ const docTemplate = `{
                     "description": "微信支付相关参数",
                     "type": "object",
                     "additionalProperties": true
-                }
-            }
-        },
-        "controller.TaskResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "expression": {
-                    "type": "string"
-                },
-                "last_run_at": {
-                    "type": "string"
-                },
-                "max_retries": {
-                    "type": "integer"
-                },
-                "next_run_at": {
-                    "type": "string"
-                },
-                "retry_count": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "task_id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.LoginRequest": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.RefreshTokenRequest": {
-            "type": "object",
-            "required": [
-                "refresh_token"
-            ],
-            "properties": {
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.RegisterRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 6
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 3
-                }
-            }
-        },
-        "request.WechatLoginRequest": {
-            "type": "object",
-            "required": [
-                "code"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.CaptchaResponse": {
-            "type": "object",
-            "properties": {
-                "captchaId": {
-                    "type": "string"
-                },
-                "captchaLength": {
-                    "type": "integer"
-                },
-                "openCaptcha": {
-                    "type": "boolean"
-                },
-                "picPath": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "accessToken": {
-                    "type": "string"
-                },
-                "refreshToken": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/response.UserInfoResponse"
-                }
-            }
-        },
-        "response.UserInfoResponse": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nickname": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         }

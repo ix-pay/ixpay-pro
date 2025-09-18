@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/ix-pay/ixpay-pro/internal/domain/model"
+	"github.com/ix-pay/ixpay-pro/internal/app/base/domain/model"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
 )
 

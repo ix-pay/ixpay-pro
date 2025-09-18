@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ix-pay/ixpay-pro/internal/app/base/domain/model"
 	"github.com/ix-pay/ixpay-pro/internal/config"
-	"github.com/ix-pay/ixpay-pro/internal/domain/model"
-	"github.com/ix-pay/ixpay-pro/internal/domain/utils/captcha"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/redis"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/snowflake"
+	"github.com/ix-pay/ixpay-pro/internal/utils/captcha"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -24,19 +24,17 @@ type UserService struct {
 	jwtAuth   *auth.JWTAuth
 	config    *config.Config
 	log       logger.Logger
-	wechatSvc *WechatService
 	redis     *redis.RedisClient
 	snowflake *snowflake.Snowflake
 }
 
 // NewUserService 创建用户服务实例
-func NewUserService(repo model.UserRepository, jwtAuth *auth.JWTAuth, config *config.Config, log logger.Logger, wechatSvc *WechatService, redis *redis.RedisClient, snowflake *snowflake.Snowflake) model.UserService {
+func NewUserService(repo model.UserRepository, jwtAuth *auth.JWTAuth, config *config.Config, log logger.Logger, redis *redis.RedisClient, snowflake *snowflake.Snowflake) model.UserService {
 	return &UserService{
 		repo:      repo,
 		jwtAuth:   jwtAuth,
 		config:    config,
 		log:       log,
-		wechatSvc: wechatSvc,
 		redis:     redis,
 		snowflake: snowflake,
 	}
@@ -132,60 +130,6 @@ func (s *UserService) Login(username, password string) (*model.User, string, str
 	}
 
 	s.log.Info("User logged in successfully", "username", username)
-	return user, accessToken, refreshToken, nil
-}
-
-// WechatLogin 微信登录
-func (s *UserService) WechatLogin(code string) (*model.User, string, string, error) {
-	// 获取微信用户信息
-	wechatInfo, err := s.wechatSvc.GetUserInfoByCode(code)
-	if err != nil {
-		s.log.Error("Failed to get WeChat user info", "error", err)
-		return nil, "", "", err
-	}
-
-	// 检查用户是否已存在
-	user, err := s.repo.GetByWechatOpenID(wechatInfo.OpenID)
-	if err == nil {
-		// 用户已存在，更新信息
-		user.Nickname = wechatInfo.Nickname
-		user.Avatar = wechatInfo.AvatarURL
-		user.UpdatedAt = time.Now()
-		if err := s.repo.Update(user); err != nil {
-			s.log.Error("Failed to update user", "error", err)
-			return nil, "", "", err
-		}
-	} else {
-		// 创建新用户
-		user = &model.User{
-			Username:      "wechat_" + wechatInfo.OpenID[:10],
-			Nickname:      wechatInfo.Nickname,
-			Avatar:        wechatInfo.AvatarURL,
-			WechatOpenID:  wechatInfo.OpenID,
-			WechatUnionID: wechatInfo.UnionID,
-			Role:          "user",
-			Status:        1,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-			// 生成随机密码
-			PasswordHash: generateRandomPasswordHash(),
-			Email:        fmt.Sprintf("wechat_%s@example.com", wechatInfo.OpenID[:10]),
-		}
-
-		if err := s.repo.Create(user); err != nil {
-			s.log.Error("Failed to create user", "error", err)
-			return nil, "", "", err
-		}
-	}
-
-	// 生成令牌
-	accessToken, refreshToken, err := s.jwtAuth.GenerateToken(user.ID, user.Username, user.Role, "wechat")
-	if err != nil {
-		s.log.Error("Failed to generate tokens", "error", err)
-		return nil, "", "", err
-	}
-
-	s.log.Info("WeChat user logged in successfully", "openID", wechatInfo.OpenID)
 	return user, accessToken, refreshToken, nil
 }
 

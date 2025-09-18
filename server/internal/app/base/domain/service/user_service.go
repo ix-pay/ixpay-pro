@@ -1,11 +1,7 @@
 package service
 
 import (
-	"crypto/rand"
-	"crypto/subtle"
-	"encoding/base64"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/app/base/domain/model"
@@ -15,7 +11,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/redis"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/snowflake"
 	"github.com/ix-pay/ixpay-pro/internal/utils/captcha"
-	"golang.org/x/crypto/argon2"
+	"github.com/ix-pay/ixpay-pro/internal/utils/encryption"
 )
 
 // UserService 实现用户领域服务接口
@@ -75,7 +71,7 @@ func (s *UserService) Register(username, password, email string) (*model.User, e
 	}
 
 	// 生成密码哈希
-	passwordHash, err := generatePasswordHash(password)
+	passwordHash, err := encryption.GeneratePasswordHash(password)
 	if err != nil {
 		s.log.Error("Failed to generate password hash", "error", err)
 		return nil, err
@@ -112,7 +108,7 @@ func (s *UserService) Login(username, password string) (*model.User, string, str
 	}
 
 	// 验证密码
-	if err := verifyPassword(user.PasswordHash, password); err != nil {
+	if err := encryption.VerifyPassword(user.PasswordHash, password); err != nil {
 		s.log.Error("Password verification failed", "username", username)
 		return nil, "", "", errors.New("invalid username or password")
 	}
@@ -164,13 +160,13 @@ func (s *UserService) ChangePassword(userID uint, oldPassword, newPassword strin
 	}
 
 	// 验证旧密码
-	if err := verifyPassword(user.PasswordHash, oldPassword); err != nil {
+	if err := encryption.VerifyPassword(user.PasswordHash, oldPassword); err != nil {
 		s.log.Error("Old password verification failed", "userID", userID)
 		return errors.New("invalid old password")
 	}
 
 	// 生成新密码哈希
-	passwordHash, err := generatePasswordHash(newPassword)
+	passwordHash, err := encryption.GeneratePasswordHash(newPassword)
 	if err != nil {
 		s.log.Error("Failed to generate password hash", "error", err)
 		return err
@@ -191,105 +187,4 @@ func (s *UserService) ChangePassword(userID uint, oldPassword, newPassword strin
 // RefreshToken 刷新令牌
 func (s *UserService) RefreshToken(refreshToken string) (string, string, error) {
 	return s.jwtAuth.RefreshToken(refreshToken)
-}
-
-// generatePasswordHash 生成密码哈希
-func generatePasswordHash(password string) (string, error) {
-	// 生成随机salt
-	salt := make([]byte, 16)
-	if _, err := rand.Read(salt); err != nil {
-		return "", err
-	}
-
-	// 配置参数
-	params := &Argon2Params{
-		Memory:      64 * 1024,
-		Iterations:  1,
-		Parallelism: 2,
-		SaltLength:  16,
-		KeyLength:   32,
-	}
-
-	// 生成哈希
-	hash := argon2.IDKey([]byte(password), salt, params.Iterations, params.Memory, params.Parallelism, params.KeyLength)
-
-	// 编码结果
-	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
-
-	// 格式化结果
-	encodedHash := fmt.Sprintf("$argon2id$v=19$m=%d,t=%d,p=%d$%s$%s",
-		params.Memory, params.Iterations, params.Parallelism,
-		b64Salt, b64Hash)
-
-	return encodedHash, nil
-}
-
-// verifyPassword 验证密码
-func verifyPassword(encodedHash, password string) error {
-	// 解析编码后的哈希
-	params, salt, hash, err := decodeHash(encodedHash)
-	if err != nil {
-		return err
-	}
-
-	// 生成输入密码的哈希
-	otherHash := argon2.IDKey([]byte(password), salt, params.Iterations, params.Memory, params.Parallelism, params.KeyLength)
-
-	// 比较哈希
-	if subtle.ConstantTimeCompare(hash, otherHash) != 1 {
-		return errors.New("invalid password")
-	}
-
-	return nil
-}
-
-// generateRandomPasswordHash 生成随机密码哈希
-func generateRandomPasswordHash() string {
-	// 生成随机字节
-	randomBytes := make([]byte, 32)
-	if _, err := rand.Read(randomBytes); err != nil {
-		// 如果随机数生成失败，使用默认值
-		return "$argon2id$v=19$m=65536,t=1,p=2$0000000000000000$00000000000000000000000000000000"
-	}
-
-	// 编码为Base64
-	randomStr := base64.RawStdEncoding.EncodeToString(randomBytes)
-
-	// 生成哈希
-	hash, err := generatePasswordHash(randomStr)
-	if err != nil {
-		// 如果哈希生成失败，使用默认值
-		return "$argon2id$v=19$m=65536,t=1,p=2$0000000000000000$00000000000000000000000000000000"
-	}
-
-	return hash
-}
-
-// Argon2Params Argon2参数
-
-type Argon2Params struct {
-	Memory      uint32
-	Iterations  uint32
-	Parallelism uint8
-	SaltLength  uint32
-	KeyLength   uint32
-}
-
-// decodeHash 解析编码后的哈希
-func decodeHash(encodedHash string) (p *Argon2Params, salt, hash []byte, err error) {
-	// 这个函数需要实现解析argon2格式的哈希字符串
-	// 为了简化，这里返回一个默认值
-	p = &Argon2Params{
-		Memory:      64 * 1024,
-		Iterations:  1,
-		Parallelism: 2,
-		SaltLength:  16,
-		KeyLength:   32,
-	}
-
-	salt = make([]byte, p.SaltLength)
-	hash = make([]byte, p.KeyLength)
-
-	return p, salt, hash, nil
 }

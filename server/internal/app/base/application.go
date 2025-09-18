@@ -9,8 +9,10 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/logger"
+	"github.com/ix-pay/ixpay-pro/internal/utils/encryption"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // AppBase 应用程序结构
@@ -94,10 +96,20 @@ func (a *AppBase) initializeSeedData() {
 		a.logger.Info("Admin用户已存在，跳过创建")
 		return
 	}
+	// 如果不是记录不存在的错误，记录并返回
+	if err != gorm.ErrRecordNotFound {
+		a.logger.Error("检查admin用户时发生错误", "error", err)
+		return
+	}
 
 	// admin用户不存在，创建admin用户
 	// 创建密码哈希（使用默认密码'admin123'）
-	passwordHash := "$argon2id$v=19$m=65536,t=1,p=2$K0VYVVRtWXhkVXk3$vW5IqE4+ZgXc0V0t9tGtPq2sLzXjK5Yg" // admin123的哈希
+	passwordHash, err := encryption.GeneratePasswordHash("admin123")
+	if err != nil {
+		a.logger.Error("生成admin用户密码哈希失败", "error", err)
+		// 使用备用密码哈希
+		passwordHash = "$argon2id$v=19$m=65536,t=1,p=2$LbteWOhUGQ78dPlhlIHpCg$dxYA6EKHTEEux4KhoAxQaawnFiK6cnKnucpeGtEiirU" // admin123的哈希
+	}
 
 	adminUser := &model.User{
 		Username:     "admin",

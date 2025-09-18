@@ -1,6 +1,6 @@
-# 微信支付API服务
+# IXPay Pro - 支付API服务
 
-一个基于Go语言和Gin框架的微信支付API服务，提供用户认证、支付处理和任务管理功能。
+一个基于Go语言和Gin框架的支付API服务，专注于提供微信支付解决方案，集成用户认证、支付处理和任务管理功能。
 
 ## 功能特性
 
@@ -10,50 +10,86 @@
 - **权限管理**：基于角色的访问控制
 - **文档化**：集成Swagger API文档
 - **优雅关闭**：支持信号处理和优雅关闭
+- **分布式ID**：集成Snowflake算法生成唯一ID
+- **验证码服务**：支持生成和验证验证码
+- **跨域支持**：内置CORS中间件
 
 ## 技术栈
 
 - **Go**：1.24.6
 - **Web框架**：Gin (v1.10.1)
-- **依赖注入**：Wire (v0.5.0)
-- **数据库**：PostgreSQL (GORM v1.25.12)
+- **依赖注入**：Wire (v0.7.0)
+- **数据库**：PostgreSQL (GORM v1.30.3)
 - **缓存**：Redis (v9.13.0)
-- **认证**：JWT (v5.2.1)
-- **配置管理**：Viper (v1.18.2)
-- **日志**：Zap (v1.21.0)
+- **认证**：JWT (v5.3.0)
+- **配置管理**：Viper (v1.20.1)
+- **日志**：Zap (v1.27.0)
 - **任务调度**：Cron (v3.0.1)
 - **API文档**：Swagger
 
 ## 项目结构
 
 ```
-├── cmd/                 # 应用程序入口点
-│   └── server/          # 服务器入口
-│       └── main.go      # 主函数
 ├── configs/             # 配置文件
 │   └── config.yaml      # 应用程序配置
+├── docker-compose.yml   # Docker Compose配置
+├── Dockerfile           # Docker构建文件
+├── docs/                # API文档
+│   ├── docs.go          # Swagger文档定义
+│   ├── swagger.json     # 自动生成的Swagger JSON
+│   └── swagger.yaml     # 自动生成的Swagger YAML
+├── go.mod               # Go模块定义
+├── go.sum               # 依赖版本锁定
 ├── internal/            # 内部包
 │   ├── app/             # 应用程序核心
-│   │   ├── controller/  # 控制器
 │   │   ├── application.go # 应用程序结构
-│   │   ├── routes.go    # 路由定义
-│   │   ├── wire.go      # 依赖注入配置
-│   │   └── wire_gen.go  # 自动生成的依赖注入代码
+│   │   ├── base/        # 基础功能模块
+│   │   │   ├── api/     # API控制器
+│   │   │   ├── application.go # 模块应用程序结构
+│   │   │   ├── domain/  # 领域模型和服务
+│   │   │   ├── routes.go    # 模块路由定义
+│   │   │   └── wire.go      # 模块依赖注入配置
+│   │   ├── routes.go    # 全局路由定义
+│   │   ├── wire.go      # 全局依赖注入配置
+│   │   ├── wire_gen.go  # 自动生成的依赖注入代码
+│   │   └── wx/          # 微信支付模块
+│   │       ├── api/     # 微信API控制器
+│   │       ├── application.go # 微信模块应用程序结构
+│   │       ├── domain/  # 微信领域模型和服务
+│   │       ├── routes.go    # 微信模块路由定义
+│   │       └── wire.go      # 微信模块依赖注入配置
 │   ├── config/          # 配置相关
-│   ├── domain/          # 领域模型和服务
-│   │   ├── model/       # 数据模型
-│   │   └── service/     # 业务服务
-│   └── infrastructure/  # 基础设施层
-│       ├── auth/        # 认证相关
-│       ├── database/    # 数据库连接
-│       ├── logger/      # 日志配置
-│       ├── middleware/  # 中间件
-│       ├── redis/       # Redis连接
-│       ├── repository/  # 数据访问层
-│       └── task/        # 任务管理
+│   │   └── config.go    # 配置结构体定义
+│   ├── infrastructure/  # 基础设施层
+│   │   ├── auth/        # 认证相关
+│   │   │   ├── jwt.go   # JWT认证
+│   │   │   └── permission.go # 权限管理
+│   │   ├── database/    # 数据库连接
+│   │   │   ├── migrations.go # 数据库迁移
+│   │   │   └── postgresql.go # PostgreSQL连接
+│   │   ├── logger/      # 日志配置
+│   │   │   └── logger.go # 日志实现
+│   │   ├── middleware/  # 中间件
+│   │   │   ├── auth_middleware.go # 认证中间件
+│   │   │   ├── cors_middleware.go # CORS中间件
+│   │   │   ├── logger_middleware.go # 日志中间件
+│   │   │   └── permission_middleware.go # 权限中间件
+│   │   ├── redis/       # Redis连接
+│   │   │   └── redis.go # Redis实现
+│   │   ├── snowflake/   # 分布式ID生成
+│   │   │   └── snowflake.go # Snowflake算法实现
+│   │   └── task/        # 任务管理
+│   │       └── task_manager.go # 任务管理器实现
+│   ├── main.go          # 应用程序入口
+│   └── utils/           # 工具函数
+│       ├── captcha/     # 验证码功能
+│       │   └── captcha.go # 验证码实现
+│       └── common/      # 通用工具
+│           ├── baseReq/ # 基础请求结构
+│           └── baseRes/ # 基础响应结构
 ├── logs/                # 日志文件
-├── go.mod               # Go模块定义
-└── go.sum               # 依赖版本锁定
+│   └── app.log          # 应用程序日志
+└── README.md            # 项目说明文档
 ```
 
 ## 快速开始

@@ -2,9 +2,19 @@ package repo
 
 import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 
+// BtnPermRelation 按钮权限关联关系类型（类型安全的枚举）
+type BtnPermRelation string
+
+const (
+	BtnPermRelationMenu      BtnPermRelation = "Menu"      // 所属菜单
+	BtnPermRelationAPIRoutes BtnPermRelation = "APIRoutes" // API 路由
+)
+
 // BtnPermRepository 按钮权限仓库接口
 type BtnPermRepository interface {
-	GetByID(id string) (*entity.BtnPerm, error)
+	// GetByID 根据 ID 查询按钮权限并支持加载关联数据
+	// relations 参数使用 BtnPermRelation 类型，提供编译期类型检查
+	GetByID(id string, relations ...BtnPermRelation) (*entity.BtnPerm, error)
 	GetByCode(code string) (*entity.BtnPerm, error)
 	GetBtnPermsByMenu(menuID string) ([]*entity.BtnPerm, error)
 	Create(button *entity.BtnPerm) error

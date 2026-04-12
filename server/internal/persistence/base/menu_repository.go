@@ -26,6 +26,18 @@ type menuModel struct {
 	Permission string `gorm:"size:100"`
 	Type       int    `gorm:"default:2"`
 	FrameSrc   string `gorm:"size:255"`
+
+	// GORM 关联关系 - 一对多（子菜单）
+	Children []menuModel `gorm:"foreignKey:ParentID;references:ID"`
+
+	// GORM 关联关系 - 多对一（父菜单）
+	Parent *menuModel `gorm:"foreignKey:ParentID;references:ID"`
+
+	// GORM 关联关系 - 多对多（通过中间表 base_menu_api_routes）
+	APIRoutes []apiModel `gorm:"many2many:base_menu_api_routes;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+
+	// GORM 关联关系 - 一对多（按钮权限）
+	BtnPerms []btnPermModel `gorm:"foreignKey:MenuID;references:ID"`
 }
 
 // TableName 指定表名
@@ -38,7 +50,7 @@ func (m *menuModel) toDomain() *entity.Menu {
 	if m == nil {
 		return nil
 	}
-	return &entity.Menu{
+	menu := &entity.Menu{
 		ID:         strconv.FormatInt(m.ID, 10),
 		ParentID:   strconv.FormatInt(m.ParentID, 10),
 		Path:       m.Path,
@@ -59,6 +71,46 @@ func (m *menuModel) toDomain() *entity.Menu {
 		UpdatedBy:  strconv.FormatInt(m.UpdatedBy, 10),
 		UpdatedAt:  m.UpdatedAt,
 	}
+
+	// ⭐ 处理关联数据 - 子菜单
+	if len(m.Children) > 0 {
+		children := make([]*entity.Menu, len(m.Children))
+		for i, child := range m.Children {
+			children[i] = child.toDomain()
+		}
+		menu.Children = children
+	}
+
+	// ⭐ 处理关联数据 - 父菜单
+	if m.Parent != nil {
+		menu.Parent = m.Parent.toDomain()
+	}
+
+	// ⭐ 处理关联数据 - API 路由（同时填充 APIRouteIds 和 APIRoutes）
+	if len(m.APIRoutes) > 0 {
+		apiRoutes := make([]*entity.API, len(m.APIRoutes))
+		apiRouteIDs := make([]string, len(m.APIRoutes))
+		for i, apiRoute := range m.APIRoutes {
+			apiRoutes[i] = apiRoute.toDomain()
+			apiRouteIDs[i] = strconv.FormatInt(apiRoute.ID, 10)
+		}
+		menu.APIRoutes = apiRoutes
+		menu.APIRouteIds = apiRouteIDs
+	}
+
+	// ⭐ 处理关联数据 - 按钮权限（同时填充 BtnPermIds 和 BtnPerms）
+	if len(m.BtnPerms) > 0 {
+		btnPerms := make([]*entity.BtnPerm, len(m.BtnPerms))
+		btnPermIDs := make([]string, len(m.BtnPerms))
+		for i, btnPerm := range m.BtnPerms {
+			btnPerms[i] = btnPerm.toDomain()
+			btnPermIDs[i] = strconv.FormatInt(btnPerm.ID, 10)
+		}
+		menu.BtnPerms = btnPerms
+		menu.BtnPermIds = btnPermIDs
+	}
+
+	return menu
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -124,15 +176,22 @@ func NewMenuRepository(db *database.PostgresDB) repo.MenuRepository {
 	return &menuRepository{db: db}
 }
 
-// GetByID 根据 ID 查询菜单
-func (r *menuRepository) GetByID(id string) (*entity.Menu, error) {
+// GetByID 根据 ID 查询菜单并支持加载关联数据
+func (r *menuRepository) GetByID(id string, relations ...repo.MenuRelation) (*entity.Menu, error) {
 	intID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbModel menuModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	query := r.db.Where("id = ?", intID)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}

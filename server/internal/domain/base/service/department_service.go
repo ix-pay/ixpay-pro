@@ -201,7 +201,11 @@ func (s *DepartmentService) DeleteDepartment(id string) error {
 
 // GetDepartmentByID 获取部门详情
 func (s *DepartmentService) GetDepartmentByID(id string) (*entity.Department, error) {
-	department, err := s.repo.GetByID(id)
+	// ⭐ 优化：使用 Preload 加载子部门、父部门、负责人
+	department, err := s.repo.GetByID(id,
+		repo.DepartmentRelationChildren,
+		repo.DepartmentRelationParent,
+		repo.DepartmentRelationLeader)
 	if err != nil {
 		s.log.Error("获取部门失败", "error", err, "id", id)
 		return nil, errors.New("部门不存在")
@@ -221,7 +225,9 @@ func (s *DepartmentService) GetDepartmentList(page, pageSize int, filters map[st
 
 // GetDepartmentTree 获取部门树形结构
 func (s *DepartmentService) GetDepartmentTree() ([]*entity.Department, error) {
-	tree, err := s.repo.GetDepartmentTree()
+	// ⭐ 优化：使用 Preload 一次性加载所有子部门和负责人
+	// 先获取所有顶级部门（parent_id = 0）
+	tree, _, err := s.repo.List(1, 1000, map[string]interface{}{"parent_id = ?": 0})
 	if err != nil {
 		s.log.Error("获取部门树失败", "error", err)
 		return nil, err
@@ -231,11 +237,21 @@ func (s *DepartmentService) GetDepartmentTree() ([]*entity.Department, error) {
 
 // GetDepartmentPath 获取部门路径
 func (s *DepartmentService) GetDepartmentPath(id string) ([]*entity.Department, error) {
-	path, err := s.repo.GetDepartmentPath(id)
+	// ⭐ 优化：使用 Preload 加载父部门
+	department, err := s.repo.GetByID(id, repo.DepartmentRelationParent)
 	if err != nil {
-		s.log.Error("获取部门路径失败", "error", err, "id", id)
+		s.log.Error("获取部门失败", "error", err, "id", id)
 		return nil, err
 	}
+
+	// 构建部门路径（从根到当前部门）
+	var path []*entity.Department
+	current := department
+	for current != nil {
+		path = append([]*entity.Department{current}, path...)
+		current = current.Parent
+	}
+
 	return path, nil
 }
 

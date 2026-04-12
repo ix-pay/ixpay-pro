@@ -29,6 +29,7 @@ type User struct {
 	UpdatedBy               string      // 更新人 ID
 	UpdatedAt               time.Time   // 更新时间
 	RoleIds                 []string    // 用户关联的角色 ID 列表
+	Roles                   []*Role     // 角色列表
 	Department              *Department // 所属部门
 	Position                *Position   // 所属岗位
 	SpecialPermissionIds    []string    // 用户特殊权限 ID 列表

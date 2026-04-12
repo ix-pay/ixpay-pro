@@ -5,7 +5,7 @@ type WechatLoginRequest struct {
 	Code string `json:"code" binding:"required"`
 }
 
-// RefreshTokenRequest 刷新令牌请求参数
-type RefreshTokenRequest struct {
+// WechatRefreshTokenRequest 刷新令牌请求参数
+type WechatRefreshTokenRequest struct {
 	RefreshToken string `json:"refresh_token" binding:"required"`
 }

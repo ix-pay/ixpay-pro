@@ -14,7 +14,7 @@ import (
 // @Summary 支付相关 API
 // @Description 提供支付创建、查询、取消等功能
 // @Tags 支付管理
-// @Router /api//payment [get]
+// @Router /api/payment [get]
 type PaymentController struct {
 	service *wxService.PaymentService
 	log     logger.Logger
@@ -28,12 +28,6 @@ func NewPaymentController(service *wxService.PaymentService, log logger.Logger) 
 	}
 }
 
-// CreatePaymentRequest 创建支付请求参数
-// 已移动到 internal/dto/wx/request/payment.go
-
-// PaymentResponse 支付响应
-// 已移动到 internal/dto/wx/response/payment.go
-
 // CreatePayment 创建支付
 // @Summary 创建支付
 // @Description 创建一笔新的支付订单
@@ -46,7 +40,7 @@ func NewPaymentController(service *wxService.PaymentService, log logger.Logger) 
 // @Failure 400 {object} map[string]string "请求参数错误"
 // @Failure 401 {object} map[string]string "未授权"
 // @Failure 500 {object} map[string]string "服务器内部错误"
-// @Router /api//payment [post]
+// @Router /api/payment [post]
 func (c *PaymentController) CreatePayment(ctx *gin.Context) {
 	var req request.CreatePaymentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

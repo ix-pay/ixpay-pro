@@ -24,7 +24,8 @@ func NewDictService(repo repo.DictRepository, log logger.Logger) *DictService {
 
 // GetDictByID 根据 ID 获取字典
 func (s *DictService) GetDictByID(id string) (*entity.Dict, error) {
-	dict, err := s.repo.GetByID(id)
+	// ⭐ 优化：使用 Preload 一次性加载字典及其字典项
+	dict, err := s.repo.GetByID(id, repo.DictRelationItems)
 	if err != nil {
 		s.log.Error("获取字典失败", "id", id, "error", err)
 		return nil, errors.New("字典不存在")
@@ -34,7 +35,8 @@ func (s *DictService) GetDictByID(id string) (*entity.Dict, error) {
 
 // GetDictByCode 根据字典编码获取字典
 func (s *DictService) GetDictByCode(dictCode string) (*entity.Dict, error) {
-	dict, err := s.repo.GetByCode(dictCode)
+	// ⭐ 优化：使用 Preload 一次性加载字典及其字典项
+	dict, err := s.repo.GetByCode(dictCode, repo.DictRelationItems)
 	if err != nil {
 		s.log.Error("获取字典失败", "dict_code", dictCode, "error", err)
 		return nil, errors.New("字典不存在")

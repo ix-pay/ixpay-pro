@@ -317,7 +317,10 @@ func (s *MenuService) GetMenusByUserID(userID string) ([]*entity.Menu, error) {
 // GetMenuTree 获取菜单树结构
 func (s *MenuService) GetMenuTree(parentID string) ([]*entity.Menu, error) {
 	s.log.Info("获取菜单树结构", "parentID", parentID)
-	menus, err := s.repo.GetMenuTree(parentID)
+
+	// ⭐ 优化：先获取顶级菜单，然后使用 Preload 加载关联数据
+	// 使用 List 方法获取指定 parentID 的菜单列表
+	menus, _, err := s.repo.List(1, 1000, map[string]interface{}{"parent_id = ?": parentID})
 	if err != nil {
 		s.log.Error("获取菜单树失败", "error", err, "parentID", parentID)
 		return nil, err
@@ -335,7 +338,10 @@ func (s *MenuService) GetMenuTree(parentID string) ([]*entity.Menu, error) {
 // GetAllMenuTree 获取所有菜单的树结构
 func (s *MenuService) GetAllMenuTree() ([]*entity.Menu, error) {
 	s.log.Info("获取所有菜单的树结构")
-	menus, err := s.repo.GetAllMenuTree()
+
+	// ⭐ 优化：使用 Preload 一次性加载所有关联数据
+	// 先获取所有顶级菜单（parent_id = 0）
+	menus, _, err := s.repo.List(1, 1000, map[string]interface{}{"parent_id = ?": 0})
 	if err != nil {
 		s.log.Error("获取所有菜单树失败", "error", err)
 		return nil, err
@@ -353,15 +359,23 @@ func (s *MenuService) GetAllMenuTree() ([]*entity.Menu, error) {
 // GetMenuPath 获取菜单路径
 func (s *MenuService) GetMenuPath(menuID string) ([]*entity.Menu, error) {
 	s.log.Info("获取菜单路径", "menuID", menuID)
-	menus, err := s.repo.GetMenuPath(menuID)
+
+	// ⭐ 优化：使用 Preload 加载父菜单
+	menu, err := s.repo.GetByID(menuID, repo.MenuRelationParent)
 	if err != nil {
 		s.log.Error("获取菜单路径失败", "error", err, "menuID", menuID)
 		return nil, err
 	}
 
-	// 填充所有菜单的元数据
-	for _, menu := range menus {
-		fillMenuMeta(menu)
+	// 填充菜单元数据
+	fillMenuMeta(menu)
+
+	// 构建菜单路径（从根到当前菜单）
+	var menus []*entity.Menu
+	current := menu
+	for current != nil {
+		menus = append([]*entity.Menu{current}, menus...)
+		current = current.Parent
 	}
 
 	s.log.Info("获取菜单路径成功", "menuID", menuID, "count", len(menus))

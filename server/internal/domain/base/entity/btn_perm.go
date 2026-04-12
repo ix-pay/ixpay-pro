@@ -13,7 +13,10 @@ type BtnPerm struct {
 	Description string    // 权限描述
 	Status      int       // 状态：1-启用，0-禁用
 	APIRouteIds []string  // 关联的 API 路由 ID 列表
+	APIRoutes   []*API    // 关联的 API 路由列表（新增）
 	RoleIds     []string  // 关联的角色 ID 列表
+	Roles       []*Role   // 关联的角色列表（新增）
+	Menu        *Menu     // 所属菜单（新增）
 	CreatedBy   string    // 创建人 ID
 	CreatedAt   time.Time // 创建时间
 	UpdatedBy   string    // 更新人 ID

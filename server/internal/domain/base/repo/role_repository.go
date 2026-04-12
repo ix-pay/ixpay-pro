@@ -2,9 +2,24 @@ package repo
 
 import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 
+// RoleRelation 角色关联关系类型（类型安全的枚举）
+type RoleRelation string
+
+const (
+	RoleRelationUsers            RoleRelation = "Users"            // 用户
+	RoleRelationMenus            RoleRelation = "Menus"            // 菜单
+	RoleRelationAPIRoutes        RoleRelation = "APIRoutes"        // API 路由
+	RoleRelationBtnPerms         RoleRelation = "BtnPerms"         // 按钮权限
+	RoleRelationPermissionGroups RoleRelation = "PermissionGroups" // 权限组
+	RoleRelationChildren         RoleRelation = "Children"         // 子角色
+	RoleRelationParent           RoleRelation = "Parent"           // 父角色
+)
+
 // RoleRepository 角色仓库接口
 type RoleRepository interface {
-	GetByID(id string) (*entity.Role, error)
+	// GetByID 根据 ID 查询角色并支持加载关联数据
+	// relations 参数使用 RoleRelation 类型，提供编译期类型检查
+	GetByID(id string, relations ...RoleRelation) (*entity.Role, error)
 	GetByName(name string) (*entity.Role, error)
 	GetByCode(code string) (*entity.Role, error)
 	Create(role *entity.Role) error

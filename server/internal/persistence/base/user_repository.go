@@ -26,6 +26,13 @@ type userModel struct {
 	LastLoginIP   string `gorm:"size:50"`
 	LastLoginTime string `gorm:"size:50"`
 	WechatOpenID  string `gorm:"size:100;uniqueIndex;default:null"`
+
+	// GORM 关联标签 - 多对一
+	Department *departmentModel `gorm:"foreignKey:DepartmentID;references:ID"`
+	Position   *positionModel   `gorm:"foreignKey:PositionID;references:ID"`
+
+	// GORM 关联标签 - 多对多
+	Roles []roleModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 // TableName 指定表名
@@ -35,7 +42,7 @@ func (userModel) TableName() string {
 
 // toDomain 将数据库模型转换为领域实体
 func (m *userModel) toDomain() *entity.User {
-	return &entity.User{
+	user := &entity.User{
 		ID:            common.ToString(m.ID),
 		Username:      m.Username,
 		PasswordHash:  m.PasswordHash,
@@ -58,6 +65,31 @@ func (m *userModel) toDomain() *entity.User {
 		UpdatedBy:     common.ToString(m.UpdatedBy),
 		UpdatedAt:     m.UpdatedAt,
 	}
+
+	// 处理关联数据 - 部门
+	if m.Department != nil {
+		user.Department = m.Department.toDomain()
+	}
+
+	// 处理关联数据 - 岗位
+	if m.Position != nil {
+		user.Position = m.Position.toDomain()
+	}
+
+	// 处理关联数据 - 角色
+	if len(m.Roles) > 0 {
+		// 将 roleModel 转换为 *entity.Role，同时填充角色 ID 列表
+		roles := make([]*entity.Role, len(m.Roles))
+		roleIDs := make([]string, len(m.Roles))
+		for i, role := range m.Roles {
+			roles[i] = role.toDomain()
+			roleIDs[i] = common.ToString(role.ID)
+		}
+		user.Roles = roles
+		user.RoleIds = roleIDs
+	}
+
+	return user
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -102,15 +134,27 @@ func NewUserRepository(db *database.PostgresDB) repo.UserRepository {
 	return &userRepository{db: db}
 }
 
-// GetByID 根据 ID 查询用户
-func (r *userRepository) GetByID(id string) (*entity.User, error) {
+// GetByID 根据 ID 查询用户并支持加载关联数据（使用 Preload）
+// relations 参数可以是："Department", "Position", "Roles" 等
+// 使用示例：
+//   - 只查用户：GetByID("123")
+//   - 查用户 + 部门：GetByID("123", "Department")
+//   - 查用户 + 部门 + 岗位 + 角色：GetByID("123", "Department", "Position", "Roles")
+func (r *userRepository) GetByID(id string, relations ...repo.UserRelation) (*entity.User, error) {
 	intID, err := common.ParseInt64(id)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbModel userModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	query := r.db.Where("id = ?", intID)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}

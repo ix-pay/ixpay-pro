@@ -145,8 +145,10 @@ func (s *BtnPermService) GetBtnPermByID(id string) (*entity.BtnPerm, error) {
 		return nil, errors.New("无效的参数")
 	}
 
-	// 获取按钮权限
-	btnPerm, err := s.btnPermRepo.GetByID(id)
+	// ⭐ 优化：使用 Preload 一次性加载所属菜单和 API 路由
+	btnPerm, err := s.btnPermRepo.GetByID(id,
+		repo.BtnPermRelationMenu,
+		repo.BtnPermRelationAPIRoutes)
 	if err != nil {
 		s.logger.Error("获取按钮权限失败", "error", err, "btn_perm_id", id)
 		return nil, err

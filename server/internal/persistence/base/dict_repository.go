@@ -14,6 +14,9 @@ type dictModel struct {
 	DictCode    string `gorm:"size:50;not null"`
 	Description string `gorm:"size:255"`
 	Status      int    `gorm:"default:1"`
+
+	// GORM 关联关系 - 一对多（字典项）
+	DictItems []dictItemModel `gorm:"foreignKey:DictID;references:ID"`
 }
 
 // TableName 指定表名
@@ -26,7 +29,7 @@ func (m *dictModel) toDomain() *entity.Dict {
 	if m == nil {
 		return nil
 	}
-	return &entity.Dict{
+	dict := &entity.Dict{
 		ID:          common.ToString(m.ID),
 		DictName:    m.DictName,
 		DictCode:    m.DictCode,
@@ -37,6 +40,17 @@ func (m *dictModel) toDomain() *entity.Dict {
 		UpdatedBy:   common.ToString(m.UpdatedBy),
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// ⭐ 处理关联数据 - 字典项
+	if len(m.DictItems) > 0 {
+		dictItems := make([]entity.DictItem, len(m.DictItems))
+		for i, item := range m.DictItems {
+			dictItems[i] = *item.toDomain()
+		}
+		dict.DictItems = dictItems
+	}
+
+	return dict
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -69,15 +83,22 @@ func NewDictRepository(db *database.PostgresDB) repo.DictRepository {
 	return &dictRepository{db: db}
 }
 
-// GetByID 根据 ID 查询字典
-func (r *dictRepository) GetByID(id string) (*entity.Dict, error) {
+// GetByID 根据 ID 查询字典并支持加载关联数据
+func (r *dictRepository) GetByID(id string, relations ...repo.DictRelation) (*entity.Dict, error) {
 	intID, err := common.ParseInt64(id)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbModel dictModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	query := r.db.Where("id = ?", intID)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -85,10 +106,17 @@ func (r *dictRepository) GetByID(id string) (*entity.Dict, error) {
 	return dbModel.toDomain(), nil
 }
 
-// GetByCode 根据编码查询字典
-func (r *dictRepository) GetByCode(dictCode string) (*entity.Dict, error) {
+// GetByCode 根据编码查询字典并支持加载关联数据
+func (r *dictRepository) GetByCode(dictCode string, relations ...repo.DictRelation) (*entity.Dict, error) {
 	var dbModel dictModel
-	result := r.db.Where("dict_code = ?", dictCode).First(&dbModel)
+	query := r.db.Where("dict_code = ?", dictCode)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}

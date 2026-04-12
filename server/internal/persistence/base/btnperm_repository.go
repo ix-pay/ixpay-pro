@@ -15,6 +15,12 @@ type btnPermModel struct {
 	Name        string `gorm:"size:50;not null"`
 	Description string `gorm:"size:255"`
 	Status      int    `gorm:"default:1"`
+
+	// GORM 关联关系 - 多对一（所属菜单）
+	Menu *menuModel `gorm:"foreignKey:MenuID;references:ID"`
+
+	// GORM 关联关系 - 多对多（通过中间表 base_btn_perm_api_routes）
+	APIRoutes []apiModel `gorm:"many2many:base_btn_perm_api_routes;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 // TableName 指定表名
@@ -27,7 +33,7 @@ func (m *btnPermModel) toDomain() *entity.BtnPerm {
 	if m == nil {
 		return nil
 	}
-	return &entity.BtnPerm{
+	btnPerm := &entity.BtnPerm{
 		ID:        common.ToString(m.ID),
 		MenuID:    common.ToString(m.MenuID),
 		Code:      m.Code,
@@ -38,6 +44,25 @@ func (m *btnPermModel) toDomain() *entity.BtnPerm {
 		UpdatedBy: common.ToString(m.UpdatedBy),
 		UpdatedAt: m.UpdatedAt,
 	}
+
+	// ⭐ 处理关联数据 - 菜单
+	if m.Menu != nil {
+		btnPerm.Menu = m.Menu.toDomain()
+	}
+
+	// ⭐ 处理关联数据 - API 路由（同时填充 APIRouteIds 和 APIRoutes）
+	if len(m.APIRoutes) > 0 {
+		apiRoutes := make([]*entity.API, len(m.APIRoutes))
+		apiRouteIDs := make([]string, len(m.APIRoutes))
+		for i, apiRoute := range m.APIRoutes {
+			apiRoutes[i] = apiRoute.toDomain()
+			apiRouteIDs[i] = common.ToString(apiRoute.ID)
+		}
+		btnPerm.APIRoutes = apiRoutes
+		btnPerm.APIRouteIds = apiRouteIDs
+	}
+
+	return btnPerm
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -70,15 +95,22 @@ func NewBtnPermRepository(db *database.PostgresDB) repo.BtnPermRepository {
 	return &btnPermRepository{db: db}
 }
 
-// GetByID 根据 ID 查询按钮权限
-func (r *btnPermRepository) GetByID(id string) (*entity.BtnPerm, error) {
+// GetByID 根据 ID 查询按钮权限并支持加载关联数据
+func (r *btnPermRepository) GetByID(id string, relations ...repo.BtnPermRelation) (*entity.BtnPerm, error) {
 	intID, err := common.ParseInt64(id)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbModel btnPermModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	query := r.db.Where("id = ?", intID)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}

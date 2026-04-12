@@ -2,10 +2,20 @@ package repo
 
 import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 
+// DictRelation 字典关联关系类型（类型安全的枚举）
+type DictRelation string
+
+const (
+	DictRelationItems DictRelation = "DictItems" // 字典项
+)
+
 // DictRepository 字典仓库接口
 type DictRepository interface {
-	GetByID(id string) (*entity.Dict, error)
-	GetByCode(dictCode string) (*entity.Dict, error)
+	// GetByID 根据 ID 查询字典并支持加载关联数据
+	// relations 参数使用 DictRelation 类型，提供编译期类型检查
+	GetByID(id string, relations ...DictRelation) (*entity.Dict, error)
+	// GetByCode 根据编码查询字典并支持加载关联数据
+	GetByCode(dictCode string, relations ...DictRelation) (*entity.Dict, error)
 	Create(dict *entity.Dict) error
 	Update(dict *entity.Dict) error
 	Delete(id string) error

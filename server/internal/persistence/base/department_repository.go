@@ -13,11 +13,15 @@ import (
 type departmentModel struct {
 	database.SnowflakeBaseModel
 	Name        string `gorm:"size:100;not null"`
-	ParentID    int64  `gorm:"default:0"`
+	ParentID    int64  `gorm:"default:0;index"`
 	LeaderID    int64  `gorm:"index"`
 	Sort        int    `gorm:"default:0"`
 	Status      int    `gorm:"default:1"`
 	Description string `gorm:"size:255"`
+	// GORM 关联关系
+	Children []departmentModel `gorm:"foreignKey:ParentID;references:ID"`
+	Parent   *departmentModel  `gorm:"foreignKey:ParentID;references:ID"`
+	Leader   *userModel        `gorm:"foreignKey:LeaderID;references:ID"`
 }
 
 // TableName 指定表名
@@ -30,7 +34,7 @@ func (m *departmentModel) toDomain() *entity.Department {
 	if m == nil {
 		return nil
 	}
-	return &entity.Department{
+	dept := &entity.Department{
 		ID:          common.ToString(m.ID),
 		Name:        m.Name,
 		ParentID:    common.ToString(m.ParentID),
@@ -43,6 +47,27 @@ func (m *departmentModel) toDomain() *entity.Department {
 		UpdatedBy:   common.ToString(m.UpdatedBy),
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// ⭐ 处理关联数据 - 子部门
+	if len(m.Children) > 0 {
+		children := make([]*entity.Department, len(m.Children))
+		for i, child := range m.Children {
+			children[i] = child.toDomain()
+		}
+		dept.Children = children
+	}
+
+	// ⭐ 处理关联数据 - 父部门
+	if m.Parent != nil {
+		dept.Parent = m.Parent.toDomain()
+	}
+
+	// ⭐ 处理关联数据 - 负责人
+	if m.Leader != nil {
+		dept.Leader = m.Leader.toDomain()
+	}
+
+	return dept
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -77,15 +102,22 @@ func NewDepartmentRepository(db *database.PostgresDB) repo.DepartmentRepository 
 	return &departmentRepository{db: db}
 }
 
-// GetByID 根据 ID 查询部门
-func (r *departmentRepository) GetByID(id string) (*entity.Department, error) {
+// GetByID 根据 ID 查询部门并支持加载关联数据
+func (r *departmentRepository) GetByID(id string, relations ...repo.DepartmentRelation) (*entity.Department, error) {
 	intID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbModel departmentModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	query := r.db.Where("id = ?", intID)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}

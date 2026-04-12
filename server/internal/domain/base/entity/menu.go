@@ -31,36 +31,40 @@ type MenuMeta struct {
 // 包含菜单的基本信息、路由信息和权限信息
 // 纯业务模型，无 GORM 标签
 type Menu struct {
-	ID           string    // 菜单 ID
-	ParentID     string    // 父菜单 ID，0 表示顶级菜单
-	Path         string    // 路由路径
-	Name         string    // 路由名称，前端组件名
-	Component    string    // 组件路径
-	Title        string    // 菜单标题
-	Icon         string    // 菜单图标
-	Hidden       bool      // 是否隐藏
-	Sort         int       // 排序号
-	Status       int       // 状态：0 禁用，1 启用
-	IsExt        bool      // 是否外部链接
-	Redirect     string    // 重定向地址
-	Permission   string    // 权限标识
-	KeepAlive    bool      // 是否缓存
-	DefaultMenu  bool      // 是否默认菜单
-	Breadcrumb   bool      // 是否在面包屑显示
-	ActiveMenu   string    // 当前激活的菜单
-	Affix        bool      // 是否固定在标签栏
-	Type         MenuType  // 菜单类型：1 目录，2 菜单，3 按钮，4iframe
-	FrameSrc     string    // iframe 地址（如果是 iframe 类型）
-	FrameLoading bool      // iframe 加载动画
-	Meta         MenuMeta  // 菜单元数据
-	Children     []*Menu   // 子菜单
-	BtnPermIds   []string  // 菜单下的按钮权限 ID 列表
-	RoleIds      []string  // 关联的角色 ID 列表
-	APIRouteIds  []string  // 关联的 API 路由 ID 列表
-	CreatedBy    string    // 创建人 ID
-	CreatedAt    time.Time // 创建时间
-	UpdatedBy    string    // 更新人 ID
-	UpdatedAt    time.Time // 更新时间
+	ID           string     // 菜单 ID
+	ParentID     string     // 父菜单 ID，0 表示顶级菜单
+	Path         string     // 路由路径
+	Name         string     // 路由名称，前端组件名
+	Component    string     // 组件路径
+	Title        string     // 菜单标题
+	Icon         string     // 菜单图标
+	Hidden       bool       // 是否隐藏
+	Sort         int        // 排序号
+	Status       int        // 状态：0 禁用，1 启用
+	IsExt        bool       // 是否外部链接
+	Redirect     string     // 重定向地址
+	Permission   string     // 权限标识
+	KeepAlive    bool       // 是否缓存
+	DefaultMenu  bool       // 是否默认菜单
+	Breadcrumb   bool       // 是否在面包屑显示
+	ActiveMenu   string     // 当前激活的菜单
+	Affix        bool       // 是否固定在标签栏
+	Type         MenuType   // 菜单类型：1 目录，2 菜单，3 按钮，4iframe
+	FrameSrc     string     // iframe 地址（如果是 iframe 类型）
+	FrameLoading bool       // iframe 加载动画
+	Meta         MenuMeta   // 菜单元数据
+	Children     []*Menu    // 子菜单
+	Parent       *Menu      // 父菜单（新增）
+	BtnPermIds   []string   // 菜单下的按钮权限 ID 列表
+	BtnPerms     []*BtnPerm // 菜单下的按钮权限列表（新增）
+	RoleIds      []string   // 关联的角色 ID 列表
+	Roles        []*Role    // 关联的角色列表（新增）
+	APIRouteIds  []string   // 关联的 API 路由 ID 列表
+	APIRoutes    []*API     // 关联的 API 路由列表（新增）
+	CreatedBy    string     // 创建人 ID
+	CreatedAt    time.Time  // 创建时间
+	UpdatedBy    string     // 更新人 ID
+	UpdatedAt    time.Time  // 更新时间
 }
 
 // IsActive 检查菜单是否启用

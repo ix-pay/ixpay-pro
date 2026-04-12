@@ -2,10 +2,18 @@ package repo
 
 import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 
+type UserRelation string
+
+const (
+	DEPARTMENT UserRelation = "Department"
+	POSITION   UserRelation = "Position"
+	ROLES      UserRelation = "Roles"
+)
+
 // UserRepository 用户仓库接口
 // 定义用户数据访问的抽象接口
 type UserRepository interface {
-	GetByID(id string) (*entity.User, error)
+	GetByID(id string, relations ...UserRelation) (*entity.User, error)
 	GetByUsername(username string) (*entity.User, error)
 	GetByEmail(email string) (*entity.User, error)
 	GetByPhone(phone string) (*entity.User, error)

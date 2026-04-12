@@ -14,6 +14,8 @@ type Department struct {
 	Status      int           // 状态：1-正常，0-禁用
 	Description string        // 部门描述
 	Children    []*Department // 子部门
+	Parent      *Department   // 父部门（新增）
+	Leader      *User         // 部门负责人（新增）
 	CreatedBy   string        // 创建人 ID
 	CreatedAt   time.Time     // 创建时间
 	UpdatedBy   string        // 更新人 ID

@@ -18,6 +18,20 @@ type roleModel struct {
 	Status      int    `gorm:"default:1"`
 	IsSystem    bool   `gorm:"default:false"`
 	Sort        int    `gorm:"default:0"`
+
+	// GORM 关联关系 - 多对多（通过中间表）
+	Users []userModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Menus []menuModel `gorm:"many2many:base_role_menus;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+
+	// GORM 关联关系 - 多对多（通过中间表）
+	APIRoutes []apiModel     `gorm:"many2many:base_role_api_routes;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	BtnPerms  []btnPermModel `gorm:"many2many:base_role_btn_perms;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+
+	// GORM 关联关系 - 一对多（子角色）
+	Children []roleModel `gorm:"foreignKey:ParentID;references:ID"`
+
+	// GORM 关联关系 - 多对一（父角色）
+	Parent *roleModel `gorm:"foreignKey:ParentID;references:ID"`
 }
 
 // TableName 指定表名
@@ -76,7 +90,7 @@ func (m *roleModel) toDomain() *entity.Role {
 	if m == nil {
 		return nil
 	}
-	return &entity.Role{
+	role := &entity.Role{
 		ID:          common.ToString(m.ID),
 		Name:        m.Name,
 		Code:        m.Code,
@@ -91,6 +105,70 @@ func (m *roleModel) toDomain() *entity.Role {
 		UpdatedBy:   common.ToString(m.UpdatedBy),
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// ⭐ 处理关联数据 - 用户（同时填充 UserIds 和 Users）
+	if len(m.Users) > 0 {
+		users := make([]*entity.User, len(m.Users))
+		userIDs := make([]string, len(m.Users))
+		for i, user := range m.Users {
+			users[i] = user.toDomain()
+			userIDs[i] = common.ToString(user.ID)
+		}
+		role.Users = users
+		role.UserIds = userIDs
+	}
+
+	// ⭐ 处理关联数据 - 菜单（同时填充 MenuIds 和 Menus）
+	if len(m.Menus) > 0 {
+		menus := make([]*entity.Menu, len(m.Menus))
+		menuIDs := make([]string, len(m.Menus))
+		for i, menu := range m.Menus {
+			menus[i] = menu.toDomain()
+			menuIDs[i] = common.ToString(menu.ID)
+		}
+		role.Menus = menus
+		role.MenuIds = menuIDs
+	}
+
+	// ⭐ 处理关联数据 - API 路由（同时填充 APIRouteIds 和 APIRoutes）
+	if len(m.APIRoutes) > 0 {
+		apiRoutes := make([]*entity.API, len(m.APIRoutes))
+		apiRouteIDs := make([]string, len(m.APIRoutes))
+		for i, apiRoute := range m.APIRoutes {
+			apiRoutes[i] = apiRoute.toDomain()
+			apiRouteIDs[i] = common.ToString(apiRoute.ID)
+		}
+		role.APIRoutes = apiRoutes
+		role.APIRouteIds = apiRouteIDs
+	}
+
+	// ⭐ 处理关联数据 - 按钮权限（同时填充 BtnPermIds 和 BtnPerms）
+	if len(m.BtnPerms) > 0 {
+		btnPerms := make([]*entity.BtnPerm, len(m.BtnPerms))
+		btnPermIDs := make([]string, len(m.BtnPerms))
+		for i, btnPerm := range m.BtnPerms {
+			btnPerms[i] = btnPerm.toDomain()
+			btnPermIDs[i] = common.ToString(btnPerm.ID)
+		}
+		role.BtnPerms = btnPerms
+		role.BtnPermIds = btnPermIDs
+	}
+
+	// ⭐ 处理关联数据 - 父角色
+	if m.Parent != nil {
+		role.Parent = m.Parent.toDomain()
+	}
+
+	// ⭐ 处理关联数据 - 子角色
+	if len(m.Children) > 0 {
+		children := make([]*entity.Role, len(m.Children))
+		for i, child := range m.Children {
+			children[i] = child.toDomain()
+		}
+		role.Children = children
+	}
+
+	return role
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -127,15 +205,22 @@ func NewRoleRepository(db *database.PostgresDB) repo.RoleRepository {
 	return &roleRepository{db: db}
 }
 
-// GetByID 根据 ID 查询角色
-func (r *roleRepository) GetByID(id string) (*entity.Role, error) {
+// GetByID 根据 ID 查询角色并支持加载关联数据
+func (r *roleRepository) GetByID(id string, relations ...repo.RoleRelation) (*entity.Role, error) {
 	intID, err := common.ParseInt64(id)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbModel roleModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	query := r.db.Where("id = ?", intID)
+
+	// 根据指定的关联关系进行 Preload
+	for _, relation := range relations {
+		query = query.Preload(string(relation))
+	}
+
+	result := query.First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}

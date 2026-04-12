@@ -274,7 +274,8 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 
 // GetUserInfo 获取用户信息
 func (s *UserService) GetUserInfo(userID string) (*entity.User, error) {
-	user, err := s.repo.GetByID(userID)
+	user, err := s.repo.GetByID(userID, repo.DEPARTMENT, repo.POSITION, repo.ROLES)
+
 	if err != nil {
 		s.log.Error("获取用户信息失败", "error", err)
 		return nil, err

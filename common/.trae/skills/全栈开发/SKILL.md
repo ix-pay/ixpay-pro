@@ -541,6 +541,136 @@ func (u *User) HasRole(roleID string) bool {
 }
 ```
 
+### 4.1 关联数据设计模式：同时保留 ID 列表和完整对象 ⭐⭐⭐
+
+**设计原则**：在领域实体中同时保留关联对象的 ID 列表和完整对象列表
+
+**示例代码**：
+```go
+// internal/domain/base/entity/user.go
+package entity
+
+// User 领域实体
+type User struct {
+    // ... 基本字段
+    
+    // ⭐ 关联数据：同时保留 ID 列表和完整对象
+    RoleIds     []string    // 用户关联的角色 ID 列表（轻量级，用于业务判断）
+    Roles       []*Role     // 角色列表（完整对象，用于返回详细信息）
+    
+    DepartmentID string     // 部门 ID
+    Department  *Department // 所属部门对象
+    
+    PositionID string       // 岗位 ID
+    Position  *Position     // 岗位对象
+}
+```
+
+**优势对比**：
+
+| 设计方式 | 性能 | 灵活性 | 内存占用 | 适用场景 |
+|---------|------|--------|---------|---------|
+| **只保留 ID 列表** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | 只需判断关联关系 |
+| **只保留完整对象** | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ | 需要完整信息展示 |
+| **两者都保留** ⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | **推荐：适应多场景** |
+
+**使用场景**：
+
+1. **登录场景**（使用 ID 列表）：
+```go
+// 登录时只需要角色 ID 生成 JWT token
+user, err := s.repo.GetByID(userID)  // 不加载 Roles
+if len(user.RoleIds) > 0 {
+    roleCode = user.RoleIds[0]  // ✅ 使用 RoleIds，轻量高效
+}
+```
+
+2. **用户详情场景**（使用完整对象）：
+```go
+// 获取用户详情，需要展示完整角色信息
+user, err := s.repo.GetByID(userID, repo.UserRelationRoles)  // 加载 Roles
+// ✅ 使用 Roles，返回完整角色信息给前端
+roleInfos := make([]*response.RoleInfo, 0, len(user.Roles))
+for _, role := range user.Roles {
+    roleInfos = append(roleInfos, &response.RoleInfo{
+        ID:   role.ID,
+        Name: role.Name,
+        Code: role.Code,
+    })
+}
+```
+
+3. **业务判断场景**（使用 ID 列表）：
+```go
+// 权限检查：使用 RoleIds 高效判断
+func (u *User) HasRole(roleID string) bool {
+    for _, rid := range u.RoleIds {  // ✅ 字符串比较，高效
+        if rid == roleID {
+            return true
+        }
+    }
+    return false
+}
+```
+
+**Repository 层转换**：
+```go
+// internal/persistence/base/user_repository.go
+func (m *userModel) toDomain() *entity.User {
+    user := &entity.User{
+        ID:       common.ToString(m.ID),
+        Username: m.Username,
+        // ... 基本字段
+    }
+    
+    // ⭐ 处理关联数据：同时填充 ID 列表和完整对象
+    if len(m.Roles) > 0 {
+        // 一个循环完成两个任务
+        roles := make([]*entity.Role, len(m.Roles))
+        roleIDs := make([]string, len(m.Roles))
+        for i, role := range m.Roles {
+            roles[i] = role.toDomain()           // ✅ 转换为领域实体
+            roleIDs[i] = common.ToString(role.ID) // ✅ 填充 ID 列表
+        }
+        user.Roles = roles
+        user.RoleIds = roleIDs
+    }
+    
+    return user
+}
+```
+
+**注意事项**：
+
+1. ✅ **数据一致性**：在 `toDomain()` 方法中同时填充两个字段，确保一致性
+2. ✅ **性能优化**：使用一个循环完成两个任务，避免多次遍历
+3. ✅ **按需加载**：通过 Preload 控制是否加载完整对象，避免过度查询
+4. ✅ **职责分离**：
+   - `RoleIds`：用于业务逻辑判断、权限检查、生成 Token
+   - `Roles`：用于返回完整信息、展示角色详情
+
+**其他关联关系同样适用**：
+```go
+type Department struct {
+    ID         string
+    Name       string
+    ParentID   string        // 父部门 ID
+    Parent     *Department   // 父部门对象
+    LeaderID   string        // 负责人 ID
+    Leader     *User         // 负责人对象
+}
+
+type Menu struct {
+    ID         string
+    Name       string
+    ParentID   string        // 父菜单 ID
+    Parent     *Menu         // 父菜单对象
+    Children   []*Menu       // 子菜单列表
+    ApiIds     []string      // 关联的 API ID 列表
+    Apis       []*API        // 关联的 API 对象列表
+}
+```
+
 ### 5. 仓库接口定义
 
 ```go
@@ -780,6 +910,263 @@ logger.Error("创建用户失败", "error", err)
 // ❌ 错误
 logger.Info("User login successful", "user_id", userID)
 logger.Error("Failed to create user", "error", err)
+```
+
+### 13. GORM 关联表内联查询（Preload 懒加载）⭐
+
+**使用 GORM 的 `Preload` 方法实现类似 C# LINQ 的关联查询功能**
+
+#### 13.1 数据库模型关联标签定义
+
+**多对一关联（Belongs To）**
+```go
+type userModel struct {
+    // ... 其他字段
+    DepartmentID int64  `gorm:"index"`
+    PositionID   int64  `gorm:"index"`
+    
+    // GORM 关联标签 - 多对一
+    Department *departmentModel `gorm:"foreignKey:DepartmentID;references:ID"`
+    Position   *positionModel   `gorm:"foreignKey:PositionID;references:ID"`
+}
+```
+
+**多对多关联（Many To Many）**
+```go
+type userModel struct {
+    // ... 其他字段
+    
+    // GORM 关联标签 - 多对多（通过中间表 base_role_users）
+    Roles []roleModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+```
+
+**一对多关联（Has Many）**
+```go
+type roleModel struct {
+    // ... 其他字段
+    
+    // GORM 关联关系 - 一对多（通过中间表）
+    Users []userModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+```
+
+#### 13.2 ⭐ 关联关系枚举定义（类型安全）⭐⭐⭐
+
+**在接口层定义关联关系类型和常量**
+
+```go
+// internal/domain/base/repo/user_repository.go
+package repo
+
+// UserRelation 用户关联关系类型（类型安全的枚举）
+type UserRelation string
+
+const (
+    UserRelationDepartment UserRelation = "Department"  // 部门
+    UserRelationPosition   UserRelation = "Position"    // 岗位
+    UserRelationRoles      UserRelation = "Roles"       // 角色
+)
+
+// UserRepository 用户数据仓库接口
+type UserRepository interface {
+    // GetByID 根据 ID 查询用户并支持加载关联数据
+    // relations 参数使用 UserRelation 类型，提供编译期类型检查
+    GetByID(id string, relations ...UserRelation) (*entity.User, error)
+    // ... 其他方法
+}
+```
+
+**优势**：
+- ✅ **编译期类型检查**：只能传入预定义的常量，避免拼写错误
+- ✅ **IDE 自动提示**：输入 `repo.UserRelation` 后自动提示可用常量
+- ✅ **易于维护**：集中定义，易于扩展
+- ✅ **无循环依赖**：定义在接口层，符合依赖倒置原则
+
+**使用示例**：
+```go
+// internal/domain/base/service/user_service.go
+func (s *UserService) GetUserInfo(userID string) (*entity.User, error) {
+    // ✅ 正确：使用类型安全的常量
+    user, err := s.repo.GetByID(userID, repo.UserRelationDepartment)
+    
+    // ❌ 错误：编译失败 - 不能直接使用字符串
+    // user, err := s.repo.GetByID(userID, "Department")
+    
+    if err != nil {
+        s.log.Error("获取用户信息失败", "error", err)
+        return nil, err
+    }
+    return user, nil
+}
+```
+
+#### 13.3 Repository 实现层
+
+**实现层将 UserRelation 类型转换为 string 用于 GORM**
+
+```go
+// internal/persistence/base/user_repository.go
+package persistence
+
+import (
+    "github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
+    // ... 其他导入
+)
+
+// GetByID 根据 ID 查询用户并支持加载关联数据
+func (r *userRepository) GetByID(id string, relations ...repo.UserRelation) (*entity.User, error) {
+    intID, err := common.ParseInt64(id)
+    if err != nil {
+        return nil, err
+    }
+
+    var dbModel userModel
+    query := r.db.Where("id = ?", intID)
+    
+    // 根据指定的关联关系进行 Preload
+    for _, relation := range relations {
+        query = query.Preload(string(relation))  // ✅ 转换为字符串用于 GORM
+    }
+    
+    result := query.First(&dbModel)
+    if result.Error != nil {
+        return nil, result.Error
+    }
+
+    return dbModel.toDomain(), nil
+}
+```
+
+#### 13.4 Preload 查询用法
+
+**基本用法**
+```go
+// 只查基本信息（不加载关联）
+var user userModel
+db.First(&user, id)
+
+// 加载单个关联
+db.Preload("Department").First(&user, id)
+
+// 加载多个关联
+db.Preload("Department").Preload("Position").Preload("Roles").First(&user, id)
+
+// 条件加载关联
+db.Preload("Roles", "status = ?", 1).First(&user, id)
+
+// 嵌套加载（加载关联的关联）
+db.Preload("Department.Leader").Preload("Roles.Menus").First(&user, id)
+```
+
+**Service 层使用示例**
+```go
+// 只查用户基本信息
+user, err := repo.GetByID("123")
+
+// 查用户 + 部门
+user, err := repo.GetByID("123", repo.UserRelationDepartment)
+
+// 查用户 + 部门 + 岗位 + 角色
+user, err := repo.GetByID("123", repo.UserRelationDepartment, repo.UserRelationPosition, repo.UserRelationRoles)
+
+// 分页查询带关联
+users, total, err := repo.List(1, 10, nil, repo.UserRelationDepartment, repo.UserRelationRoles)
+```
+
+#### 13.5 toDomain 方法处理关联数据
+
+```go
+func (m *userModel) toDomain() *entity.User {
+    user := &entity.User{
+        ID:       common.ToString(m.ID),
+        Username: m.Username,
+        // ... 其他基本字段
+    }
+    
+    // 处理关联数据 - 部门
+    if m.Department != nil {
+        user.Department = m.Department.toDomain()
+    }
+    
+    // 处理关联数据 - 岗位
+    if m.Position != nil {
+        user.Position = m.Position.toDomain()
+    }
+    
+    // 处理关联数据 - 角色
+    if len(m.Roles) > 0 {
+        roleIDs := make([]string, len(m.Roles))
+        for i, role := range m.Roles {
+            roleIDs[i] = common.ToString(role.ID)
+        }
+        user.RoleIds = roleIDs
+    }
+    
+    return user
+}
+```
+
+#### 13.6 Preload 的优势
+
+1. **懒加载**：只在需要时加载关联数据，避免不必要的查询
+2. **避免 N+1 问题**：批量加载关联数据，提高查询效率
+3. **灵活控制**：可以精确控制加载哪些关联
+4. **性能优化**：不会意外加载不需要的数据
+5. **类型安全**：使用枚举常量，避免字符串拼写错误 ⭐
+
+#### 13.7 注意事项
+
+1. **关联字段类型**：
+   - 多对一：使用指针类型 `*Model`
+   - 多对多：使用切片类型 `[]Model`
+   
+2. **外键一致性**：外键字段类型必须一致（如都是 int64）
+
+3. **空值处理**：关联可能为空，需要检查 nil
+   ```go
+   if user.Department != nil {
+       // 使用部门数据
+   }
+   ```
+
+4. **中间表**：多对多关系需要中间表存在（如 base_role_users）
+
+5. **性能考虑**：
+   ```go
+   // ❌ 避免：在循环中查询
+   for _, user := range users {
+       db.First(&department, user.DepartmentID)  // N+1 问题
+   }
+   
+   // ✅ 推荐：使用 Preload 批量加载
+   db.Preload("Department").Find(&users)
+   ```
+
+6. **类型转换**：Repository 实现层需要将枚举类型转换为 string
+   ```go
+   // ✅ 正确：在实现层转换
+   query.Preload(string(relation))
+   ```
+
+#### 13.8 C# LINQ vs Go GORM 对比
+
+**C# LINQ:**
+```csharp
+var user = context.Users
+    .Include(u => u.Department)
+    .Include(u => u.Position)
+    .Include(u => u.Roles)
+    .FirstOrDefault(u => u.Id == id);
+```
+
+**Go GORM:**
+```go
+var user userModel
+db.Preload("Department").
+   Preload("Position").
+   Preload("Roles").
+   First(&user, id)
 ```
 
 ***

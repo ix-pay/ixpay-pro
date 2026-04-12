@@ -218,6 +218,19 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 		return nil, "", "", time.Time{}, time.Time{}, errors.New("用户账户未激活")
 	}
 
+	// 加载用户的角色 ID 列表
+	userRoles, err := s.roleService.GetRolesForUser(user.ID)
+	if err != nil {
+		s.log.Error("获取用户角色失败", "userID", user.ID, "error", err)
+	} else {
+		// 将角色 ID 填充到 user.RoleIds
+		roleIds := make([]string, len(userRoles))
+		for i, role := range userRoles {
+			roleIds[i] = role.ID
+		}
+		user.RoleIds = roleIds
+	}
+
 	// 生成令牌，获取用户角色
 	role := "user" // 默认角色
 	if len(user.RoleIds) > 0 {

@@ -25,7 +25,7 @@ func (a *AppBase) setupRoutes() {
 		// 需要认证的路由
 		authenticated := admin
 		authenticated.Use(middleware.AuthMiddleware(a.auth, a.cache))
-		authenticated.Use(middleware.PermissionMiddleware(a.permissionService, a.permissions, a.roleRepo, a.logger, a.cache))
+		authenticated.Use(middleware.PermissionMiddleware(a.permissionService, a.roleRepo, a.logger, a.cache))
 		{
 			// 认证相关路由（需要认证）
 			auth := authenticated.Group("/auth")

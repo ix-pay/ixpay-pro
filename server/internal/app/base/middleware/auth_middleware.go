@@ -3,7 +3,6 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -64,33 +63,24 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache) gin.HandlerF
 
 		// 【关键修改】从缓存获取用户的当前角色，而不是使用 JWT 令牌中的角色
 		currentRoleKey := fmt.Sprintf("user:current_role:%s", claims.UserID)
-		currentRoleIDStr, err := cacheClient.Get(currentRoleKey)
+		currentRoleID, err := cacheClient.Get(currentRoleKey)
 		if err != nil {
-			currentRoleIDStr = ""
+			currentRoleID = ""
 		}
 
 		var currentRole string
-		var currentRoleID int64
 		roleFromRedis := false
 
-		if currentRoleIDStr != "" {
+		if currentRoleID != "" {
 			// 缓存中有存储，尝试使用当前角色
-			var err error
-			currentRoleID, err = strconv.ParseInt(currentRoleIDStr, 10, 64)
-			if err == nil {
-				// 获取角色信息
-				role, err := getRoleByID(currentRoleID, cacheClient)
-				if err == nil && role != nil && role.Code != "" {
-					currentRole = role.Code
-					roleFromRedis = true
-					fmt.Printf("✓ 从缓存加载角色：roleID=%d, roleCode=%s, roleName=%s\n", currentRoleID, role.Code, role.Name)
-				} else {
-					// 获取角色失败，记录日志并回退到 JWT 角色
-					fmt.Printf("✗ 获取角色信息失败：roleID=%d, role=%v, err=%v，将使用 JWT 角色\n", currentRoleID, role, err)
-				}
+			role, err := getRoleByID(currentRoleID, cacheClient)
+			if err == nil && role != nil && role.Code != "" {
+				currentRole = role.Code
+				roleFromRedis = true
+				fmt.Printf("✓ 从缓存加载角色：roleID=%s, roleCode=%s, roleName=%s\n", currentRoleID, role.Code, role.Name)
 			} else {
-				// 解析角色 ID 失败
-				fmt.Printf("✗ 解析角色 ID 失败：currentRoleIDStr=%s, err=%v，将使用 JWT 角色\n", currentRoleIDStr, err)
+				// 获取角色失败，记录日志并回退到 JWT 角色
+				fmt.Printf("✗ 获取角色信息失败：roleID=%s, role=%v, err=%v，将使用 JWT 角色\n", currentRoleID, role, err)
 			}
 		} else {
 			fmt.Printf("→ 缓存中没有当前角色信息，将使用 JWT 角色：userID=%s\n", claims.UserID)
@@ -114,9 +104,9 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache) gin.HandlerF
 }
 
 // getRoleByID 根据角色 ID 获取角色信息
-func getRoleByID(roleID int64, cacheClient cache.Cache) (*entity.Role, error) {
+func getRoleByID(roleID string, cacheClient cache.Cache) (*entity.Role, error) {
 	// 尝试从缓存获取角色信息
-	cacheKey := fmt.Sprintf("role:info:%d", roleID)
+	cacheKey := fmt.Sprintf("role:info:%s", roleID)
 	roleData, err := cacheClient.Get(cacheKey)
 	if err != nil || roleData == "" {
 		// 缓存中没有，返回 nil
@@ -129,8 +119,8 @@ func getRoleByID(roleID int64, cacheClient cache.Cache) (*entity.Role, error) {
 		role := &entity.Role{}
 
 		// 安全地提取字段
-		if id, ok := simpleRole["ID"].(float64); ok {
-			role.ID = fmt.Sprintf("%.0f", id)
+		if id, ok := simpleRole["ID"].(string); ok {
+			role.ID = id
 		}
 		if code, ok := simpleRole["Code"].(string); ok {
 			role.Code = code

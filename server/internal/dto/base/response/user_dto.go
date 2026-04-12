@@ -12,17 +12,17 @@ type UserSimpleDTO struct {
 
 // UserDetailDTO 详情用户 DTO（详情使用）
 type UserDetailDTO struct {
-	ID           string       `json:"id"`
-	Username     string       `json:"username"`
-	Nickname     string       `json:"nickname"`
-	Email        string       `json:"email"`
-	Phone        string       `json:"phone"`
-	Avatar       string       `json:"avatar"`
-	Status       int          `json:"status"`
-	DepartmentID string       `json:"departmentId"`
-	PositionID   string       `json:"positionId"`
-	Roles        []RoleDTO    `json:"roles"`
-	CreatedAt    string       `json:"createdAt"`
+	ID           string    `json:"id"`
+	Username     string    `json:"username"`
+	Nickname     string    `json:"nickname"`
+	Email        string    `json:"email"`
+	Phone        string    `json:"phone"`
+	Avatar       string    `json:"avatar"`
+	Status       int       `json:"status"`
+	DepartmentID string    `json:"departmentId"`
+	PositionID   string    `json:"positionId"`
+	Roles        []RoleDTO `json:"roles"`
+	CreatedAt    string    `json:"createdAt"`
 }
 
 // UserSelectDTO 下拉选项 DTO（选择器使用）

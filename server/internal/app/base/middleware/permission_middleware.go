@@ -13,12 +13,11 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/cache"
-	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 	httpresponse "github.com/ix-pay/ixpay-pro/internal/infrastructure/transport/http"
 )
 
 // PermissionMiddleware 权限中间件 - 支持多角色、基于菜单/API 的权限验证和按钮级权限
-func PermissionMiddleware(permissionService *service.PermissionService, permissionManager *auth.PermissionManager, roleRepo repo.RoleRepository, log logger.Logger, cacheClient cache.Cache) gin.HandlerFunc {
+func PermissionMiddleware(permissionService *service.PermissionService, roleRepo repo.RoleRepository, log logger.Logger, cacheClient cache.Cache) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取请求路径和方法
 		path := c.Request.URL.Path

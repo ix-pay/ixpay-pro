@@ -1,0 +1,124 @@
+package persistence
+
+import (
+	"strconv"
+
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
+	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
+)
+
+// userSettingModel 用户设置数据库模型
+type userSettingModel struct {
+	database.SnowflakeBaseModel
+	UserID           int64  `gorm:"uniqueIndex;not null"`
+	ThemeColor       string `gorm:"size:20"`
+	SidebarColor     string `gorm:"size:20"`
+	NavbarColor      string `gorm:"size:20"`
+	FontSize         int    `gorm:"default:14"`
+	Language         string `gorm:"size:20;default:zh-CN"`
+	AutoLogin        bool   `gorm:"default:false"`
+	RememberPassword bool   `gorm:"default:false"`
+}
+
+// TableName 指定表名
+func (userSettingModel) TableName() string {
+	return "base_user_settings"
+}
+
+// toDomain 将数据库模型转换为领域实体
+func (m *userSettingModel) toDomain() *entity.UserSetting {
+	if m == nil {
+		return nil
+	}
+	return &entity.UserSetting{
+		ID:               common.ToString(m.ID),
+		UserID:           common.ToString(m.UserID),
+		ThemeColor:       m.ThemeColor,
+		SidebarColor:     m.SidebarColor,
+		NavbarColor:      m.NavbarColor,
+		FontSize:         m.FontSize,
+		Language:         m.Language,
+		AutoLogin:        m.AutoLogin,
+		RememberPassword: m.RememberPassword,
+		CreatedBy:        common.ToString(m.CreatedBy),
+		CreatedAt:        m.CreatedAt,
+		UpdatedBy:        common.ToString(m.UpdatedBy),
+		UpdatedAt:        m.UpdatedAt,
+	}
+}
+
+// fromDomain 将领域实体转换为数据库模型
+func fromDomainUserSetting(setting *entity.UserSetting) (*userSettingModel, error) {
+	id, createdBy, updatedBy := common.SetBaseFields(setting.ID, setting.CreatedBy, setting.UpdatedBy)
+
+	return &userSettingModel{
+		SnowflakeBaseModel: database.SnowflakeBaseModel{
+			ID:        id,
+			CreatedBy: createdBy,
+			UpdatedBy: updatedBy,
+		},
+		UserID:           common.TryParseInt64(setting.UserID),
+		ThemeColor:       setting.ThemeColor,
+		SidebarColor:     setting.SidebarColor,
+		NavbarColor:      setting.NavbarColor,
+		FontSize:         setting.FontSize,
+		Language:         setting.Language,
+		AutoLogin:        setting.AutoLogin,
+		RememberPassword: setting.RememberPassword,
+	}, nil
+}
+
+// userSettingRepository Repository 实现
+type userSettingRepository struct {
+	db *database.PostgresDB
+}
+
+// 确保实现接口
+var _ repo.UserSettingRepository = (*userSettingRepository)(nil)
+
+// NewUserSettingRepository 创建用户设置仓库实现
+func NewUserSettingRepository(db *database.PostgresDB) repo.UserSettingRepository {
+	return &userSettingRepository{db: db}
+}
+
+// GetByUserID 根据用户 ID 查询用户设置
+func (r *userSettingRepository) GetByUserID(userID string) (*entity.UserSetting, error) {
+	intUserID, _ := strconv.ParseInt(userID, 10, 64)
+
+	var dbModel userSettingModel
+	result := r.db.Where("user_id = ?", intUserID).First(&dbModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return dbModel.toDomain(), nil
+}
+
+// Create 创建用户设置
+func (r *userSettingRepository) Create(setting *entity.UserSetting) error {
+	dbModel, err := fromDomainUserSetting(setting)
+	if err != nil {
+		return err
+	}
+
+	return r.db.Create(dbModel).Error
+}
+
+// Update 更新用户设置
+func (r *userSettingRepository) Update(setting *entity.UserSetting) error {
+	dbModel, err := fromDomainUserSetting(setting)
+	if err != nil {
+		return err
+	}
+
+	return r.db.Save(dbModel).Error
+}
+
+// Delete 删除用户设置
+func (r *userSettingRepository) Delete(userID string) error {
+	intUserID, _ := strconv.ParseInt(userID, 10, 64)
+
+	return r.db.Where("user_id = ?", intUserID).Delete(&userSettingModel{}).Error
+}

@@ -1,0 +1,62 @@
+server:
+  host: "0.0.0.0"
+  port: "8586"
+  read_timeout: 5
+  write_timeout: 10
+  idle_timeout: 120
+  captcha_time_out: 60 # 验证码超时时间，单位秒
+  captcha_len: 4 # 验证码长度
+  open_captcha: true # 开启验证码 ，true开启，false关闭
+  machine_id: "1" # 机器码，用于生成唯一的ID
+  init_seed_data: true # 是否初始化种子数据，true初始化，false不初始化
+  update_routes_on_start: true # 是否在启动时更新路由信息，true更新，false不更新
+
+postgres:
+  host: "127.0.0.1"
+  port: "5432"
+  user: "magic"
+  password: "magic@520"
+  dbname: "ixpay-pro"
+  sslmode: "disable"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime: 30
+
+redis:
+  address: "127.0.0.1:6379"
+  password: ""
+  db: 0
+  dial_timeout: 5
+  read_timeout: 3
+  write_timeout: 3
+  pool_size: 10
+  pre_key: "ixpay-pro:"
+
+jwt:
+  secret_key: "G1LuFZ6s9eNvhirEc3xmVgnqTbta42YJHoMw0UldBkApXWK5S7Dj8yQCzPIfRO"
+  access_token_expire: 30m
+  refresh_token_expire: 720h
+
+logging:
+  level: "${LOG_LEVEL:-info}"
+  format: "json"
+  # 应用主日志（记录所有常规日志）
+  file_path: "logs/app.log"
+  # 错误日志（单独记录 ERROR 级别，便于快速定位问题）
+  error_file: "logs/error.log"
+  # 任务日志（定时任务专用日志）
+  task_file: "logs/task.log"
+  # 请求日志（HTTP 请求专用日志）
+  request_file: "logs/request.log"
+  # 审计日志（敏感操作专用日志）
+  audit_file: "logs/audit.log"
+  # 日志轮转配置
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  # 是否启用分开存储不同级别日志（保留向后兼容）
+  separate_log: false
+
+swagger:
+  enabled: true
+  path: "/swagger"

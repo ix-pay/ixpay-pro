@@ -1,0 +1,17 @@
+# Go项目默认忽略规则
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# 依赖和中间文件
+vendor/
+bin/
+obj/
+
+# 日志文件
+logs/
+*.log

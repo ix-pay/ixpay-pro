@@ -1,0 +1,22 @@
+package response
+
+import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
+
+// ConfigResponse 配置响应模型
+// 所有 ID 字段使用 string 格式，避免前端精度丢失
+type ConfigResponse struct {
+	ID          string `json:"id,string"`   // 配置 ID
+	ConfigKey   string `json:"configKey"`   // 配置键
+	ConfigValue string `json:"configValue"` // 配置值
+	ConfigType  string `json:"configType"`  // 配置类型
+	Description string `json:"description"` // 描述
+	Status      int    `json:"status"`      // 状态：1-启用 0-禁用
+	CreatedAt   string `json:"createdAt"`   // 创建时间
+	UpdatedAt   string `json:"updatedAt"`   // 更新时间
+}
+
+// ConfigListResponse 配置列表响应模型
+type ConfigListResponse struct {
+	baseRes.PageResult
+	List []ConfigResponse `json:"list"` // 配置列表
+}

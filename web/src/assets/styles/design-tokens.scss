@@ -1,0 +1,100 @@
+/**
+ * 设计令牌系统 - Design Tokens
+ * 
+ * 精简版：仅保留必要的 CSS 变量，用于组件间共享和主题定制
+ * 大部分样式使用 Tailwind CSS 的原子类
+ */
+
+:root {
+  /* ==========================================================================
+     核心配色 - 用于业务组件和主题定制
+     ========================================================================== */
+
+  // 主色调
+  --primary-color: #3b82f6;
+  --primary-light: #60a5fa;
+  --primary-dark: #2563eb;
+
+  // 功能色
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #6b7280;
+
+  /* ==========================================================================
+     布局组件颜色 - 用于侧边栏、头部等
+     ========================================================================== */
+
+  --sidebar-bg: #1f2937;
+  --sidebar-text: #d1d5db;
+  --sidebar-active-bg: #3b82f6;
+  --sidebar-active-text: #ffffff;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
+
+  --header-bg: #ffffff;
+  --header-text: #1f2937;
+  --header-border: #e5e7eb;
+
+  /* ==========================================================================
+     基础背景色 - 用于页面内容区域
+     ========================================================================== */
+
+  --bg-color: #ffffff;
+  --bg-dark: #f3f4f6;
+  --bg-light: #f9fafb;
+  --bg-hover: #f9fafb;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-regular: #4b5563;
+  --text-placeholder: #9ca3af;
+  --border-color: #e5e7eb;
+  --border-dark: #d1d5db;
+
+  /* ==========================================================================
+     基础间距单位 - 用于需要精确控制的场景
+     ========================================================================== */
+
+  --space-unit: 4px;
+  --space-xs: calc(var(--space-unit) * 2); // 8px
+  --space-sm: calc(var(--space-unit) * 3); // 12px
+  --space-md: calc(var(--space-unit) * 4); // 16px
+  --space-lg: calc(var(--space-unit) * 6); // 24px
+  --space-xl: calc(var(--space-unit) * 8); // 32px
+  --space-2xl: calc(var(--space-unit) * 12); // 48px
+
+  /* ==========================================================================
+     过渡动画 - 用于统一动画效果
+     ========================================================================== */
+
+  --transition-duration: 150ms;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   暗黑模式设计令牌
+   ========================================================================== */
+
+html.dark {
+  // 布局组件颜色
+  --sidebar-bg: #1f2937;
+  --sidebar-text: #d1d5db;
+  --sidebar-active-bg: rgba(59, 130, 246, 0.3);
+  --sidebar-active-text: #ffffff;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+
+  --header-bg: #1f2937;
+  --header-text: #f9fafb;
+  --header-border: #374151;
+
+  // 基础背景色 - 暗黑模式
+  --bg-color: #1f2937;
+  --bg-dark: #111827;
+  --bg-light: #374151;
+  --bg-hover: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-regular: #d1d5db;
+  --text-placeholder: #6b7280;
+  --border-color: #374151;
+  --border-dark: #4b5563;
+}

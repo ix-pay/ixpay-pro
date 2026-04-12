@@ -100,8 +100,6 @@ go build -o build/ixpay-pro.exe ./cmd/ixpay-pro
 ```bash
 # 执行后端单元测试
 go test ./tests/unit/... -v
-# 执行集成测试
-go test ./tests/integration/... -v
 ```
 
 **检查项目**：
@@ -186,7 +184,7 @@ npm run build
 
 - [ ] 缩进：4 空格
 - [ ] 行宽：≤120 字符
-- [ ] 括号：K\&R 风格
+- [ ] 括号：K&R 风格
 - [ ] 运算符：两侧空格
 
 **执行命令**：
@@ -201,9 +199,9 @@ go vet ./...
 **检查项目**：
 
 - [ ] 包名：小写
-- [ ] 文件名：小写 + 下划线（snake\_case）
+- [ ] 文件名：小写 + 下划线（snake_case）
 - [ ] 函数/变量：驼峰（camelCase）
-- [ ] 常量：大写 + 下划线（UPPER\_CASE）
+- [ ] 常量：大写 + 下划线（UPPER_CASE）
 - [ ] 结构体：PascalCase
 - [ ] **JSON 标签：camelCase** ⭐
 - [ ] **ID 字段：应用层和 DTO 使用 string，数据库使用 int64** ⭐
@@ -307,7 +305,7 @@ go vet ./...
 
 - [ ] 是否使用指定日志库
 - [ ] **日志消息是否使用中文** ⭐
-- [ ] 关键操作是否记录 user\_id 和 IP
+- [ ] 关键操作是否记录 user_id 和 IP
 - [ ] 是否记录敏感信息
 
 **示例问题**：
@@ -344,7 +342,7 @@ npm run lint
 
 - [ ] 组件名：PascalCase
 - [ ] 变量/方法名：camelCase
-- [ ] 常量：UPPER\_CASE
+- [ ] 常量：UPPER_CASE
 - [ ] **TypeScript 接口：全字段 camelCase** ⭐
 
 **示例问题**：
@@ -532,9 +530,6 @@ npm run lint
 
 - name: Unit Test Check
   run: go test ./tests/unit/... -v
-
-- name: Integration Test Check
-  run: go test ./tests/integration/... -v
 
 - name: Swagger Doc Check
   run: swag init -g cmd/ixpay-pro/main.go --output ./docs

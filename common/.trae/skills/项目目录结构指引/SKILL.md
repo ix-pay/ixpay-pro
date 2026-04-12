@@ -1,6 +1,6 @@
 ---
 name: 项目目录结构指引
-description: 当 AI 需要创建任何文件（代码文件、配置文件、文档等）或不确定文件位置时触发，用于确定正确的文件创建位置
+description: 当 AI 需要创建任何文件（代码文件、配置文件、文档等）或不确定文件位置时触发，用于确定正确的文件创建位置，确保项目结构规范性和一致性
 ---
 
 # 项目目录结构指引
@@ -14,15 +14,6 @@ description: 当 AI 需要创建任何文件（代码文件、配置文件、文
 - ✅ 保持项目结构的一致性和规范性
 - ✅ 避免文件乱放导致的维护困难
 - ✅ 提供快速查找和定位能力
-
-## 触发条件
-
-当检测到以下情况时自动激活：
-- ✅ 用户要求创建新的代码文件（API、组件、页面、服务等）
-- ✅ 用户要求创建配置文件或脚本
-- ✅ 用户要求创建文档文件
-- ✅ AI 不确定文件应该放在哪个目录时
-- ✅ 需要验证文件位置是否正确时
 
 ## 核心功能
 
@@ -116,8 +107,8 @@ AI 在正确位置创建文件
 
 **技能响应**：
 1. 判断：这是后端需求文档
-2. 查询文档目录 → `server/docs/`
-3. 返回完整路径：`server/docs/用户管理需求.md`
+2. 查询文档目录 → `server/.trae/documents/`
+3. 返回完整路径：`server/.trae/documents/用户管理需求.md`
 
 ### 示例 5：创建网关健康检查功能
 
@@ -154,52 +145,67 @@ server/
 │   ├── app/                     # 【应用层】协调领域层，处理 HTTP 请求
 │   │   ├── base/                # 基础管理模块
 │   │   │   ├── api/             # API 处理器
-│   │   │   ├── application/     # 应用服务
 │   │   │   ├── middleware/      # 模块中间件
 │   │   │   ├── migrations/      # 数据库迁移文件
 │   │   │   ├── seed/            # 数据库种子文件
-│   │   │   ├── application.go   # 应用分入口
-│   │   │   ├── wire.go          # 依赖注入配置
-│   │   │   └── routes.go        # 路由配置
+│   │   │   ├── routes.go        # 路由配置
+│   │   │   └── wire.go          # 依赖注入配置
+│   │   ├── wx/                  # 微信支付模块
+│   │   │   ├── api/             # API 处理器
+│   │   │   ├── middleware/      # 模块中间件
+│   │   │   ├── migrations/      # 数据库迁移文件
+│   │   │   ├── routes.go        # 路由配置
+│   │   │   └── wire.go          # 依赖注入配置
 │   │   ├── application.go       # 应用总入口
-│   │   ├── routes.go
-│   │   ├── wire_gen.go          # 依赖注入配置（自动生成）
-│   │   └── wire.go
+│   │   ├── routes.go            # 全局路由配置
+│   │   ├── wire.go              # 依赖注入配置
+│   │   └── wire_gen.go          # 依赖注入配置（自动生成）
 │   │
 │   ├── domain/                  # 【领域层】核心业务逻辑，不依赖基础设施
 │   │   ├── base/                # 基础管理领域
 │   │   │   ├── entity/          # 领域实体
 │   │   │   ├── repo/            # 仓库接口定义
 │   │   │   └── service/         # 领域服务
-│   │   └── shared/              # 共享领域对象
-│   │       └── value_object/    # 值对象
+│   │   └── wx/                  # 微信支付领域
+│   │       ├── entity/          # 领域实体
+│   │       ├── repo/            # 仓库接口定义
+│   │       └── service/         # 领域服务
 │   │
 │   ├── persistence/             # 【基础设施层】实现 Repository 接口
 │   │   ├── base/                # Base 模块仓库实现
+│   │   ├── wx/                  # Wx 模块仓库实现
 │   │   └── common/              # 通用持久化工具
 │   │
 │   ├── infrastructure/          # 【基础设施层】通用技术组件
-│   │   ├── persistence/         # 数据持久化
-│   │   ├── transport/           # 传输层
-│   │   ├── security/            # 安全相关
-│   │   ├── observability/       # 可观测性
-│   │   └── support/             # 支撑工具
+│   │   ├── observability/       # 可观测性（日志、监控）
+│   │   ├── persistence/         # 数据持久化（数据库、缓存、Redis）
+│   │   ├── security/            # 安全相关（认证、验证码）
+│   │   ├── support/             # 支撑工具（错误处理、雪花算法、任务管理）
+│   │   └── transport/           # 传输层（HTTP、中间件）
 │   │
 │   ├── dto/                     # 【数据传输对象】请求和响应数据结构
 │   │   ├── base/
 │   │   │   ├── request/         # 请求 DTO
 │   │   │   └── response/        # 响应 DTO
+│   │   └── wx/
+│   │       ├── request/         # 请求 DTO
+│   │       └── response/        # 响应 DTO
 │   │
-│   ├── utils/                   # 工具函数
-│   └── config/                  # 配置管理
+│   ├── config/                  # 配置管理
+│   └── utils/                   # 工具函数
 │
 ├── tests/                       # 【测试目录】独立测试目录
-│   ├── unit/                    # 单元测试
-│   ├── integration/             # 集成测试
-│   └── e2e/                     # 端到端测试
+│   └── unit/                    # 单元测试
+│       └── domain/
+│           └── base/
+│               └── service/     # 领域服务测试
 │
-├── scripts/                     # 【脚本目录】
 ├── .trae/documents/            # 后端需求计划文档
+├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
+├── go.mod
+├── go.sum
 └── README.md
 ```
 
@@ -209,28 +215,178 @@ server/
 web/
 ├── src/
 │   ├── api/                  # API 接口
+│   │   ├── index.ts          # API 总入口
+│   │   ├── monitor.ts        # 监控 API
 │   │   └── modules/          # 按模块组织的 API 服务
+│   │       ├── user.ts       # 用户 API
+│   │       ├── role.ts       # 角色 API
+│   │       ├── menu.ts       # 菜单 API
+│   │       └── ...
+│   │
 │   ├── views/                # 页面视图
 │   │   ├── base/             # 基础管理模块
-│   │   │   └── user/         # 用户管理页面
+│   │   │   ├── index/        # 首页
+│   │   │   ├── login/        # 登录页
+│   │   │   ├── profile/      # 个人资料
+│   │   │   ├── setting/      # 设置
+│   │   │   └── user/         # 用户管理
+│   │   ├── system/           # 系统管理模块
+│   │   │   ├── api-route/    # API 路由管理
+│   │   │   ├── config/       # 配置管理
+│   │   │   ├── department/   # 部门管理
+│   │   │   ├── dict/         # 字典管理
+│   │   │   ├── menu/         # 菜单管理
+│   │   │   ├── notice/       # 通知管理
+│   │   │   ├── position/     # 岗位管理
+│   │   │   ├── role/         # 角色管理
+│   │   │   └── user/         # 用户管理
+│   │   ├── log/              # 日志模块
+│   │   │   ├── login-log/    # 登录日志
+│   │   │   └── operation-log/# 操作日志
+│   │   ├── monitor/          # 监控模块
+│   │   │   ├── monitor/      # 系统监控
+│   │   │   └── online-user/  # 在线用户
+│   │   └── task/             # 任务模块
+│   │       └── task/         # 定时任务
+│   │
 │   ├── components/           # 组件
 │   │   ├── common/           # 通用组件
-│   │   └── business/         # 业务组件
-│   ├── stores/               # 状态管理
+│   │   │   ├── IconSelector/ # 图标选择器
+│   │   │   └── ...
+│   │   ├── business/         # 业务组件
+│   │   │   ├── Card/         # 卡片组件
+│   │   │   ├── Chart/        # 图表组件
+│   │   │   ├── PageTemplate/ # 页面模板
+│   │   │   ├── StatCard/     # 统计卡片
+│   │   │   ├── ThemePanel/   # 主题面板
+│   │   │   └── error/        # 错误页面组件
+│   │   └── layout/           # 布局组件
+│   │       ├── BaseLayout.vue # 基础布局
+│   │       ├── Header.vue    # 头部
+│   │       ├── Sidebar.vue   # 侧边栏
+│   │       ├── TabManager.vue # 标签管理
+│   │       └── ContentWrapper.vue # 内容包装
+│   │
+│   ├── stores/               # 状态管理（Pinia）
+│   │   ├── index.ts          # Store 总入口
+│   │   └── modules/          # 模块
+│   │       ├── app.ts        # 应用状态
+│   │       ├── router.ts     # 路由状态
+│   │       └── user.ts       # 用户状态
+│   │
 │   ├── types/                # TypeScript 类型定义
+│   │   ├── index.ts          # 类型总入口
+│   │   ├── user.ts           # 用户类型
+│   │   ├── role.ts           # 角色类型
+│   │   ├── menu.ts           # 菜单类型
+│   │   ├── config.ts         # 配置类型
+│   │   ├── department.ts     # 部门类型
+│   │   ├── dict.ts           # 字典类型
+│   │   ├── position.ts       # 岗位类型
+│   │   └── date.d.ts         # 日期类型
+│   │
 │   ├── utils/                # 工具函数
+│   │   ├── request.ts        # HTTP 请求封装
+│   │   ├── asyncRouter.ts    # 异步路由
+│   │   ├── bus.ts            # 事件总线
+│   │   ├── date.ts           # 日期工具
+│   │   ├── dictionary.ts     # 字典工具
+│   │   ├── echarts.ts        # ECharts 工具
+│   │   ├── format.ts         # 格式化工具
+│   │   └── permission.ts     # 权限工具
+│   │
 │   ├── app/                  # 应用配置
-│   │   └── router/           # 路由配置
-│   └── main.ts               # 应用入口
-├── public/                   # 静态资源
-├── .trae/documents/          # 前端文档
+│   │   ├── config/           # 配置
+│   │   │   └── index.ts
+│   │   ├── router/           # 路由配置
+│   │   │   └── index.ts
+│   │   ├── App.vue           # 根组件
+│   │   └── main.ts           # 应用入口
+│   │
+│   ├── assets/               # 静态资源
+│   │   ├── images/           # 图片资源
+│   │   └── styles/           # 样式资源
+│   │       ├── global.scss   # 全局样式
+│   │       ├── tailwind.css  # Tailwind CSS
+│   │       ├── transition.scss # 过渡动画
+│   │       └── design-tokens.scss # 设计令牌
+│   │
+│   ├── directive/            # 自定义指令
+│   │   └── auth.ts           # 权限指令
+│   │
+│   ├── hooks/                # 组合式函数
+│   │   └── responsive.ts     # 响应式钩子
+│   │
+│   ├── core/                 # 核心功能
+│   │   ├── global.ts         # 全局配置
+│   │   └── ixpay-pro.ts      # IXPay Pro 核心
+│   │
+│   ├── auto-imports.d.ts     # 自动导入类型声明
+│   ├── components.d.ts       # 组件类型声明
+│   └── pathInfo.json         # 路径信息
+│
+├── public/                   # 公共静态资源
+│   └── favicon.ico           # 网站图标
+│
+├── .vscode/                  # VSCode 配置
+│   └── extensions.json       # 推荐插件
+│
+├── .env.development          # 开发环境变量
+├── .env.production           # 生产环境变量
+├── .editorconfig             # 编辑器配置
+├── .eslintrc.cjs             # ESLint 配置
+├── .gitignore
+├── .prettierrc.json          # Prettier 配置
+├── index.html                # HTML 入口
 ├── package.json              # 项目配置
+├── package-lock.json         # 依赖锁定
+├── postcss.config.js         # PostCSS 配置
+├── tailwind.config.js        # Tailwind 配置
+├── tsconfig.json             # TypeScript 配置
+├── tsconfig.app.json         # 应用 TypeScript 配置
+├── tsconfig.node.json        # Node TypeScript 配置
+├── vite.config.mts           # Vite 配置
+├── env.d.ts                  # 环境变量类型声明
 └── README.md
 ```
 
 ### 公共目录结构（common/）
 
-详见完整目录树（此处省略，保持与原文件一致）
+```
+common/
+├── .trae/
+│   ├── rules/                # AI 规则文件
+│   │   └── AI 说明书.md        # AI 核心行为准则
+│   ├── skills/               # AI 技能文件
+│   │   ├── 项目目录结构指引/
+│   │   │   └── SKILL.md
+│   │   ├── 规则与技能创建与编辑指南/
+│   │   │   └── SKILL.md
+│   │   ├── 代码质量检查器/
+│   │   │   └── SKILL.md
+│   │   ├── 全栈开发/
+│   │   │   └── SKILL.md
+│   │   ├── 前端开发工具集/
+│   │   │   └── SKILL.md
+│   │   ├── 后端开发工具集/
+│   │   │   └── SKILL.md
+│   │   └── git 提交推送/
+│   │       └── SKILL.md
+│   └── skill-config.json     # 技能配置
+│
+├── docs/                     # 公共文档
+│   ├── images/               # 公共图片资源
+│   │   ├── ixpay-master.png
+│   │   ├── ixpay.png
+│   │   └── ...
+│   └── manual/               # 使用手册
+│       ├── server 项目设计文档.md
+│       ├── web 项目设计文档.md
+│       └── 部署说明.md
+│
+├── LICENSE
+└── README.md
+```
 
 ### H5 应用目录结构（h5app/）
 
@@ -290,9 +446,12 @@ gxy/
 │       └── log.go            # 日志工具
 │
 ├── docs/                     # 网关文档
+├── .gitignore
 ├── config.json               # 网关配置文件
 ├── Dockerfile                # Docker 镜像构建文件
+├── gateway-dev-prompt.md     # 网关开发文档
 ├── go.mod                    # Go 模块依赖
+├── performance_test_script.go # 性能测试脚本
 └── README.md
 ```
 
@@ -321,7 +480,7 @@ gxy/
 | 仓库实现 | `server/internal/persistence/[模块]/` | `server/internal/persistence/base/user_repository.go` |
 | DTO 请求 | `server/internal/dto/[模块]/request/` | `server/internal/dto/base/request/user.go` |
 | DTO 响应 | `server/internal/dto/[模块]/response/` | `server/internal/dto/base/response/user.go` |
-| 单元测试 | `server/tests/unit/[层]/[模块]/` | `server/tests/unit/domain/base/user_domain_service_test.go` |
+| 单元测试 | `server/tests/unit/[层]/[模块]/` | `server/tests/unit/domain/base/service/user_service_test.go` |
 | 集成测试 | `server/tests/integration/[类型]/` | `server/tests/integration/api/user_test.go` |
 | 脚本文件 | `server/scripts/` | `server/scripts/migrate.sh` |
 | 后端需求文档 | `server/.trae/documents/` | `server/.trae/documents/用户管理需求.md` |
@@ -336,8 +495,8 @@ gxy/
 | 组件 | `web/src/components/[类型]/` | `web/src/components/common/modal.vue` |
 | Store | `web/src/stores/` | `web/src/stores/user.ts` |
 | TypeScript 类型 | `web/src/types/` | `web/src/types/user.ts` |
-| 前端文档 | `web/docs/` | `web/docs/用户界面需求.md` |
-| 技术文档 | `web/docs/` | `web/docs/组件设计.md` |
+| 前端文档 | `web/.trae/documents/` | `web/.trae/documents/用户界面需求.md` |
+| 技术文档 | `web/.trae/documents/` | `web/.trae/documents/组件设计.md` |
 
 ### 网关文件
 

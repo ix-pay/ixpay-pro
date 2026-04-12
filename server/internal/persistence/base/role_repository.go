@@ -25,6 +25,52 @@ func (roleModel) TableName() string {
 	return "base_roles"
 }
 
+// roleUserModel 角色用户关联模型
+type roleUserModel struct {
+	RoleID int64 `gorm:"not null;index"`
+	UserID int64 `gorm:"not null;index"`
+}
+
+// TableName 指定表名
+func (roleUserModel) TableName() string {
+	return "base_role_users"
+}
+
+// roleMenuModel 角色菜单关联模型
+type roleMenuModel struct {
+	RoleID int64 `gorm:"not null;index"`
+	MenuID int64 `gorm:"not null;index"`
+}
+
+// TableName 指定表名
+func (roleMenuModel) TableName() string {
+	return "base_role_menus"
+}
+
+// roleAPIRouteModel 角色 API 路由关联模型
+type roleAPIRouteModel struct {
+	RoleID  int64  `gorm:"not null;index"`
+	RouteID int64  `gorm:"not null;index"`
+	Source  int    `gorm:"default:1"`
+	Note    string `gorm:"size:255"`
+}
+
+// TableName 指定表名
+func (roleAPIRouteModel) TableName() string {
+	return "base_role_api_routes"
+}
+
+// roleBtnPermModel 角色按钮权限关联模型
+type roleBtnPermModel struct {
+	RoleID    int64 `gorm:"not null;index"`
+	BtnPermID int64 `gorm:"not null;index"`
+}
+
+// TableName 指定表名
+func (roleBtnPermModel) TableName() string {
+	return "base_role_btn_perms"
+}
+
 // toDomain 将数据库模型转换为领域实体
 func (m *roleModel) toDomain() *entity.Role {
 	if m == nil {
@@ -196,108 +242,356 @@ func (r *roleRepository) GetAllRoles() ([]*entity.Role, error) {
 
 // AddUserToRole 添加用户到角色
 func (r *roleRepository) AddUserToRole(roleID, userID string) error {
-	// TODO: 实现角色关联用户表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	uID, err := common.ParseInt64(userID)
+	if err != nil {
+		return err
+	}
+
+	model := &roleUserModel{
+		RoleID: rID,
+		UserID: uID,
+	}
+
+	return r.db.Create(model).Error
 }
 
 // RemoveUserFromRole 从角色移除用户
 func (r *roleRepository) RemoveUserFromRole(roleID, userID string) error {
-	// TODO: 实现角色关联用户表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	uID, err := common.ParseInt64(userID)
+	if err != nil {
+		return err
+	}
+
+	return r.db.Where("role_id = ? AND user_id = ?", rID, uID).Delete(&roleUserModel{}).Error
 }
 
 // ExistsUserInRole 检查用户是否在角色中
 func (r *roleRepository) ExistsUserInRole(roleID, userID string) (bool, error) {
-	// TODO: 实现角色关联用户表操作
-	return false, nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return false, err
+	}
+	uID, err := common.ParseInt64(userID)
+	if err != nil {
+		return false, err
+	}
+
+	var count int64
+	err = r.db.Model(&roleUserModel{}).Where("role_id = ? AND user_id = ?", rID, uID).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
 
 // GetUsersByRole 获取角色下的所有用户
 func (r *roleRepository) GetUsersByRole(roleID string) ([]*entity.User, error) {
-	// TODO: 实现角色关联用户表操作
-	return nil, nil
+	intID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	var userModels []userModel
+	err = r.db.Table("base_users").
+		Joins("JOIN base_role_users ON base_role_users.user_id = base_users.id").
+		Where("base_role_users.role_id = ?", intID).
+		Find(&userModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]*entity.User, len(userModels))
+	for i, model := range userModels {
+		users[i] = model.toDomain()
+	}
+
+	return users, nil
 }
 
 // GetRolesByUser 获取用户的所有角色
 func (r *roleRepository) GetRolesByUser(userID string) ([]*entity.Role, error) {
-	// TODO: 实现角色关联用户表操作
-	return nil, nil
+	intID, err := common.ParseInt64(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var roleModels []roleModel
+	err = r.db.Table("base_roles").
+		Joins("JOIN base_role_users ON base_role_users.role_id = base_roles.id").
+		Where("base_role_users.user_id = ?", intID).
+		Find(&roleModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	roles := make([]*entity.Role, len(roleModels))
+	for i, model := range roleModels {
+		roles[i] = model.toDomain()
+	}
+
+	return roles, nil
 }
 
 // AddMenuToRole 添加菜单到角色
 func (r *roleRepository) AddMenuToRole(roleID, menuID string) error {
-	// TODO: 实现角色关联菜单表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	mID, err := common.ParseInt64(menuID)
+	if err != nil {
+		return err
+	}
+
+	model := &roleMenuModel{
+		RoleID: rID,
+		MenuID: mID,
+	}
+
+	return r.db.Create(model).Error
 }
 
 // RemoveMenuFromRole 从角色移除菜单
 func (r *roleRepository) RemoveMenuFromRole(roleID, menuID string) error {
-	// TODO: 实现角色关联菜单表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	mID, err := common.ParseInt64(menuID)
+	if err != nil {
+		return err
+	}
+
+	return r.db.Where("role_id = ? AND menu_id = ?", rID, mID).Delete(&roleMenuModel{}).Error
 }
 
 // GetMenusByRole 获取角色下的所有菜单
 func (r *roleRepository) GetMenusByRole(roleID string) ([]*entity.Menu, error) {
-	// TODO: 实现角色关联菜单表操作
-	return nil, nil
+	intID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	var menuModels []menuModel
+	err = r.db.Table("base_menus").
+		Joins("JOIN base_role_menus ON base_role_menus.menu_id = base_menus.id").
+		Where("base_role_menus.role_id = ?", intID).
+		Find(&menuModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	menus := make([]*entity.Menu, len(menuModels))
+	for i, model := range menuModels {
+		menus[i] = model.toDomain()
+	}
+
+	return menus, nil
 }
 
 // GetRolesByMenu 获取菜单的所有角色
 func (r *roleRepository) GetRolesByMenu(menuID string) ([]*entity.Role, error) {
-	// TODO: 实现角色关联菜单表操作
-	return nil, nil
+	intID, err := common.ParseInt64(menuID)
+	if err != nil {
+		return nil, err
+	}
+
+	var roleModels []roleModel
+	err = r.db.Table("base_roles").
+		Joins("JOIN base_role_menus ON base_role_menus.role_id = base_roles.id").
+		Where("base_role_menus.menu_id = ?", intID).
+		Find(&roleModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	roles := make([]*entity.Role, len(roleModels))
+	for i, model := range roleModels {
+		roles[i] = model.toDomain()
+	}
+
+	return roles, nil
 }
 
 // AddToRole 添加接口路由到角色
 func (r *roleRepository) AddToRole(roleID, routeID string) error {
-	// TODO: 实现角色关联接口路由表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	rtID, err := common.ParseInt64(routeID)
+	if err != nil {
+		return err
+	}
+
+	model := &roleAPIRouteModel{
+		RoleID:  rID,
+		RouteID: rtID,
+		Source:  1, // 1-直接授权
+	}
+
+	return r.db.Create(model).Error
 }
 
 // RemoveFromRole 从角色移除接口路由
 func (r *roleRepository) RemoveFromRole(roleID, routeID string) error {
-	// TODO: 实现角色关联接口路由表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	rtID, err := common.ParseInt64(routeID)
+	if err != nil {
+		return err
+	}
+
+	return r.db.Where("role_id = ? AND route_id = ?", rID, rtID).Delete(&roleAPIRouteModel{}).Error
 }
 
 // GetsByRole 获取角色下的所有接口路由
 func (r *roleRepository) GetsByRole(roleID string) ([]*entity.API, error) {
-	// TODO: 实现角色关联接口路由表操作
-	return nil, nil
+	intID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiModels []apiModel
+	err = r.db.Table("base_apis").
+		Joins("JOIN base_role_api_routes ON base_role_api_routes.route_id = base_apis.id").
+		Where("base_role_api_routes.role_id = ?", intID).
+		Find(&apiModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	apis := make([]*entity.API, len(apiModels))
+	for i, model := range apiModels {
+		apis[i] = model.toDomain()
+	}
+
+	return apis, nil
 }
 
 // GetRolesBy 获取接口路由的所有角色
 func (r *roleRepository) GetRolesBy(routeID string) ([]*entity.Role, error) {
-	// TODO: 实现角色关联接口路由表操作
-	return nil, nil
+	intID, err := common.ParseInt64(routeID)
+	if err != nil {
+		return nil, err
+	}
+
+	var roleModels []roleModel
+	err = r.db.Table("base_roles").
+		Joins("JOIN base_role_api_routes ON base_role_api_routes.role_id = base_roles.id").
+		Where("base_role_api_routes.route_id = ?", intID).
+		Find(&roleModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	roles := make([]*entity.Role, len(roleModels))
+	for i, model := range roleModels {
+		roles[i] = model.toDomain()
+	}
+
+	return roles, nil
 }
 
 // GetAPIByPathAndMethod 根据路径和方法获取接口路由
 func (r *roleRepository) GetAPIByPathAndMethod(path, method string) (*entity.API, error) {
-	// TODO: 实现接口路由查询
-	return nil, nil
+	var apiModel apiModel
+	result := r.db.Where("path = ? AND method = ?", path, method).First(&apiModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return apiModel.toDomain(), nil
 }
 
 // AddBtnPermToRole 添加按钮权限到角色
 func (r *roleRepository) AddBtnPermToRole(roleID, btnPermID string) error {
-	// TODO: 实现角色关联按钮权限表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	bID, err := common.ParseInt64(btnPermID)
+	if err != nil {
+		return err
+	}
+
+	model := &roleBtnPermModel{
+		RoleID:    rID,
+		BtnPermID: bID,
+	}
+
+	return r.db.Create(model).Error
 }
 
 // RemoveBtnPermFromRole 从角色移除按钮权限
 func (r *roleRepository) RemoveBtnPermFromRole(roleID, btnPermID string) error {
-	// TODO: 实现角色关联按钮权限表操作
-	return nil
+	rID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return err
+	}
+	bID, err := common.ParseInt64(btnPermID)
+	if err != nil {
+		return err
+	}
+
+	return r.db.Where("role_id = ? AND btn_perm_id = ?", rID, bID).Delete(&roleBtnPermModel{}).Error
 }
 
 // GetBtnPermsByRole 获取角色下的所有按钮权限
 func (r *roleRepository) GetBtnPermsByRole(roleID string) ([]*entity.BtnPerm, error) {
-	// TODO: 实现角色关联按钮权限表操作
-	return nil, nil
+	intID, err := common.ParseInt64(roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	var btnPermModels []btnPermModel
+	err = r.db.Table("base_btn_perms").
+		Joins("JOIN base_role_btn_perms ON base_role_btn_perms.btn_perm_id = base_btn_perms.id").
+		Where("base_role_btn_perms.role_id = ?", intID).
+		Find(&btnPermModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	btnPerms := make([]*entity.BtnPerm, len(btnPermModels))
+	for i, model := range btnPermModels {
+		btnPerms[i] = model.toDomain()
+	}
+
+	return btnPerms, nil
 }
 
 // GetRolesByBtnPerm 获取按钮权限的所有角色
 func (r *roleRepository) GetRolesByBtnPerm(btnPermID string) ([]*entity.Role, error) {
-	// TODO: 实现角色关联按钮权限表操作
-	return nil, nil
+	intID, err := common.ParseInt64(btnPermID)
+	if err != nil {
+		return nil, err
+	}
+
+	var roleModels []roleModel
+	err = r.db.Table("base_roles").
+		Joins("JOIN base_role_btn_perms ON base_role_btn_perms.role_id = base_roles.id").
+		Where("base_role_btn_perms.btn_perm_id = ?", intID).
+		Find(&roleModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	roles := make([]*entity.Role, len(roleModels))
+	for i, model := range roleModels {
+		roles[i] = model.toDomain()
+	}
+
+	return roles, nil
 }

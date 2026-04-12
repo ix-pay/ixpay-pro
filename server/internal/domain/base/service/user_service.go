@@ -232,7 +232,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	}
 
 	// 生成令牌，获取用户角色
-	role := "user" // 默认角色
+	role := "" // 默认角色
 	if len(user.RoleIds) > 0 {
 		// 获取用户角色详情
 		userRoles, err := s.roleService.GetRolesForUser(user.ID)
@@ -240,6 +240,12 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 			role = userRoles[0].Code // 使用第一个角色的 Code
 		}
 	}
+
+	if role == "" {
+		s.log.Error("用户未授权！", "userID", user.ID)
+		return nil, "", "", time.Time{}, time.Time{}, nil
+	}
+
 	// 传入 nickname（如果有昵称则使用昵称，否则使用用户名）
 	nickname := user.Nickname
 	if nickname == "" {

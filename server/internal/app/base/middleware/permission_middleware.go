@@ -32,7 +32,7 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		}
 
 		// 获取当前角色
-		role, roleExists := c.Get("role")
+		roleValue, roleExists := c.Get("role")
 		if !roleExists {
 			log.Error("✗ 角色不存在于上下文中", "path", path, "method", method, "userID", userID)
 			httpresponse.UnauthorizedResponse(c, "Role not found")
@@ -41,18 +41,18 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		}
 
 		// 确保角色是字符串类型
-		roleStr := ""
-		switch v := role.(type) {
+		role := ""
+		switch v := roleValue.(type) {
 		case string:
-			roleStr = v
+			role = v
 		default:
-			roleStr = fmt.Sprintf("%v", v)
+			role = fmt.Sprintf("%v", v)
 		}
 
-		log.Info("✓ 权限检查开始", "userID", userID, "role", roleStr, "roleType", fmt.Sprintf("%T", role), "path", path, "method", method)
+		log.Info("✓ 权限检查开始", "userID", userID, "role", role, "roleType", fmt.Sprintf("%T", role), "path", path, "method", method)
 
 		// 【新增】检查是否为管理员
-		if roleStr == "admin" {
+		if role == "admin" {
 			// 管理员角色拥有所有权限，直接放行
 			log.Debug("✓ 管理员角色，跳过权限验证", "path", path, "method", method)
 			c.Next()
@@ -76,9 +76,9 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		}
 
 		// 从缓存获取角色权限（auth_type = 1 需要验证角色权限）
-		hasPermission, err := checkPermissionFromCache(roleRepo, roleStr, method, path, log, cacheClient)
+		hasPermission, err := checkPermissionFromCache(roleRepo, role, method, path, log, cacheClient)
 		if err != nil {
-			log.Error("从缓存检查权限失败", "error", err, "role", roleStr, "path", path, "method", method)
+			log.Error("从缓存检查权限失败", "error", err, "role", role, "path", path, "method", method)
 			httpresponse.InternalServerErrorResponse(c, "Failed to check permission")
 			c.Abort()
 			return

@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"time"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -235,13 +237,75 @@ func (r *taskExecutionLogRepository) ClearExpiredLogs(beforeDate string) (int64,
 
 // GetSuccessRateByTaskID 获取任务的成功率
 func (r *taskExecutionLogRepository) GetSuccessRateByTaskID(taskID string, days int) (float64, error) {
-	// TODO: 实现成功率计算逻辑
-	// 这里需要根据 days 参数计算指定天数内的成功率
-	return 0.0, nil
+	var totalCount, successCount int64
+
+	query := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ?", taskID)
+
+	// 根据 days 参数计算指定天数内的成功率
+	if days > 0 {
+		cutoffTime := time.Now().AddDate(0, 0, -days)
+		query = query.Where("execute_at >= ?", cutoffTime)
+	}
+
+	// 获取总执行次数
+	if err := query.Count(&totalCount).Error; err != nil {
+		return 0, err
+	}
+
+	if totalCount == 0 {
+		return 0, nil
+	}
+
+	// 获取成功次数
+	if err := query.Where("result = ?", "SUCCESS").Count(&successCount).Error; err != nil {
+		return 0, err
+	}
+
+	// 计算成功率
+	successRate := float64(successCount) / float64(totalCount) * 100
+	return successRate, nil
 }
 
 // GetGroupStatistics 获取任务分组统计
 func (r *taskExecutionLogRepository) GetGroupStatistics() ([]*entity.TaskGroupStat, error) {
-	// TODO: 实现分组统计逻辑
-	return nil, nil
+	type StatResult struct {
+		Group         string
+		TotalTasks    int64
+		TotalExecutes int64
+		SuccessCount  int64
+		FailedCount   int64
+	}
+
+	var results []StatResult
+
+	// 使用原生 SQL 进行分组统计
+	sql := `
+		SELECT 
+			"group" as group,
+			COUNT(DISTINCT task_id) as total_tasks,
+			COUNT(*) as total_executes,
+			SUM(CASE WHEN result = 'SUCCESS' THEN 1 ELSE 0 END) as success_count,
+			SUM(CASE WHEN result != 'SUCCESS' THEN 1 ELSE 0 END) as failed_count
+		FROM base_task_execution_logs
+		GROUP BY "group"
+	`
+
+	if err := r.db.Raw(sql).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+
+	// 转换为领域实体
+	stats := make([]*entity.TaskGroupStat, len(results))
+	for i, result := range results {
+		stats[i] = &entity.TaskGroupStat{
+			Group:         result.Group,
+			TotalTasks:    result.TotalTasks,
+			TotalExecutes: result.TotalExecutes,
+			SuccessCount:  result.SuccessCount,
+			FailedCount:   result.FailedCount,
+			SuccessRate:   float64(result.SuccessCount) / float64(result.TotalExecutes) * 100,
+		}
+	}
+
+	return stats, nil
 }

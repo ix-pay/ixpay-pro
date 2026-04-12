@@ -71,7 +71,7 @@ func (cs *ConfigSeed) Init(db *database.PostgresDB, logger logger.Logger) error 
 		},
 		{
 			ConfigKey:   "wechat_notify_url",
-			ConfigValue: "http://your-server.com/api/wx//pay/notify",
+			ConfigValue: "http://your-server.com/api/wx/pay/notify",
 			ConfigType:  "wechat",
 			Description: "微信支付回调通知地址",
 			Status:      1,

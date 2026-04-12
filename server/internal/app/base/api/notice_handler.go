@@ -20,7 +20,7 @@ import (
 //     @Summary		公告管理 API
 //     @Description	提供公告创建、更新、删除、查询、阅读标记等功能
 //     @Tags			公告管理
-//     @Router			/api/admin//notices [get]
+//     @Router			/api/admin/notices [get]
 type NoticeController struct {
 	service       *service.NoticeService           // 公告服务接口
 	recordService *service.NoticeReadRecordService // 阅读记录服务接口
@@ -58,7 +58,7 @@ func NewNoticeController(service *service.NoticeService, recordService *service.
 //	@Success		200			{object}	baseRes.Response{data=response.NoticeListResponse,msg=string}	"公告列表"
 //	@Failure		401			{object}	map[string]string															"未授权"
 //	@Failure		500			{object}	map[string]string															"服务器内部错误"
-//	@Router			/api/admin//notices [get]
+//	@Router			/api/admin/notices [get]
 func (c *NoticeController) GetNoticeList(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -142,7 +142,7 @@ func (c *NoticeController) GetNoticeList(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string													"请求参数错误"
 //	@Failure		401	{object}	map[string]string													"未授权"
 //	@Failure		500	{object}	map[string]string													"服务器内部错误"
-//	@Router			/api/admin//notices/:id [get]
+//	@Router			/api/admin/notices/:id [get]
 func (c *NoticeController) GetNoticeByID(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -202,7 +202,7 @@ func (c *NoticeController) GetNoticeByID(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string												"请求参数错误"
 //	@Failure		401		{object}	map[string]string												"未授权"
 //	@Failure		500		{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin//notices [post]
+//	@Router			/api/admin/notices [post]
 func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 	var req request.CreateNoticeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -273,7 +273,7 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string															"请求参数错误"
 //	@Failure		401		{object}	map[string]string															"未授权"
 //	@Failure		500		{object}	map[string]string															"服务器内部错误"
-//	@Router			/api/admin//notices [put]
+//	@Router			/api/admin/notices [put]
 func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 	var req request.UpdateNoticeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -343,7 +343,7 @@ func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//notices/{id} [delete]
+//	@Router			/api/admin/notices/:id [delete]
 func (c *NoticeController) DeleteNotice(ctx *gin.Context) {
 	// 直接使用 string 类型的公告 ID
 	noticeID := ctx.Param("id")
@@ -375,7 +375,7 @@ func (c *NoticeController) DeleteNotice(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//notices/{id}/publish [post]
+//	@Router			/api/admin/notices/:id/publish [post]
 func (c *NoticeController) PublishNotice(ctx *gin.Context) {
 	// 直接使用 string 类型的公告 ID
 	noticeID := ctx.Param("id")
@@ -416,7 +416,7 @@ func (c *NoticeController) PublishNotice(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//notices/:id/read [post]
+//	@Router			/api/admin/notices/:id/read [post]
 func (c *NoticeController) MarkAsRead(ctx *gin.Context) {
 	// 直接使用 string 类型的公告 ID
 	noticeID := ctx.Param("id")
@@ -455,7 +455,7 @@ func (c *NoticeController) MarkAsRead(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=response.NoticeStatisticsResponse,msg=string}	"统计信息"
 //	@Failure		401	{object}	map[string]string																	"未授权"
 //	@Failure		500	{object}	map[string]string																	"服务器内部错误"
-//	@Router			/api/admin//notices/statistics [get]
+//	@Router			/api/admin/notices/statistics [get]
 func (c *NoticeController) GetStatistics(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -496,7 +496,7 @@ func (c *NoticeController) GetStatistics(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string						"请求参数错误"
 //	@Failure		401	{object}	map[string]string						"未授权"
 //	@Failure		500	{object}	map[string]string						"服务器内部错误"
-//	@Router			/api/admin//notices/:id/is-read [get]
+//	@Router			/api/admin/notices/:id/is-read [get]
 func (c *NoticeController) CheckIsRead(ctx *gin.Context) {
 	// 直接使用 string 类型的公告 ID
 	noticeID := ctx.Param("id")

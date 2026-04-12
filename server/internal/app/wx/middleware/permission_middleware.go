@@ -23,7 +23,7 @@ func PermissionMiddleware(permissionManager *auth.PermissionManager) gin.Handler
 			strings.HasPrefix(path, "/api/wx//auth") ||
 			strings.HasPrefix(path, "/api/wx//health") ||
 			strings.HasPrefix(path, "/api/wx//pay/notify") ||
-			strings.HasPrefix(path, "/api/admin//auth") {
+			strings.HasPrefix(path, "/api/admin/auth") {
 			c.Next()
 			return
 		}

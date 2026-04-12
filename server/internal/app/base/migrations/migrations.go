@@ -391,8 +391,8 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createDictsTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_dicts (
 		id BIGINT PRIMARY KEY,
-		code VARCHAR(100) UNIQUE NOT NULL,
-		name VARCHAR(100) NOT NULL,
+		dict_code VARCHAR(100) UNIQUE NOT NULL,
+		dict_name VARCHAR(100) NOT NULL,
 		description VARCHAR(255),
 		status INTEGER DEFAULT 1,
 		created_by BIGINT DEFAULT 0,
@@ -415,12 +415,11 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	CREATE TABLE IF NOT EXISTS base_dict_items (
 		id BIGINT PRIMARY KEY,
 		dict_id BIGINT NOT NULL,
-		value VARCHAR(100) NOT NULL,
-		label VARCHAR(100) NOT NULL,
+		item_key VARCHAR(50) NOT NULL,
+		item_value VARCHAR(255),
 		sort INTEGER DEFAULT 0,
 		status INTEGER DEFAULT 1,
 		description VARCHAR(255),
-		extend_params JSONB,
 		created_by BIGINT DEFAULT 0,
 		updated_by BIGINT DEFAULT 0,
 		deleted_by BIGINT DEFAULT 0,
@@ -440,8 +439,8 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	// 添加字典项索引
 	addDictItemIndexSQL := `
 	CREATE INDEX IF NOT EXISTS idx_base_dict_items_dict_id ON base_dict_items(dict_id);
-	CREATE INDEX IF NOT EXISTS idx_base_dict_items_value ON base_dict_items(value);
-	CREATE INDEX IF NOT EXISTS idx_base_dict_items_label ON base_dict_items(label);
+	CREATE INDEX IF NOT EXISTS idx_base_dict_items_item_key ON base_dict_items(item_key);
+	CREATE INDEX IF NOT EXISTS idx_base_dict_items_item_value ON base_dict_items(item_value);
 	`
 
 	if err := db.Exec(addDictItemIndexSQL).Error; err != nil {
@@ -470,6 +469,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		duration BIGINT DEFAULT 0,
 		error_message TEXT,
 		is_success BOOLEAN DEFAULT true,
+		execute_time TIMESTAMP NOT NULL DEFAULT NOW(),
 		created_by BIGINT DEFAULT 0,
 		updated_by BIGINT DEFAULT 0,
 		deleted_by BIGINT DEFAULT 0,
@@ -493,6 +493,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	CREATE INDEX IF NOT EXISTS idx_base_operation_logs_client_ip ON base_operation_logs(client_ip);
 	CREATE INDEX IF NOT EXISTS idx_base_operation_logs_status_code ON base_operation_logs(status_code);
 	CREATE INDEX IF NOT EXISTS idx_base_operation_logs_is_success ON base_operation_logs(is_success);
+	CREATE INDEX IF NOT EXISTS idx_base_operation_logs_execute_time ON base_operation_logs(execute_time);
 	CREATE INDEX IF NOT EXISTS idx_base_operation_logs_created_at ON base_operation_logs(created_at);
 	`
 

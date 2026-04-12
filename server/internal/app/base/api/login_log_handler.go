@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
+	"github.com/ix-pay/ixpay-pro/internal/domain/shared/converter"
 	"github.com/ix-pay/ixpay-pro/internal/dto/base/request"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
@@ -33,19 +34,19 @@ func NewLoginLogController(service *service.LoginLogService, log logger.Logger) 
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			page		query		int																			true	"页码"
-//	@Param			page_size	query		int																			true	"每页数量"
-//	@Param			user_id		query		int64																		false	"用户 ID"
-//	@Param			username	query		string																		false	"用户名"
-//	@Param			login_ip	query		string																		false	"登录 IP"
-//	@Param			result		query		int																			false	"登录结果：0-失败，1-成功"
-//	@Param			start_date	query		string																		false	"开始日期（YYYY-MM-DD）"
-//	@Param			end_date	query		string																		false	"结束日期（YYYY-MM-DD）"
-//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]entity.LoginLog},msg=string}	"登录日志列表"
-//	@Failure		400			{object}	map[string]string															"请求参数错误"
-//	@Failure		401			{object}	map[string]string															"未授权"
-//	@Failure		500			{object}	map[string]string															"服务器内部错误"
-//	@Router			/api/admin//login-log [get]
+//	@Param			page		query		int									true	"页码"
+//	@Param			page_size	query		int									true	"每页数量"
+//	@Param			user_id		query		int64								false	"用户 ID"
+//	@Param			username	query		string								false	"用户名"
+//	@Param			login_ip	query		string								false	"登录 IP"
+//	@Param			result		query		int									false	"登录结果：0-失败，1-成功"
+//	@Param			start_date	query		string								false	"开始日期（YYYY-MM-DD）"
+//	@Param			end_date	query		string								false	"结束日期（YYYY-MM-DD）"
+//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]response.LoginLogListDTO},msg=string}	"登录日志列表"
+//	@Failure		400			{object}	map[string]string					"请求参数错误"
+//	@Failure		401			{object}	map[string]string					"未授权"
+//	@Failure		500			{object}	map[string]string					"服务器内部错误"
+//	@Router			/api/admin/login-log [get]
 func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -94,8 +95,11 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 		return
 	}
 
+	// 使用转换器将 Entity 转换为 DTO
+	dtoList := converter.ConvertSliceWithFunc(logs, converter.LoginLogToListDTO)
+
 	pageResult := baseRes.PageResult{
-		List:     logs,
+		List:     dtoList,
 		Total:    total,
 		Page:     req.Page,
 		PageSize: req.PageSize,
@@ -112,13 +116,13 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			start_date	query		string																				true	"开始日期（YYYY-MM-DD）"
-//	@Param			end_date	query		string																				true	"结束日期（YYYY-MM-DD）"
-//	@Success		200			{object}	baseRes.Response{data=entity.LoginStatistics,msg=string}							"统计信息"
-//	@Failure		400			{object}	map[string]string																	"请求参数错误"
-//	@Failure		401			{object}	map[string]string																	"未授权"
-//	@Failure		500			{object}	map[string]string																	"服务器内部错误"
-//	@Router			/api/admin//login-log/statistics [get]
+//	@Param			start_date	query		string									true	"开始日期（YYYY-MM-DD）"
+//	@Param			end_date	query		string									true	"结束日期（YYYY-MM-DD）"
+//	@Success		200			{object}	baseRes.Response{data=entity.LoginStatistics,msg=string}	"统计信息"
+//	@Failure		400			{object}	map[string]string						"请求参数错误"
+//	@Failure		401			{object}	map[string]string						"未授权"
+//	@Failure		500			{object}	map[string]string						"服务器内部错误"
+//	@Router			/api/admin/login-log/statistics [get]
 func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -160,6 +164,8 @@ func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 		return
 	}
 
+	// TODO: 需要创建 LoginStatistics 转换函数
+	// statsDTO := converter.ConvertLoginStatistics(stats)
 	baseRes.OkWithDetailed(stats, "获取登录统计成功", ctx)
 }
 
@@ -171,13 +177,13 @@ func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			page		query		int																					true	"页码"
-//	@Param			page_size	query		int																					true	"每页数量"
-//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]entity.AbnormalLoginInfo},msg=string}	"异常登录列表"
-//	@Failure		400			{object}	map[string]string																	"请求参数错误"
-//	@Failure		401			{object}	map[string]string																	"未授权"
-//	@Failure		500			{object}	map[string]string																	"服务器内部错误"
-//	@Router			/api/admin//login-log/abnormal [get]
+//	@Param			page		query		int									true	"页码"
+//	@Param			page_size	query		int									true	"每页数量"
+//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]response.AbnormalLoginInfoDTO},msg=string}	"异常登录列表"
+//	@Failure		400			{object}	map[string]string					"请求参数错误"
+//	@Failure		401			{object}	map[string]string					"未授权"
+//	@Failure		500			{object}	map[string]string					"服务器内部错误"
+//	@Router			/api/admin/login-log/abnormal [get]
 func (c *LoginLogController) GetAbnormalLogins(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -201,8 +207,11 @@ func (c *LoginLogController) GetAbnormalLogins(ctx *gin.Context) {
 		return
 	}
 
+	// 使用转换器将 Entity 转换为 DTO
+	dtoList := converter.ConvertSliceWithFunc(abnormalLogins, converter.AbnormalLoginInfoToDTO)
+
 	pageResult := baseRes.PageResult{
-		List:     abnormalLogins,
+		List:     dtoList,
 		Total:    total,
 		Page:     req.Page,
 		PageSize: req.PageSize,
@@ -225,7 +234,7 @@ func (c *LoginLogController) GetAbnormalLogins(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string			"请求参数错误"
 //	@Failure		401		{object}	map[string]string			"未授权"
 //	@Failure		500		{object}	map[string]string			"服务器内部错误"
-//	@Router			/api/admin//login-log [post]
+//	@Router			/api/admin/login-log [post]
 func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 	// 检查授权（内部调用需要特殊权限）
 	userID, exists := ctx.Get("userID")
@@ -291,12 +300,12 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id	path		string											true	"登录日志 ID"
-//	@Success		200	{object}	entity.LoginLog	"登录日志详情"
-//	@Failure		400	{object}	map[string]string								"请求参数错误"
-//	@Failure		401	{object}	map[string]string								"未授权"
-//	@Failure		500	{object}	map[string]string								"服务器内部错误"
-//	@Router			/api/admin//login-log/:id [get]
+//	@Param			id	path		string									true	"登录日志 ID"
+//	@Success		200	{object}	baseRes.Response{data=response.LoginLogDetailDTO,msg=string}	"登录日志详情"
+//	@Failure		400	{object}	map[string]string						"请求参数错误"
+//	@Failure		401	{object}	map[string]string						"未授权"
+//	@Failure		500	{object}	map[string]string						"服务器内部错误"
+//	@Router			/api/admin/login-log/:id [get]
 func (c *LoginLogController) GetLoginLogByID(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -321,5 +330,8 @@ func (c *LoginLogController) GetLoginLogByID(ctx *gin.Context) {
 		return
 	}
 
-	baseRes.OkWithDetailed(log, "获取登录日志详情成功", ctx)
+	// 使用转换器将 Entity 转换为详情 DTO
+	detailDTO := converter.ConvertWithFunc(log, converter.LoginLogToDetailDTO)
+
+	baseRes.OkWithDetailed(detailDTO, "获取登录日志详情成功", ctx)
 }

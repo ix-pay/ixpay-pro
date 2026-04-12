@@ -46,7 +46,7 @@ func NewAuthController(service *service.UserService, jwtAuth *auth.JWTAuth, log 
 //	@Success		200		{object}	baseRes.Response{data=response.LoginResponse,msg=string}	"登录成功"
 //	@Failure		400		{object}	map[string]string									"请求参数错误"
 //	@Failure		401		{object}	map[string]string									"用户名或密码错误"
-//	@Router			/api/admin//auth/login [post]
+//	@Router			/api/admin/auth/login [post]
 func (c *AuthController) Login(ctx *gin.Context) {
 	var req request.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -120,7 +120,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	baseRes.Response{data=response.CaptchaResponse,msg=string}	"验证码信息"
 //	@Failure		500	{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//auth/captcha [post]
+//	@Router			/api/admin/auth/captcha [post]
 func (c *AuthController) Captcha(ctx *gin.Context) {
 	captchaId, captchaImage, captchaLen, openCaptcha, err := c.service.Captcha()
 	if err != nil {
@@ -150,7 +150,7 @@ func (c *AuthController) Captcha(ctx *gin.Context) {
 //	@Success		200		{object}	baseRes.Response{data=response.LoginResponse,msg=string}	"刷新成功"
 //	@Failure		400				{object}	map[string]string							"请求参数错误"
 //	@Failure		401				{object}	map[string]string							"刷新令牌无效"
-//	@Router			/api/admin//auth/refresh-token [post]
+//	@Router			/api/admin/auth/refresh-token [post]
 func (c *AuthController) RefreshToken(ctx *gin.Context) {
 	var req request.RefreshTokenRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -187,7 +187,7 @@ func (c *AuthController) RefreshToken(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{msg=string}	"登出成功"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//auth/logout [post]
+//	@Router			/api/admin/auth/logout [post]
 func (c *AuthController) Logout(ctx *gin.Context) {
 	// 从上下文中获取用户 ID
 	userID, exists := ctx.Get("userID")

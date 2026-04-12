@@ -19,7 +19,7 @@ import (
 //	@Summary		任务管理 API
 //	@Description	提供任务添加、移除、启动、停止等功能（管理员权限）
 //	@Tags			任务管理
-//	@Router			/api/admin//task [get]
+//	@Router			/api/admin/task [get]
 type TaskController struct {
 	manager *task.TaskManager
 	log     logger.Logger
@@ -73,7 +73,7 @@ func (t *MockTask) GetName() string {
 //	@Failure		401		{object}	map[string]string					"未授权"
 //	@Failure		403		{object}	map[string]string					"无权限"
 //	@Failure		500		{object}	map[string]string					"服务器内部错误"
-//	@Router			/api/admin//task [post]
+//	@Router			/api/admin/task [post]
 func (c *TaskController) AddTask(ctx *gin.Context) {
 	var req request.AddTaskRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -154,7 +154,7 @@ func (c *TaskController) AddTask(ctx *gin.Context) {
 //	@Failure		401	{object}	map[string]string	"未授权"
 //	@Failure		403	{object}	map[string]string	"无权限"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//task/{id} [delete]
+//	@Router			/api/admin/task/:id [delete]
 func (c *TaskController) RemoveTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
@@ -187,7 +187,7 @@ func (c *TaskController) RemoveTask(ctx *gin.Context) {
 //	@Failure		401	{object}	map[string]string	"未授权"
 //	@Failure		403	{object}	map[string]string	"无权限"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//task/{id}/start [post]
+//	@Router			/api/admin/task/:id/start [post]
 func (c *TaskController) StartTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
@@ -221,7 +221,7 @@ func (c *TaskController) StartTask(ctx *gin.Context) {
 //	@Failure		401	{object}	map[string]string	"未授权"
 //	@Failure		403	{object}	map[string]string	"无权限"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//task/{id}/stop [post]
+//	@Router			/api/admin/task/:id/stop [post]
 func (c *TaskController) StopTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
@@ -255,7 +255,7 @@ func (c *TaskController) StopTask(ctx *gin.Context) {
 //	@Failure		401	{object}	map[string]string	"未授权"
 //	@Failure		403	{object}	map[string]string	"无权限"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//task/{id}/retry [post]
+//	@Router			/api/admin/task/:id/retry [post]
 func (c *TaskController) RetryTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
@@ -286,7 +286,7 @@ func (c *TaskController) RetryTask(ctx *gin.Context) {
 //	@Success		200	{object}	map[string][]response.TaskResponse	"任务列表"
 //	@Failure		401	{object}	map[string]string			"未授权"
 //	@Failure		403	{object}	map[string]string			"无权限"
-//	@Router			//task [get]
+//	@Router			/api/admin/task [get]
 func (c *TaskController) GetTasks(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取任务列表
 	role, exists := ctx.Get("role")
@@ -342,7 +342,7 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 //	@Success		200		{object}	map[string]response.TaskExecutionLogsResponse				"执行日志列表"
 //	@Failure		401		{object}	map[string]string		"未授权"
 //	@Failure		403		{object}	map[string]string		"无权限"
-//	@Router			/api/admin//task/{id}/execution-logs [get]
+//	@Router			/api/admin/task/:id/execution-logs [get]
 func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
@@ -410,7 +410,7 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 //	@Success		200	{object}	map[string][]response.TaskStatisticsResponse	"任务统计列表"
 //	@Failure		401	{object}	map[string]string		"未授权"
 //	@Failure		403	{object}	map[string]string		"无权限"
-//	@Router			/api/admin//task/statistics [get]
+//	@Router			/api/admin/task/statistics [get]
 func (c *TaskController) GetStatistics(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取统计
 	role, exists := ctx.Get("role")
@@ -465,7 +465,7 @@ func (c *TaskController) GetStatistics(ctx *gin.Context) {
 //	@Failure		401		{object}	map[string]string					"未授权"
 //	@Failure		403		{object}	map[string]string					"无权限"
 //	@Failure		404		{object}	map[string]string					"任务不存在"
-//	@Router			/api/admin//task/{id}/group [post]
+//	@Router			/api/admin/task/:id/group [post]
 func (c *TaskController) SetTaskGroup(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
@@ -510,7 +510,7 @@ func (c *TaskController) GetManager() *task.TaskManager {
 //	@Failure		401	{object}	map[string]string		"未授权"
 //	@Failure		403	{object}	map[string]string		"无权限"
 //	@Failure		404	{object}	map[string]string		"任务不存在"
-//	@Router			/api/admin//task/{id} [get]
+//	@Router			/api/admin/task/:id [get]
 func (c *TaskController) GetTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 

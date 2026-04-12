@@ -18,7 +18,7 @@ import (
 //	@Summary		系统配置相关API
 //	@Description	提供系统配置的增删改查功能
 //	@Tags			系统配置管理
-//	@Router			/api/admin//config [get]
+//	@Router			/api/admin/config [get]
 type ConfigController struct {
 	service *service.ConfigService
 	log     logger.Logger
@@ -59,7 +59,7 @@ func convertToConfigResponse(config *entity.Config) response.ConfigResponse {
 //	@Failure		400			{object}	map[string]string											"请求参数错误"
 //	@Failure		401			{object}	map[string]string											"未授权"
 //	@Failure		500			{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//config/key [get]
+//	@Router			/api/admin/config/key [get]
 func (c *ConfigController) GetConfigByKey(ctx *gin.Context) {
 	configKey := ctx.Query("config_key")
 	if configKey == "" {
@@ -94,7 +94,7 @@ func (c *ConfigController) GetConfigByKey(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string											"请求参数错误"
 //	@Failure		401	{object}	map[string]string											"未授权"
 //	@Failure		500	{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//config/{id} [get]
+//	@Router			/api/admin/config/:id [get]
 func (c *ConfigController) GetConfigByID(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 
@@ -124,7 +124,7 @@ func (c *ConfigController) GetConfigByID(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string											"请求参数错误"
 //	@Failure		401		{object}	map[string]string											"未授权"
 //	@Failure		500		{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//config [post]
+//	@Router			/api/admin/config [post]
 func (c *ConfigController) CreateConfig(ctx *gin.Context) {
 	var req request.CreateConfigRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -174,7 +174,7 @@ func (c *ConfigController) CreateConfig(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string				"请求参数错误"
 //	@Failure		401		{object}	map[string]string				"未授权"
 //	@Failure		500		{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//config [put]
+//	@Router			/api/admin/config [put]
 func (c *ConfigController) UpdateConfig(ctx *gin.Context) {
 	var req request.UpdateConfigRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -222,7 +222,7 @@ func (c *ConfigController) UpdateConfig(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//config/{id} [delete]
+//	@Router			/api/admin/config/:id [delete]
 func (c *ConfigController) DeleteConfig(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	if idStr == "" {
@@ -256,7 +256,7 @@ func (c *ConfigController) DeleteConfig(ctx *gin.Context) {
 //	@Success		200			{object}	baseRes.Response{data=response.ConfigListResponse,msg=string}	"配置列表"
 //	@Failure		401			{object}	map[string]string												"未授权"
 //	@Failure		500			{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin//config/list [get]
+//	@Router			/api/admin/config/list [get]
 func (c *ConfigController) GetConfigList(ctx *gin.Context) {
 	// 获取分页参数
 	pageStr := ctx.DefaultQuery("page", "1")
@@ -311,7 +311,7 @@ func (c *ConfigController) GetConfigList(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	baseRes.Response{data=[]response.ConfigResponse,msg=string}	"配置列表"
 //	@Failure		500	{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//config/active [get]
+//	@Router			/api/admin/config/active [get]
 func (c *ConfigController) GetAllActiveConfigs(ctx *gin.Context) {
 	configs, err := c.service.GetAllActiveConfigs()
 	if err != nil {

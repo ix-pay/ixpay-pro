@@ -21,7 +21,7 @@ import (
 //     @Summary		岗位管理 API
 //     @Description	提供岗位创建、更新、删除、查询等功能
 //     @Tags			岗位管理
-//     @Router			/api/admin//position [get]
+//     @Router			/api/admin/position [get]
 type PositionController struct {
 	service *service.PositionService // 岗位服务
 	log     logger.Logger            // 日志记录器
@@ -68,7 +68,7 @@ func convertToPositionResponse(position *entity.Position) response.PositionRespo
 //	@Success		200			{object}	baseRes.Response{data=response.PositionListResponse,msg=string}	"岗位列表"
 //	@Failure		401			{object}	map[string]string															"未授权"
 //	@Failure		500			{object}	map[string]string															"服务器内部错误"
-//	@Router			/api/admin//position [get]
+//	@Router			/api/admin/position [get]
 func (c *PositionController) GetPositionList(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -128,7 +128,7 @@ func (c *PositionController) GetPositionList(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=[]entity.Position,msg=string}	"岗位列表"
 //	@Failure		401	{object}	map[string]string									"未授权"
 //	@Failure		500	{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//position/all [get]
+//	@Router			/api/admin/position/all [get]
 func (c *PositionController) GetAllPositions(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -161,7 +161,7 @@ func (c *PositionController) GetAllPositions(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string									"请求参数错误"
 //	@Failure		401	{object}	map[string]string									"未授权"
 //	@Failure		500	{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//position/:id [get]
+//	@Router			/api/admin/position/:id [get]
 func (c *PositionController) GetPositionByID(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -201,7 +201,7 @@ func (c *PositionController) GetPositionByID(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string									"请求参数错误"
 //	@Failure		401		{object}	map[string]string									"未授权"
 //	@Failure		500		{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//position [post]
+//	@Router			/api/admin/position [post]
 func (c *PositionController) CreatePosition(ctx *gin.Context) {
 	var req request.CreatePositionRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -254,7 +254,7 @@ func (c *PositionController) CreatePosition(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string									"请求参数错误"
 //	@Failure		401		{object}	map[string]string									"未授权"
 //	@Failure		500		{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//position [put]
+//	@Router			/api/admin/position [put]
 func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 	var req request.UpdatePositionRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -303,7 +303,7 @@ func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//position/{id} [delete]
+//	@Router			/api/admin/position/:id [delete]
 func (c *PositionController) DeletePosition(ctx *gin.Context) {
 	// 直接使用 string 类型的岗位 ID
 	positionID := ctx.Param("id")

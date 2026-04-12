@@ -126,7 +126,7 @@ func InitializeApp() (*Application, error) {
 	cacheMonitor := monitor.SetupCacheMonitor(client)
 	databaseMonitor := monitor.SetupDatabaseMonitor(postgresDB, configConfig, loggerLogger)
 	monitorController := baseapi.NewMonitorController(systemMonitor, cacheMonitor, databaseMonitor)
-	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, btnPermController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, operationLogService, onlineUserService, taskExecutionLogRepository, cacheCache)
+	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, btnPermController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, dictRepository, operationLogService, onlineUserService, taskExecutionLogRepository, cacheCache)
 	if err != nil {
 		return nil, err
 	}

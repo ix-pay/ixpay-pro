@@ -15,7 +15,7 @@ import (
 //	@Summary		操作日志管理API
 //	@Description	提供操作日志的查询、删除和统计功能
 //	@Tags			系统管理
-//	@Router			/api/admin//logs [get]
+//	@Router			/api/admin/logs [get]
 type OperationLogController struct {
 	service *service.OperationLogService
 }
@@ -46,7 +46,7 @@ func NewOperationLogController(service *service.OperationLogService) *OperationL
 //	@Success		200				{object}	baseRes.Response{data=response.OperationLogListResponse}	"操作日志列表"
 //	@Failure		400				{object}	map[string]string		"请求参数错误"
 //	@Failure		500				{object}	map[string]string		"服务器内部错误"
-//	@Router			/api/admin//logs [get]
+//	@Router			/api/admin/logs [get]
 func (c *OperationLogController) GetLogList(ctx *gin.Context) {
 	var req request.GetOperationLogListRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -134,7 +134,7 @@ func (c *OperationLogController) GetLogList(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string	"请求参数错误"
 //	@Failure		404	{object}	map[string]string	"日志不存在"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//logs/{id} [get]
+//	@Router			/api/admin/logs/:id [get]
 func (c *OperationLogController) GetLogByID(ctx *gin.Context) {
 	// 解析 ID 参数
 	id := ctx.Param("id")
@@ -193,7 +193,7 @@ func (c *OperationLogController) GetLogByID(ctx *gin.Context) {
 //	@Success		200	{object}	map[string]string	"删除成功"
 //	@Failure		400	{object}	map[string]string	"请求参数错误"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//logs/{id} [delete]
+//	@Router			/api/admin/logs/:id [delete]
 func (c *OperationLogController) DeleteLogByID(ctx *gin.Context) {
 	// 解析 ID 参数
 	id := ctx.Param("id")
@@ -224,7 +224,7 @@ func (c *OperationLogController) DeleteLogByID(ctx *gin.Context) {
 //	@Success		200		{object}	map[string]string	"批量删除成功"
 //	@Failure		400		{object}	map[string]string	"请求参数错误"
 //	@Failure		500		{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//logs/batch-delete [post]
+//	@Router			/api/admin/logs/batch-delete [post]
 func (c *OperationLogController) BatchDeleteLog(ctx *gin.Context) {
 	// 解析请求体
 	var req request.BatchDeleteOperationLogRequest
@@ -257,7 +257,7 @@ func (c *OperationLogController) BatchDeleteLog(ctx *gin.Context) {
 //	@Success		200			{object}	baseRes.Response{data=response.OperationLogStatisticsResponse}	"操作日志统计信息"
 //	@Failure		400			{object}	map[string]string		"请求参数错误"
 //	@Failure		500			{object}	map[string]string		"服务器内部错误"
-//	@Router			/api/admin//logs/statistics [get]
+//	@Router			/api/admin/logs/statistics [get]
 func (c *OperationLogController) GetLogStatistics(ctx *gin.Context) {
 	var req request.GetOperationLogStatisticsRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -321,7 +321,7 @@ func (c *OperationLogController) GetLogStatistics(ctx *gin.Context) {
 //	@Success		200		{object}	map[string]string	"清空成功"
 //	@Failure		400		{object}	map[string]string	"请求参数错误"
 //	@Failure		500		{object}	map[string]string	"服务器内部错误"
-//	@Router			/api/admin//logs/clear [post]
+//	@Router			/api/admin/logs/clear [post]
 func (c *OperationLogController) ClearLogByTimeRange(ctx *gin.Context) {
 	var req request.ClearOperationLogByTimeRangeRequest
 

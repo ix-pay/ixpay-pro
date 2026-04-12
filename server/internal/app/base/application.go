@@ -46,6 +46,7 @@ type AppBase struct {
 	roleRepo               repo.RoleRepository
 	menuRepo               repo.MenuRepository
 	configRepo             repo.ConfigRepository
+	dictRepo               repo.DictRepository
 	permissionService      *service.PermissionService
 	operationLogService    *service.OperationLogService
 	onlineUserService      *service.OnlineUserService
@@ -81,6 +82,7 @@ func NewAppBase(
 	roleRepo repo.RoleRepository,
 	menuRepo repo.MenuRepository,
 	configRepo repo.ConfigRepository,
+	dictRepo repo.DictRepository,
 	operationLogService *service.OperationLogService,
 	onlineUserService *service.OnlineUserService,
 	taskExecutionLogRepo repo.TaskExecutionLogRepository,
@@ -115,6 +117,7 @@ func NewAppBase(
 		roleRepo:               roleRepo,
 		menuRepo:               menuRepo,
 		configRepo:             configRepo,
+		dictRepo:               dictRepo,
 		operationLogService:    operationLogService,
 		onlineUserService:      onlineUserService,
 		taskExecutionLogRepo:   taskExecutionLogRepo,
@@ -160,8 +163,9 @@ func (a *AppBase) initializeSeedData() {
 		seed.NewConfigSeed(a.configRepo),
 		seed.NewRoleSeed(a.roleRepo),
 		seed.NewUserSeed(a.userRepo, a.roleRepo),
-		seed.NewMenuSeed(a.menuRepo, a.apiRepo),
 		seed.NewAPISeed(a.apiRepo),
+		seed.NewMenuSeed(a.menuRepo, a.apiRepo),
+		seed.NewDictSeed(a.dictRepo),
 	})
 
 	// 初始化所有种子数据

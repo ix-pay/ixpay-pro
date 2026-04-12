@@ -4,6 +4,7 @@ import (
 	"github.com/google/wire"
 	baseapi "github.com/ix-pay/ixpay-pro/internal/app/base/api"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
+	"github.com/ix-pay/ixpay-pro/internal/domain/shared/converter"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/monitor"
 	repository "github.com/ix-pay/ixpay-pro/internal/persistence/base"
 )
@@ -59,6 +60,11 @@ var ProviderSetBaseService = wire.NewSet(
 	service.NewNoticeService,
 	service.NewNoticeReadRecordService,
 	service.NewOnlineUserService,
+)
+
+var ProviderSetBaseConverter = wire.NewSet(
+	// 转换器层
+	converter.NewEntityConverter,
 )
 
 var ProviderSetBaseController = wire.NewSet(

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestAPIService_PathValidation 测试 API 路径验证
+// / TestAPIService_PathValidation 测试 API 路径验证
 func TestAPIService_PathValidation(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -15,12 +15,12 @@ func TestAPIService_PathValidation(t *testing.T) {
 		expectError bool
 		expectMsg   string
 	}{
-		{"有效路径 - 标准格式", "/api/admin//user", false, ""},
-		{"有效路径 - 包含参数", "/api/admin//user/:id", false, ""},
-		{"无效路径 - 不以/开头", "api/admin//user", true, "路径应该以/开头"},
+		{"有效路径 - 标准格式", "/api/admin/user", false, ""},
+		{"有效路径 - 包含参数", "/api/admin/user/:id", false, ""},
+		{"无效路径 - 不以/开头", "api/admin/user", true, "路径应该以/开头"},
 		{"无效路径 - 空字符串", "", true, "路径不能为空"},
 		{"无效路径 - 只有/", "/", true, "路径不应该只包含/"},
-		{"无效路径 - 连续//", "/api//admin", true, "路径不应该包含连续的/"},
+		{"无效路径 - 连续/", "/api/admin", true, "路径不应该包含连续的/"},
 	}
 
 	for _, tc := range testCases {
@@ -55,7 +55,7 @@ func TestAPIService_PathValidation(t *testing.T) {
 	}
 }
 
-// TestAPIService_MethodValidation 测试 HTTP 方法验证
+// / TestAPIService_MethodValidation 测试 HTTP 方法验证
 func TestAPIService_MethodValidation(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -107,7 +107,7 @@ func TestAPIService_MethodValidation(t *testing.T) {
 	}
 }
 
-// TestAPIService_CategoryValidation 测试 API 分类验证
+// / TestAPIService_CategoryValidation 测试 API 分类验证
 func TestAPIService_CategoryValidation(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -147,7 +147,7 @@ func TestAPIService_CategoryValidation(t *testing.T) {
 	}
 }
 
-// TestAPIService_DescriptionLength 测试描述长度边界
+// / TestAPIService_DescriptionLength 测试描述长度边界
 func TestAPIService_DescriptionLength(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -276,19 +276,19 @@ func TestAPIService_KeywordSearch(t *testing.T) {
 		{
 			name:          "搜索用户相关 API",
 			keyword:       "user",
-			expectMatches: []string{"/api/admin//user/info", "/api/admin//user"},
+			expectMatches: []string{"/api/admin/user/info", "/api/admin/user"},
 			description:   "应该匹配包含 user 的路径",
 		},
 		{
 			name:          "搜索认证相关 API",
 			keyword:       "认证",
-			expectMatches: []string{"/api/admin//auth/login", "/api/admin//auth/register"},
+			expectMatches: []string{"/api/admin/auth/login", "/api/admin/auth/register"},
 			description:   "应该匹配分组为认证管理的 API",
 		},
 		{
 			name:          "搜索登录描述",
 			keyword:       "登录",
-			expectMatches: []string{"/api/admin//auth/login"},
+			expectMatches: []string{"/api/admin/auth/login"},
 			description:   "应该匹配描述中包含登录的 API",
 		},
 		{

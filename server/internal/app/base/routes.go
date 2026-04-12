@@ -7,11 +7,11 @@ import (
 // setupRoutes 设置路由
 func (a *AppBase) setupRoutes() {
 
-	// 管理后台路由组，添加/api/admin前缀（保持向后兼容）
+	// 管理后台路由组，添加/api/admin 前缀（保持向后兼容）
 	admin := a.router.Group("/api/admin")
 	{
 		// 公共路由
-		public := admin.Group("")
+		public := admin
 		{
 			// 认证路由
 			auth := public.Group("/auth")
@@ -23,7 +23,7 @@ func (a *AppBase) setupRoutes() {
 		}
 
 		// 需要认证的路由
-		authenticated := admin.Group("")
+		authenticated := admin
 		authenticated.Use(middleware.AuthMiddleware(a.auth, a.cache))
 		authenticated.Use(middleware.PermissionMiddleware(a.permissionService, a.permissions, a.roleRepo, a.logger, a.cache))
 		{
@@ -49,7 +49,7 @@ func (a *AppBase) setupRoutes() {
 			}
 
 			// 角色路由
-			role := authenticated.Group("/roles")
+			role := authenticated.Group("/role")
 			{
 				role.POST("", a.roleController.CreateRole)
 				role.GET("/detail", a.roleController.GetRoleByID)
@@ -78,22 +78,6 @@ func (a *AppBase) setupRoutes() {
 				task.GET("/:id/execution-logs", a.taskController.GetExecutionLogs)
 				task.GET("/statistics", a.taskController.GetStatistics)
 				task.POST("/:id/group", a.taskController.SetTaskGroup)
-			}
-
-			// 任务路由（复数形式，兼容前端调用）
-			tasks := authenticated.Group("/tasks")
-			{
-				tasks.POST("", a.taskController.AddTask)
-				tasks.DELETE("/:id", a.taskController.RemoveTask)
-				tasks.POST("/:id/start", a.taskController.StartTask)
-				tasks.POST("/:id/stop", a.taskController.StopTask)
-				tasks.POST("/:id/retry", a.taskController.RetryTask)
-				tasks.GET("", a.taskController.GetTasks)
-				tasks.GET("/:id", a.taskController.GetTask)
-				// 新增任务执行日志和统计路由
-				tasks.GET("/:id/execution-logs", a.taskController.GetExecutionLogs)
-				tasks.GET("/statistics", a.taskController.GetStatistics)
-				tasks.POST("/:id/group", a.taskController.SetTaskGroup)
 			}
 
 			// API路由管理（需要admin角色）
@@ -159,7 +143,7 @@ func (a *AppBase) setupRoutes() {
 				config.GET("/active", a.configController.GetAllActiveConfigs)
 			}
 
-			// 字典管理路由（同时支持 dict 和 dicts 两种路径，保持向后兼容）
+			// 字典管理路由
 			dict := authenticated.Group("/dict")
 			{
 				// 字典表相关接口
@@ -176,25 +160,6 @@ func (a *AppBase) setupRoutes() {
 				dict.POST("/item", a.dictController.CreateDictItem)
 				dict.PUT("/item", a.dictController.UpdateDictItem)
 				dict.DELETE("/item/:id", a.dictController.DeleteDictItem)
-			}
-
-			// 字典管理路由（复数形式，兼容前端调用）
-			dicts := authenticated.Group("/dicts")
-			{
-				// 字典表相关接口
-				dicts.GET("", a.dictController.GetDictList)
-				dicts.GET("/code", a.dictController.GetDictByCode)
-				dicts.GET("/:id", a.dictController.GetDictByID)
-				dicts.POST("", a.dictController.CreateDict)
-				dicts.PUT("", a.dictController.UpdateDict)
-				dicts.DELETE("/:id", a.dictController.DeleteDict)
-
-				// 字典项相关接口
-				dicts.GET("/item/:id", a.dictController.GetDictItemByID)
-				dicts.GET("/items", a.dictController.GetDictItemsByDictID)
-				dicts.POST("/item", a.dictController.CreateDictItem)
-				dicts.PUT("/item", a.dictController.UpdateDictItem)
-				dicts.DELETE("/item/:id", a.dictController.DeleteDictItem)
 			}
 
 			// 操作日志路由
@@ -227,25 +192,6 @@ func (a *AppBase) setupRoutes() {
 				dept.PUT("/:id/leader", a.departmentController.UpdateDepartmentLeader)
 			}
 
-			// 部门管理路由（复数形式，兼容前端调用）
-			departments := authenticated.Group("/departments")
-			{
-				// 获取部门列表
-				departments.GET("", a.departmentController.GetDepartmentList)
-				// 获取部门树形结构
-				departments.GET("/tree", a.departmentController.GetDepartmentTree)
-				// 获取部门详情
-				departments.GET("/:id", a.departmentController.GetDepartmentByID)
-				// 创建部门
-				departments.POST("", a.departmentController.CreateDepartment)
-				// 更新部门
-				departments.PUT("", a.departmentController.UpdateDepartment)
-				// 删除部门
-				departments.DELETE("/:id", a.departmentController.DeleteDepartment)
-				// 更新部门负责人
-				departments.PUT("/:id/leader", a.departmentController.UpdateDepartmentLeader)
-			}
-
 			// 岗位管理路由
 			position := authenticated.Group("/position")
 			{
@@ -261,23 +207,6 @@ func (a *AppBase) setupRoutes() {
 				position.PUT("", a.positionController.UpdatePosition)
 				// 删除岗位
 				position.DELETE("/:id", a.positionController.DeletePosition)
-			}
-
-			// 岗位管理路由（复数形式，兼容前端调用）
-			positions := authenticated.Group("/positions")
-			{
-				// 获取岗位列表
-				positions.GET("", a.positionController.GetPositionList)
-				// 获取所有岗位
-				positions.GET("/all", a.positionController.GetAllPositions)
-				// 获取岗位详情
-				positions.GET("/:id", a.positionController.GetPositionByID)
-				// 创建岗位
-				positions.POST("", a.positionController.CreatePosition)
-				// 更新岗位
-				positions.PUT("", a.positionController.UpdatePosition)
-				// 删除岗位
-				positions.DELETE("/:id", a.positionController.DeletePosition)
 			}
 
 			// 公告管理路由
@@ -333,23 +262,6 @@ func (a *AppBase) setupRoutes() {
 				onlineUser.DELETE("/:user_id", a.onlineUserController.ForceOffline)
 				// 批量强制用户下线
 				onlineUser.POST("/batch", a.onlineUserController.BatchForceOffline)
-			}
-
-			// 在线用户管理路由（复数形式，兼容前端调用）
-			onlineUsers := authenticated.Group("/online-users")
-			{
-				// 获取在线用户列表
-				onlineUsers.GET("", a.onlineUserController.GetOnlineUserList)
-				// 获取在线用户详情
-				onlineUsers.GET("/:user_id", a.onlineUserController.GetOnlineUserByID)
-				// 获取在线用户数量
-				onlineUsers.GET("/count", a.onlineUserController.GetOnlineCount)
-				// 检查用户是否在线
-				onlineUsers.GET("/online", a.onlineUserController.IsOnline)
-				// 强制用户下线
-				onlineUsers.DELETE("/:user_id", a.onlineUserController.ForceOffline)
-				// 批量强制用户下线
-				onlineUsers.POST("/batch", a.onlineUserController.BatchForceOffline)
 			}
 
 			// 系统监控路由

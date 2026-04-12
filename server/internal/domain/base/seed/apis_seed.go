@@ -1,6 +1,8 @@
 package seed
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
@@ -73,10 +75,10 @@ func (as *APISeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 
 // getAPIRoutes 获取所有 API 路由定义
 func (as *APISeed) getAPIRoutes() []*entity.API {
-	return []*entity.API{
+	apis := []*entity.API{
 		// ==================== 认证管理 ====================
 		{
-			Path:         "/api/admin//auth/register",
+			Path:         "/api/admin/auth/register",
 			Method:       "POST",
 			Group:        "认证管理",
 			AuthRequired: false,
@@ -85,7 +87,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//auth/login",
+			Path:         "/api/admin/auth/login",
 			Method:       "POST",
 			Group:        "认证管理",
 			AuthRequired: false,
@@ -94,7 +96,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//auth/captcha",
+			Path:         "/api/admin/auth/captcha",
 			Method:       "POST",
 			Group:        "认证管理",
 			AuthRequired: false,
@@ -103,7 +105,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//auth/refresh-token",
+			Path:         "/api/admin/auth/refresh-token",
 			Method:       "POST",
 			Group:        "认证管理",
 			AuthRequired: true,
@@ -112,7 +114,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//auth/logout",
+			Path:         "/api/admin/auth/logout",
 			Method:       "POST",
 			Group:        "认证管理",
 			AuthRequired: true,
@@ -123,7 +125,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 用户管理 ====================
 		{
-			Path:         "/api/admin//user/info",
+			Path:         "/api/admin/user/info",
 			Method:       "GET",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -132,7 +134,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/info",
+			Path:         "/api/admin/user/info",
 			Method:       "PUT",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -141,7 +143,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/info/password",
+			Path:         "/api/admin/user/info/password",
 			Method:       "PUT",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -150,7 +152,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user",
+			Path:         "/api/admin/user",
 			Method:       "GET",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -159,7 +161,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user",
+			Path:         "/api/admin/user",
 			Method:       "POST",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -168,7 +170,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/:id",
+			Path:         "/api/admin/user/:id",
 			Method:       "GET",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -177,7 +179,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/:id",
+			Path:         "/api/admin/user/:id",
 			Method:       "PUT",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -186,7 +188,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/:id",
+			Path:         "/api/admin/user/:id",
 			Method:       "DELETE",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -195,7 +197,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/password/reset",
+			Path:         "/api/admin/user/password/reset",
 			Method:       "PUT",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -204,7 +206,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/switch-role",
+			Path:         "/api/admin/user/switch-role",
 			Method:       "POST",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -213,7 +215,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/getSelfSetting",
+			Path:         "/api/admin/user/getSelfSetting",
 			Method:       "GET",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -222,7 +224,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//user/setSelfSetting",
+			Path:         "/api/admin/user/setSelfSetting",
 			Method:       "PUT",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -233,7 +235,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 角色管理 ====================
 		{
-			Path:         "/api/admin//roles",
+			Path:         "/api/admin/roles",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -242,7 +244,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles",
+			Path:         "/api/admin/roles",
 			Method:       "POST",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -251,7 +253,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id",
+			Path:         "/api/admin/roles/:id",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -260,7 +262,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id",
+			Path:         "/api/admin/roles/:id",
 			Method:       "PUT",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -269,7 +271,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id",
+			Path:         "/api/admin/roles/:id",
 			Method:       "DELETE",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -278,7 +280,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id/apis",
+			Path:         "/api/admin/roles/:id/apis",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -287,7 +289,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id/apis/available",
+			Path:         "/api/admin/roles/:id/apis/available",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -296,7 +298,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id/apis",
+			Path:         "/api/admin/roles/:id/apis",
 			Method:       "PUT",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -305,7 +307,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/detail",
+			Path:         "/api/admin/roles/detail",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -314,7 +316,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id/detail",
+			Path:         "/api/admin/roles/:id/detail",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -323,7 +325,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/:id/available-apis",
+			Path:         "/api/admin/roles/:id/available-apis",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -332,7 +334,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/assign-users",
+			Path:         "/api/admin/roles/assign-users",
 			Method:       "POST",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -341,7 +343,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/assign-menus",
+			Path:         "/api/admin/roles/assign-menus",
 			Method:       "POST",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -350,7 +352,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/assign-api-routes",
+			Path:         "/api/admin/roles/assign-api-routes",
 			Method:       "POST",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -359,7 +361,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//roles/all",
+			Path:         "/api/admin/roles/all",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -370,7 +372,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 菜单管理 ====================
 		{
-			Path:         "/api/admin//menu",
+			Path:         "/api/admin/menu",
 			Method:       "GET",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -379,7 +381,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//menu",
+			Path:         "/api/admin/menu",
 			Method:       "POST",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -388,7 +390,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//menu/:id",
+			Path:         "/api/admin/menu/:id",
 			Method:       "GET",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -397,7 +399,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//menu/:id",
+			Path:         "/api/admin/menu/:id",
 			Method:       "PUT",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -406,7 +408,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//menu/:id",
+			Path:         "/api/admin/menu/:id",
 			Method:       "DELETE",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -415,7 +417,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//menu/tree",
+			Path:         "/api/admin/menu/tree",
 			Method:       "GET",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -424,7 +426,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//menu/page",
+			Path:         "/api/admin/menu/page",
 			Method:       "GET",
 			Group:        "菜单管理",
 			AuthRequired: true,
@@ -435,7 +437,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== API 管理 ====================
 		{
-			Path:         "/api/admin//apis",
+			Path:         "/api/admin/apis",
 			Method:       "GET",
 			Group:        "API 管理",
 			AuthRequired: true,
@@ -444,7 +446,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//apis/:id",
+			Path:         "/api/admin/apis/:id",
 			Method:       "GET",
 			Group:        "API 管理",
 			AuthRequired: true,
@@ -453,7 +455,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//apis",
+			Path:         "/api/admin/apis",
 			Method:       "POST",
 			Group:        "API 管理",
 			AuthRequired: true,
@@ -462,7 +464,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//apis/:id",
+			Path:         "/api/admin/apis/:id",
 			Method:       "PUT",
 			Group:        "API 管理",
 			AuthRequired: true,
@@ -471,7 +473,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//apis/:id",
+			Path:         "/api/admin/apis/:id",
 			Method:       "DELETE",
 			Group:        "API 管理",
 			AuthRequired: true,
@@ -482,7 +484,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 字典管理 ====================
 		{
-			Path:         "/api/admin//dict",
+			Path:         "/api/admin/dict",
 			Method:       "GET",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -491,7 +493,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict",
+			Path:         "/api/admin/dict",
 			Method:       "POST",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -500,7 +502,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/:id",
+			Path:         "/api/admin/dict/:id",
 			Method:       "GET",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -509,7 +511,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/:id",
+			Path:         "/api/admin/dict/:id",
 			Method:       "PUT",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -518,7 +520,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/:id",
+			Path:         "/api/admin/dict/:id",
 			Method:       "DELETE",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -527,7 +529,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/code",
+			Path:         "/api/admin/dict/code",
 			Method:       "GET",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -536,7 +538,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/item",
+			Path:         "/api/admin/dict/item",
 			Method:       "GET",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -545,7 +547,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/item",
+			Path:         "/api/admin/dict/item",
 			Method:       "POST",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -554,7 +556,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/item/:id",
+			Path:         "/api/admin/dict/item/:id",
 			Method:       "GET",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -563,7 +565,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/item/:id",
+			Path:         "/api/admin/dict/item/:id",
 			Method:       "PUT",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -572,7 +574,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/item/:id",
+			Path:         "/api/admin/dict/item/:id",
 			Method:       "DELETE",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -581,7 +583,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//dict/items",
+			Path:         "/api/admin/dict/items",
 			Method:       "GET",
 			Group:        "字典管理",
 			AuthRequired: true,
@@ -592,7 +594,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 部门管理 ====================
 		{
-			Path:         "/api/admin//department",
+			Path:         "/api/admin/department",
 			Method:       "GET",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -601,7 +603,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//department",
+			Path:         "/api/admin/department",
 			Method:       "POST",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -610,7 +612,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//department/:id",
+			Path:         "/api/admin/department/:id",
 			Method:       "GET",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -619,7 +621,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//department/:id",
+			Path:         "/api/admin/department/:id",
 			Method:       "PUT",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -628,7 +630,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//department/:id",
+			Path:         "/api/admin/department/:id",
 			Method:       "DELETE",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -637,7 +639,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//department/tree",
+			Path:         "/api/admin/department/tree",
 			Method:       "GET",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -646,7 +648,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//department/:id/leader",
+			Path:         "/api/admin/department/:id/leader",
 			Method:       "PUT",
 			Group:        "部门管理",
 			AuthRequired: true,
@@ -657,7 +659,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 岗位管理 ====================
 		{
-			Path:         "/api/admin//position",
+			Path:         "/api/admin/position",
 			Method:       "GET",
 			Group:        "岗位管理",
 			AuthRequired: true,
@@ -666,7 +668,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//position",
+			Path:         "/api/admin/position",
 			Method:       "POST",
 			Group:        "岗位管理",
 			AuthRequired: true,
@@ -675,7 +677,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//position/:id",
+			Path:         "/api/admin/position/:id",
 			Method:       "GET",
 			Group:        "岗位管理",
 			AuthRequired: true,
@@ -684,7 +686,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//position/:id",
+			Path:         "/api/admin/position/:id",
 			Method:       "PUT",
 			Group:        "岗位管理",
 			AuthRequired: true,
@@ -693,7 +695,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//position/:id",
+			Path:         "/api/admin/position/:id",
 			Method:       "DELETE",
 			Group:        "岗位管理",
 			AuthRequired: true,
@@ -702,7 +704,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//position/all",
+			Path:         "/api/admin/position/all",
 			Method:       "GET",
 			Group:        "岗位管理",
 			AuthRequired: true,
@@ -713,7 +715,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 按钮权限管理 ====================
 		{
-			Path:         "/api/admin//btn-perms",
+			Path:         "/api/admin/btn-perms",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -722,7 +724,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms",
+			Path:         "/api/admin/btn-perms",
 			Method:       "POST",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -731,7 +733,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/:id",
+			Path:         "/api/admin/btn-perms/:id",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -740,7 +742,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/:id",
+			Path:         "/api/admin/btn-perms/:id",
 			Method:       "PUT",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -749,7 +751,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/:id",
+			Path:         "/api/admin/btn-perms/:id",
 			Method:       "DELETE",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -758,7 +760,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/detail",
+			Path:         "/api/admin/btn-perms/detail",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -767,7 +769,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/assign-api-routes",
+			Path:         "/api/admin/btn-perms/assign-api-routes",
 			Method:       "POST",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -776,7 +778,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/revoke-api-route",
+			Path:         "/api/admin/btn-perms/revoke-api-route",
 			Method:       "POST",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -785,7 +787,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/assign-to-role",
+			Path:         "/api/admin/btn-perms/assign-to-role",
 			Method:       "POST",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -794,7 +796,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/revoke-from-role",
+			Path:         "/api/admin/btn-perms/revoke-from-role",
 			Method:       "POST",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -803,7 +805,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/api-routes",
+			Path:         "/api/admin/btn-perms/api-routes",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -812,7 +814,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/for-route",
+			Path:         "/api/admin/btn-perms/for-route",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -821,7 +823,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/by-role",
+			Path:         "/api/admin/btn-perms/by-role",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -830,7 +832,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//btn-perms/by-menu",
+			Path:         "/api/admin/btn-perms/by-menu",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,
@@ -841,7 +843,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 系统配置 ====================
 		{
-			Path:         "/api/admin//config",
+			Path:         "/api/admin/config",
 			Method:       "GET",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -850,7 +852,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//config",
+			Path:         "/api/admin/config",
 			Method:       "POST",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -859,7 +861,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//config/:key",
+			Path:         "/api/admin/config/:key",
 			Method:       "GET",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -868,7 +870,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//config/:key",
+			Path:         "/api/admin/config/:key",
 			Method:       "PUT",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -877,7 +879,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//config/:key",
+			Path:         "/api/admin/config/:key",
 			Method:       "DELETE",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -886,7 +888,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//config/key",
+			Path:         "/api/admin/config/key",
 			Method:       "GET",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -895,7 +897,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//config/active",
+			Path:         "/api/admin/config/active",
 			Method:       "GET",
 			Group:        "系统配置",
 			AuthRequired: true,
@@ -906,7 +908,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 通知公告 ====================
 		{
-			Path:         "/api/admin//notice",
+			Path:         "/api/admin/notice",
 			Method:       "GET",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -915,7 +917,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice",
+			Path:         "/api/admin/notice",
 			Method:       "POST",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -924,7 +926,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/:id",
+			Path:         "/api/admin/notice/:id",
 			Method:       "GET",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -933,7 +935,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/:id",
+			Path:         "/api/admin/notice/:id",
 			Method:       "PUT",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -942,7 +944,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/:id",
+			Path:         "/api/admin/notice/:id",
 			Method:       "DELETE",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -951,7 +953,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/:id/publish",
+			Path:         "/api/admin/notice/:id/publish",
 			Method:       "POST",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -960,7 +962,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/:id/read",
+			Path:         "/api/admin/notice/:id/read",
 			Method:       "POST",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -969,7 +971,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/:id/is-read",
+			Path:         "/api/admin/notice/:id/is-read",
 			Method:       "GET",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -978,7 +980,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//notice/statistics",
+			Path:         "/api/admin/notice/statistics",
 			Method:       "GET",
 			Group:        "通知公告",
 			AuthRequired: true,
@@ -989,7 +991,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 操作日志 ====================
 		{
-			Path:         "/api/admin//logs",
+			Path:         "/api/admin/logs",
 			Method:       "GET",
 			Group:        "操作日志",
 			AuthRequired: true,
@@ -998,7 +1000,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//logs/:id",
+			Path:         "/api/admin/logs/:id",
 			Method:       "GET",
 			Group:        "操作日志",
 			AuthRequired: true,
@@ -1007,7 +1009,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//logs/:id",
+			Path:         "/api/admin/logs/:id",
 			Method:       "DELETE",
 			Group:        "操作日志",
 			AuthRequired: true,
@@ -1016,7 +1018,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//logs/batch-delete",
+			Path:         "/api/admin/logs/batch-delete",
 			Method:       "POST",
 			Group:        "操作日志",
 			AuthRequired: true,
@@ -1025,7 +1027,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//logs/statistics",
+			Path:         "/api/admin/logs/statistics",
 			Method:       "GET",
 			Group:        "操作日志",
 			AuthRequired: true,
@@ -1034,7 +1036,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//logs/clear",
+			Path:         "/api/admin/logs/clear",
 			Method:       "POST",
 			Group:        "操作日志",
 			AuthRequired: true,
@@ -1045,7 +1047,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 登录日志 ====================
 		{
-			Path:         "/api/admin//login-log",
+			Path:         "/api/admin/login-log",
 			Method:       "GET",
 			Group:        "登录日志",
 			AuthRequired: true,
@@ -1054,7 +1056,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//login-log/:id",
+			Path:         "/api/admin/login-log/:id",
 			Method:       "GET",
 			Group:        "登录日志",
 			AuthRequired: true,
@@ -1063,7 +1065,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//login-log/statistics",
+			Path:         "/api/admin/login-log/statistics",
 			Method:       "GET",
 			Group:        "登录日志",
 			AuthRequired: true,
@@ -1072,7 +1074,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//login-log/abnormal",
+			Path:         "/api/admin/login-log/abnormal",
 			Method:       "GET",
 			Group:        "登录日志",
 			AuthRequired: true,
@@ -1081,7 +1083,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//login-log",
+			Path:         "/api/admin/login-log",
 			Method:       "POST",
 			Group:        "登录日志",
 			AuthRequired: true,
@@ -1092,7 +1094,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 在线用户 ====================
 		{
-			Path:         "/api/admin//online-user",
+			Path:         "/api/admin/online-user",
 			Method:       "GET",
 			Group:        "在线用户",
 			AuthRequired: true,
@@ -1101,7 +1103,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//online-user/:user_id",
+			Path:         "/api/admin/online-user/:user_id",
 			Method:       "GET",
 			Group:        "在线用户",
 			AuthRequired: true,
@@ -1110,7 +1112,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//online-user/:user_id",
+			Path:         "/api/admin/online-user/:user_id",
 			Method:       "DELETE",
 			Group:        "在线用户",
 			AuthRequired: true,
@@ -1119,7 +1121,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//online-user/count",
+			Path:         "/api/admin/online-user/count",
 			Method:       "GET",
 			Group:        "在线用户",
 			AuthRequired: true,
@@ -1128,7 +1130,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//online-user/online",
+			Path:         "/api/admin/online-user/online",
 			Method:       "GET",
 			Group:        "在线用户",
 			AuthRequired: true,
@@ -1137,7 +1139,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//online-user/batch",
+			Path:         "/api/admin/online-user/batch",
 			Method:       "POST",
 			Group:        "在线用户",
 			AuthRequired: true,
@@ -1148,7 +1150,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 系统监控 ====================
 		{
-			Path:         "/api/admin//monitor/system",
+			Path:         "/api/admin/monitor/system",
 			Method:       "GET",
 			Group:        "系统监控",
 			AuthRequired: true,
@@ -1157,7 +1159,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//monitor/cache",
+			Path:         "/api/admin/monitor/cache",
 			Method:       "GET",
 			Group:        "系统监控",
 			AuthRequired: true,
@@ -1166,7 +1168,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//monitor/database",
+			Path:         "/api/admin/monitor/database",
 			Method:       "GET",
 			Group:        "系统监控",
 			AuthRequired: true,
@@ -1175,7 +1177,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//monitor/redis-keys",
+			Path:         "/api/admin/monitor/redis-keys",
 			Method:       "GET",
 			Group:        "系统监控",
 			AuthRequired: true,
@@ -1184,7 +1186,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//monitor/slow-queries",
+			Path:         "/api/admin/monitor/slow-queries",
 			Method:       "GET",
 			Group:        "系统监控",
 			AuthRequired: true,
@@ -1195,7 +1197,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 定时任务 ====================
 		{
-			Path:         "/api/admin//task",
+			Path:         "/api/admin/task",
 			Method:       "GET",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1204,7 +1206,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task",
+			Path:         "/api/admin/task",
 			Method:       "POST",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1213,7 +1215,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id",
+			Path:         "/api/admin/task/:id",
 			Method:       "GET",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1222,7 +1224,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id",
+			Path:         "/api/admin/task/:id",
 			Method:       "DELETE",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1231,7 +1233,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id/start",
+			Path:         "/api/admin/task/:id/start",
 			Method:       "POST",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1240,7 +1242,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id/stop",
+			Path:         "/api/admin/task/:id/stop",
 			Method:       "POST",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1249,7 +1251,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id/retry",
+			Path:         "/api/admin/task/:id/retry",
 			Method:       "POST",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1258,7 +1260,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id/execution-logs",
+			Path:         "/api/admin/task/:id/execution-logs",
 			Method:       "GET",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1267,7 +1269,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/statistics",
+			Path:         "/api/admin/task/statistics",
 			Method:       "GET",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1276,7 +1278,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//task/:id/group",
+			Path:         "/api/admin/task/:id/group",
 			Method:       "POST",
 			Group:        "定时任务",
 			AuthRequired: true,
@@ -1287,7 +1289,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 
 		// ==================== 权限审计日志 ====================
 		{
-			Path:         "/api/admin//permission-logs",
+			Path:         "/api/admin/permission-logs",
 			Method:       "GET",
 			Group:        "权限审计日志",
 			AuthRequired: true,
@@ -1296,7 +1298,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin//permission-logs/roles/:id/permission-logs",
+			Path:         "/api/admin/permission-logs/roles/:id/permission-logs",
 			Method:       "GET",
 			Group:        "权限审计日志",
 			AuthRequired: true,
@@ -1305,4 +1307,11 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 	}
+
+	// 批量替换所有双斜杠为单斜杠
+	for _, api := range apis {
+		api.Path = strings.ReplaceAll(api.Path, "//", "/")
+	}
+
+	return apis
 }

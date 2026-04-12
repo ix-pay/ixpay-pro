@@ -34,7 +34,7 @@ func NewMonitorController(
 // @Produce json
 // @Success 200 {object} baseRes.Response{data=monitor.SystemStatus} "成功返回系统监控信息"
 // @Failure 500 {object} baseRes.Response "服务器错误"
-// @Router /api/admin//monitor/system [get]
+// @Router /api/admin/monitor/system [get]
 func (c *MonitorController) GetSystemMonitor(ctx *gin.Context) {
 	status, err := c.systemMonitor.GetSystemStatus()
 	if err != nil {
@@ -53,7 +53,7 @@ func (c *MonitorController) GetSystemMonitor(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} baseRes.Response{data=object} "成功返回缓存监控信息"
 // @Failure 500 {object} baseRes.Response "服务器错误"
-// @Router /api/admin//monitor/cache [get]
+// @Router /api/admin/monitor/cache [get]
 func (c *MonitorController) GetCacheMonitor(ctx *gin.Context) {
 	status, err := c.cacheMonitor.GetCacheStatus()
 	if err != nil {
@@ -72,7 +72,7 @@ func (c *MonitorController) GetCacheMonitor(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} baseRes.Response{data=object} "成功返回数据库监控信息"
 // @Failure 500 {object} baseRes.Response "服务器错误"
-// @Router /api/admin//monitor/database [get]
+// @Router /api/admin/monitor/database [get]
 func (c *MonitorController) GetDatabaseMonitor(ctx *gin.Context) {
 	status, err := c.databaseMonitor.GetDatabaseStatus()
 	if err != nil {
@@ -93,7 +93,7 @@ func (c *MonitorController) GetDatabaseMonitor(ctx *gin.Context) {
 // @Param limit query int false "限制数量 (默认：100)"
 // @Success 200 {object} baseRes.Response{data=object} "成功返回 Redis 键列表"
 // @Failure 500 {object} baseRes.Response "服务器错误"
-// @Router /api/admin//monitor/redis-keys [get]
+// @Router /api/admin/monitor/redis-keys [get]
 func (c *MonitorController) GetRedisKeys(ctx *gin.Context) {
 	pattern := ctx.DefaultQuery("pattern", "*")
 	limit := int64(100)
@@ -118,7 +118,7 @@ func (c *MonitorController) GetRedisKeys(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} baseRes.Response{data=object} "成功返回慢查询日志"
 // @Failure 500 {object} baseRes.Response "服务器错误"
-// @Router /api/admin//monitor/slow-queries [get]
+// @Router /api/admin/monitor/slow-queries [get]
 func (c *MonitorController) GetSlowQueries(ctx *gin.Context) {
 	// TODO: 实现慢查询日志查询
 	baseRes.OkWithDetailed([]interface{}{}, "查询慢查询日志成功", ctx)

@@ -17,7 +17,7 @@ import (
 //	@Summary		菜单相关API
 //	@Description	提供菜单管理功能
 //	@Tags			菜单管理
-//	@Router			/api/admin//menu [get]
+//	@Router			/api/admin/menu [get]
 type MenuController struct {
 	service *service.MenuService
 	log     logger.Logger
@@ -98,7 +98,7 @@ func convertToMenuResponse(menu *entity.Menu) *response.MenuResponse {
 //	@Success	200	{object}	baseRes.Response{data=[]entity.Menu,msg=string}	"菜单列表"
 //	@Failure		401	{object}	map[string]string								"未授权"
 //	@Failure		500	{object}	map[string]string								"服务器内部错误"
-//	@Router			/api/admin//menu [get]
+//	@Router			/api/admin/menu [get]
 func (c *MenuController) GetMenuList(ctx *gin.Context) {
 	// 从上下文中获取用户ID
 	_, exists := ctx.Get("userID")
@@ -293,7 +293,7 @@ func (c *MenuController) UpdateMenu(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//menu/{id} [delete]
+//	@Router			/api/admin/menu/:id [delete]
 func (c *MenuController) DeleteMenu(ctx *gin.Context) {
 	// 解析菜单ID
 	menuID := ctx.Param("id")
@@ -329,7 +329,7 @@ func (c *MenuController) DeleteMenu(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string														"请求参数错误"
 //	@Failure		401			{object}	map[string]string														"未授权"
 //	@Failure		500			{object}	map[string]string														"服务器内部错误"
-//	@Router			/api/admin//menu/page [get]
+//	@Router			/api/admin/menu/page [get]
 func (c *MenuController) GetMenuPage(ctx *gin.Context) {
 	var req request.GetMenuPageRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -380,7 +380,7 @@ func (c *MenuController) GetMenuPage(ctx *gin.Context) {
 //	@Failure		401	{object}	map[string]string																"未授权"
 //	@Failure		404	{object}	map[string]string																"菜单不存在"
 //	@Failure		500	{object}	map[string]string																"服务器内部错误"
-//	@Router			/api/admin//menu/{id}/delete-impact [get]
+//	@Router			/api/admin/menu/:id/delete-impact [get]
 func (c *MenuController) GetMenuDeleteImpact(ctx *gin.Context) {
 	// 获取菜单 ID
 	menuID := ctx.Param("id")
@@ -412,7 +412,7 @@ func (c *MenuController) GetMenuDeleteImpact(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=[]response.MenuResponse,msg=string}						"菜单树结构"
 //	@Failure		401	{object}	map[string]string																"未授权"
 //	@Failure		500	{object}	map[string]string																"服务器内部错误"
-//	@Router			/api/admin//menu/tree [get]
+//	@Router			/api/admin/menu/tree [get]
 func (c *MenuController) GetMenuTree(ctx *gin.Context) {
 	// 从上下文中获取用户 ID
 	_, exists := ctx.Get("userID")

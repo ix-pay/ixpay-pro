@@ -394,56 +394,56 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 注册 | POST | /api/admin//auth/register | 用户注册 |
-| 登录 | POST | /api/admin//auth/login | 用户登录 |
-| 验证码 | POST | /api/admin//auth/captcha | 获取验证码 |
-| 刷新令牌 | POST | /api/admin//auth/refresh-token | 刷新访问令牌 |
-| 退出登录 | POST | /api/admin//auth/logout | 用户退出登录 |
+| 注册 | POST | /api/admin/auth/register | 用户注册 |
+| 登录 | POST | /api/admin/auth/login | 用户登录 |
+| 验证码 | POST | /api/admin/auth/captcha | 获取验证码 |
+| 刷新令牌 | POST | /api/admin/auth/refresh-token | 刷新访问令牌 |
+| 退出登录 | POST | /api/admin/auth/logout | 用户退出登录 |
 
 #### 用户管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 获取用户信息 | GET | /api/admin//user/info | 获取当前用户信息 |
-| 更新用户信息 | PUT | /api/admin//user/info | 更新用户信息 |
-| 获取用户列表 | GET | /api/admin//user | 获取用户列表 |
-| 添加用户 | POST | /api/admin//user | 添加新用户 |
-| 删除用户 | DELETE | /api/admin//user/:id | 删除用户 |
-| 修改密码 | PUT | /api/admin//user/password | 修改用户密码 |
-| 重置密码 | PUT | /api/admin//user/reset-password | 重置用户密码 |
-| 获取用户设置 | GET | /api/admin//user/getSelfSetting | 获取用户设置 |
-| 设置用户设置 | PUT | /api/admin//user/setSelfSetting | 设置用户设置 |
+| 获取用户信息 | GET | /api/admin/user/info | 获取当前用户信息 |
+| 更新用户信息 | PUT | /api/admin/user/info | 更新用户信息 |
+| 获取用户列表 | GET | /api/admin/user | 获取用户列表 |
+| 添加用户 | POST | /api/admin/user | 添加新用户 |
+| 删除用户 | DELETE | /api/admin/user/:id | 删除用户 |
+| 修改密码 | PUT | /api/admin/user/password | 修改用户密码 |
+| 重置密码 | PUT | /api/admin/user/reset-password | 重置用户密码 |
+| 获取用户设置 | GET | /api/admin/user/getSelfSetting | 获取用户设置 |
+| 设置用户设置 | PUT | /api/admin/user/setSelfSetting | 设置用户设置 |
 
 #### 角色管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 创建角色 | POST | /api/admin//roles | 创建新角色 |
-| 获取角色详情 | GET | /api/admin//roles/detail | 获取角色详情 |
-| 更新角色 | PUT | /api/admin//roles | 更新角色信息 |
-| 删除角色 | DELETE | /api/admin//roles | 删除角色 |
-| 获取角色列表 | GET | /api/admin//roles | 获取角色列表 |
-| 分配用户到角色 | POST | /api/admin//roles/assign-users | 分配用户到角色 |
-| 分配菜单到角色 | POST | /api/admin//roles/assign-menus | 分配菜单到角色 |
-| 分配API路由到角色 | POST | /api/admin//roles/assign-api-routes | 分配API路由到角色 |
+| 创建角色 | POST | /api/admin/roles | 创建新角色 |
+| 获取角色详情 | GET | /api/admin/roles/detail | 获取角色详情 |
+| 更新角色 | PUT | /api/admin/roles | 更新角色信息 |
+| 删除角色 | DELETE | /api/admin/roles | 删除角色 |
+| 获取角色列表 | GET | /api/admin/roles | 获取角色列表 |
+| 分配用户到角色 | POST | /api/admin/roles/assign-users | 分配用户到角色 |
+| 分配菜单到角色 | POST | /api/admin/roles/assign-menus | 分配菜单到角色 |
+| 分配API路由到角色 | POST | /api/admin/roles/assign-api-routes | 分配API路由到角色 |
 
 #### 按钮权限管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 创建按钮权限 | POST | /api/admin//btn-perms | 创建按钮权限 |
-| 获取按钮权限详情 | GET | /api/admin//btn-perms/detail | 获取按钮权限详情 |
-| 更新按钮权限 | PUT | /api/admin//btn-perms | 更新按钮权限 |
-| 删除按钮权限 | DELETE | /api/admin//btn-perms | 删除按钮权限 |
-| 获取按钮权限列表 | GET | /api/admin//btn-perms | 获取按钮权限列表 |
-| 分配API路由到按钮权限 | POST | /api/admin//btn-perms/assign-api-routes | 分配API路由到按钮权限 |
-| 从按钮权限中撤销API路由 | POST | /api/admin//btn-perms/revoke-api-route | 从按钮权限中撤销API路由 |
-| 分配按钮权限到角色 | POST | /api/admin//btn-perms/assign-to-role | 分配按钮权限到角色 |
-| 从角色中撤销按钮权限 | POST | /api/admin//btn-perms/revoke-from-role | 从角色中撤销按钮权限 |
-| 获取按钮权限下的API路由 | GET | /api/admin//btn-perms/api-routes | 获取按钮权限下的API路由 |
-| 获取API路由下的按钮权限 | GET | /api/admin//btn-perms/for-route | 获取API路由下的按钮权限 |
-| 获取角色下的按钮权限 | GET | /api/admin//btn-perms/by-role | 获取角色下的按钮权限 |
-| 获取菜单下的按钮权限 | GET | /api/admin//btn-perms/by-menu | 获取菜单下的按钮权限 |
+| 创建按钮权限 | POST | /api/admin/btn-perms | 创建按钮权限 |
+| 获取按钮权限详情 | GET | /api/admin/btn-perms/detail | 获取按钮权限详情 |
+| 更新按钮权限 | PUT | /api/admin/btn-perms | 更新按钮权限 |
+| 删除按钮权限 | DELETE | /api/admin/btn-perms | 删除按钮权限 |
+| 获取按钮权限列表 | GET | /api/admin/btn-perms | 获取按钮权限列表 |
+| 分配API路由到按钮权限 | POST | /api/admin/btn-perms/assign-api-routes | 分配API路由到按钮权限 |
+| 从按钮权限中撤销API路由 | POST | /api/admin/btn-perms/revoke-api-route | 从按钮权限中撤销API路由 |
+| 分配按钮权限到角色 | POST | /api/admin/btn-perms/assign-to-role | 分配按钮权限到角色 |
+| 从角色中撤销按钮权限 | POST | /api/admin/btn-perms/revoke-from-role | 从角色中撤销按钮权限 |
+| 获取按钮权限下的API路由 | GET | /api/admin/btn-perms/api-routes | 获取按钮权限下的API路由 |
+| 获取API路由下的按钮权限 | GET | /api/admin/btn-perms/for-route | 获取API路由下的按钮权限 |
+| 获取角色下的按钮权限 | GET | /api/admin/btn-perms/by-role | 获取角色下的按钮权限 |
+| 获取菜单下的按钮权限 | GET | /api/admin/btn-perms/by-menu | 获取菜单下的按钮权限 |
 
 #### 支付管理 API
 
@@ -739,7 +739,7 @@ npm run dev
    curl http://localhost:8586/health
    
    # 测试登录接口
-   curl -X POST http://localhost:8586/api/admin//auth/login \
+   curl -X POST http://localhost:8586/api/admin/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username": "admin", "password": "password123"}'
    ```

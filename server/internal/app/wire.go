@@ -63,6 +63,8 @@ var ProviderSet = wire.NewSet(
 	// Service
 	base.ProviderSetBaseService,
 	wx.ProviderSetWXService,
+	// Converter
+	base.ProviderSetBaseConverter,
 	// Controller
 	base.ProviderSetBaseController,
 	wx.ProviderSetWXController,

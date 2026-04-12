@@ -58,7 +58,7 @@ func convertToRoleResponse(role *entity.Role) response.RoleResponse {
 //	@Security		BearerAuth
 //	@Param			data	body		request.CreateRoleRequest	true	"角色信息"
 //	@Success		200		{object}	baseRes.Response{data=response.RoleResponse}
-//	@Router			/api/admin//roles [post]
+//	@Router			/api/admin/role [post]
 func (c *RoleController) CreateRole(ctx *gin.Context) {
 	var req request.CreateRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -92,7 +92,7 @@ func (c *RoleController) CreateRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			id	query		string	true	"角色 ID"
 //	@Success	200	{object}	baseRes.Response{data=response.RoleDetailResponse}
-//	@Router			/api/admin//roles/detail [get]
+//	@Router			/api/admin/role/detail [get]
 func (c *RoleController) GetRoleByID(ctx *gin.Context) {
 	var req request.GetRoleByIDRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -134,7 +134,7 @@ func (c *RoleController) GetRoleByID(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.UpdateRoleRequest	true	"角色信息"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//roles [put]
+//	@Router			/api/admin/role [put]
 func (c *RoleController) UpdateRole(ctx *gin.Context) {
 	var req request.UpdateRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -168,7 +168,7 @@ func (c *RoleController) UpdateRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.DeleteRoleRequest	true	"角色ID"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//roles [delete]
+//	@Router			/api/admin/role [delete]
 func (c *RoleController) DeleteRole(ctx *gin.Context) {
 	var req request.DeleteRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -204,7 +204,7 @@ func (c *RoleController) DeleteRole(ctx *gin.Context) {
 //	@Param			name		query		string	false	"角色名称"
 //	@Param			status		query		int		false	"状态(-1:全部,0:禁用,1:启用)"
 //	@Success		200			{object}	baseRes.Response{data=response.RoleListResponse}
-//	@Router			/api/admin//roles [get]
+//	@Router			/api/admin/role [get]
 func (c *RoleController) GetRoleList(ctx *gin.Context) {
 	var req request.GetRoleListRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -258,7 +258,7 @@ func (c *RoleController) GetRoleList(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.AssignUserToRoleRequest	true	"角色ID和用户ID列表"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//roles/assign-users [post]
+//	@Router			/api/admin/role/assign-users [post]
 func (c *RoleController) AssignUserToRole(ctx *gin.Context) {
 	var req request.AssignUserToRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -291,7 +291,7 @@ func (c *RoleController) AssignUserToRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.AssignMenuToRoleRequest	true	"角色ID和菜单ID列表"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//roles/assign-menus [post]
+//	@Router			/api/admin/role/assign-menus [post]
 func (c *RoleController) AssignMenuToRole(ctx *gin.Context) {
 	var req request.AssignMenuToRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -324,7 +324,7 @@ func (c *RoleController) AssignMenuToRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.AssignToRoleRequest	true	"角色ID和API路由ID列表"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//roles/assign-api-routes [post]
+//	@Router			/api/admin/role/assign-api-routes [post]
 func (c *RoleController) AssignAPIToRole(ctx *gin.Context) {
 	var req request.AssignToRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -354,7 +354,7 @@ func (c *RoleController) AssignAPIToRole(ctx *gin.Context) {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Success		200	{object}	baseRes.Response{data=[]entity.Role}
-//	@Router			/api/admin//roles/all [get]
+//	@Router			/api/admin/role/all [get]
 func (c *RoleController) GetAllRoles(ctx *gin.Context) {
 	roles, err := c.roleService.GetAllRoles()
 	if err != nil {
@@ -378,7 +378,7 @@ func (c *RoleController) GetAllRoles(ctx *gin.Context) {
 //	@Param			id		path		string							true	"角色 ID"
 //	@Param			data	body		request.SaveRolePermissionsRequest	true	"权限信息"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//roles/:id/permissions [post]
+//	@Router			/api/admin/role/:id/permissions [post]
 func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 	// 直接使用 string 类型的 ID
 	roleID := ctx.Param("id")
@@ -421,7 +421,7 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			id	path		string	true	"角色 ID"
 //	@Success	200	{object}	entity.Role
-//	@Router			/api/admin//roles/:id/detail [get]
+//	@Router			/api/admin/role/:id/detail [get]
 func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 	// 直接使用 string 类型的 ID
 	roleID := ctx.Param("id")
@@ -447,7 +447,7 @@ func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			id	path		string	true	"角色 ID"
 //	@Success		200	{object}	baseRes.Response{data=[]response.APIResponse}
-//	@Router			/api/admin//roles/:id/available-apis [get]
+//	@Router			/api/admin/role/:id/available-apis [get]
 func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 	// 直接使用 string 类型的 ID
 	roleID := ctx.Param("id")

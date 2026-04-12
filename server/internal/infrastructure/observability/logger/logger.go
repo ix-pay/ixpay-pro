@@ -41,7 +41,8 @@ const (
 
 // zapLogger 实现 Logger 接口
 type zapLogger struct {
-	logger *zap.Logger
+	logger      *zap.Logger
+	errorLogger *zap.Logger // 错误日志专用记录器
 }
 
 // MultiLogger 多类型日志管理器
@@ -86,9 +87,19 @@ func (ml *MultiLogger) GetLogger(loggerType LoggerType) Logger {
 	}
 }
 
-// SetupLogger 创建新的日志记录器（默认类型）
+// SetupLogger 创建新的日志记录器（默认类型，带错误日志注入）
 func SetupLogger(cfg *config.Config) Logger {
-	return setupLoggerWithType(cfg, DefaultLogger)
+	defaultLogger := setupLoggerWithType(cfg, DefaultLogger)
+	errorLogger := setupLoggerWithType(cfg, ErrorLogger)
+
+	// 将 errorLogger 注入到 defaultLogger 中，使得调用 Error 时同时写入两个文件
+	if defaultZapLogger, ok := defaultLogger.(*zapLogger); ok {
+		if errorZapLogger, ok := errorLogger.(*zapLogger); ok {
+			defaultZapLogger.errorLogger = errorZapLogger.logger
+		}
+	}
+
+	return defaultLogger
 }
 
 // SetupMultiLogger 创建多类型日志记录器
@@ -205,12 +216,20 @@ func (l *zapLogger) Warn(msg string, fields ...interface{}) {
 
 // Error 记录错误信息
 func (l *zapLogger) Error(msg string, fields ...interface{}) {
-	l.logger.Error(msg, parseFields(fields)...)
+	if l.errorLogger != nil {
+		l.errorLogger.Error(msg, parseFields(fields)...)
+	} else {
+		l.logger.Error(msg, parseFields(fields)...)
+	}
 }
 
 // Fatal 记录致命错误信息并退出
 func (l *zapLogger) Fatal(msg string, fields ...interface{}) {
-	l.logger.Fatal(msg, parseFields(fields)...)
+	if l.errorLogger != nil {
+		l.errorLogger.Fatal(msg, parseFields(fields)...)
+	} else {
+		l.logger.Fatal(msg, parseFields(fields)...)
+	}
 }
 
 // With 返回一个带有上下文的新日志记录器

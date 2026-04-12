@@ -117,37 +117,6 @@ func PermissionMiddleware(permissionService *service.PermissionService, permissi
 	}
 }
 
-// isPublicAPI 检查是否为公开 API（所有认证用户都可访问的基础接口）
-// 【已废弃】改为使用 API 表中的 auth_type 字段
-// func isPublicAPI(path, method string) bool {
-//     publicAPIs := map[string][]string{
-//         // 用户信息相关
-//         "/api/admin//user/info": {"GET", "PUT"},
-//         // 认证相关
-//         "/api/admin//auth/logout": {"POST"},
-//         // 菜单相关
-//         "/api/admin//menu": {"GET"},
-//         // 字典相关
-//         "/api/admin//dict":      {"GET"},
-//         "/api/admin//dict/item": {"GET"},
-//         // 系统监控相关（可选）
-//         "/api/admin//monitor/system": {"GET"},
-//     }
-//
-//     allowedMethods, exists := publicAPIs[path]
-//     if !exists {
-//         return false
-//     }
-//
-//     for _, allowedMethod := range allowedMethods {
-//         if method == allowedMethod {
-//             return true
-//         }
-//     }
-//
-//     return false
-// }
-
 // getAPIAuthType 获取 API 的授权类型
 // 返回值：
 // - 0: 不需要授权（只要登录就能用）

@@ -18,7 +18,7 @@ import (
 //	@Summary		字典管理相关API
 //	@Description	提供字典和字典明细项的增删改查功能
 //	@Tags			字典管理
-//	@Router			/api/admin//dict [get]
+//	@Router			/api/admin/dict [get]
 type DictController struct {
 	dictService     *service.DictService
 	dictItemService *service.DictItemService
@@ -83,7 +83,7 @@ func convertToDictResponse(dict *entity.Dict) response.DictResponse {
 //	@Failure		400	{object}	map[string]string										"请求参数错误"
 //	@Failure		401	{object}	map[string]string										"未授权"
 //	@Failure		500	{object}	map[string]string										"服务器内部错误"
-//	@Router			/api/admin//dict/{id} [get]
+//	@Router			/api/admin/dict/:id [get]
 func (c *DictController) GetDictByID(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	if idStr == "" {
@@ -118,7 +118,7 @@ func (c *DictController) GetDictByID(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string										"请求参数错误"
 //	@Failure		401			{object}	map[string]string										"未授权"
 //	@Failure		500			{object}	map[string]string										"服务器内部错误"
-//	@Router			/api/admin//dict/code [get]
+//	@Router			/api/admin/dict/code [get]
 func (c *DictController) GetDictByCode(ctx *gin.Context) {
 	dictCode := ctx.Query("dict_code")
 	if dictCode == "" {
@@ -175,7 +175,7 @@ func (c *DictController) GetDictByCode(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string										"请求参数错误"
 //	@Failure		401		{object}	map[string]string										"未授权"
 //	@Failure		500		{object}	map[string]string										"服务器内部错误"
-//	@Router			/api/admin//dict [post]
+//	@Router			/api/admin/dict [post]
 func (c *DictController) CreateDict(ctx *gin.Context) {
 	var req request.CreateDictRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -233,7 +233,7 @@ func (c *DictController) CreateDict(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string				"请求参数错误"
 //	@Failure		401		{object}	map[string]string				"未授权"
 //	@Failure		500		{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//dict [put]
+//	@Router			/api/admin/dict [put]
 func (c *DictController) UpdateDict(ctx *gin.Context) {
 	var req request.UpdateDictRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -280,7 +280,7 @@ func (c *DictController) UpdateDict(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//dict/{id} [delete]
+//	@Router			/api/admin/dict/:id [delete]
 func (c *DictController) DeleteDict(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	if idStr == "" {
@@ -315,7 +315,7 @@ func (c *DictController) DeleteDict(ctx *gin.Context) {
 //	@Success		200			{object}	baseRes.Response{data=response.DictListResponse,msg=string}	"字典列表"
 //	@Failure		401			{object}	map[string]string											"未授权"
 //	@Failure		500			{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//dict/list [get]
+//	@Router			/api/admin/dict/list [get]
 func (c *DictController) GetDictList(ctx *gin.Context) {
 	// 获取分页参数
 	pageStr := ctx.DefaultQuery("page", "1")
@@ -389,7 +389,7 @@ func (c *DictController) GetDictList(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string											"请求参数错误"
 //	@Failure		401	{object}	map[string]string											"未授权"
 //	@Failure		500	{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//dict/item/{id} [get]
+//	@Router			/api/admin/dict/item/:id [get]
 func (c *DictController) GetDictItemByID(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	if idStr == "" {
@@ -424,7 +424,7 @@ func (c *DictController) GetDictItemByID(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string												"请求参数错误"
 //	@Failure		401		{object}	map[string]string												"未授权"
 //	@Failure		500		{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin//dict/items [get]
+//	@Router			/api/admin/dict/items [get]
 func (c *DictController) GetDictItemsByDictID(ctx *gin.Context) {
 	dictIDStr := ctx.Query("dict_id")
 	if dictIDStr == "" {
@@ -472,7 +472,7 @@ func (c *DictController) GetDictItemsByDictID(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string											"请求参数错误"
 //	@Failure		401			{object}	map[string]string											"未授权"
 //	@Failure		500			{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//dict/item [post]
+//	@Router			/api/admin/dict/item [post]
 func (c *DictController) CreateDictItem(ctx *gin.Context) {
 	var req request.CreateDictItemRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -523,7 +523,7 @@ func (c *DictController) CreateDictItem(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string				"请求参数错误"
 //	@Failure		401			{object}	map[string]string				"未授权"
 //	@Failure		500			{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//dict/item [put]
+//	@Router			/api/admin/dict/item [put]
 func (c *DictController) UpdateDictItem(ctx *gin.Context) {
 	var req request.UpdateDictItemRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -572,7 +572,7 @@ func (c *DictController) UpdateDictItem(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//dict/item/{id} [delete]
+//	@Router			/api/admin/dict/item/:id [delete]
 func (c *DictController) DeleteDictItem(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	if idStr == "" {

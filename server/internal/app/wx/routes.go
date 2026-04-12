@@ -7,11 +7,11 @@ import (
 // setupRoutes 设置路由
 func (a *AppWX) setupRoutes() {
 
-	// 微信公众号路由组，添加/api/wx前缀
+	// 微信公众号路由组，添加/api/wx 前缀
 	wx := a.router.Group("/api/wx")
 	{
 		// 公共路由
-		public := wx.Group("")
+		public := wx
 		{
 			// 认证路由
 			auth := public.Group("/auth")
@@ -27,7 +27,7 @@ func (a *AppWX) setupRoutes() {
 		}
 
 		// 需要认证的路由
-		authenticated := wx.Group("")
+		authenticated := wx
 		authenticated.Use(middleware.AuthMiddleware(a.auth))
 		authenticated.Use(middleware.PermissionMiddleware(a.permissions))
 		{

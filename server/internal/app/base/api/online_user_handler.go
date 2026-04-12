@@ -39,7 +39,7 @@ func NewOnlineUserController(service *service.OnlineUserService, log logger.Logg
 //	@Failure		400			{object}	map[string]string															"请求参数错误"
 //	@Failure		401			{object}	map[string]string															"未授权"
 //	@Failure		500			{object}	map[string]string															"服务器内部错误"
-//	@Router			/api/admin//online-user [get]
+//	@Router			/api/admin/online-user [get]
 func (c *OnlineUserController) GetOnlineUserList(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -127,7 +127,7 @@ func (c *OnlineUserController) GetOnlineUserList(ctx *gin.Context) {
 //	@Failure		401		{object}	map[string]string													"未授权"
 //	@Failure		404		{object}	map[string]string													"用户不在线"
 //	@Failure		500		{object}	map[string]string													"服务器内部错误"
-//	@Router			/api/admin//online-user/:user_id [get]
+//	@Router			/api/admin/online-user/:user_id [get]
 func (c *OnlineUserController) GetOnlineUserByID(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -186,7 +186,7 @@ func (c *OnlineUserController) GetOnlineUserByID(ctx *gin.Context) {
 //	@Failure		401		{object}	map[string]string			"未授权"
 //	@Failure		404		{object}	map[string]string			"用户不在线"
 //	@Failure		500		{object}	map[string]string			"服务器内部错误"
-//	@Router			/api/admin//online-user/:user_id [delete]
+//	@Router			/api/admin/online-user/:user_id [delete]
 func (c *OnlineUserController) ForceOffline(ctx *gin.Context) {
 	// 检查用户是否已登录
 	operatorID, exists := ctx.Get("userID")
@@ -232,7 +232,7 @@ func (c *OnlineUserController) ForceOffline(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=int64,msg=string}	"在线用户数量"
 //	@Failure		401	{object}	map[string]string						"未授权"
 //	@Failure		500	{object}	map[string]string						"服务器内部错误"
-//	@Router			/api/admin//online-user/count [get]
+//	@Router			/api/admin/online-user/count [get]
 func (c *OnlineUserController) GetOnlineCount(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -265,7 +265,7 @@ func (c *OnlineUserController) GetOnlineCount(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string													"请求参数错误"
 //	@Failure		401		{object}	map[string]string													"未授权"
 //	@Failure		500		{object}	map[string]string													"服务器内部错误"
-//	@Router			/api/admin//online-user/online [get]
+//	@Router			/api/admin/online-user/online [get]
 func (c *OnlineUserController) IsOnline(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -305,7 +305,7 @@ func (c *OnlineUserController) IsOnline(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string					"请求参数错误"
 //	@Failure		401		{object}	map[string]string					"未授权"
 //	@Failure		500		{object}	map[string]string					"服务器内部错误"
-//	@Router			/api/admin//online-user/batch [post]
+//	@Router			/api/admin/online-user/batch [post]
 func (c *OnlineUserController) BatchForceOffline(ctx *gin.Context) {
 	// 检查用户是否已登录
 	operatorID, exists := ctx.Get("userID")

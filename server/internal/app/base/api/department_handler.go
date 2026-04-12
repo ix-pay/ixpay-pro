@@ -21,7 +21,7 @@ import (
 //     @Summary		部门管理 API
 //     @Description	提供部门创建、更新、删除、查询等功能
 //     @Tags			部门管理
-//     @Router			/api/admin//dept [get]
+//     @Router			/api/admin/dept [get]
 type DepartmentController struct {
 	service *service.DepartmentService // 部门服务接口
 	log     logger.Logger              // 日志记录器
@@ -71,7 +71,7 @@ func convertToDepartmentResponse(dept *entity.Department) response.DepartmentRes
 //	@Success		200			{object}	baseRes.Response{data=response.DepartmentListResponse,msg=string}	"部门列表"
 //	@Failure		401			{object}	map[string]string																"未授权"
 //	@Failure		500			{object}	map[string]string																"服务器内部错误"
-//	@Router			/api/admin//dept [get]
+//	@Router			/api/admin/dept [get]
 func (c *DepartmentController) GetDepartmentList(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -135,7 +135,7 @@ func (c *DepartmentController) GetDepartmentList(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=[]entity.Department,msg=string}	"部门树"
 //	@Failure		401	{object}	map[string]string										"未授权"
 //	@Failure		500	{object}	map[string]string										"服务器内部错误"
-//	@Router			/api/admin//dept/tree [get]
+//	@Router			/api/admin/dept/tree [get]
 func (c *DepartmentController) GetDepartmentTree(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -168,7 +168,7 @@ func (c *DepartmentController) GetDepartmentTree(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string									"请求参数错误"
 //	@Failure		401	{object}	map[string]string									"未授权"
 //	@Failure		500	{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//dept/:id [get]
+//	@Router			/api/admin/dept/:id [get]
 func (c *DepartmentController) GetDepartmentByID(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -208,7 +208,7 @@ func (c *DepartmentController) GetDepartmentByID(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string									"请求参数错误"
 //	@Failure		401		{object}	map[string]string									"未授权"
 //	@Failure		500		{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//dept [post]
+//	@Router			/api/admin/dept [post]
 func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 	var req request.CreateDepartmentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -267,7 +267,7 @@ func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string									"请求参数错误"
 //	@Failure		401		{object}	map[string]string									"未授权"
 //	@Failure		500		{object}	map[string]string									"服务器内部错误"
-//	@Router			/api/admin//dept [put]
+//	@Router			/api/admin/dept [put]
 func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 	var req request.UpdateDepartmentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -318,7 +318,7 @@ func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//dept/{id} [delete]
+//	@Router			/api/admin/dept/:id [delete]
 func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
 	// 直接使用 string 类型的部门 ID
 	departmentID := ctx.Param("id")
@@ -351,7 +351,7 @@ func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
 //	@Failure		400		{object}	map[string]string						"请求参数错误"
 //	@Failure		401		{object}	map[string]string						"未授权"
 //	@Failure		500		{object}	map[string]string						"服务器内部错误"
-//	@Router			/api/admin//dept/{id}/leader [put]
+//	@Router			/api/admin/dept/:id/leader [put]
 func (c *DepartmentController) UpdateDepartmentLeader(ctx *gin.Context) {
 	// 直接使用 string 类型的部门 ID
 	departmentID := ctx.Param("id")

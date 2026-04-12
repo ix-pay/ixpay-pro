@@ -55,7 +55,7 @@ func convertToUserSettingResponse(setting *entity.UserSetting) response.UserSett
 //     @Summary		用户相关 API
 //     @Description	提供用户注册、登录、信息查询等功能
 //     @Tags			用户管理
-//     @Router			/api/admin//user [get]
+//     @Router			/api/admin/user [get]
 type UserController struct {
 	service *service.UserService // 用户服务接口
 	log     logger.Logger        // 日志记录器
@@ -85,7 +85,7 @@ func NewUserController(service *service.UserService, log logger.Logger) *UserCon
 //	@Param			register	body		request.RegisterRequest							true	"注册请求参数"
 //	@Success		201			{object}	baseRes.Response{data=entity.User,msg=string}	"注册成功"
 //	@Failure		400			{object}	map[string]string								"请求参数错误"
-//	@Router			/api/admin//auth/register [post]
+//	@Router			/api/admin/auth/register [post]
 func (c *UserController) Register(ctx *gin.Context) {
 	var req request.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -117,7 +117,7 @@ func (c *UserController) Register(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=response.UserInfoResponse,msg=string}	"用户信息"
 //	@Failure		401	{object}	map[string]string											"未授权"
 //	@Failure		500	{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin//user/info [get]
+//	@Router			/api/admin/user/info [get]
 func (c *UserController) GetUserInfo(ctx *gin.Context) {
 	// 从上下文中获取用户 ID
 	userID, exists := ctx.Get("userID")
@@ -220,7 +220,7 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 //	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]entity.User},msg=string}	"用户列表"
 //	@Failure		401			{object}	map[string]string														"未授权"
 //	@Failure		500			{object}	map[string]string														"服务器内部错误"
-//	@Router			/api/admin//user [get]
+//	@Router			/api/admin/user [get]
 func (c *UserController) GetUserList(ctx *gin.Context) {
 	// 检查用户是否已登录
 	_, exists := ctx.Get("userID")
@@ -289,7 +289,7 @@ func (c *UserController) GetUserList(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string								"请求参数错误"
 //	@Failure		401			{object}	map[string]string								"未授权"
 //	@Failure		500			{object}	map[string]string								"服务器内部错误"
-//	@Router			/api/admin//user [post]
+//	@Router			/api/admin/user [post]
 func (c *UserController) AddUser(ctx *gin.Context) {
 	var req request.AddUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -346,7 +346,7 @@ func (c *UserController) AddUser(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string								"请求参数错误"
 //	@Failure		401			{object}	map[string]string								"未授权"
 //	@Failure		500			{object}	map[string]string								"服务器内部错误"
-//	@Router			/api/admin//user/info [put]
+//	@Router			/api/admin/user/info [put]
 func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 	var req request.UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -422,7 +422,7 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 //	@Failure		400	{object}	map[string]string				"请求参数错误"
 //	@Failure		401	{object}	map[string]string				"未授权"
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//user/{id} [delete]
+//	@Router			/api/admin/user/{id} [delete]
 func (c *UserController) DeleteUser(ctx *gin.Context) {
 	// 解析用户 ID（直接使用 string 类型）
 	userID := ctx.Param("id")
@@ -454,7 +454,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 //	@Failure		400				{object}	map[string]string				"请求参数错误"
 //	@Failure		401				{object}	map[string]string				"未授权"
 //	@Failure		500				{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//user/password [put]
+//	@Router			/api/admin/user/password [put]
 func (c *UserController) ChangePassword(ctx *gin.Context) {
 	var req request.ChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -493,7 +493,7 @@ func (c *UserController) ChangePassword(ctx *gin.Context) {
 //	@Failure		400				{object}	map[string]string				"请求参数错误"
 //	@Failure		401				{object}	map[string]string				"未授权"
 //	@Failure		500				{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//user/reset-password [put]
+//	@Router			/api/admin/user/reset-password [put]
 func (c *UserController) ResetPassword(ctx *gin.Context) {
 	var req request.ResetPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -538,7 +538,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=map[string]entity.UserSetting,msg=string}	"用户设置信息"
 //	@Failure		401	{object}	map[string]string												"未授权"
 //	@Failure		500	{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin//user/getSelfSetting [get]
+//	@Router			/api/admin/user/getSelfSetting [get]
 func (c *UserController) GetSelfSetting(ctx *gin.Context) {
 	// 从上下文中获取用户ID
 	userID, exists := ctx.Get("userID")
@@ -575,7 +575,7 @@ func (c *UserController) GetSelfSetting(ctx *gin.Context) {
 //	@Failure		400				{object}	map[string]string												"请求参数错误"
 //	@Failure		401				{object}	map[string]string												"未授权"
 //	@Failure		500				{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin//user/setSelfSetting [put]
+//	@Router			/api/admin/user/setSelfSetting [put]
 func (c *UserController) SetSelfSetting(ctx *gin.Context) {
 	var req entity.UserSetting
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -619,7 +619,7 @@ func (c *UserController) SetSelfSetting(ctx *gin.Context) {
 //	@Failure		400			{object}	map[string]string				"请求参数错误"
 //	@Failure		401			{object}	map[string]string				"未授权"
 //	@Failure		500			{object}	map[string]string				"服务器内部错误"
-//	@Router			/api/admin//user/switch-role [post]
+//	@Router			/api/admin/user/switch-role [post]
 func (c *UserController) SwitchRole(ctx *gin.Context) {
 	var req request.SwitchRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

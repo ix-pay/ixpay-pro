@@ -100,7 +100,7 @@ func convertToAPIResponse(route *entity.API) *response.APIResponse {
 //	@Failure		401			{object}	baseRes.Response{msg=string}				"未授权"
 //	@Failure		403			{object}	baseRes.Response{msg=string}				"无权限"
 //	@Failure		500			{object}	baseRes.Response{msg=string}				"服务器内部错误"
-//	@Router			/api/admin//apis [get]
+//	@Router			/api/admin/apis [get]
 func (c *APIController) GetAPIs(ctx *gin.Context) {
 	_, ok := c.checkAdminPermission(ctx)
 	if !ok {
@@ -161,7 +161,7 @@ func (c *APIController) GetAPIs(ctx *gin.Context) {
 //	@Failure		403	{object}	baseRes.Response{msg=string}		"无权限"
 //	@Failure		404	{object}	baseRes.Response{msg=string}		"路由不存在"
 //	@Failure		500	{object}	baseRes.Response{msg=string}		"服务器内部错误"
-//	@Router			/api/admin//apis/{id} [get]
+//	@Router			/api/admin/apis/:id [get]
 func (c *APIController) GetRouteByID(ctx *gin.Context) {
 	_, ok := c.checkAdminPermission(ctx)
 	if !ok {
@@ -201,7 +201,7 @@ func (c *APIController) GetRouteByID(ctx *gin.Context) {
 //	@Failure		403		{object}	baseRes.Response{msg=string}		"无权限"
 //	@Failure		400		{object}	baseRes.Response{msg=string}		"参数错误"
 //	@Failure		500		{object}	baseRes.Response{msg=string}		"服务器内部错误"
-//	@Router			/api/admin//apis [post]
+//	@Router			/api/admin/apis [post]
 func (c *APIController) CreateAPI(ctx *gin.Context) {
 	operatorID, ok := c.checkAdminPermission(ctx)
 	if !ok {
@@ -255,7 +255,7 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 //	@Failure		400		{object}	baseRes.Response{msg=string}		"参数错误"
 //	@Failure		404		{object}	baseRes.Response{msg=string}		"路由不存在"
 //	@Failure		500		{object}	baseRes.Response{msg=string}		"服务器内部错误"
-//	@Router			/api/admin//apis/{id} [put]
+//	@Router			/api/admin/apis/:id [put]
 func (c *APIController) UpdateAPI(ctx *gin.Context) {
 	operatorID, ok := c.checkAdminPermission(ctx)
 	if !ok {
@@ -309,7 +309,7 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 //	@Failure		400	{object}	baseRes.Response{msg=string}	"参数错误"
 //	@Failure		404	{object}	baseRes.Response{msg=string}	"路由不存在"
 //	@Failure		500	{object}	baseRes.Response{msg=string}	"服务器内部错误"
-//	@Router			/api/admin//apis/{id} [delete]
+//	@Router			/api/admin/apis/:id [delete]
 func (c *APIController) DeleteAPI(ctx *gin.Context) {
 	_, ok := c.checkAdminPermission(ctx)
 	if !ok {
@@ -349,7 +349,7 @@ func (c *APIController) DeleteAPI(ctx *gin.Context) {
 //	@Failure		401				{object}	baseRes.Response{msg=string}							"未授权"
 //	@Failure		403				{object}	baseRes.Response{msg=string}							"无权限"
 //	@Failure		500				{object}	baseRes.Response{msg=string}							"服务器内部错误"
-//	@Router			/api/admin//apis/list [get]
+//	@Router			/api/admin/apis/list [get]
 func (c *APIController) GetAPIList(ctx *gin.Context) {
 	_, ok := c.checkAdminPermission(ctx)
 	if !ok {

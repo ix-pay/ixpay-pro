@@ -2,6 +2,13 @@ package response
 
 import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
+// RoleDTO 角色 DTO（用于用户详情中的角色信息）
+type RoleDTO struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Code string `json:"code"`
+}
+
 // RoleResponse 角色响应模型
 // 所有 ID 字段使用 string 格式，避免前端精度丢失
 type RoleResponse struct {

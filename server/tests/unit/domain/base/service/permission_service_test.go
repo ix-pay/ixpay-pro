@@ -43,11 +43,11 @@ func TestPermissionService_CheckAPIAccess(t *testing.T) {
 		method       string
 		expectAccess bool
 	}{
-		{"管理员访问", 1, "/api/admin//user", "GET", true},
-		{"普通用户访问", 2, "/api/admin//user", "GET", false},
-		{"未认证用户", 0, "/api/admin//user", "GET", false},
+		{"管理员访问", 1, "/api/admin/user", "GET", true},
+		{"普通用户访问", 2, "/api/admin/user", "GET", false},
+		{"未认证用户", 0, "/api/admin/user", "GET", false},
 		{"无效路径", 1, "/invalid/path", "GET", false},
-		{"无效方法", 1, "/api/admin//user", "INVALID", false},
+		{"无效方法", 1, "/api/admin/user", "INVALID", false},
 	}
 
 	for _, tc := range testCases {
@@ -192,9 +192,9 @@ func TestPermissionService_GetUserAPIPermissions(t *testing.T) {
 	assert.Positive(t, userId, "用户 ID 必须大于 0")
 
 	apiPermissions := []*entity.API{
-		{Path: "/api/admin//user", Method: "GET"},
-		{Path: "/api/admin//user", Method: "POST"},
-		{Path: "/api/admin//role", Method: "GET"},
+		{Path: "/api/admin/user", Method: "GET"},
+		{Path: "/api/admin/user", Method: "POST"},
+		{Path: "/api/admin/role", Method: "GET"},
 	}
 
 	assert.NotEmpty(t, apiPermissions, "权限列表不应该为空")

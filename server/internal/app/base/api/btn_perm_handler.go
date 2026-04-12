@@ -38,7 +38,7 @@ func NewBtnPermController(btnPermService *service.BtnPermService, permissionServ
 //	@Security		BearerAuth
 //	@Param			data	body		request.CreateBtnPermRequest	true	"按钮权限信息"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms [post]
+//	@Router			/api/admin/btn-perms [post]
 func (c *BtnPermController) CreateBtnPerm(ctx *gin.Context) {
 	var req request.CreateBtnPermRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -78,7 +78,7 @@ func (c *BtnPermController) CreateBtnPerm(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			id	query		uint	true	"按钮权限ID"
 //	@Success		200	{object}	baseRes.Response{data=response.BtnPermResponse}
-//	@Router			/api/admin//btn-perms/detail [get]
+//	@Router			/api/admin/btn-perms/detail [get]
 func (c *BtnPermController) GetBtnPermByID(ctx *gin.Context) {
 	var req request.GetBtnPermByIDRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -107,7 +107,7 @@ func (c *BtnPermController) GetBtnPermByID(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.UpdateBtnPermRequest	true	"按钮权限信息"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms [put]
+//	@Router			/api/admin/btn-perms [put]
 func (c *BtnPermController) UpdateBtnPerm(ctx *gin.Context) {
 	var req request.UpdateBtnPermRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -147,7 +147,7 @@ func (c *BtnPermController) UpdateBtnPerm(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.DeleteBtnPermRequest	true	"按钮权限ID"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms [delete]
+//	@Router			/api/admin/btn-perms [delete]
 func (c *BtnPermController) DeleteBtnPerm(ctx *gin.Context) {
 	var req request.DeleteBtnPermRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -183,7 +183,7 @@ func (c *BtnPermController) DeleteBtnPerm(ctx *gin.Context) {
 //	@Param			name		query		string	false	"按钮名称"
 //	@Param			status		query		int		false	"状态(-1:全部,0:禁用,1:启用)"
 //	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]entity.BtnPerm,total=int64,page=int,pageSize=int}}
-//	@Router			/api/admin//btn-perms [get]
+//	@Router			/api/admin/btn-perms [get]
 func (c *BtnPermController) GetBtnPermList(ctx *gin.Context) {
 	var req request.GetBtnPermListRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -233,7 +233,7 @@ func (c *BtnPermController) GetBtnPermList(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.AssignToBtnPermRequest	true	"按钮ID和API路由ID列表"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms/assign-api-routes [post]
+//	@Router			/api/admin/btn-perms/assign-api-routes [post]
 func (c *BtnPermController) AssignToBtnPerm(ctx *gin.Context) {
 	var req request.AssignToBtnPermRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -267,7 +267,7 @@ func (c *BtnPermController) AssignToBtnPerm(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.RevokeFromBtnPermRequest	true	"按钮ID和API路由ID"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms/revoke-api-route [post]
+//	@Router			/api/admin/btn-perms/revoke-api-route [post]
 func (c *BtnPermController) RevokeFromBtnPerm(ctx *gin.Context) {
 	var req request.RevokeFromBtnPermRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -298,7 +298,7 @@ func (c *BtnPermController) RevokeFromBtnPerm(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.AssignBtnPermToRoleRequest	true	"角色ID和按钮权限ID列表"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms/assign-to-role [post]
+//	@Router			/api/admin/btn-perms/assign-to-role [post]
 func (c *BtnPermController) AssignBtnPermToRole(ctx *gin.Context) {
 	var req request.AssignBtnPermToRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -330,7 +330,7 @@ func (c *BtnPermController) AssignBtnPermToRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			data	body		request.RevokeBtnPermFromRoleRequest	true	"角色ID和按钮权限ID"
 //	@Success		200		{object}	baseRes.Response
-//	@Router			/api/admin//btn-perms/revoke-from-role [post]
+//	@Router			/api/admin/btn-perms/revoke-from-role [post]
 func (c *BtnPermController) RevokeBtnPermFromRole(ctx *gin.Context) {
 	var req request.RevokeBtnPermFromRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -362,7 +362,7 @@ func (c *BtnPermController) RevokeBtnPermFromRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			btnPermId	query		int64	true	"按钮权限 ID"
 //	@Success		200			{object}	baseRes.Response{data=[]entity.API}
-//	@Router			/api/admin//btn-perms/api-routes [get]
+//	@Router			/api/admin/btn-perms/api-routes [get]
 func (c *BtnPermController) GetAPIRoutesByBtnPerm(ctx *gin.Context) {
 	var req struct {
 		BtnPermID string `form:"btnPermId" binding:"required,gte=1"`
@@ -394,7 +394,7 @@ func (c *BtnPermController) GetAPIRoutesByBtnPerm(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			routeId	query		int64	true	"API 路由 ID"
 //	@Success		200		{object}	baseRes.Response{data=[]entity.BtnPerm}
-//	@Router			/api/admin//btn-perms/for-route [get]
+//	@Router			/api/admin/btn-perms/for-route [get]
 func (c *BtnPermController) GetBtnPermsByAPIRoute(ctx *gin.Context) {
 	var req struct {
 		RouteID string `form:"routeId" binding:"required,gte=1"`
@@ -426,7 +426,7 @@ func (c *BtnPermController) GetBtnPermsByAPIRoute(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			roleId	query		int64	true	"角色 ID"
 //	@Success		200		{object}	baseRes.Response{data=[]response.BtnPermForRole}
-//	@Router			/api/admin//btn-perms/by-role [get]
+//	@Router			/api/admin/btn-perms/by-role [get]
 func (c *BtnPermController) GetBtnPermsByRole(ctx *gin.Context) {
 	var req struct {
 		RoleID string `form:"roleId" binding:"required"`
@@ -473,7 +473,7 @@ func (c *BtnPermController) GetBtnPermsByRole(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			menuId	query		int64	true	"菜单 ID"
 //	@Success		200		{object}	baseRes.Response{data=[]entity.BtnPerm}
-//	@Router			/api/admin//btn-perms/by-menu [get]
+//	@Router			/api/admin/btn-perms/by-menu [get]
 func (c *BtnPermController) GetBtnPermsByMenu(ctx *gin.Context) {
 	var req struct {
 		MenuID string `form:"menuId" binding:"required,gte=1"`

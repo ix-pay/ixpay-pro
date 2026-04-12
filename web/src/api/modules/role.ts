@@ -52,7 +52,7 @@ export const getRoleList = (params?: {
   status?: number
 }): Promise<ApiResponse<{ list: RoleType[]; total: number; page: number; pageSize: number }>> => {
   return service({
-    url: '/roles',
+    url: '/role',
     method: 'get',
     params,
   })
@@ -61,7 +61,7 @@ export const getRoleList = (params?: {
 // 创建角色
 export const createRole = (data: CreateRoleRequest): Promise<ApiResponse<RoleType>> => {
   return service({
-    url: '/roles',
+    url: '/role',
     method: 'post',
     data,
   })
@@ -70,7 +70,7 @@ export const createRole = (data: CreateRoleRequest): Promise<ApiResponse<RoleTyp
 // 获取角色详情 (包含关联权限)
 export const getRoleDetail = (id: string): Promise<ApiResponse<RoleType>> => {
   return service({
-    url: '/roles/detail',
+    url: '/role/detail',
     method: 'get',
     params: { id }, // 直接传递字符串，避免 Number 精度丢失
   })
@@ -79,7 +79,7 @@ export const getRoleDetail = (id: string): Promise<ApiResponse<RoleType>> => {
 // 更新角色
 export const updateRole = (data: UpdateRoleRequest): Promise<ApiResponse> => {
   return service({
-    url: '/roles',
+    url: '/role',
     method: 'put',
     data,
   })
@@ -88,7 +88,7 @@ export const updateRole = (data: UpdateRoleRequest): Promise<ApiResponse> => {
 // 删除角色
 export const deleteRole = (id: string): Promise<ApiResponse> => {
   return service({
-    url: '/roles',
+    url: '/role',
     method: 'delete',
     data: { id },
   })
@@ -100,7 +100,7 @@ export const assignUserToRole = (data: {
   userIds: number[]
 }): Promise<ApiResponse> => {
   return service({
-    url: '/roles/assign-users',
+    url: '/role/assign-users',
     method: 'post',
     data,
   })
@@ -112,7 +112,7 @@ export const assignMenuToRole = (data: {
   menuIds: number[]
 }): Promise<ApiResponse> => {
   return service({
-    url: '/roles/assign-menus',
+    url: '/role/assign-menus',
     method: 'post',
     data,
   })
@@ -121,7 +121,7 @@ export const assignMenuToRole = (data: {
 // 分配 API 路由到角色
 export const assignApiToRole = (data: { roleId: number; ids: number[] }): Promise<ApiResponse> => {
   return service({
-    url: '/roles/assign-api-routes',
+    url: '/role/assign-api-routes',
     method: 'post',
     data,
   })
@@ -130,7 +130,7 @@ export const assignApiToRole = (data: { roleId: number; ids: number[] }): Promis
 // 获取所有角色列表
 export const getRolesList = (): Promise<ApiResponse<RoleType[]>> => {
   return service({
-    url: '/roles/all',
+    url: '/role/all',
     method: 'get',
   })
 }

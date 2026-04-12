@@ -398,15 +398,15 @@ type PaymentAppService struct {
 | 用户状态管理       | 启用/禁用用户账号                              | ✅ 已实现 |
 
 **核心接口**：
-- `POST /api/admin//auth/register` - 用户注册
-- `POST /api/admin//auth/login` - 用户登录
-- `GET /api/admin//user/info` - 获取当前用户信息
-- `PUT /api/admin//user/info` - 更新用户信息
-- `GET /api/admin//user` - 获取用户列表
-- `POST /api/admin//user` - 添加用户
-- `DELETE /api/admin//user/:id` - 删除用户
-- `PUT /api/admin//user/password` - 修改密码
-- `PUT /api/admin//user/reset-password` - 重置密码
+- `POST /api/admin/auth/register` - 用户注册
+- `POST /api/admin/auth/login` - 用户登录
+- `GET /api/admin/user/info` - 获取当前用户信息
+- `PUT /api/admin/user/info` - 更新用户信息
+- `GET /api/admin/user` - 获取用户列表
+- `POST /api/admin/user` - 添加用户
+- `DELETE /api/admin/user/:id` - 删除用户
+- `PUT /api/admin/user/password` - 修改密码
+- `PUT /api/admin/user/reset-password` - 重置密码
 
 #### 3.1.2 角色管理
 
@@ -422,14 +422,14 @@ type PaymentAppService struct {
 | 角色状态管理       | 启用/禁用角色                                  | ✅ 已实现 |
 
 **核心接口**：
-- `POST /api/admin//roles` - 创建角色
-- `GET /api/admin//roles` - 获取角色列表
-- `GET /api/admin//roles/detail` - 获取角色详情
-- `PUT /api/admin//roles` - 更新角色
-- `DELETE /api/admin//roles` - 删除角色
-- `POST /api/admin//roles/assign-users` - 分配用户到角色
-- `POST /api/admin//roles/assign-menus` - 分配菜单到角色
-- `POST /api/admin//roles/assign-api-routes` - 分配 API 路由到角色
+- `POST /api/admin/roles` - 创建角色
+- `GET /api/admin/roles` - 获取角色列表
+- `GET /api/admin/roles/detail` - 获取角色详情
+- `PUT /api/admin/roles` - 更新角色
+- `DELETE /api/admin/roles` - 删除角色
+- `POST /api/admin/roles/assign-users` - 分配用户到角色
+- `POST /api/admin/roles/assign-menus` - 分配菜单到角色
+- `POST /api/admin/roles/assign-api-routes` - 分配 API 路由到角色
 
 #### 3.1.3 权限管理
 
@@ -472,11 +472,11 @@ type PaymentAppService struct {
 | 菜单状态管理       | 启用/禁用菜单                                  | ✅ 已实现 |
 
 **核心接口**：
-- `POST /api/admin//menu` - 添加菜单
-- `GET /api/admin//menu` - 获取菜单列表
-- `GET /api/admin//menu/page` - 分页获取菜单
-- `PUT /api/admin//menu` - 更新菜单
-- `DELETE /api/admin//menu/:id` - 删除菜单
+- `POST /api/admin/menu` - 添加菜单
+- `GET /api/admin/menu` - 获取菜单列表
+- `GET /api/admin/menu/page` - 分页获取菜单
+- `PUT /api/admin/menu` - 更新菜单
+- `DELETE /api/admin/menu/:id` - 删除菜单
 
 #### 3.1.5 API 路由管理
 
@@ -492,11 +492,11 @@ type PaymentAppService struct {
 | 自动收集路由       | 启动时自动收集并保存路由到数据库               | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//apis` - 获取 API 路由列表
-- `GET /api/admin//apis/:id` - 获取 API 路由详情
-- `POST /api/admin//apis` - 创建 API 路由
-- `PUT /api/admin//apis/:id` - 更新 API 路由
-- `DELETE /api/admin//apis/:id` - 删除 API 路由
+- `GET /api/admin/apis` - 获取 API 路由列表
+- `GET /api/admin/apis/:id` - 获取 API 路由详情
+- `POST /api/admin/apis` - 创建 API 路由
+- `PUT /api/admin/apis/:id` - 更新 API 路由
+- `DELETE /api/admin/apis/:id` - 删除 API 路由
 
 #### 3.1.6 按钮权限管理
 
@@ -512,13 +512,13 @@ type PaymentAppService struct {
 | 按钮权限查询       | 根据角色、菜单查询按钮权限                     | ✅ 已实现 |
 
 **核心接口**：
-- `POST /api/admin//btn-perms` - 创建按钮权限
-- `GET /api/admin//btn-perms` - 获取按钮权限列表
-- `GET /api/admin//btn-perms/detail` - 获取按钮权限详情
-- `PUT /api/admin//btn-perms` - 更新按钮权限
-- `DELETE /api/admin//btn-perms` - 删除按钮权限
-- `POST /api/admin//btn-perms/assign-to-role` - 分配按钮权限到角色
-- `POST /api/admin//btn-perms/assign-api-routes` - 分配 API 路由到按钮权限
+- `POST /api/admin/btn-perms` - 创建按钮权限
+- `GET /api/admin/btn-perms` - 获取按钮权限列表
+- `GET /api/admin/btn-perms/detail` - 获取按钮权限详情
+- `PUT /api/admin/btn-perms` - 更新按钮权限
+- `DELETE /api/admin/btn-perms` - 删除按钮权限
+- `POST /api/admin/btn-perms/assign-to-role` - 分配按钮权限到角色
+- `POST /api/admin/btn-perms/assign-api-routes` - 分配 API 路由到按钮权限
 
 #### 3.1.7 配置管理
 
@@ -533,13 +533,13 @@ type PaymentAppService struct {
 | 配置状态管理       | 启用/禁用配置项                                | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//config` - 获取配置列表
-- `GET /api/admin//config/key` - 根据键获取配置
-- `GET /api/admin//config/:id` - 根据 ID 获取配置
-- `POST /api/admin//config` - 创建配置
-- `PUT /api/admin//config` - 更新配置
-- `DELETE /api/admin//config/:id` - 删除配置
-- `GET /api/admin//config/active` - 获取所有启用的配置
+- `GET /api/admin/config` - 获取配置列表
+- `GET /api/admin/config/key` - 根据键获取配置
+- `GET /api/admin/config/:id` - 根据 ID 获取配置
+- `POST /api/admin/config` - 创建配置
+- `PUT /api/admin/config` - 更新配置
+- `DELETE /api/admin/config/:id` - 删除配置
+- `GET /api/admin/config/active` - 获取所有启用的配置
 
 #### 3.1.8 字典管理
 
@@ -553,14 +553,14 @@ type PaymentAppService struct {
 | 字典状态管理       | 启用/禁用字典表和字典项                        | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//dict` - 获取字典列表
-- `GET /api/admin//dict/code` - 根据编码获取字典
-- `GET /api/admin//dict/:id` - 根据 ID 获取字典
-- `POST /api/admin//dict` - 创建字典
-- `PUT /api/admin//dict` - 更新字典
-- `DELETE /api/admin//dict/:id` - 删除字典
-- `GET /api/admin//dict/items` - 获取字典项列表
-- `POST /api/admin//dict/item` - 创建字典项
+- `GET /api/admin/dict` - 获取字典列表
+- `GET /api/admin/dict/code` - 根据编码获取字典
+- `GET /api/admin/dict/:id` - 根据 ID 获取字典
+- `POST /api/admin/dict` - 创建字典
+- `PUT /api/admin/dict` - 更新字典
+- `DELETE /api/admin/dict/:id` - 删除字典
+- `GET /api/admin/dict/items` - 获取字典项列表
+- `POST /api/admin/dict/item` - 创建字典项
 
 #### 3.1.9 操作日志
 
@@ -575,12 +575,12 @@ type PaymentAppService struct {
 | 自动捕获           | 通过中间件自动捕获请求和响应                   | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//logs` - 获取操作日志列表
-- `GET /api/admin//logs/:id` - 获取操作日志详情
-- `DELETE /api/admin//logs/:id` - 删除操作日志
-- `POST /api/admin//logs/batch-delete` - 批量删除操作日志
-- `GET /api/admin//logs/statistics` - 获取操作日志统计
-- `POST /api/admin//logs/clear` - 按时间范围清理日志
+- `GET /api/admin/logs` - 获取操作日志列表
+- `GET /api/admin/logs/:id` - 获取操作日志详情
+- `DELETE /api/admin/logs/:id` - 删除操作日志
+- `POST /api/admin/logs/batch-delete` - 批量删除操作日志
+- `GET /api/admin/logs/statistics` - 获取操作日志统计
+- `POST /api/admin/logs/clear` - 按时间范围清理日志
 
 #### 3.1.10 组织架构管理
 
@@ -595,17 +595,17 @@ type PaymentAppService struct {
 | 岗位状态管理       | 启用/禁用岗位                                  | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//dept` - 获取部门列表
-- `GET /api/admin//dept/tree` - 获取部门树形结构
-- `GET /api/admin//dept/:id` - 获取部门详情
-- `POST /api/admin//dept` - 创建部门
-- `PUT /api/admin//dept` - 更新部门
-- `DELETE /api/admin//dept/:id` - 删除部门
-- `PUT /api/admin//dept/:id/leader` - 更新部门负责人
-- `GET /api/admin//position` - 获取岗位列表
-- `POST /api/admin//position` - 创建岗位
-- `PUT /api/admin//position` - 更新岗位
-- `DELETE /api/admin//position/:id` - 删除岗位
+- `GET /api/admin/dept` - 获取部门列表
+- `GET /api/admin/dept/tree` - 获取部门树形结构
+- `GET /api/admin/dept/:id` - 获取部门详情
+- `POST /api/admin/dept` - 创建部门
+- `PUT /api/admin/dept` - 更新部门
+- `DELETE /api/admin/dept/:id` - 删除部门
+- `PUT /api/admin/dept/:id/leader` - 更新部门负责人
+- `GET /api/admin/position` - 获取岗位列表
+- `POST /api/admin/position` - 创建岗位
+- `PUT /api/admin/position` - 更新岗位
+- `DELETE /api/admin/position/:id` - 删除岗位
 
 #### 3.1.11 登录日志
 
@@ -618,10 +618,10 @@ type PaymentAppService struct {
 | 自动记录           | 登录成功后自动记录                             | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//login-log` - 获取登录日志列表
-- `GET /api/admin//login-log/:id` - 获取登录日志详情
-- `GET /api/admin//login-log/statistics` - 获取登录统计
-- `GET /api/admin//login-log/abnormal` - 获取异常登录查询
+- `GET /api/admin/login-log` - 获取登录日志列表
+- `GET /api/admin/login-log/:id` - 获取登录日志详情
+- `GET /api/admin/login-log/statistics` - 获取登录统计
+- `GET /api/admin/login-log/abnormal` - 获取异常登录查询
 
 #### 3.1.12 在线用户
 
@@ -635,11 +635,11 @@ type PaymentAppService struct {
 | 批量强制下线       | 批量强制多个用户下线                           | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//online-user` - 获取在线用户列表
-- `GET /api/admin//online-user/:user_id` - 获取在线用户详情
-- `GET /api/admin//online-user/count` - 获取在线用户数量
-- `GET /api/admin//online-user/online` - 检查用户是否在线
-- `DELETE /api/admin//online-user/:user_id` - 强制用户下线
+- `GET /api/admin/online-user` - 获取在线用户列表
+- `GET /api/admin/online-user/:user_id` - 获取在线用户详情
+- `GET /api/admin/online-user/count` - 获取在线用户数量
+- `GET /api/admin/online-user/online` - 检查用户是否在线
+- `DELETE /api/admin/online-user/:user_id` - 强制用户下线
 
 #### 3.1.13 公告管理
 
@@ -655,15 +655,15 @@ type PaymentAppService struct {
 | 公告统计           | 获取公告统计信息                               | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//notice` - 获取公告列表
-- `GET /api/admin//notice/:id` - 获取公告详情
-- `POST /api/admin//notice` - 创建公告
-- `PUT /api/admin//notice` - 更新公告
-- `DELETE /api/admin//notice/:id` - 删除公告
-- `POST /api/admin//notice/:id/publish` - 发布公告
-- `POST /api/admin//notice/:id/read` - 标记公告已读
-- `GET /api/admin//notice/:id/is-read` - 检查公告是否已读
-- `GET /api/admin//notice/statistics` - 获取公告统计
+- `GET /api/admin/notice` - 获取公告列表
+- `GET /api/admin/notice/:id` - 获取公告详情
+- `POST /api/admin/notice` - 创建公告
+- `PUT /api/admin/notice` - 更新公告
+- `DELETE /api/admin/notice/:id` - 删除公告
+- `POST /api/admin/notice/:id/publish` - 发布公告
+- `POST /api/admin/notice/:id/read` - 标记公告已读
+- `GET /api/admin/notice/:id/is-read` - 检查公告是否已读
+- `GET /api/admin/notice/statistics` - 获取公告统计
 
 #### 3.1.14 系统监控
 
@@ -677,11 +677,11 @@ type PaymentAppService struct {
 | Prometheus 集成     | 集成 Prometheus 监控系统                       | ✅ 已实现 |
 
 **核心接口**：
-- `GET /api/admin//monitor/system` - 获取系统资源监控
-- `GET /api/admin//monitor/cache` - 获取缓存监控
-- `GET /api/admin//monitor/database` - 获取数据库监控
-- `GET /api/admin//monitor/redis-keys` - 查询 Redis 键
-- `GET /api/admin//monitor/slow-queries` - 查询慢查询日志
+- `GET /api/admin/monitor/system` - 获取系统资源监控
+- `GET /api/admin/monitor/cache` - 获取缓存监控
+- `GET /api/admin/monitor/database` - 获取数据库监控
+- `GET /api/admin/monitor/redis-keys` - 查询 Redis 键
+- `GET /api/admin/monitor/slow-queries` - 查询慢查询日志
 
 #### 3.1.15 任务管理
 
@@ -698,16 +698,16 @@ type PaymentAppService struct {
 | 任务统计           | 获取任务统计信息                               | ✅ 已实现 |
 
 **核心接口**：
-- `POST /api/admin//task` - 添加任务
-- `GET /api/admin//task` - 获取任务列表
-- `GET /api/admin//task/:id` - 获取任务详情
-- `POST /api/admin//task/:id/start` - 启动任务
-- `POST /api/admin//task/:id/stop` - 停止任务
-- `POST /api/admin//task/:id/retry` - 重试任务
-- `DELETE /api/admin//task/:id` - 删除任务
-- `GET /api/admin//task/:id/execution-logs` - 获取任务执行日志
-- `GET /api/admin//task/statistics` - 获取任务统计
-- `POST /api/admin//task/:id/group` - 设置任务分组
+- `POST /api/admin/task` - 添加任务
+- `GET /api/admin/task` - 获取任务列表
+- `GET /api/admin/task/:id` - 获取任务详情
+- `POST /api/admin/task/:id/start` - 启动任务
+- `POST /api/admin/task/:id/stop` - 停止任务
+- `POST /api/admin/task/:id/retry` - 重试任务
+- `DELETE /api/admin/task/:id` - 删除任务
+- `GET /api/admin/task/:id/execution-logs` - 获取任务执行日志
+- `GET /api/admin/task/statistics` - 获取任务统计
+- `POST /api/admin/task/:id/group` - 设置任务分组
 
 ### 3.2 微信支付模块
 

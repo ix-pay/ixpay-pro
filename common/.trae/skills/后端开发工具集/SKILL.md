@@ -250,7 +250,7 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 // @Param        register  body  request.RegisterRequest  true  "注册请求参数"
 // @Success      201  {object}  baseRes.Response{data=entity.User,msg=string}  "注册成功"
 // @Failure      400  {object}  map[string]string  "请求参数错误"
-// @Router       /api/admin//auth/register [post]
+// @Router       /api/admin/auth/register [post]
 ```
 
 ## 功能 6：错误处理规范

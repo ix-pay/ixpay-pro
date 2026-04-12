@@ -29,7 +29,7 @@ export const getOnlineUserList = (params?: {
   }>
 > => {
   return service({
-    url: '/online-users',
+    url: '/online-user',
     method: 'get',
     params,
   })
@@ -38,7 +38,7 @@ export const getOnlineUserList = (params?: {
 // 强制下线
 export const forceLogout = (token: string): Promise<ApiResponse> => {
   return service({
-    url: `//online-users/${token}/logout`,
+    url: `/online-user/${token}/logout`,
     method: 'post',
   })
 }
@@ -46,7 +46,7 @@ export const forceLogout = (token: string): Promise<ApiResponse> => {
 // 批量强制下线
 export const batchForceLogout = (data: { tokens: string[] }): Promise<ApiResponse> => {
   return service({
-    url: '/online-users/batch-logout',
+    url: '/online-user/batch-logout',
     method: 'post',
     data,
   })

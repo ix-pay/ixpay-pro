@@ -27,7 +27,7 @@ export const getPositionList = (params?: {
   }>
 > => {
   return service({
-    url: '/positions',
+    url: '/position',
     method: 'get',
     params,
   })
@@ -42,7 +42,7 @@ export const createPosition = (data: {
   status: number
 }): Promise<ApiResponse<Position>> => {
   return service({
-    url: '/positions',
+    url: '/position',
     method: 'post',
     data,
   })
@@ -60,7 +60,7 @@ export const updatePosition = (
   },
 ): Promise<ApiResponse<Position>> => {
   return service({
-    url: `//positions/${id}`,
+    url: `/position/${id}`,
     method: 'put',
     data,
   })
@@ -69,7 +69,7 @@ export const updatePosition = (
 // 删除职位
 export const deletePosition = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//positions/${id}`,
+    url: `/position/${id}`,
     method: 'delete',
   })
 }

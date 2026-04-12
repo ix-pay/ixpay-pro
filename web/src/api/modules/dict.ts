@@ -39,7 +39,7 @@ export const getDictList = (params?: {
   }>
 > => {
   return service({
-    url: '/dicts',
+    url: '/dict',
     method: 'get',
     params,
   })
@@ -53,7 +53,7 @@ export const createDict = (data: {
   status: number
 }): Promise<ApiResponse<Dict>> => {
   return service({
-    url: '/dicts',
+    url: '/dict',
     method: 'post',
     data,
   })
@@ -70,7 +70,7 @@ export const updateDict = (
   },
 ): Promise<ApiResponse<Dict>> => {
   return service({
-    url: `//dicts/${id}`,
+    url: `/dict/${id}`,
     method: 'put',
     data,
   })
@@ -79,7 +79,7 @@ export const updateDict = (
 // 删除字典
 export const deleteDict = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//dicts/${id}`,
+    url: `/dict/${id}`,
     method: 'delete',
   })
 }
@@ -87,7 +87,7 @@ export const deleteDict = (id: number): Promise<ApiResponse> => {
 // 获取字典项列表
 export const getDictItemList = (dictCode: string): Promise<ApiResponse<DictItem[]>> => {
   return service({
-    url: `//dicts/${dictCode}/items`,
+    url: `/dict/${dictCode}/items`,
     method: 'get',
   })
 }
@@ -103,7 +103,7 @@ export const createDictItem = (
   },
 ): Promise<ApiResponse<DictItem>> => {
   return service({
-    url: `//dicts/${dictId}/items`,
+    url: `/dict/${dictId}/items`,
     method: 'post',
     data,
   })

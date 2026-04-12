@@ -30,7 +30,7 @@ export const getTaskList = (params?: {
   }>
 > => {
   return service({
-    url: '/tasks/list',
+    url: '/task/list',
     method: 'get',
     params,
   })
@@ -39,7 +39,7 @@ export const getTaskList = (params?: {
 // 获取所有任务
 export const getAllTasks = (): Promise<ApiResponse<Task[]>> => {
   return service({
-    url: '/tasks',
+    url: '/task',
     method: 'get',
   })
 }
@@ -47,7 +47,7 @@ export const getAllTasks = (): Promise<ApiResponse<Task[]>> => {
 // 根据 ID 获取任务
 export const getTaskById = (id: number): Promise<ApiResponse<Task>> => {
   return service({
-    url: `//tasks/${id}`,
+    url: `/task/${id}`,
     method: 'get',
   })
 }
@@ -61,7 +61,7 @@ export const createTask = (data: {
   status: number
 }): Promise<ApiResponse<Task>> => {
   return service({
-    url: '/tasks',
+    url: '/task',
     method: 'post',
     data,
   })
@@ -79,7 +79,7 @@ export const updateTask = (
   },
 ): Promise<ApiResponse<Task>> => {
   return service({
-    url: `//tasks/${id}`,
+    url: `/task/${id}`,
     method: 'put',
     data,
   })
@@ -88,7 +88,7 @@ export const updateTask = (
 // 删除任务
 export const deleteTask = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//tasks/${id}`,
+    url: `/task/${id}`,
     method: 'delete',
   })
 }
@@ -96,7 +96,7 @@ export const deleteTask = (id: number): Promise<ApiResponse> => {
 // 执行任务
 export const runTask = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//tasks/${id}/run`,
+    url: `/task/${id}/run`,
     method: 'post',
   })
 }
@@ -124,7 +124,7 @@ export const getTaskLogs = (
   }>
 > => {
   return service({
-    url: `//tasks/${id}/execution-logs`,
+    url: `/task/${id}/execution-logs`,
     method: 'get',
     params,
   })

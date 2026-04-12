@@ -13,7 +13,7 @@ import type { ApiResponse } from '@/types'
 // @Param module query string false "操作模块"
 // @Param operationType query int false "操作类型"
 // @Param isSuccess query bool false "操作结果"
-// @Router /api/admin//logs [get]
+// @Router /api/admin/logs [get]
 export const getLogList = (params: {
   page: number
   pageSize: number
@@ -36,7 +36,7 @@ export const getLogList = (params: {
 // @Tags 系统管理
 // @Security BearerAuth
 // @Param id path int true "日志 ID"
-// @Router /api/admin//logs/{id} [get]
+// @Router /api/admin/logs/{id} [get]
 export const getLogByID = (id: string): Promise<ApiResponse> => {
   return service({
     url: `//logs/${id}`,
@@ -49,7 +49,7 @@ export const getLogByID = (id: string): Promise<ApiResponse> => {
 // @Tags 系统管理
 // @Security BearerAuth
 // @Param id path int true "日志 ID"
-// @Router /api/admin//logs/{id} [delete]
+// @Router /api/admin/logs/{id} [delete]
 export const deleteLogByID = (id: string): Promise<ApiResponse> => {
   return service({
     url: `//logs/${id}`,
@@ -62,7 +62,7 @@ export const deleteLogByID = (id: string): Promise<ApiResponse> => {
 // @Tags 系统管理
 // @Security BearerAuth
 // @Param request body map[string][]int64 true "批量删除请求参数"
-// @Router /api/admin//logs/batch-delete [post]
+// @Router /api/admin/logs/batch-delete [post]
 export const batchDeleteLog = (data: { ids: string[] }): Promise<ApiResponse> => {
   return service({
     url: '/logs/batch-delete',
@@ -77,7 +77,7 @@ export const batchDeleteLog = (data: { ids: string[] }): Promise<ApiResponse> =>
 // @Security BearerAuth
 // @Param startTime query string false "开始时间 (格式:2006-01-02)"
 // @Param endTime query string false "结束时间 (格式:2006-01-02)"
-// @Router /api/admin//logs/statistics [get]
+// @Router /api/admin/logs/statistics [get]
 export const getLogStatistics = (params?: {
   startTime?: string
   endTime?: string
@@ -94,7 +94,7 @@ export const getLogStatistics = (params?: {
 // @Tags 系统管理
 // @Security BearerAuth
 // @Param request body map[string]string true "时间范围参数"
-// @Router /api/admin//logs/clear [post]
+// @Router /api/admin/logs/clear [post]
 export const clearLogByTimeRange = (data: {
   startTime: string
   endTime: string

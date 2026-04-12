@@ -32,5 +32,5 @@ AI 必须按以下流程调用技能：
 4. **规则遵守**：rules ≤1000 字符、中文命名、frontmatter
 5. **质量第一**：格式化 + 类型检查 + 构建验证
 6. **单文件操作**：一次只操作一个文件
-7. **禁止 PowerShell 命令修改文件**：只用 Edit 工具
+7. **禁止 PowerShell 的 Get-Content 和 -replace 命令修改文件**：只用 Edit 工具
 8. **前后端一致性**：ID 使用 string，JSON 标签 camelCase

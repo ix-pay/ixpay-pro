@@ -17,7 +17,7 @@ export const getDepartmentList = (params?: {
   parentId?: number
 }): Promise<ApiResponse<Department[]>> => {
   return service({
-    url: '/departments',
+    url: '/dept',
     method: 'get',
     params,
   })
@@ -31,7 +31,7 @@ export const createDepartment = (data: {
   status: number
 }): Promise<ApiResponse<Department>> => {
   return service({
-    url: '/departments',
+    url: '/dept',
     method: 'post',
     data,
   })
@@ -48,7 +48,7 @@ export const updateDepartment = (
   },
 ): Promise<ApiResponse<Department>> => {
   return service({
-    url: `//departments/${id}`,
+    url: `/dept/${id}`,
     method: 'put',
     data,
   })
@@ -57,7 +57,7 @@ export const updateDepartment = (
 // 删除部门
 export const deleteDepartment = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//departments/${id}`,
+    url: `/dept/${id}`,
     method: 'delete',
   })
 }

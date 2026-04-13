@@ -141,11 +141,6 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 			if err := operationLogService.CreateLog(operationLog); err != nil {
 				log.Error("记录操作日志失败", "error", err)
 			}
-
-			// 记录操作日志
-			if err := operationLogService.CreateLog(operationLog); err != nil {
-				log.Error("记录操作日志失败", "error", err)
-			}
 		}()
 	}
 }

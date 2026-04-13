@@ -161,4 +161,4 @@ func ProvideRedisClient(redisClient *redis.RedisClient) *redis2.Client {
 	return redisClient.Client
 }
 
-var ProviderSet = wire.NewSet(base.ProviderSetBaseMonitor, base.ProviderSetBaseRepo, wx.ProviderSetWXRepo, base.ProviderSetBaseService, wx.ProviderSetWXService, base.ProviderSetBaseController, wx.ProviderSetWXController, base.ProviderSetBaseApp, wx.ProviderSetWXApp)
+var ProviderSet = wire.NewSet(base.ProviderSetBaseMonitor, base.ProviderSetBaseRepo, wx.ProviderSetWXRepo, base.ProviderSetBaseService, wx.ProviderSetWXService, base.ProviderSetBaseConverter, base.ProviderSetBaseController, wx.ProviderSetWXController, base.ProviderSetBaseApp, wx.ProviderSetWXApp)

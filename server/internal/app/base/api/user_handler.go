@@ -96,7 +96,6 @@ func (c *UserController) Register(ctx *gin.Context) {
 
 	user, err := c.service.Register(req.Username, req.Password, req.Email)
 	if err != nil {
-		c.log.Error("用户注册失败", "error", err)
 		baseRes.FailWithMessage("用户注册失败", ctx)
 		return
 	}
@@ -129,7 +128,6 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 
 	user, err := c.service.GetUserInfo(userID.(string))
 	if err != nil {
-		c.log.Error("获取用户信息失败", "error", err)
 		baseRes.FailWithMessage("获取用户信息失败", ctx)
 		return
 	}
@@ -254,7 +252,6 @@ func (c *UserController) GetUserList(ctx *gin.Context) {
 
 	users, total, err := c.service.GetUserList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取用户列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -314,7 +311,6 @@ func (c *UserController) AddUser(ctx *gin.Context) {
 
 	user, err := c.service.AddUser(req.Username, req.Password, req.Email, req.Nickname, req.Phone, req.Avatar, req.DepartmentID, req.PositionID, createdBy.(string), status)
 	if err != nil {
-		c.log.Error("添加用户失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -322,7 +318,6 @@ func (c *UserController) AddUser(ctx *gin.Context) {
 	// 分配角色
 	if len(req.Roles) > 0 {
 		if err := c.service.UpdateUserRoles(user.ID, req.Roles); err != nil {
-			c.log.Error("分配用户角色失败", "error", err)
 			baseRes.FailWithMessage("分配用户角色失败", ctx)
 			return
 		}
@@ -366,7 +361,6 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 	// 获取要更新的用户信息（使用 string 类型的 ID）
 	user, err := c.service.GetUserInfo(req.ID)
 	if err != nil {
-		c.log.Error("获取用户信息失败", "error", err)
 		baseRes.FailWithMessage("获取用户信息失败", ctx)
 		return
 	}
@@ -390,7 +384,6 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 
 	// 调用服务层更新用户信息
 	if err := c.service.UpdateUserInfo(user, updatedBy.(string)); err != nil {
-		c.log.Error("更新用户信息失败", "error", err)
 		baseRes.FailWithMessage("更新用户信息失败", ctx)
 		return
 	}
@@ -398,7 +391,6 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 	// 更新用户角色
 	if len(req.Roles) > 0 {
 		if err := c.service.UpdateUserRoles(user.ID, req.Roles); err != nil {
-			c.log.Error("更新用户角色失败", "error", err)
 			baseRes.FailWithMessage("更新用户角色失败", ctx)
 			return
 		}
@@ -433,7 +425,6 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 	}
 
 	if err := c.service.DeleteUser(userID); err != nil {
-		c.log.Error("删除用户失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -472,7 +463,6 @@ func (c *UserController) ChangePassword(ctx *gin.Context) {
 	}
 
 	if err := c.service.ChangePassword(userID.(string), req.OldPassword, req.NewPassword); err != nil {
-		c.log.Error("修改密码失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -519,7 +509,6 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 	}
 
 	if err := c.service.ResetPassword(userID, "123456", updatedBy.(string)); err != nil {
-		c.log.Error("重置密码失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -550,7 +539,6 @@ func (c *UserController) GetSelfSetting(ctx *gin.Context) {
 
 	setting, err := c.service.GetSelfSetting(userID.(string))
 	if err != nil {
-		c.log.Error("获取用户设置失败", "error", err)
 		baseRes.FailWithMessage("获取用户设置失败", ctx)
 		return
 	}
@@ -594,7 +582,6 @@ func (c *UserController) SetSelfSetting(ctx *gin.Context) {
 
 	setting, err := c.service.SetSelfSetting(userID.(string), &req)
 	if err != nil {
-		c.log.Error("保存用户设置失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -638,7 +625,6 @@ func (c *UserController) SwitchRole(ctx *gin.Context) {
 
 	// 调用服务层切换角色（使用 string 类型）
 	if err := c.service.SwitchRole(userID.(string), req.RoleID); err != nil {
-		c.log.Error("切换角色失败", "userID", userID, "roleID", req.RoleID, "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

@@ -38,21 +38,55 @@ export const useUserStore = defineStore('user', () => {
     // 处理后端返回的 user 对象，确保字段名称和类型正确匹配
     const normalizedUserInfo: Partial<UserInfo> = {
       // 处理字段名称大小写差异并确保是字符串类型
-      nickname: String((val as Record<string, unknown>).nickname || (val as Record<string, unknown>).Nickname || ''),
-      avatar: String((val as Record<string, unknown>).avatar || (val as Record<string, unknown>).Avatar || ''),
+      nickname: String(
+        (val as Record<string, unknown>).nickname ||
+          (val as Record<string, unknown>).Nickname ||
+          '',
+      ),
+      avatar: String(
+        (val as Record<string, unknown>).avatar || (val as Record<string, unknown>).Avatar || '',
+      ),
       // 处理 ID 字段类型转换
-      id: (val as Record<string, unknown>).id ? String((val as Record<string, unknown>).id) : (val as Record<string, unknown>).ID ? String((val as Record<string, unknown>).ID) : '',
+      id: (val as Record<string, unknown>).id
+        ? String((val as Record<string, unknown>).id)
+        : (val as Record<string, unknown>).ID
+          ? String((val as Record<string, unknown>).ID)
+          : '',
       // 处理 roles 字段（后端返回的是 Roles）- 只保留简单字段，避免循环引用
-      roles: processRoles((val as Record<string, unknown>).roles || (val as Record<string, unknown>).Roles),
+      roles: processRoles(
+        (val as Record<string, unknown>).roles || (val as Record<string, unknown>).Roles,
+      ),
       // 处理 current_role_id 字段
-      currentRoleId: String((val as Record<string, unknown>).current_role_id || (val as Record<string, unknown>).currentRoleId || ''),
+      currentRoleId: String(
+        (val as Record<string, unknown>).current_role_id ||
+          (val as Record<string, unknown>).currentRoleId ||
+          '',
+      ),
       // 其他字段
-      username: String((val as Record<string, unknown>).username || (val as Record<string, unknown>).Username || ''),
-      email: String((val as Record<string, unknown>).email || (val as Record<string, unknown>).Email || ''),
-      phone: String((val as Record<string, unknown>).phone || (val as Record<string, unknown>).Phone || ''),
-      status: Number((val as Record<string, unknown>).status || (val as Record<string, unknown>).Status || 1),
-      createdAt: String((val as Record<string, unknown>).created_at || (val as Record<string, unknown>).CreatedAt || ''),
-      updatedAt: String((val as Record<string, unknown>).updated_at || (val as Record<string, unknown>).UpdatedAt || ''),
+      username: String(
+        (val as Record<string, unknown>).username ||
+          (val as Record<string, unknown>).Username ||
+          '',
+      ),
+      email: String(
+        (val as Record<string, unknown>).email || (val as Record<string, unknown>).Email || '',
+      ),
+      phone: String(
+        (val as Record<string, unknown>).phone || (val as Record<string, unknown>).Phone || '',
+      ),
+      status: Number(
+        (val as Record<string, unknown>).status || (val as Record<string, unknown>).Status || 1,
+      ),
+      createdAt: String(
+        (val as Record<string, unknown>).created_at ||
+          (val as Record<string, unknown>).CreatedAt ||
+          '',
+      ),
+      updatedAt: String(
+        (val as Record<string, unknown>).updated_at ||
+          (val as Record<string, unknown>).UpdatedAt ||
+          '',
+      ),
     }
 
     // 合并用户信息

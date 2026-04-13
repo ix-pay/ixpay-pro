@@ -98,7 +98,6 @@ func (c *TaskController) AddTask(ctx *gin.Context) {
 		}
 
 		if err := c.manager.AddScheduledTask(scheduledTask); err != nil {
-			c.log.Error("添加定时任务失败", "error", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -166,7 +165,6 @@ func (c *TaskController) RemoveTask(ctx *gin.Context) {
 	}
 
 	if err := c.manager.RemoveScheduledTask(taskID); err != nil {
-		c.log.Error("移除任务失败", "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -232,9 +230,8 @@ func (c *TaskController) StopTask(ctx *gin.Context) {
 		return
 	}
 
-	// 在TaskManager中，停止任务相当于移除任务
+	// 在 TaskManager 中，停止任务相当于移除任务
 	if err := c.manager.RemoveScheduledTask(taskID); err != nil {
-		c.log.Error("停止任务失败", "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -364,7 +361,6 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 	// 查询执行历史
 	logs, total, err := c.service.GetExecutionHistory(req.TaskID, req.Page, req.PageSize)
 	if err != nil {
-		c.log.Error("查询任务执行历史失败", "task_id", taskID, "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询任务执行历史失败"})
 		return
 	}
@@ -422,7 +418,6 @@ func (c *TaskController) GetStatistics(ctx *gin.Context) {
 	// 获取所有任务统计
 	stats, err := c.service.GetAllTaskStatistics()
 	if err != nil {
-		c.log.Error("获取任务统计失败", "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "获取任务统计失败"})
 		return
 	}
@@ -484,7 +479,6 @@ func (c *TaskController) SetTaskGroup(ctx *gin.Context) {
 
 	// 设置任务分组
 	if err := c.manager.SetTaskGroup(taskID, req.Group); err != nil {
-		c.log.Error("设置任务分组失败", "task_id", taskID, "error", err)
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "任务不存在"})
 		return
 	}

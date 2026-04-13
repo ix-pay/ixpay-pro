@@ -28,16 +28,16 @@ type menuModel struct {
 	FrameSrc   string `gorm:"size:255"`
 
 	// GORM 关联关系 - 一对多（子菜单）
-	Children []menuModel `gorm:"foreignKey:ParentID;references:ID"`
+	Children []menuModel `gorm:"foreignKey:parent_id;references:id"`
 
 	// GORM 关联关系 - 多对一（父菜单）
-	Parent *menuModel `gorm:"foreignKey:ParentID;references:ID"`
+	Parent *menuModel `gorm:"foreignKey:parent_id;references:id"`
 
 	// GORM 关联关系 - 多对多（通过中间表 base_menu_api_routes）
-	APIRoutes []apiModel `gorm:"many2many:base_menu_api_routes;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	APIRoutes []apiModel `gorm:"many2many:base_menu_api_routes;joinForeignKey:menu_id;joinReferences:route_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
 	// GORM 关联关系 - 一对多（按钮权限）
-	BtnPerms []btnPermModel `gorm:"foreignKey:MenuID;references:ID"`
+	BtnPerms []btnPermModel `gorm:"foreignKey:menu_id;references:id"`
 }
 
 // TableName 指定表名

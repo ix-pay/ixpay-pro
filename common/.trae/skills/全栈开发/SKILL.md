@@ -938,16 +938,24 @@ logger.Error("Failed to create user", "error", err)
 
 #### 13.1 数据库模型关联标签定义
 
+**⭐⭐⭐ 关联字段命名规范（必须遵守）⭐⭐⭐**
+
+**核心原则**：GORM 关联标签中的字段名必须与数据库表结构中的实际字段名完全一致（使用 snake_case）
+
 **多对一关联（Belongs To）**
 ```go
 type userModel struct {
     // ... 其他字段
-    DepartmentID int64  `gorm:"index"`
-    PositionID   int64  `gorm:"index"`
+    DepartmentID int64  `gorm:"index"`      // Go 字段名：PascalCase
+    PositionID   int64  `gorm:"index"`      // Go 字段名：PascalCase
     
     // GORM 关联标签 - 多对一
-    Department *departmentModel `gorm:"foreignKey:DepartmentID;references:ID"`
-    Position   *positionModel   `gorm:"foreignKey:PositionID;references:ID"`
+    // ✅ 正确：foreignKey 和 references 使用数据库字段名（snake_case）
+    Department *departmentModel `gorm:"foreignKey:department_id;references:id"`
+    Position   *positionModel   `gorm:"foreignKey:position_id;references:id"`
+    
+    // ❌ 错误：不要使用 Go 字段名（PascalCase）
+    // Department *departmentModel `gorm:"foreignKey:DepartmentID;references:ID"`
 }
 ```
 
@@ -957,7 +965,11 @@ type userModel struct {
     // ... 其他字段
     
     // GORM 关联标签 - 多对多（通过中间表 base_role_users）
-    Roles []roleModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+    // ✅ 正确：joinForeignKey 和 joinReferences 使用数据库字段名（snake_case）
+    Roles []*roleModel `gorm:"many2many:base_role_users;joinForeignKey:user_id;joinReferences:role_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+    
+    // ❌ 错误：不要使用 Go 字段名（PascalCase）
+    // Roles []*roleModel `gorm:"many2many:base_role_users;joinForeignKey:UserID;joinReferences:RoleID"`
 }
 ```
 
@@ -967,8 +979,38 @@ type roleModel struct {
     // ... 其他字段
     
     // GORM 关联关系 - 一对多（通过中间表）
-    Users []userModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+    // ✅ 正确：foreignKey 和 references 使用数据库字段名（snake_case）
+    Users []*userModel `gorm:"many2many:base_role_users;joinForeignKey:role_id;joinReferences:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
+```
+
+**⭐⭐⭐ 关键字段说明⭐⭐⭐**
+
+| 参数 | 用途 | 命名规则 | 示例 |
+|------|------|---------|------|
+| `foreignKey` | 指定**当前模型**中的外键字段 | snake_case（数据库字段名） | `department_id`, `parent_id` |
+| `references` | 指定**关联模型**的主键字段 | snake_case（通常是 `id`） | `id` |
+| `joinForeignKey` | 指定**当前模型**在中间表中的外键字段 | snake_case（中间表字段名） | `user_id`, `role_id` |
+| `joinReferences` | 指定**关联模型**在中间表中的外键字段 | snake_case（中间表字段名） | `role_id`, `menu_id` |
+
+**中间表字段映射示例**：
+```go
+// 数据库中间表：base_role_users
+// 字段：role_id (BIGINT), user_id (BIGINT)
+
+// ✅ 正确：User 模型的多对多定义
+type userModel struct {
+    Roles []*roleModel `gorm:"many2many:base_role_users;joinForeignKey:user_id;joinReferences:role_id"`
+}
+// joinForeignKey:user_id → 当前模型 (User) 在中间表中的外键字段
+// joinReferences:role_id → 关联模型 (Role) 在中间表中的外键字段
+
+// ✅ 正确：Role 模型的多对多定义
+type roleModel struct {
+    Users []*userModel `gorm:"many2many:base_role_users;joinForeignKey:role_id;joinReferences:user_id"`
+}
+// joinForeignKey:role_id → 当前模型 (Role) 在中间表中的外键字段
+// joinReferences:user_id → 关联模型 (User) 在中间表中的外键字段
 ```
 
 #### 13.2 ⭐ 关联关系枚举定义（类型安全）⭐⭐⭐

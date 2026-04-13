@@ -60,7 +60,6 @@ func (c *BtnPermController) CreateBtnPerm(ctx *gin.Context) {
 	// 调用服务层创建按钮权限
 	err := c.btnPermService.CreateBtnPerm(btnPerm, userID.(string))
 	if err != nil {
-		c.log.Error("创建按钮权限失败", "error", err.Error())
 		baseRes.FailWithMessage("创建按钮权限失败", ctx)
 		return
 	}
@@ -89,7 +88,6 @@ func (c *BtnPermController) GetBtnPermByID(ctx *gin.Context) {
 
 	btnPermDetail, err := c.btnPermService.GetBtnPermByID(req.ID)
 	if err != nil {
-		c.log.Error("获取按钮权限详情失败", "error", err.Error(), "btnPermID", req.ID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取按钮权限失败", ctx)
 		return
 	}
@@ -128,7 +126,6 @@ func (c *BtnPermController) UpdateBtnPerm(ctx *gin.Context) {
 	// 调用 UpdateBtnPerm 方法
 	err := c.btnPermService.UpdateBtnPerm(btnPerm, userID.(string))
 	if err != nil {
-		c.log.Error("更新按钮权限失败", "error", err.Error(), "userID", userID, "btnPermID", req.ID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "更新按钮权限失败", ctx)
 		return
 	}
@@ -159,7 +156,6 @@ func (c *BtnPermController) DeleteBtnPerm(ctx *gin.Context) {
 	userID, _ := ctx.Get("userID")
 	err := c.btnPermService.DeleteBtnPerm(req.ID)
 	if err != nil {
-		c.log.Error("删除按钮权限失败", "error", err.Error(), "userID", userID, "btnPermID", req.ID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "删除按钮权限失败", ctx)
 		return
 	}
@@ -209,7 +205,6 @@ func (c *BtnPermController) GetBtnPermList(ctx *gin.Context) {
 
 	btnPermList, total, err := c.btnPermService.GetBtnPermList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取按钮权限列表失败", "error", err.Error(), "page", req.Page, "pageSize", req.PageSize)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取按钮权限列表失败", ctx)
 		return
 	}
@@ -247,8 +242,7 @@ func (c *BtnPermController) AssignToBtnPerm(ctx *gin.Context) {
 	for _, routeID := range req.IDs {
 		err := c.btnPermService.AssignAPIToBtnPerm(req.BtnPermID, routeID)
 		if err != nil {
-			c.log.Error("分配API路由到按钮失败", "error", err.Error(), "userID", userID, "btnPermID", req.BtnPermID, "routeID", routeID)
-			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配API路由到按钮失败", ctx)
+			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配 API 路由到按钮失败", ctx)
 			return
 		}
 	}
@@ -279,8 +273,7 @@ func (c *BtnPermController) RevokeFromBtnPerm(ctx *gin.Context) {
 	userID, _ := ctx.Get("userID")
 	err := c.btnPermService.RevokeAPIFromBtnPerm(req.BtnPermID, req.ID)
 	if err != nil {
-		c.log.Error("撤销API路由从按钮失败", "error", err.Error(), "userID", userID, "btnPermID", req.BtnPermID, "routeID", req.ID)
-		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "撤销API路由从按钮失败", ctx)
+		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "撤销 API 路由从按钮失败", ctx)
 		return
 	}
 
@@ -311,7 +304,6 @@ func (c *BtnPermController) AssignBtnPermToRole(ctx *gin.Context) {
 	// 使用角色服务批量分配按钮权限
 	err := c.roleService.BatchAssignBtnPermsToRole(req.RoleID, req.BtnPermIDs)
 	if err != nil {
-		c.log.Error("分配按钮权限到角色失败", "error", err.Error(), "userID", userID, "roleID", req.RoleID)
 		baseRes.FailWithMessage("分配按钮权限到角色失败", ctx)
 		return
 	}
@@ -343,7 +335,6 @@ func (c *BtnPermController) RevokeBtnPermFromRole(ctx *gin.Context) {
 	// 使用角色服务撤销按钮权限
 	err := c.roleService.RevokeBtnPermFromRole(req.RoleID, req.BtnPermID)
 	if err != nil {
-		c.log.Error("从角色撤销按钮权限失败", "error", err.Error(), "userID", userID, "roleID", req.RoleID, "btnPermID", req.BtnPermID)
 		baseRes.FailWithMessage("从角色撤销按钮权限失败", ctx)
 		return
 	}
@@ -375,8 +366,7 @@ func (c *BtnPermController) GetAPIRoutesByBtnPerm(ctx *gin.Context) {
 
 	apiRoutes, err := c.btnPermService.GetAPIsForBtnPerm(req.BtnPermID)
 	if err != nil {
-		c.log.Error("获取按钮关联API路由失败", "error", err.Error(), "btnPermID", req.BtnPermID)
-		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取按钮关联API路由失败", ctx)
+		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取按钮关联 API 路由失败", ctx)
 		return
 	}
 
@@ -407,7 +397,6 @@ func (c *BtnPermController) GetBtnPermsByAPIRoute(ctx *gin.Context) {
 
 	btnPerms, err := c.btnPermService.GetBtnPermsForAPI(req.RouteID)
 	if err != nil {
-		c.log.Error("获取路由关联按钮权限失败", "error", err.Error(), "routeID", req.RouteID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取路由关联按钮权限失败", ctx)
 		return
 	}
@@ -440,7 +429,6 @@ func (c *BtnPermController) GetBtnPermsByRole(ctx *gin.Context) {
 	// 通过 PermissionService 获取角色的按钮权限列表
 	btnPerms, err := c.permissionService.GetBtnPermsByRole(req.RoleID)
 	if err != nil {
-		c.log.Error("获取角色关联按钮权限失败", "error", err.Error(), "roleID", req.RoleID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色关联按钮权限失败", ctx)
 		return
 	}
@@ -486,7 +474,6 @@ func (c *BtnPermController) GetBtnPermsByMenu(ctx *gin.Context) {
 
 	btnPerms, err := c.btnPermService.GetBtnPermsByMenu(req.MenuID)
 	if err != nil {
-		c.log.Error("获取菜单关联按钮权限失败", "error", err.Error(), "menuID", req.MenuID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取菜单关联按钮权限失败", ctx)
 		return
 	}

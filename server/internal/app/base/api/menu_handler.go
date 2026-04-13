@@ -118,7 +118,6 @@ func (c *MenuController) GetMenuList(ctx *gin.Context) {
 
 	menus, err := c.service.GetUserMenus(role.(string))
 	if err != nil {
-		c.log.Error("获取菜单列表失败", "error", err)
 		baseRes.FailWithMessage("获取菜单列表失败", ctx)
 		return
 	}
@@ -177,7 +176,6 @@ func (c *MenuController) AddMenu(ctx *gin.Context) {
 
 	// 调用服务层创建菜单
 	if err := c.service.CreateMenu(&menu, createdBy.(string)); err != nil {
-		c.log.Error("创建菜单失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -255,7 +253,6 @@ func (c *MenuController) UpdateMenu(ctx *gin.Context) {
 
 	// 调用服务层更新菜单（包含 API 关联）
 	if err := c.service.UpdateMenuWithAPIs(&menu, req.ApiIds, updatedBy.(string)); err != nil {
-		c.log.Error("更新菜单失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -305,7 +302,6 @@ func (c *MenuController) DeleteMenu(ctx *gin.Context) {
 
 	// 调用服务层删除菜单
 	if err := c.service.DeleteMenu(menuID); err != nil {
-		c.log.Error("删除菜单失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -351,7 +347,6 @@ func (c *MenuController) GetMenuPage(ctx *gin.Context) {
 	// 调用服务层获取分页菜单列表
 	menus, total, err := c.service.GetMenuList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取菜单分页列表失败", "error", err)
 		baseRes.FailWithMessage("获取菜单分页列表失败", ctx)
 		return
 	}
@@ -393,7 +388,6 @@ func (c *MenuController) GetMenuDeleteImpact(ctx *gin.Context) {
 	// 调用服务层计算删除影响
 	impact, err := c.service.CalculateDeleteImpact(menuID)
 	if err != nil {
-		c.log.Error("计算删除影响失败", "error", err, "menuID", menuID)
 		baseRes.FailWithMessage("计算删除影响失败", ctx)
 		return
 	}
@@ -425,7 +419,6 @@ func (c *MenuController) GetMenuTree(ctx *gin.Context) {
 	// 调用服务层获取菜单树
 	menus, err := c.service.GetAllMenuTree()
 	if err != nil {
-		c.log.Error("获取菜单树失败", "error", err)
 		baseRes.FailWithMessage("获取菜单树失败", ctx)
 		return
 	}

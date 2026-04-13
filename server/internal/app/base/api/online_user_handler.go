@@ -58,7 +58,6 @@ func (c *OnlineUserController) GetOnlineUserList(ctx *gin.Context) {
 
 	users, err := c.service.GetOnlineUserList()
 	if err != nil {
-		c.log.Error("获取在线用户列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -147,7 +146,6 @@ func (c *OnlineUserController) GetOnlineUserByID(ctx *gin.Context) {
 
 	user, err := c.service.GetOnlineUserByID(userID)
 	if err != nil {
-		c.log.Error("获取在线用户详情失败", "error", err, "user_id", userID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -212,7 +210,6 @@ func (c *OnlineUserController) ForceOffline(ctx *gin.Context) {
 
 	// 强制用户下线
 	if err := c.service.ForceOffline(userID, operatorID.(string)); err != nil {
-		c.log.Error("强制用户下线失败", "error", err, "user_id", userID, "operator_id", operatorID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -244,7 +241,6 @@ func (c *OnlineUserController) GetOnlineCount(ctx *gin.Context) {
 
 	count, err := c.service.GetOnlineCount()
 	if err != nil {
-		c.log.Error("获取在线用户数量失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -284,7 +280,6 @@ func (c *OnlineUserController) IsOnline(ctx *gin.Context) {
 
 	online, err := c.service.IsOnline(req.UserID)
 	if err != nil {
-		c.log.Error("检查用户在线状态失败", "error", err, "user_id", req.UserID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -334,7 +329,6 @@ func (c *OnlineUserController) BatchForceOffline(ctx *gin.Context) {
 
 	// 批量强制用户下线
 	if err := c.service.BatchKickoutUsers(req.UserIDs, req.Reason, operatorID.(string)); err != nil {
-		c.log.Error("批量强制用户下线失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
-	"github.com/ix-pay/ixpay-pro/internal/domain/shared/converter"
+	"github.com/ix-pay/ixpay-pro/internal/domain/converter"
 	"github.com/ix-pay/ixpay-pro/internal/dto/base/request"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
@@ -42,7 +42,7 @@ func NewLoginLogController(service *service.LoginLogService, log logger.Logger) 
 //	@Param			result		query		int									false	"登录结果：0-失败，1-成功"
 //	@Param			start_date	query		string								false	"开始日期（YYYY-MM-DD）"
 //	@Param			end_date	query		string								false	"结束日期（YYYY-MM-DD）"
-//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]response.LoginLogListDTO},msg=string}	"登录日志列表"
+//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO},msg=string}	"登录日志列表"
 //	@Failure		400			{object}	map[string]string					"请求参数错误"
 //	@Failure		401			{object}	map[string]string					"未授权"
 //	@Failure		500			{object}	map[string]string					"服务器内部错误"
@@ -90,7 +90,6 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 
 	logs, total, err := c.service.GetLoginLogList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取登录日志列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -118,7 +117,7 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			start_date	query		string									true	"开始日期（YYYY-MM-DD）"
 //	@Param			end_date	query		string									true	"结束日期（YYYY-MM-DD）"
-//	@Success		200			{object}	baseRes.Response{data=entity.LoginStatistics,msg=string}	"统计信息"
+//	@Success		200			{object}	baseRes.Response{data=github_com_ix-pay_ixpay-pro_internal_domain_base_entity.LoginStatistics,msg=string}	"统计信息"
 //	@Failure		400			{object}	map[string]string						"请求参数错误"
 //	@Failure		401			{object}	map[string]string						"未授权"
 //	@Failure		500			{object}	map[string]string						"服务器内部错误"
@@ -159,7 +158,6 @@ func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 
 	stats, err := c.service.GetStatistics(startDate, endDate)
 	if err != nil {
-		c.log.Error("获取登录统计失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -179,7 +177,7 @@ func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			page		query		int									true	"页码"
 //	@Param			page_size	query		int									true	"每页数量"
-//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]response.AbnormalLoginInfoDTO},msg=string}	"异常登录列表"
+//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO},msg=string}	"异常登录列表"
 //	@Failure		400			{object}	map[string]string					"请求参数错误"
 //	@Failure		401			{object}	map[string]string					"未授权"
 //	@Failure		500			{object}	map[string]string					"服务器内部错误"
@@ -202,7 +200,6 @@ func (c *LoginLogController) GetAbnormalLogins(ctx *gin.Context) {
 
 	abnormalLogins, total, err := c.service.GetAbnormalLogins(req.Page, req.PageSize)
 	if err != nil {
-		c.log.Error("获取异常登录记录失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -283,7 +280,6 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 		req.Success,
 		req.ErrorMsg,
 	); err != nil {
-		c.log.Error("记录登录日志失败", "error", err, "user_id", req.UserID, "username", req.Username)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -301,7 +297,7 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id	path		string									true	"登录日志 ID"
-//	@Success		200	{object}	baseRes.Response{data=response.LoginLogDetailDTO,msg=string}	"登录日志详情"
+//	@Success		200	{object}	baseRes.Response{data=github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO,msg=string}	"登录日志详情"
 //	@Failure		400	{object}	map[string]string						"请求参数错误"
 //	@Failure		401	{object}	map[string]string						"未授权"
 //	@Failure		500	{object}	map[string]string						"服务器内部错误"
@@ -325,7 +321,6 @@ func (c *LoginLogController) GetLoginLogByID(ctx *gin.Context) {
 
 	log, err := c.service.GetLoginLogByID(logID)
 	if err != nil {
-		c.log.Error("获取登录日志详情失败", "error", err, "id", logID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

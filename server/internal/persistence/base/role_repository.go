@@ -20,18 +20,18 @@ type roleModel struct {
 	Sort        int    `gorm:"default:0"`
 
 	// GORM 关联关系 - 多对多（通过中间表）
-	Users []userModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	Menus []menuModel `gorm:"many2many:base_role_menus;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Users []*userModel `gorm:"many2many:base_role_users;joinForeignKey:role_id;joinReferences:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Menus []*menuModel `gorm:"many2many:base_role_menus;joinForeignKey:role_id;joinReferences:menu_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
 	// GORM 关联关系 - 多对多（通过中间表）
-	APIRoutes []apiModel     `gorm:"many2many:base_role_api_routes;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	BtnPerms  []btnPermModel `gorm:"many2many:base_role_btn_perms;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	APIRoutes []*apiModel     `gorm:"many2many:base_role_api_routes;joinForeignKey:role_id;joinReferences:route_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	BtnPerms  []*btnPermModel `gorm:"many2many:base_role_btn_perms;joinForeignKey:role_id;joinReferences:button_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
 	// GORM 关联关系 - 一对多（子角色）
-	Children []roleModel `gorm:"foreignKey:ParentID;references:ID"`
+	Children []*roleModel `gorm:"foreignKey:parent_id;references:id"`
 
 	// GORM 关联关系 - 多对一（父角色）
-	Parent *roleModel `gorm:"foreignKey:ParentID;references:ID"`
+	Parent *roleModel `gorm:"foreignKey:parent_id;references:id"`
 }
 
 // TableName 指定表名

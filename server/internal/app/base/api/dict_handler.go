@@ -94,7 +94,6 @@ func (c *DictController) GetDictByID(ctx *gin.Context) {
 
 	dict, err := c.dictService.GetDictByID(idStr)
 	if err != nil {
-		c.log.Error("获取字典失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -129,7 +128,6 @@ func (c *DictController) GetDictByCode(ctx *gin.Context) {
 
 	dict, err := c.dictService.GetDictByCode(dictCode)
 	if err != nil {
-		c.log.Error("获取字典失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -137,7 +135,6 @@ func (c *DictController) GetDictByCode(ctx *gin.Context) {
 	// 获取字典项
 	dictItems, err := c.dictItemService.GetDictItemsByDictID(dict.ID)
 	if err != nil {
-		c.log.Error("获取字典项失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -200,7 +197,6 @@ func (c *DictController) CreateDict(ctx *gin.Context) {
 		createdBy.(string),
 	)
 	if err != nil {
-		c.log.Error("创建字典失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -259,7 +255,6 @@ func (c *DictController) UpdateDict(ctx *gin.Context) {
 		updatedBy.(string),
 	)
 	if err != nil {
-		c.log.Error("更新字典失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -291,7 +286,6 @@ func (c *DictController) DeleteDict(ctx *gin.Context) {
 
 	err := c.dictService.DeleteDict(idStr)
 	if err != nil {
-		c.log.Error("删除字典失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -341,7 +335,6 @@ func (c *DictController) GetDictList(ctx *gin.Context) {
 
 	dicts, total, err := c.dictService.GetDictList(int64(page), int64(pageSize), filters)
 	if err != nil {
-		c.log.Error("获取字典列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -400,7 +393,6 @@ func (c *DictController) GetDictItemByID(ctx *gin.Context) {
 
 	dictItem, err := c.dictItemService.GetDictItemByID(idStr)
 	if err != nil {
-		c.log.Error("获取字典项失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -435,7 +427,6 @@ func (c *DictController) GetDictItemsByDictID(ctx *gin.Context) {
 
 	dictItems, err := c.dictItemService.GetDictItemsByDictID(dictIDStr)
 	if err != nil {
-		c.log.Error("获取字典项列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -499,7 +490,6 @@ func (c *DictController) CreateDictItem(ctx *gin.Context) {
 		createdBy.(string),
 	)
 	if err != nil {
-		c.log.Error("创建字典项失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -551,7 +541,6 @@ func (c *DictController) UpdateDictItem(ctx *gin.Context) {
 		updatedBy.(string),
 	)
 	if err != nil {
-		c.log.Error("更新字典项失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -583,7 +572,6 @@ func (c *DictController) DeleteDictItem(ctx *gin.Context) {
 
 	err := c.dictItemService.DeleteDictItem(idStr)
 	if err != nil {
-		c.log.Error("删除字典项失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

@@ -49,7 +49,6 @@ func (c *AuthController) LoginByCode(ctx *gin.Context) {
 	// 调用服务层登录方法，返回用户信息、访问令牌、刷新令牌和错误
 	wxUser, accessToken, refreshToken, accessExpire, _, err := c.service.LoginByCode(req.Code)
 	if err != nil {
-		c.log.Error("微信登录失败", "error", err)
 		baseRes.FailWithMessage("微信登录失败", ctx)
 		return
 	}
@@ -96,7 +95,6 @@ func (c *AuthController) RefreshToken(ctx *gin.Context) {
 
 	accessToken, refreshToken, accessExpire, _, err := c.service.RefreshToken(req.RefreshToken)
 	if err != nil {
-		c.log.Error("刷新令牌失败", "error", err)
 		baseRes.FailWithMessage("刷新令牌失败", ctx)
 		return
 	}

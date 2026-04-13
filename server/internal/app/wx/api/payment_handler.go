@@ -68,7 +68,6 @@ func (c *PaymentController) CreatePayment(ctx *gin.Context) {
 		req.Description,
 	)
 	if err != nil {
-		c.log.Error("创建支付失败", "error", err)
 		baseRes.FailWithMessage("创建支付失败", ctx)
 		return
 	}
@@ -115,7 +114,6 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 
 	payment, err := c.service.GetPayment(paymentID)
 	if err != nil {
-		c.log.Error("查询支付失败", "error", err)
 		baseRes.FailWithMessage("查询支付失败", ctx)
 		return
 	}
@@ -216,7 +214,6 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	// 获取支付记录以验证用户权限
 	payment, err := c.service.GetPayment(paymentID)
 	if err != nil {
-		c.log.Error("查询支付失败", "error", err)
 		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
@@ -231,7 +228,6 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	// 取消支付
 	err = c.service.CancelPayment(paymentID)
 	if err != nil {
-		c.log.Error("取消支付失败", "error", err)
 		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
@@ -239,7 +235,6 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 	// 重新获取支付记录以获取更新后的状态
 	payment, err = c.service.GetPayment(paymentID)
 	if err != nil {
-		c.log.Error("取消后查询支付失败", "error", err)
 		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}

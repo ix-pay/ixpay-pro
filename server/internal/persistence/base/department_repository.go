@@ -19,9 +19,9 @@ type departmentModel struct {
 	Status      int    `gorm:"default:1"`
 	Description string `gorm:"size:255"`
 	// GORM 关联关系
-	Children []departmentModel `gorm:"foreignKey:ParentID;references:ID"`
-	Parent   *departmentModel  `gorm:"foreignKey:ParentID;references:ID"`
-	Leader   *userModel        `gorm:"foreignKey:LeaderID;references:ID"`
+	Children []departmentModel `gorm:"foreignKey:parent_id;references:id"`
+	Parent   *departmentModel  `gorm:"foreignKey:parent_id;references:id"`
+	Leader   *userModel        `gorm:"foreignKey:leader_id;references:id"`
 }
 
 // TableName 指定表名

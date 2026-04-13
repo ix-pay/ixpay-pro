@@ -28,11 +28,11 @@ type userModel struct {
 	WechatOpenID  string `gorm:"size:100;uniqueIndex;default:null"`
 
 	// GORM 关联标签 - 多对一
-	Department *departmentModel `gorm:"foreignKey:DepartmentID;references:ID"`
-	Position   *positionModel   `gorm:"foreignKey:PositionID;references:ID"`
+	Department *departmentModel `gorm:"foreignKey:department_id;references:id"`
+	Position   *positionModel   `gorm:"foreignKey:position_id;references:id"`
 
 	// GORM 关联标签 - 多对多
-	Roles []roleModel `gorm:"many2many:base_role_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Roles []*roleModel `gorm:"many2many:base_role_users;joinForeignKey:user_id;joinReferences:role_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 // TableName 指定表名

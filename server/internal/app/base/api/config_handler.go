@@ -70,7 +70,6 @@ func (c *ConfigController) GetConfigByKey(ctx *gin.Context) {
 
 	config, err := c.service.GetConfigByKey(configKey)
 	if err != nil {
-		c.log.Error("获取配置失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -100,7 +99,6 @@ func (c *ConfigController) GetConfigByID(ctx *gin.Context) {
 
 	config, err := c.service.GetConfigByID(idStr)
 	if err != nil {
-		c.log.Error("获取配置失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -150,7 +148,6 @@ func (c *ConfigController) CreateConfig(ctx *gin.Context) {
 		createdBy.(string),
 	)
 	if err != nil {
-		c.log.Error("创建配置失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -201,7 +198,6 @@ func (c *ConfigController) UpdateConfig(ctx *gin.Context) {
 		updatedBy.(string),
 	)
 	if err != nil {
-		c.log.Error("更新配置失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -233,7 +229,6 @@ func (c *ConfigController) DeleteConfig(ctx *gin.Context) {
 
 	err := c.service.DeleteConfig(idStr)
 	if err != nil {
-		c.log.Error("删除配置失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -278,7 +273,6 @@ func (c *ConfigController) GetConfigList(ctx *gin.Context) {
 
 	configs, total, err := c.service.GetConfigList(page, pageSize, filters)
 	if err != nil {
-		c.log.Error("获取配置列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -315,7 +309,6 @@ func (c *ConfigController) GetConfigList(ctx *gin.Context) {
 func (c *ConfigController) GetAllActiveConfigs(ctx *gin.Context) {
 	configs, err := c.service.GetAllActiveConfigs()
 	if err != nil {
-		c.log.Error("获取启用的配置列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

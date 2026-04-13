@@ -5,9 +5,12 @@ import type { ApiResponse, UserInfo, CaptchaResponse } from '@/types'
 // @Produce  application/json
 // @Param data body {username:"string",password:"string"}
 // @Router /auth/login [post]
-export const login = (
-  data: { username: string; password: string; captcha?: string; captchaId?: string },
-): Promise<ApiResponse<{ user: UserInfo; accessToken?: string; refreshToken?: string }>> => {
+export const login = (data: {
+  username: string
+  password: string
+  captcha?: string
+  captchaId?: string
+}): Promise<ApiResponse<{ user: UserInfo; accessToken?: string; refreshToken?: string }>> => {
   return service({
     url: '/auth/login',
     method: 'post',

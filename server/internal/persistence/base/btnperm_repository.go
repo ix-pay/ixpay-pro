@@ -17,10 +17,10 @@ type btnPermModel struct {
 	Status      int    `gorm:"default:1"`
 
 	// GORM 关联关系 - 多对一（所属菜单）
-	Menu *menuModel `gorm:"foreignKey:MenuID;references:ID"`
+	Menu *menuModel `gorm:"foreignKey:menu_id;references:id"`
 
 	// GORM 关联关系 - 多对多（通过中间表 base_btn_perm_api_routes）
-	APIRoutes []apiModel `gorm:"many2many:base_btn_perm_api_routes;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	APIRoutes []apiModel `gorm:"many2many:base_btn_perm_api_routes;joinForeignKey:btn_perm_id;joinReferences:route_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 // TableName 指定表名

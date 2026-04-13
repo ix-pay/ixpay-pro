@@ -73,7 +73,6 @@ func (c *RoleController) CreateRole(ctx *gin.Context) {
 	// 提供默认值：roleType=1（普通角色）, parentID="0"（顶级角色）, sort=0, isSystem=false
 	role, err := c.roleService.CreateRole(req.Name, code, req.Description, "0", 1, userID.(string), req.Status, 0, false)
 	if err != nil {
-		c.log.Error("创建角色失败", "error", err.Error(), "userID", userID, "roleName", req.Name)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "创建角色失败", ctx)
 		return
 	}
@@ -106,7 +105,6 @@ func (c *RoleController) GetRoleByID(ctx *gin.Context) {
 
 	roleDetail, err := c.roleService.GetRoleByID(roleID)
 	if err != nil {
-		c.log.Error("获取角色详情失败", "error", err.Error(), "roleID", roleID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色失败", ctx)
 		return
 	}
@@ -149,7 +147,6 @@ func (c *RoleController) UpdateRole(ctx *gin.Context) {
 	// 更新角色时保持原有角色类型、父级、排序和系统标识不变
 	err := c.roleService.UpdateRole(req.ID, req.Name, code, req.Description, "0", 1, userID.(string), req.Status, 0, false)
 	if err != nil {
-		c.log.Error("更新角色失败", "error", err.Error(), "userID", userID, "roleID", req.ID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "更新角色失败", ctx)
 		return
 	}
@@ -182,7 +179,6 @@ func (c *RoleController) DeleteRole(ctx *gin.Context) {
 	roleID := req.ID
 	err := c.roleService.DeleteRole(roleID)
 	if err != nil {
-		c.log.Error("删除角色失败", "error", err.Error(), "userID", userID, "roleID", req.ID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "删除角色失败", ctx)
 		return
 	}
@@ -224,7 +220,6 @@ func (c *RoleController) GetRoleList(ctx *gin.Context) {
 
 	roleList, total, err := c.roleService.GetRoleList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取角色列表失败", "error", err.Error(), "page", req.Page, "pageSize", req.PageSize, "name", req.Name)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色列表失败", ctx)
 		return
 	}
@@ -271,7 +266,6 @@ func (c *RoleController) AssignUserToRole(ctx *gin.Context) {
 	for _, userID := range req.UserIDs {
 		err := c.roleService.AssignUserToRole(req.RoleID, userID)
 		if err != nil {
-			c.log.Error("分配用户到角色失败", "error", err.Error(), "roleID", req.RoleID, "userID", userID)
 			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配用户到角色失败", ctx)
 			return
 		}
@@ -304,7 +298,6 @@ func (c *RoleController) AssignMenuToRole(ctx *gin.Context) {
 	for _, menuID := range req.MenuIDs {
 		err := c.roleService.AssignMenuToRole(req.RoleID, menuID)
 		if err != nil {
-			c.log.Error("分配菜单到角色失败", "error", err.Error(), "roleID", req.RoleID, "menuID", menuID)
 			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配菜单到角色失败", ctx)
 			return
 		}
@@ -336,8 +329,7 @@ func (c *RoleController) AssignAPIToRole(ctx *gin.Context) {
 	// 使用批量分配方法，更高效
 	err := c.roleService.BatchAssignAPIsToRole(req.RoleID, req.IDs)
 	if err != nil {
-		c.log.Error("分配API路由到角色失败", "error", err.Error(), "roleID", req.RoleID)
-		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配API路由到角色失败", ctx)
+		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配 API 路由到角色失败", ctx)
 		return
 	}
 
@@ -358,7 +350,6 @@ func (c *RoleController) AssignAPIToRole(ctx *gin.Context) {
 func (c *RoleController) GetAllRoles(ctx *gin.Context) {
 	roles, err := c.roleService.GetAllRoles()
 	if err != nil {
-		c.log.Error("获取所有角色失败", "error", err.Error())
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取所有角色失败", ctx)
 		return
 	}
@@ -402,7 +393,6 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 		operatorID.(string),
 	)
 	if err != nil {
-		c.log.Error("保存角色权限失败", "error", err.Error(), "roleID", roleID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -428,7 +418,6 @@ func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 
 	roleDetail, err := c.roleService.GetRoleByID(roleID)
 	if err != nil {
-		c.log.Error("获取角色详情失败", "error", err.Error(), "roleID", roleID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色失败", ctx)
 		return
 	}
@@ -455,7 +444,6 @@ func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 	// 获取该角色已分配的 API 列表
 	assignedAPIs, err := c.roleService.GetAPIsForRole(roleID)
 	if err != nil {
-		c.log.Error("获取角色已分配 API 失败", "error", err.Error(), "roleID", roleID)
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色权限失败", ctx)
 		return
 	}
@@ -469,7 +457,6 @@ func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 	// 获取所有 API 列表
 	allAPIs, err := c.apiService.GetRoutes()
 	if err != nil {
-		c.log.Error("获取所有 API 失败", "error", err.Error())
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取 API 列表失败", ctx)
 		return
 	}

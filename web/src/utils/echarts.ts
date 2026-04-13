@@ -22,10 +22,7 @@ import {
   VisualMapComponent,
   TransformComponent,
 } from 'echarts/components'
-import {
-  CanvasRenderer,
-  SVGRenderer,
-} from 'echarts/renderers'
+import { CanvasRenderer, SVGRenderer } from 'echarts/renderers'
 
 // 注册必需的组件
 echarts.use([

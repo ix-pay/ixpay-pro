@@ -99,7 +99,6 @@ func (c *DepartmentController) GetDepartmentList(ctx *gin.Context) {
 
 	departments, total, err := c.service.GetDepartmentList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取部门列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -147,7 +146,6 @@ func (c *DepartmentController) GetDepartmentTree(ctx *gin.Context) {
 
 	tree, err := c.service.GetDepartmentTree()
 	if err != nil {
-		c.log.Error("获取部门树失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -187,7 +185,6 @@ func (c *DepartmentController) GetDepartmentByID(ctx *gin.Context) {
 
 	department, err := c.service.GetDepartmentByID(req.ID)
 	if err != nil {
-		c.log.Error("获取部门详情失败", "error", err, "id", req.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -212,7 +209,6 @@ func (c *DepartmentController) GetDepartmentByID(ctx *gin.Context) {
 func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 	var req request.CreateDepartmentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("创建部门参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -245,7 +241,6 @@ func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 		status,
 	)
 	if err != nil {
-		c.log.Error("创建部门失败", "error", err, "name", req.Name)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -271,7 +266,6 @@ func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 	var req request.UpdateDepartmentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("更新部门参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -296,7 +290,6 @@ func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 		req.Status,
 	)
 	if err != nil {
-		c.log.Error("更新部门失败", "error", err, "id", req.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -329,7 +322,6 @@ func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
 	}
 
 	if err := c.service.DeleteDepartment(departmentID); err != nil {
-		c.log.Error("删除部门失败", "error", err, "id", departmentID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -363,7 +355,6 @@ func (c *DepartmentController) UpdateDepartmentLeader(ctx *gin.Context) {
 
 	var req request.UpdateDepartmentLeaderRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("更新部门负责人参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -377,7 +368,6 @@ func (c *DepartmentController) UpdateDepartmentLeader(ctx *gin.Context) {
 	}
 
 	if err := c.service.UpdateDepartmentLeader(departmentID, req.LeaderID, updatedBy.(string)); err != nil {
-		c.log.Error("更新部门负责人失败", "error", err, "id", departmentID, "leader_id", req.LeaderID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

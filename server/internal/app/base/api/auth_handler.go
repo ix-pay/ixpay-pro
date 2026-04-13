@@ -63,7 +63,6 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	// 调用服务层进行登录
 	user, accessToken, refreshToken, _, _, err := c.service.Login(req.Username, req.Password, req.CaptchaId, req.Captcha, ip, userAgent)
 	if err != nil {
-		c.log.Error("登录失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -124,7 +123,6 @@ func (c *AuthController) Login(ctx *gin.Context) {
 func (c *AuthController) Captcha(ctx *gin.Context) {
 	captchaId, captchaImage, captchaLen, openCaptcha, err := c.service.Captcha()
 	if err != nil {
-		c.log.Error("获取验证码失败", "error", err)
 		baseRes.FailWithMessage("获取验证码失败", ctx)
 		return
 	}
@@ -162,7 +160,6 @@ func (c *AuthController) RefreshToken(ctx *gin.Context) {
 	// 调用服务层刷新令牌
 	accessToken, refreshToken, _, _, err := c.service.RefreshToken(req.RefreshToken)
 	if err != nil {
-		c.log.Error("刷新令牌失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -198,7 +195,6 @@ func (c *AuthController) Logout(ctx *gin.Context) {
 	}
 
 	if err := c.service.Logout(userID.(string)); err != nil {
-		c.log.Error("登出失败", "error", err)
 		baseRes.FailWithMessage("登出失败", ctx)
 		return
 	}

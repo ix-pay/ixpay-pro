@@ -16,7 +16,7 @@ type dictModel struct {
 	Status      int    `gorm:"default:1"`
 
 	// GORM 关联关系 - 一对多（字典项）
-	DictItems []dictItemModel `gorm:"foreignKey:DictID;references:ID"`
+	DictItems []dictItemModel `gorm:"foreignKey:dict_id;references:id"`
 }
 
 // TableName 指定表名

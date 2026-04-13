@@ -93,7 +93,6 @@ func (c *PositionController) GetPositionList(ctx *gin.Context) {
 
 	positions, total, err := c.service.GetPositionList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取岗位列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -140,7 +139,6 @@ func (c *PositionController) GetAllPositions(ctx *gin.Context) {
 
 	positions, err := c.service.GetAllPositions()
 	if err != nil {
-		c.log.Error("获取所有岗位失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -180,7 +178,6 @@ func (c *PositionController) GetPositionByID(ctx *gin.Context) {
 
 	position, err := c.service.GetPositionByID(req.ID)
 	if err != nil {
-		c.log.Error("获取岗位详情失败", "error", err, "id", req.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -205,7 +202,6 @@ func (c *PositionController) GetPositionByID(ctx *gin.Context) {
 func (c *PositionController) CreatePosition(ctx *gin.Context) {
 	var req request.CreatePositionRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("创建岗位参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -232,7 +228,6 @@ func (c *PositionController) CreatePosition(ctx *gin.Context) {
 		status,
 	)
 	if err != nil {
-		c.log.Error("创建岗位失败", "error", err, "name", req.Name)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -258,7 +253,6 @@ func (c *PositionController) CreatePosition(ctx *gin.Context) {
 func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 	var req request.UpdatePositionRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("更新岗位参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -281,7 +275,6 @@ func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 		req.Status,
 	)
 	if err != nil {
-		c.log.Error("更新岗位失败", "error", err, "id", req.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -314,7 +307,6 @@ func (c *PositionController) DeletePosition(ctx *gin.Context) {
 	}
 
 	if err := c.service.DeletePosition(positionID); err != nil {
-		c.log.Error("删除岗位失败", "error", err, "id", positionID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

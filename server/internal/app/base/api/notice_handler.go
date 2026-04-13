@@ -89,7 +89,6 @@ func (c *NoticeController) GetNoticeList(ctx *gin.Context) {
 
 	notices, total, err := c.service.GetNoticeList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("获取公告列表失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -162,7 +161,6 @@ func (c *NoticeController) GetNoticeByID(ctx *gin.Context) {
 
 	notice, err := c.service.GetNoticeByID(noticeID)
 	if err != nil {
-		c.log.Error("获取公告详情失败", "error", err, "id", noticeID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -206,7 +204,6 @@ func (c *NoticeController) GetNoticeByID(ctx *gin.Context) {
 func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 	var req request.CreateNoticeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("创建公告参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -232,7 +229,6 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		sort,
 	)
 	if err != nil {
-		c.log.Error("创建公告失败", "error", err, "title", req.Title)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -277,7 +273,6 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 	var req request.UpdateNoticeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("更新公告参数验证失败", "error", err)
 		baseRes.FailWithMessage("请求参数错误", ctx)
 		return
 	}
@@ -302,7 +297,6 @@ func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 		req.Sort,
 	)
 	if err != nil {
-		c.log.Error("更新公告失败", "error", err, "id", req.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -354,7 +348,6 @@ func (c *NoticeController) DeleteNotice(ctx *gin.Context) {
 	}
 
 	if err := c.service.DeleteNotice(noticeID); err != nil {
-		c.log.Error("删除公告失败", "error", err, "id", noticeID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -394,7 +387,6 @@ func (c *NoticeController) PublishNotice(ctx *gin.Context) {
 	}
 
 	if err := c.service.PublishNotice(noticeID, publisherID.(string)); err != nil {
-		c.log.Error("发布公告失败", "error", err, "id", noticeID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -435,7 +427,6 @@ func (c *NoticeController) MarkAsRead(ctx *gin.Context) {
 	}
 
 	if err := c.service.MarkAsRead(noticeID, userID.(string)); err != nil {
-		c.log.Error("标记公告已读失败", "error", err, "id", noticeID, "user_id", userID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -467,7 +458,6 @@ func (c *NoticeController) GetStatistics(ctx *gin.Context) {
 
 	stats, err := c.service.GetStatistics()
 	if err != nil {
-		c.log.Error("获取公告统计失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -516,7 +506,6 @@ func (c *NoticeController) CheckIsRead(ctx *gin.Context) {
 
 	isRead, err := c.service.IsRead(noticeID, userID.(string))
 	if err != nil {
-		c.log.Error("检查阅读状态失败", "error", err, "id", noticeID, "user_id", userID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

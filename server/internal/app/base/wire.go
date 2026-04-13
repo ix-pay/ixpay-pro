@@ -4,7 +4,7 @@ import (
 	"github.com/google/wire"
 	baseapi "github.com/ix-pay/ixpay-pro/internal/app/base/api"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
-	"github.com/ix-pay/ixpay-pro/internal/domain/shared/converter"
+	"github.com/ix-pay/ixpay-pro/internal/domain/converter"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/monitor"
 	repository "github.com/ix-pay/ixpay-pro/internal/persistence/base"
 )

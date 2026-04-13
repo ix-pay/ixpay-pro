@@ -370,7 +370,7 @@ common/
 │   │   │   └── SKILL.md
 │   │   ├── 后端开发工具集/
 │   │   │   └── SKILL.md
-│   │   └── git 提交推送/
+│   │   └── Git 提交与推送工具/
 │   │       └── SKILL.md
 │   └── skill-config.json     # 技能配置
 │

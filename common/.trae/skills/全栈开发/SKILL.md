@@ -203,15 +203,35 @@ func (r *userRepository) GetByID(id string) (*entity.User, error) {
     return dbModel.toDomain(), nil  // ✅ 返回 Domain Entity
 }
 
-// 写入：Create
+// 写入：Create（⭐ 包含 ID 回写）
 func (r *userRepository) Create(user *entity.User) error {
     // 1️⃣ Domain Entity → Database Model
     dbModel, err := fromDomain(user)
+    if err != nil {
+        return err
+    }
     
-    // 2️⃣ 保存到数据库
-    return r.db.Create(dbModel).Error
+    // 2️⃣ 保存到数据库（分两步：先保存，再回写 ID）
+    if err := r.db.Create(dbModel).Error; err != nil {
+        return err
+    }
+    
+    // 3️⃣ ⭐ 将生成的 ID 回写到领域实体（重要！）
+    user.ID = common.ToString(dbModel.ID)
+    return nil
 }
 ```
+
+**⭐⭐⭐ ID 回写最佳实践 ⭐⭐⭐**
+
+**为什么需要 ID 回写？**
+
+当使用雪花算法生成 ID 时，数据库 Model 在 Create 后会获得一个 int64 类型的 ID。由于领域实体使用 string 类型的 ID，必须在 Create 方法完成后将生成的 ID 回写到领域实体，以确保：
+
+1. ✅ **领域实体完整性**：调用方可以立即使用新生成的 ID
+2. ✅ **避免二次查询**：不需要再次查询数据库获取 ID
+3. ✅ **事务一致性**：在同一事务内完成 ID 回写
+4. ✅ **类型转换**：将 int64 转换为 string，保持前后端一致性
 
 #### 2. Domain Service 层保持纯净
 
@@ -1548,7 +1568,7 @@ GET /api/admin/base/user/list
     ↓ 代码完成后
 代码质量检查器（质量审查）
     ↓ 开发完成后
-git 提交推送（提交代码）
+Git 提交与推送工具（提交代码）
 ```
 
 ### 技能调用规范
@@ -1558,7 +1578,7 @@ git 提交推送（提交代码）
    - 后端命令（如 `go build`、`swag init` 等）→ 调用**后端开发工具集**
    - 前端命令（如 `npm install`、`npm run dev` 等）→ 调用**前端开发工具集**
 3. **规范检查**：代码完成后，应调用**代码质量检查器**进行规范审查。
-4. **代码提交**：开发完成后，应调用**git 提交推送**工具提交代码。
+4. **代码提交**：开发完成后，应调用**Git 提交与推送工具**工具提交代码。
 
 ***
 

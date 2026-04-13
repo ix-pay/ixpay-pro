@@ -19,7 +19,7 @@ AI 必须按以下流程调用技能：
 网关 Go → [后端开发工具集](../skills/后端开发工具集/SKILL.md)（构建/测试/运行）
 
 ### 4. 代码提交流程
-开发完成 → [代码质量检查器](../skills/代码质量检查器/SKILL.md) → [git 提交推送](../skills/git 提交推送/SKILL.md)
+开发完成 → [代码质量检查器](../skills/代码质量检查器/SKILL.md) → [Git 提交与推送工具](../skills/Git 提交与推送工具/SKILL.md)
 
 ### 5. 规则/技能修改
 修改规则/技能 → [规则与技能创建与编辑指南](../skills/规则与技能创建与编辑指南/SKILL.md) → 检查字符数/frontmatter → 提交

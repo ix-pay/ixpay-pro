@@ -136,7 +136,13 @@ func (r *apiRepository) Create(route *entity.API) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	route.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // Update 更新 API 路由

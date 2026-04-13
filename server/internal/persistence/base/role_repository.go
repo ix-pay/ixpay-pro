@@ -257,7 +257,13 @@ func (r *roleRepository) Create(role *entity.Role) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	role.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // Update 更新角色
@@ -334,6 +340,16 @@ func (r *roleRepository) AddUserToRole(roleID, userID string) error {
 	uID, err := common.ParseInt64(userID)
 	if err != nil {
 		return err
+	}
+
+	// 先检查是否已存在关联，避免重复创建
+	var count int64
+	err = r.db.Model(&roleUserModel{}).Where("role_id = ? AND user_id = ?", rID, uID).Count(&count).Error
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil // 已存在关联则直接返回成功
 	}
 
 	model := &roleUserModel{
@@ -437,6 +453,16 @@ func (r *roleRepository) AddMenuToRole(roleID, menuID string) error {
 		return err
 	}
 
+	// 先检查是否已存在关联，避免重复创建
+	var count int64
+	err = r.db.Model(&roleMenuModel{}).Where("role_id = ? AND menu_id = ?", rID, mID).Count(&count).Error
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil // 已存在关联则直接返回成功
+	}
+
 	model := &roleMenuModel{
 		RoleID: rID,
 		MenuID: mID,
@@ -516,6 +542,16 @@ func (r *roleRepository) AddToRole(roleID, routeID string) error {
 	rtID, err := common.ParseInt64(routeID)
 	if err != nil {
 		return err
+	}
+
+	// 先检查是否已存在关联，避免重复创建
+	var count int64
+	err = r.db.Model(&roleAPIRouteModel{}).Where("role_id = ? AND route_id = ?", rID, rtID).Count(&count).Error
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil // 已存在关联则直接返回成功
 	}
 
 	model := &roleAPIRouteModel{
@@ -609,6 +645,16 @@ func (r *roleRepository) AddBtnPermToRole(roleID, btnPermID string) error {
 	bID, err := common.ParseInt64(btnPermID)
 	if err != nil {
 		return err
+	}
+
+	// 先检查是否已存在关联，避免重复创建
+	var count int64
+	err = r.db.Model(&roleBtnPermModel{}).Where("role_id = ? AND btn_perm_id = ?", rID, bID).Count(&count).Error
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil // 已存在关联则直接返回成功
 	}
 
 	model := &roleBtnPermModel{

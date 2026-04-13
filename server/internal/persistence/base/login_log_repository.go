@@ -100,7 +100,13 @@ func (r *loginLogRepository) Create(log *entity.LoginLog) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	log.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // GetByID 根据 ID 查询登录日志

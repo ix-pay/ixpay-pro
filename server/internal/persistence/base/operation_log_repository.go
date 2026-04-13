@@ -117,7 +117,13 @@ func (r *operationLogRepository) Create(log *entity.OperationLog) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	log.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // BatchCreate 批量创建操作日志

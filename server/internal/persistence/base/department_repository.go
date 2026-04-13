@@ -132,7 +132,13 @@ func (r *departmentRepository) Create(department *entity.Department) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	department.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // Update 更新部门

@@ -136,7 +136,13 @@ func (r *permissionRuleRepository) Create(rule *entity.PermissionRule) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	rule.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // Update 更新权限规则

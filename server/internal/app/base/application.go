@@ -204,13 +204,4 @@ func (a *AppBase) Init(router *gin.Engine) {
 		a.taskController.GetManager().SetExecutionLogRepository(a.taskExecutionLogRepo)
 		a.logger.Info("任务执行日志仓库已设置到任务管理器")
 	}
-
-	// 检查配置是否需要初始化种子数据
-	if a.config.Server.InitSeedData {
-		a.logger.Info("配置允许初始化种子数据")
-		a.initializeSeedData()
-	} else {
-		a.logger.Info("配置禁用初始化种子数据")
-	}
-
 }

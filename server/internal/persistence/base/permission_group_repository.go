@@ -103,7 +103,13 @@ func (r *permissionGroupRepository) Create(group *entity.PermissionGroup) error 
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	group.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // Update 更新权限组

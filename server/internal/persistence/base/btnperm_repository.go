@@ -153,7 +153,13 @@ func (r *btnPermRepository) Create(button *entity.BtnPerm) error {
 		return err
 	}
 
-	return r.db.Create(dbModel).Error
+	if err := r.db.Create(dbModel).Error; err != nil {
+		return err
+	}
+
+	// 将生成的 ID 回写到领域实体
+	button.ID = common.ToString(dbModel.ID)
+	return nil
 }
 
 // Update 更新按钮权限

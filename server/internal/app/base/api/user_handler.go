@@ -175,24 +175,35 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 
 	// 确定当前角色
 	var finalRoleID int64
-	var finalRoleName string
+	var finalRoleCode string
+
 	if currentRoleIDStr != "" {
 		// 将 currentRoleIDStr 转换为 int64
-		currentRoleID, _ := strconv.ParseInt(currentRoleIDStr, 10, 64)
-		// 检查当前角色 ID 是否在用户的角色列表中
-		for _, roleInfo := range roleInfos {
-			if roleInfo.ID == currentRoleID {
-				finalRoleID = roleInfo.ID
-				finalRoleName = roleInfo.Name
-				break
+		currentRoleID, parseErr := strconv.ParseInt(currentRoleIDStr, 10, 64)
+		if parseErr == nil {
+			// 检查当前角色 ID 是否在用户的角色列表中
+			for _, roleInfo := range roleInfos {
+				if roleInfo.ID == currentRoleID {
+					finalRoleID = roleInfo.ID
+					finalRoleCode = roleInfo.Code
+					break
+				}
 			}
 		}
 	}
 
-	// 如果 Redis 中没有存储或角色不在列表中，使用第一个角色作为当前角色
+	// 如果 Redis 中没有存储或角色不在列表中，使用第一个角色作为当前角色并缓存到 Redis
 	if finalRoleID == 0 && len(roleInfos) > 0 {
 		finalRoleID = roleInfos[0].ID
-		finalRoleName = roleInfos[0].Name
+		finalRoleCode = roleInfos[0].Code
+
+		// 将第一个角色缓存到 Redis，与登录接口保持一致
+		if cacheErr := c.service.SetCurrentRoleID(userIDInt, finalRoleID); cacheErr != nil {
+			c.log.Error("缓存用户当前角色失败", "error", cacheErr, "userID", userIDInt, "roleID", finalRoleID)
+			// 不阻塞主流程
+		} else {
+			c.log.Info("已缓存用户当前角色", "userID", userIDInt, "roleID", finalRoleID, "roleCode", finalRoleCode)
+		}
 	}
 
 	// 构建响应数据
@@ -206,7 +217,7 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 		Status:        user.Status,
 		Roles:         roleInfos,
 		CurrentRoleId: finalRoleID,
-		Role:          finalRoleName,
+		Role:          finalRoleCode,
 		Authority: response.AuthorityInfo{
 			DefaultRouter: "index",
 		},

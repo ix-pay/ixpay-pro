@@ -109,8 +109,8 @@ func (c *MenuController) GetMenuList(ctx *gin.Context) {
 	}
 
 	// 从上下文中获取用户角色
-	role, roleExists := ctx.Get("role")
-	if !roleExists {
+	roleIdValue, roleIdExists := ctx.Get("currentRoleId")
+	if !roleIdExists {
 		c.log.Error("获取用户角色失败")
 		baseRes.FailWithMessage("获取用户角色失败", ctx)
 		return
@@ -118,7 +118,7 @@ func (c *MenuController) GetMenuList(ctx *gin.Context) {
 
 	// 将 role 转换为 int64
 	var roleID int64
-	switch v := role.(type) {
+	switch v := roleIdValue.(type) {
 	case string:
 		roleID, _ = strconv.ParseInt(v, 10, 64)
 	case int64:

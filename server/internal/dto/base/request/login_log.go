@@ -4,14 +4,14 @@ package request
 
 // GetLoginLogListRequest 获取登录日志列表请求
 type GetLoginLogListRequest struct {
-	Page      int     `form:"page" binding:"required"`     // 页码
-	PageSize  int     `form:"pageSize" binding:"required"` // 每页数量
-	UserID    *int64  `form:"userId"`                      // 用户 ID（可选筛选）
-	Username  string  `form:"username"`                    // 用户名（可选筛选）
-	LoginIP   string  `form:"loginIp"`                     // 登录 IP（可选筛选）
-	Result    *int    `form:"result"`                      // 登录结果：0-失败，1-成功（可选筛选）
-	StartDate string  `form:"startDate"`                   // 开始日期（可选筛选）
-	EndDate   string  `form:"endDate"`                     // 结束日期（可选筛选）
+	Page      int    `form:"page" binding:"required"`     // 页码
+	PageSize  int    `form:"pageSize" binding:"required"` // 每页数量
+	UserID    *int64 `form:"userId"`                      // 用户 ID（可选筛选）
+	Username  string `form:"username"`                    // 用户名（可选筛选）
+	LoginIP   string `form:"loginIp"`                     // 登录 IP（可选筛选）
+	Result    *int   `form:"result"`                      // 登录结果：0-失败，1-成功（可选筛选）
+	StartDate string `form:"startDate"`                   // 开始日期（可选筛选）
+	EndDate   string `form:"endDate"`                     // 结束日期（可选筛选）
 }
 
 // GetLoginStatisticsRequest 获取登录统计请求

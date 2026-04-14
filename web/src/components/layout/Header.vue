@@ -1,14 +1,9 @@
 <template>
-  <el-page-header
-    class="box-border relative z-[10] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-    @back="handleBack"
-  >
+  <el-page-header class="box-border relative z-[10] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+    @back="handleBack">
     <template #content>
-      <el-breadcrumb
-        separator=">"
-        v-if="breadcrumbList.length > 0"
-        class="h-full flex items-center px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]"
-      >
+      <el-breadcrumb separator=">" v-if="breadcrumbList.length > 0"
+        class="h-full flex items-center px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]">
         <el-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="index" :to="item.path">
           {{ item.name }}
         </el-breadcrumb-item>
@@ -18,8 +13,7 @@
       <!-- 角色切换 -->
       <el-dropdown v-if="userRoles.length > 1" :hide-on-click="true" trigger="click">
         <div
-          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)] text-[13px] text-[var(--text-regular)]"
-        >
+          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)] text-[13px] text-[var(--text-regular)]">
           <el-icon class="text-[14px]">
             <User />
           </el-icon>
@@ -30,18 +24,11 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="role in userRoles"
-              :key="role.id"
-              :class="{ 'is-active': String(role.id) === String(currentRoleId) }"
-              @click="handleSwitchRole(role.id)"
-            >
+            <el-dropdown-item v-for="role in userRoles" :key="role.id"
+              :class="{ 'is-active': String(role.id) === String(currentRoleId) }" @click="handleSwitchRole(role.id)">
               <div class="flex items-center gap-2">
                 <span class="flex-1">{{ role.name }}</span>
-                <el-icon
-                  v-if="String(role.id) === String(currentRoleId)"
-                  class="text-[var(--success-color)]"
-                >
+                <el-icon v-if="String(role.id) === String(currentRoleId)" class="text-[var(--success-color)]">
                   <Check />
                 </el-icon>
               </div>
@@ -52,10 +39,8 @@
 
       <!-- 消息通知 -->
       <el-dropdown :hide-on-click="false" trigger="click">
-        <el-button
-          type="text"
-          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-hover)] hover:text-[var(--primary-color)]"
-        >
+        <el-button type="text"
+          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-hover)] hover:text-[var(--primary-color)]">
           <el-icon>
             <Bell />
           </el-icon>
@@ -94,27 +79,18 @@
 
       <!-- 主题切换 -->
       <div
-        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]"
-      >
-        <el-switch
-          v-model="appStore.isDark"
-          @change="handleThemeChange"
-          class="align-middle transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-          :active-action-icon="Moon"
-          :inactive-action-icon="Sunny"
-        />
+        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]">
+        <el-switch v-model="appStore.isDark" @change="handleThemeChange"
+          class="align-middle transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]" :active-action-icon="Moon"
+          :inactive-action-icon="Sunny" />
       </div>
 
       <!-- 全屏切换 -->
       <div
         class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] cursor-pointer hover:bg-[var(--bg-hover)]"
-        @click="toggleFullscreen"
-        :title="isFullscreen ? '退出全屏' : '全屏查看'"
-      >
-        <el-button
-          type="text"
-          class="text-lg text-[var(--text-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--primary-color)]"
-        >
+        @click="toggleFullscreen" :title="isFullscreen ? '退出全屏' : '全屏查看'">
+        <el-button type="text"
+          class="text-lg text-[var(--text-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--primary-color)]">
           <el-icon :class="{ 'rotate-180': isFullscreen }">
             <FullScreen />
           </el-icon>
@@ -123,8 +99,7 @@
       <!-- 用户信息 -->
       <el-dropdown :hide-on-click="false" trigger="click">
         <div
-          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]"
-        >
+          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]">
           <el-avatar :size="32" :src="userAvatar" />
           <div class="flex flex-col justify-center h-full overflow-hidden">
             <div class="text-[13px] leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -255,19 +230,15 @@ const handleSwitchRole = async (roleId: string | number) => {
   }
 
   try {
-    const res = await switchRole({ roleId })
-    if (res.code === 0) {
+    // 使用 userStore.SwitchRole 方法
+    const success = await userStore.SwitchRole(String(roleId))
+
+    if (success) {
       ElMessage.success('角色切换成功')
-      // 更新用户信息中的角色
-      if (userStore.userInfo) {
-        userStore.userInfo.role = currentRoleName.value
-      }
-      // 刷新页面以应用新角色权限
-      setTimeout(() => {
-        location.reload()
-      }, 500)
+      // 不需要刷新页面，userInfo 已自动更新
+      // 不需要手动修改 userInfo.role，SwitchRole 已调用 GetUserInfo()
     } else {
-      ElMessage.error(res.msg || '角色切换失败')
+      ElMessage.error('角色切换失败')
     }
   } catch (error) {
     console.error('切换角色失败:', error)
@@ -344,15 +315,14 @@ const handleLogout = async () => {
 const initUserRoles = () => {
   const roles = userStore.userInfo?.roles || []
   userRoles.value = roles
-  // 设置当前角色
-  if (roles.length > 0) {
-    // 优先使用后端返回的 currentRoleId，如果没有则使用第一个角色的 id
-    const backendCurrentRoleId = userStore.userInfo?.currentRoleId
-    if (backendCurrentRoleId && typeof backendCurrentRoleId !== 'boolean') {
-      currentRoleId.value = String(backendCurrentRoleId)
-    } else {
-      currentRoleId.value = roles[0].id
-    }
+
+  // 优先使用后端返回的 currentRoleId
+  const backendCurrentRoleId = userStore.userInfo?.currentRoleId
+  if (backendCurrentRoleId && typeof backendCurrentRoleId !== 'boolean') {
+    currentRoleId.value = String(backendCurrentRoleId)
+  } else if (roles.length > 0) {
+    // 如果没有 currentRoleId，使用第一个角色的 id
+    currentRoleId.value = roles[0].id
   } else if (userStore.userInfo?.role) {
     // 如果只有 role 字符串，创建一个临时角色对象
     userRoles.value = [
@@ -432,7 +402,7 @@ onMounted(() => {
     gap: var(--space-sm);
   }
 
-  :deep(.el-dropdown:nth-last-child(1)) > div {
+  :deep(.el-dropdown:nth-last-child(1))>div {
     @apply px-[var(--space-xs)] py-[var(--space-sm)];
   }
 

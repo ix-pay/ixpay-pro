@@ -47,7 +47,7 @@ func (rc *RedisCache) Set(key string, value interface{}, expiration time.Duratio
 	default:
 		valueStr = fmt.Sprintf("%v", v)
 	}
-	return rc.redisClient.SetTry(rc.prefix+key, valueStr, expiration)
+	return rc.redisClient.SetTry(key, valueStr, expiration)
 }
 
 // Delete 删除缓存值
@@ -76,13 +76,13 @@ func NewCaptchaStoreAdapter(cache *RedisCache) *CaptchaStoreAdapter {
 }
 
 // Set 实现 base64Captcha.Store 接口的 Set 方法
-func (a *CaptchaStoreAdapter) Set(id string, value string) error {
-	return a.cache.redisClient.Client.Set(a.cache.ctx, a.cache.prefix+id, value, a.cache.expiration).Err()
+func (a *CaptchaStoreAdapter) Set(key string, value string) error {
+	return a.cache.redisClient.Client.Set(a.cache.ctx, a.cache.prefix+key, value, a.cache.expiration).Err()
 }
 
 // Get 实现 base64Captcha.Store 接口的 Get 方法
-func (a *CaptchaStoreAdapter) Get(id string, clear bool) string {
-	fullKey := a.cache.prefix + id
+func (a *CaptchaStoreAdapter) Get(key string, clear bool) string {
+	fullKey := a.cache.prefix + key
 	val, err := a.cache.redisClient.Client.Get(a.cache.ctx, fullKey).Result()
 	if err != nil {
 		return ""
@@ -94,7 +94,7 @@ func (a *CaptchaStoreAdapter) Get(id string, clear bool) string {
 }
 
 // Verify 实现 base64Captcha.Store 接口的 Verify 方法
-func (a *CaptchaStoreAdapter) Verify(id, answer string, clear bool) bool {
-	v := a.Get(id, clear)
+func (a *CaptchaStoreAdapter) Verify(key, answer string, clear bool) bool {
+	v := a.Get(key, clear)
 	return v == answer
 }

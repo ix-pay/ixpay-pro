@@ -58,6 +58,6 @@ type DeleteDictItemRequest struct {
 
 // GetDictItemRequest 获取字典项请求模型
 type GetDictItemRequest struct {
-	ID     int64  `form:"id" binding:"omitempty,gt=0"`     // 字典项 ID
-	DictID int64  `form:"dictId" binding:"omitempty,gt=0"` // 字典 ID
+	ID     int64 `form:"id" binding:"omitempty,gt=0"`     // 字典项 ID
+	DictID int64 `form:"dictId" binding:"omitempty,gt=0"` // 字典 ID
 }

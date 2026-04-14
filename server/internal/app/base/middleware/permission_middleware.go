@@ -39,7 +39,6 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 			c.Abort()
 			return
 		}
-
 		// 确保角色是字符串类型
 		role := ""
 		switch v := roleValue.(type) {

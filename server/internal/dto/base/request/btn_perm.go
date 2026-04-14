@@ -47,8 +47,8 @@ type AssignToBtnPermRequest struct {
 
 // RevokeFromBtnPermRequest 从按钮权限撤销 API 路由请求模型
 type RevokeFromBtnPermRequest struct {
-	BtnPermID int64  `json:"btnPermId" binding:"required,gte=1"`
-	ID        int64  `json:"Id" binding:"required,gte=1"`
+	BtnPermID int64 `json:"btnPermId" binding:"required,gte=1"`
+	ID        int64 `json:"Id" binding:"required,gte=1"`
 }
 
 // AssignBtnPermToRoleRequest 为角色分配按钮权限请求模型

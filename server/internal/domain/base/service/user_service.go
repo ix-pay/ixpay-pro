@@ -233,11 +233,15 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 
 	// 生成令牌，获取用户角色
 	role := "" // 默认角色
+	var firstRoleID int64 = 0
+	var firstRole *entity.Role
 	if len(user.RoleIds) > 0 {
 		// 获取用户角色详情
 		userRoles, err := s.roleService.GetRolesForUser(user.ID)
 		if err == nil && len(userRoles) > 0 {
-			role = userRoles[0].Code // 使用第一个角色的 Code
+			firstRole = userRoles[0]
+			firstRoleID = firstRole.ID
+			role = firstRole.Code // 使用第一个角色的 Code
 		}
 	}
 
@@ -251,7 +255,8 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	if nickname == "" {
 		nickname = user.Username
 	}
-	accessToken, refreshToken, accessExpire, refreshExpire, err := s.jwtAuth.GenerateToken(fmt.Sprintf("%d", user.ID), user.Username, nickname, role, "password")
+	// 【修改 1】生成 JWT 时 role 参数传空字符串
+	accessToken, refreshToken, accessExpire, refreshExpire, err := s.jwtAuth.GenerateToken(fmt.Sprintf("%d", user.ID), user.Username, nickname, "", "password")
 	if err != nil {
 		s.log.Error("生成令牌失败", "error", err)
 		// 记录失败的登录日志（令牌生成失败）
@@ -261,11 +266,38 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 
 	s.log.Info("用户登录成功", "username", username)
 
-	// 【新增】登录成功后，清除用户之前的角色选择缓存，确保使用默认角色
-	currentRoleKey := fmt.Sprintf("user:current_role:%d", user.ID)
-	s.cache.Delete(currentRoleKey)
+	// 【修改 2】登录成功后，缓存默认角色（第一个角色）到 Redis
+	if firstRoleID > 0 {
+		// 使用 string 格式，与认证中间件保持一致
+		currentRoleKey := fmt.Sprintf("user:current_role:%s", fmt.Sprintf("%d", user.ID))
+		if cacheErr := s.cache.Set(currentRoleKey, fmt.Sprintf("%d", firstRoleID), 24*time.Hour); cacheErr != nil {
+			s.log.Error("缓存用户默认角色失败", "error", cacheErr, "userID", user.ID, "roleID", firstRoleID)
+			// 不阻塞主流程
+		} else {
+			s.log.Info("已缓存用户默认角色", "userID", user.ID, "roleID", firstRoleID)
+		}
 
-	s.log.Info("已清除用户角色缓存", "userID", user.ID)
+		// 【修改 3】缓存角色详情到 Redis
+		// 使用 string 格式，与认证中间件保持一致
+		roleCacheKey := fmt.Sprintf("role:info:%s", fmt.Sprintf("%d", firstRoleID))
+		simpleRole := map[string]interface{}{
+			"ID":     fmt.Sprintf("%d", firstRole.ID),
+			"Code":   firstRole.Code,
+			"Name":   firstRole.Name,
+			"Status": firstRole.Status,
+		}
+		roleData, marshalErr := json.Marshal(simpleRole)
+		if marshalErr == nil {
+			if cacheErr := s.cache.Set(roleCacheKey, string(roleData), 24*time.Hour); cacheErr != nil {
+				s.log.Error("缓存角色详情失败", "error", cacheErr, "roleID", firstRoleID)
+				// 不阻塞主流程
+			} else {
+				s.log.Info("已缓存角色详情", "roleID", firstRoleID, "roleCode", firstRole.Code, "roleName", firstRole.Name)
+			}
+		} else {
+			s.log.Error("序列化角色详情失败", "error", marshalErr, "roleID", firstRoleID)
+		}
+	}
 
 	// 记录成功的登录日志
 	s.loginLogService.RecordLogin(user.ID, username, ip, loginPlace, device, browser, os, userAgent, true, "")
@@ -1021,6 +1053,8 @@ func (s *UserService) UpdateUserRoles(userID int64, roleIDs []int64) error {
 // SwitchRole 切换用户当前角色
 // 该方法仅改变用户的当前活动角色，不修改用户的角色关联关系
 func (s *UserService) SwitchRole(userID int64, roleID int64) error {
+	s.log.Info("========== 开始切换用户角色 ==========", "userID", userID, "targetRoleID", roleID)
+
 	// 检查用户是否存在
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -1061,40 +1095,61 @@ func (s *UserService) SwitchRole(userID int64, roleID int64) error {
 		return errors.New("角色已禁用")
 	}
 
-	// 将用户的当前角色信息存储到缓存中
-	// key: "user:current_role:{userID}", value: roleID
-	currentRoleKey := fmt.Sprintf("user:current_role:%d", userID)
-	if err := s.cache.Set(currentRoleKey, roleID, 24*time.Hour); err != nil {
-		s.log.Error("保存当前角色到缓存失败", "error", err, "userID", userID, "roleID", roleID)
+	// 【步骤 1】缓存用户当前角色选择到 Redis
+	// key: "user:current_role:{userID}", value: roleID (字符串格式)
+	// 使用 string 格式，与认证中间件保持一致
+	currentRoleKey := fmt.Sprintf("user:current_role:%s", fmt.Sprintf("%d", userID))
+	currentRoleValue := fmt.Sprintf("%d", roleID)
+	if err := s.cache.Set(currentRoleKey, currentRoleValue, 24*time.Hour); err != nil {
+		s.log.Error("❌ 缓存用户当前角色失败", "error", err, "userID", userID, "roleID", roleID, "cacheKey", currentRoleKey)
 		// 不返回错误，因为角色切换逻辑已经成功
-	}
-
-	// 【新增】缓存角色信息到缓存，供认证中间件使用
-	// key: "role:info:{roleID}", value: 简化的角色 JSON（只包含必要字段）
-	roleCacheKey := fmt.Sprintf("role:info:%d", roleID)
-
-	// 创建简化的角色对象，只包含必要字段，避免序列化关联关系
-	simpleRole := map[string]interface{}{
-		"ID":          role.ID,
-		"Code":        role.Code,
-		"Name":        role.Name,
-		"Description": role.Description,
-		"Status":      role.Status,
-	}
-
-	roleData, err := json.Marshal(simpleRole)
-	if err == nil {
-		if cacheErr := s.cache.Set(roleCacheKey, string(roleData), 24*time.Hour); cacheErr != nil {
-			s.log.Error("缓存角色信息到缓存失败", "error", cacheErr, "roleID", roleID)
-		} else {
-			s.log.Info("角色信息已缓存", "roleID", roleID, "roleCode", role.Code, "roleName", role.Name)
-		}
 	} else {
-		s.log.Error("序列化角色信息失败", "error", err, "roleID", roleID)
+		s.log.Info("✅ 已缓存用户当前角色", "userID", userID, "roleID", roleID, "cacheKey", currentRoleKey, "expire", "24h")
 	}
 
-	s.log.Info("用户切换角色成功", "userID", userID, "username", user.Username, "newRoleID", roleID, "newRoleName", role.Name)
+	// 【步骤 2】缓存角色详情到 Redis，供认证中间件使用
+	// key: "role:info:{roleID}", value: 简化的角色 JSON（只包含必要字段）
+	// 使用 string 格式，与认证中间件保持一致
+	roleCacheKey := fmt.Sprintf("role:info:%s", fmt.Sprintf("%d", roleID))
+	simpleRole := map[string]interface{}{
+		"ID":     fmt.Sprintf("%d", role.ID),
+		"Code":   role.Code,
+		"Name":   role.Name,
+		"Status": role.Status,
+	}
+
+	roleData, marshalErr := json.Marshal(simpleRole)
+	if marshalErr != nil {
+		s.log.Error("❌ 序列化角色信息失败", "error", marshalErr, "roleID", roleID)
+	} else {
+		if cacheErr := s.cache.Set(roleCacheKey, string(roleData), 24*time.Hour); cacheErr != nil {
+			s.log.Error("❌ 缓存角色详情失败", "error", cacheErr, "roleID", roleID, "cacheKey", roleCacheKey)
+		} else {
+			s.log.Info("✅ 已缓存角色详情", "roleID", roleID, "roleCode", role.Code, "roleName", role.Name, "cacheKey", roleCacheKey, "expire", "24h")
+		}
+	}
+
+	s.log.Info("========== 用户角色切换完成 ==========",
+		"userID", userID,
+		"username", user.Username,
+		"newRoleID", roleID,
+		"newRoleCode", role.Code,
+		"newRoleName", role.Name)
 	return nil
+}
+
+// SetCurrentRoleID 设置用户的当前角色 ID
+// 将用户的当前角色选择缓存到 Redis
+// 参数:
+// - userID: 用户 ID
+// - roleID: 角色 ID
+// 返回:
+// - error: 错误信息
+func (s *UserService) SetCurrentRoleID(userID int64, roleID int64) error {
+	currentRoleKey := fmt.Sprintf("user:current_role:%d", userID)
+
+	// 将角色 ID 缓存到 Redis，设置 24 小时过期时间
+	return s.cache.Set(currentRoleKey, fmt.Sprintf("%d", roleID), 24*time.Hour)
 }
 
 // GetCurrentRoleID 获取用户的当前角色 ID

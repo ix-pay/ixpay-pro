@@ -1,4 +1,4 @@
-import { login, getUserInfo, logout } from '@/api/modules/user'
+import { login, getUserInfo, logout, switchRole } from '@/api/modules/user'
 import router from '@/app/router/index'
 import { ElLoading, ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
@@ -201,6 +201,27 @@ export const useUserStore = defineStore('user', () => {
     // 把路由定向到登录页
     router.replace({ name: 'Login' })
   }
+
+  /* 切换角色 */
+  const SwitchRole = async (roleId: string) => {
+    try {
+      const res = await switchRole({ roleId })
+
+      if (res.code === 0) {
+        // 不需要更新 token，只需要重新获取用户信息
+        await GetUserInfo()
+
+        ElMessage.success('切换角色成功')
+        return true
+      } else {
+        throw new Error(res.msg || '切换失败')
+      }
+    } catch (error) {
+      console.error('SwitchRole error:', error)
+      ElMessage.error('切换角色失败')
+      return false
+    }
+  }
   /* 清理数据 */
   const ClearStorage = async (): Promise<void> => {
     // 使用remove方法正确删除cookie
@@ -235,6 +256,7 @@ export const useUserStore = defineStore('user', () => {
     GetUserInfo,
     LoginIn,
     LoginOut,
+    SwitchRole,
     loadingInstance,
     ClearStorage,
     token,

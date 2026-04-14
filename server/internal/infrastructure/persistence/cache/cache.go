@@ -23,5 +23,5 @@ type Cache interface {
 
 // SetupCache 设置缓存服务
 func SetupCache(cfg *config.Config, redisClient *redis.RedisClient) (Cache, error) {
-	return NewRedisCache(redisClient, cfg.Redis.PreKey, 5*time.Minute), nil
+	return NewRedisCache(redisClient, redisClient.GetContext(), cfg.Redis.PreKey, 5*time.Minute), nil
 }

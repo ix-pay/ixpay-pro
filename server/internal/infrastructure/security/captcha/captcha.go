@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/config"
+	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/cache"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/redis"
 	"github.com/mojocn/base64Captcha"
 )
@@ -56,13 +57,19 @@ func new(len int, expiry int, open bool, redis *redis.RedisClient) (*Captcha, er
 		240, // 验证码宽度
 		len, 0.7, 80)
 
-	// 设置验证码在Redis中的有效期
-	redis.Expiration = time.Duration(expiry) * time.Second
-	// 设置Redis中的验证码键前缀
-	redis.PreKey = "captcha:"
+	// 创建独立的验证码存储，使用独立的前缀，不影响全局 Redis 配置
+	// 前缀格式："ixpay-pro:captcha:"，确保与其他业务隔离
+	cacheStore := cache.NewRedisCache(
+		redis,
+		redis.GetContext(),
+		"ixpay-pro:captcha:",
+		time.Duration(expiry)*time.Second,
+	)
+	// 使用适配器使其兼容 base64Captcha.Store 接口
+	store := cache.NewCaptchaStoreAdapter(cacheStore)
 
 	// 使用驱动和存储创建验证码实例
-	captcha := base64Captcha.NewCaptcha(driver, redis)
+	captcha := base64Captcha.NewCaptcha(driver, store)
 
 	// 创建并返回Captcha结构体实例
 	return &Captcha{

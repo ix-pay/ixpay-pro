@@ -1099,8 +1099,8 @@ func (s *UserService) SwitchRole(userID int64, roleID int64) error {
 
 // GetCurrentRoleID 获取用户的当前角色 ID
 // 从缓存中读取用户的当前角色选择
-func (s *UserService) GetCurrentRoleID(userID string) (string, error) {
-	currentRoleKey := fmt.Sprintf("user:current_role:%s", userID)
+func (s *UserService) GetCurrentRoleID(userID int64) (string, error) {
+	currentRoleKey := fmt.Sprintf("user:current_role:%d", userID)
 
 	// 从缓存获取当前角色
 	roleID, err := s.cache.Get(currentRoleKey)

@@ -145,7 +145,7 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 	}
 
 	// 从 Redis 获取用户的当前角色 ID
-	currentRoleIDStr, err := c.service.GetCurrentRoleID(strconv.FormatInt(userIDInt, 10))
+	currentRoleIDStr, err := c.service.GetCurrentRoleID(userIDInt)
 	if err != nil {
 		c.log.Warn("获取当前角色 ID 失败", "error", err)
 		// 不返回错误，继续执行

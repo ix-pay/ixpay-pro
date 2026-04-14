@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -71,17 +72,23 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 		isSuccess := statusCode < 400
 
 		// 获取用户信息
-		userID := ""
+		userIDStr := ""
 		username := ""
 		nickname := ""
 
 		// 从上下文中获取用户信息（从认证中间件设置的 claims 中获取）
 		if claims, exists := c.Get("claims"); exists {
 			if c, ok := claims.(*auth.Claims); ok {
-				userID = c.UserID
+				userIDStr = c.UserID
 				username = c.Username
 				nickname = c.Nickname // 从 claims 中获取准确的 nickname
 			}
+		}
+
+		// 将 userID 从 string 转换为 int64
+		var userID int64
+		if userIDStr != "" {
+			userID, _ = strconv.ParseInt(userIDStr, 10, 64)
 		}
 
 		// 获取操作类型和模块

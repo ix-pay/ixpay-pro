@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // userModel 数据库模型（带 GORM 标签）
@@ -43,7 +42,7 @@ func (userModel) TableName() string {
 // toDomain 将数据库模型转换为领域实体
 func (m *userModel) toDomain() *entity.User {
 	user := &entity.User{
-		ID:            common.ToString(m.ID),
+		ID:            m.ID,
 		Username:      m.Username,
 		PasswordHash:  m.PasswordHash,
 		Nickname:      m.Nickname,
@@ -54,15 +53,15 @@ func (m *userModel) toDomain() *entity.User {
 		Gender:        m.Gender,
 		Birthday:      m.Birthday,
 		Address:       m.Address,
-		PositionID:    common.ToString(m.PositionID),
-		DepartmentID:  common.ToString(m.DepartmentID),
+		PositionID:    m.PositionID,
+		DepartmentID:  m.DepartmentID,
 		EntryDate:     m.EntryDate,
 		LastLoginIP:   m.LastLoginIP,
 		LastLoginTime: m.LastLoginTime,
 		WechatOpenID:  m.WechatOpenID,
-		CreatedBy:     common.ToString(m.CreatedBy),
+		CreatedBy:     m.CreatedBy,
 		CreatedAt:     m.CreatedAt,
-		UpdatedBy:     common.ToString(m.UpdatedBy),
+		UpdatedBy:     m.UpdatedBy,
 		UpdatedAt:     m.UpdatedAt,
 	}
 
@@ -80,10 +79,10 @@ func (m *userModel) toDomain() *entity.User {
 	if len(m.Roles) > 0 {
 		// 将 roleModel 转换为 *entity.Role，同时填充角色 ID 列表
 		roles := make([]*entity.Role, len(m.Roles))
-		roleIDs := make([]string, len(m.Roles))
+		roleIDs := make([]int64, len(m.Roles))
 		for i, role := range m.Roles {
 			roles[i] = role.toDomain()
-			roleIDs[i] = common.ToString(role.ID)
+			roleIDs[i] = role.ID
 		}
 		user.Roles = roles
 		user.RoleIds = roleIDs
@@ -94,13 +93,11 @@ func (m *userModel) toDomain() *entity.User {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomain(user *entity.User) (*userModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(user.ID, user.CreatedBy, user.UpdatedBy)
-
 	return &userModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        user.ID,
+			CreatedBy: user.CreatedBy,
+			UpdatedBy: user.UpdatedBy,
 		},
 		Username:      user.Username,
 		PasswordHash:  user.PasswordHash,
@@ -112,8 +109,8 @@ func fromDomain(user *entity.User) (*userModel, error) {
 		Gender:        user.Gender,
 		Birthday:      user.Birthday,
 		Address:       user.Address,
-		PositionID:    common.TryParseInt64(user.PositionID),
-		DepartmentID:  common.TryParseInt64(user.DepartmentID),
+		PositionID:    user.PositionID,
+		DepartmentID:  user.DepartmentID,
 		EntryDate:     user.EntryDate,
 		LastLoginIP:   user.LastLoginIP,
 		LastLoginTime: user.LastLoginTime,
@@ -137,17 +134,12 @@ func NewUserRepository(db *database.PostgresDB) repo.UserRepository {
 // GetByID 根据 ID 查询用户并支持加载关联数据（使用 Preload）
 // relations 参数可以是："Department", "Position", "Roles" 等
 // 使用示例：
-//   - 只查用户：GetByID("123")
-//   - 查用户 + 部门：GetByID("123", "Department")
-//   - 查用户 + 部门 + 岗位 + 角色：GetByID("123", "Department", "Position", "Roles")
-func (r *userRepository) GetByID(id string, relations ...repo.UserRelation) (*entity.User, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+//   - 只查用户：GetByID(123)
+//   - 查用户 + 部门：GetByID(123, "Department")
+//   - 查用户 + 部门 + 岗位 + 角色：GetByID(123, "Department", "Position", "Roles")
+func (r *userRepository) GetByID(id int64, relations ...repo.UserRelation) (*entity.User, error) {
 	var dbModel userModel
-	query := r.db.Where("id = ?", intID)
+	query := r.db.Where("id = ?", id)
 
 	// 根据指定的关联关系进行 Preload
 	for _, relation := range relations {
@@ -218,7 +210,7 @@ func (r *userRepository) Create(user *entity.User) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	user.ID = common.ToString(dbModel.ID)
+	user.ID = dbModel.ID
 	return nil
 }
 
@@ -233,13 +225,8 @@ func (r *userRepository) Update(user *entity.User) error {
 }
 
 // Delete 删除用户
-func (r *userRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&userModel{}, intID).Error
+func (r *userRepository) Delete(id int64) error {
+	return r.db.Delete(&userModel{}, id).Error
 }
 
 // List 分页查询用户列表
@@ -272,18 +259,13 @@ func (r *userRepository) List(page, pageSize int, filters map[string]interface{}
 }
 
 // UpdateFields 更新用户指定字段
-func (r *userRepository) UpdateFields(id string, updates map[string]interface{}) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Model(&userModel{}).Where("id = ?", intID).Updates(updates).Error
+func (r *userRepository) UpdateFields(id int64, updates map[string]interface{}) error {
+	return r.db.Model(&userModel{}).Where("id = ?", id).Updates(updates).Error
 }
 
 // SetUserSpecialPermissions 设置用户特殊 API 权限
-// TODO: 需要创建用户 -API 关联表，目前暂时不实现
-func (r *userRepository) SetUserSpecialPermissions(userID string, apiIDs []string) error {
+// TODO: 需要创建用户-API 关联表，目前暂时不实现
+func (r *userRepository) SetUserSpecialPermissions(userID int64, apiIDs []int64) error {
 	// TODO: 实现用户特殊 API 权限设置
 	// 需要创建中间表 base_user_apis
 	return nil
@@ -291,7 +273,7 @@ func (r *userRepository) SetUserSpecialPermissions(userID string, apiIDs []strin
 
 // SetUserSpecialBtnPermissions 设置用户特殊按钮权限
 // TODO: 需要创建用户 - 按钮权限关联表，目前暂时不实现
-func (r *userRepository) SetUserSpecialBtnPermissions(userID string, btnPermIDs []string) error {
+func (r *userRepository) SetUserSpecialBtnPermissions(userID int64, btnPermIDs []int64) error {
 	// TODO: 实现用户特殊按钮权限设置
 	// 需要创建中间表 base_user_btn_perms
 	return nil
@@ -299,14 +281,13 @@ func (r *userRepository) SetUserSpecialBtnPermissions(userID string, btnPermIDs 
 
 // GetUserSpecialPermissions 获取用户特殊 API 权限
 // TODO: 需要创建用户-API 关联表，目前暂时不实现
-func (r *userRepository) GetUserSpecialPermissions(userID string) ([]*entity.API, error) {
+func (r *userRepository) GetUserSpecialPermissions(userID int64) ([]*entity.API, error) {
 	// TODO: 实现用户特殊 API 权限获取
 	return []*entity.API{}, nil
 }
 
 // GetUserSpecialBtnPermissions 获取用户特殊按钮权限
-// TODO: 需要创建用户 - 按钮权限关联表，目前暂时不实现
-func (r *userRepository) GetUserSpecialBtnPermissions(userID string) ([]*entity.BtnPerm, error) {
+func (r *userRepository) GetUserSpecialBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
 	// TODO: 实现用户特殊按钮权限获取
 	return []*entity.BtnPerm{}, nil
 }

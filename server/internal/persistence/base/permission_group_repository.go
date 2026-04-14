@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // permissionGroupModel 权限组数据库模型
@@ -27,27 +26,25 @@ func (m *permissionGroupModel) toDomain() *entity.PermissionGroup {
 		return nil
 	}
 	return &entity.PermissionGroup{
-		ID:          common.ToString(m.ID),
+		ID:          m.ID,
 		Name:        m.Name,
 		Description: m.Description,
 		Status:      m.Status,
 		Sort:        m.Sort,
-		CreatedBy:   common.ToString(m.CreatedBy),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainPermissionGroup(group *entity.PermissionGroup) (*permissionGroupModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(group.ID, group.CreatedBy, group.UpdatedBy)
-
 	return &permissionGroupModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        group.ID,
+			CreatedBy: group.CreatedBy,
+			UpdatedBy: group.UpdatedBy,
 		},
 		Name:        group.Name,
 		Description: group.Description,
@@ -70,14 +67,9 @@ func NewPermissionGroupRepository(db *database.PostgresDB) repo.PermissionGroupR
 }
 
 // GetByID 根据 ID 查询权限组
-func (r *permissionGroupRepository) GetByID(id string) (*entity.PermissionGroup, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *permissionGroupRepository) GetByID(id int64) (*entity.PermissionGroup, error) {
 	var dbModel permissionGroupModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -108,7 +100,7 @@ func (r *permissionGroupRepository) Create(group *entity.PermissionGroup) error 
 	}
 
 	// 将生成的 ID 回写到领域实体
-	group.ID = common.ToString(dbModel.ID)
+	group.ID = dbModel.ID
 	return nil
 }
 
@@ -123,13 +115,8 @@ func (r *permissionGroupRepository) Update(group *entity.PermissionGroup) error 
 }
 
 // Delete 删除权限组
-func (r *permissionGroupRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&permissionGroupModel{}, intID).Error
+func (r *permissionGroupRepository) Delete(id int64) error {
+	return r.db.Delete(&permissionGroupModel{}, id).Error
 }
 
 // List 分页查询权限组列表
@@ -178,61 +165,61 @@ func (r *permissionGroupRepository) GetAllGroups() ([]*entity.PermissionGroup, e
 }
 
 // AddAPIToGroup 添加 API 路由到权限组
-func (r *permissionGroupRepository) AddAPIToGroup(groupID, apiID string) error {
+func (r *permissionGroupRepository) AddAPIToGroup(groupID, apiID int64) error {
 	// TODO: 实现权限组关联 API 路由表操作
 	return nil
 }
 
 // RemoveAPIFromGroup 从权限组移除 API 路由
-func (r *permissionGroupRepository) RemoveAPIFromGroup(groupID, apiID string) error {
+func (r *permissionGroupRepository) RemoveAPIFromGroup(groupID, apiID int64) error {
 	// TODO: 实现权限组关联 API 路由表操作
 	return nil
 }
 
 // GetAPIsByGroup 获取权限组下的所有 API 路由
-func (r *permissionGroupRepository) GetAPIsByGroup(groupID string) ([]*entity.API, error) {
+func (r *permissionGroupRepository) GetAPIsByGroup(groupID int64) ([]*entity.API, error) {
 	// TODO: 实现权限组关联 API 路由表操作
 	return nil, nil
 }
 
 // GetGroupsByAPI 获取 API 路由的所有权限组
-func (r *permissionGroupRepository) GetGroupsByAPI(apiID string) ([]*entity.PermissionGroup, error) {
+func (r *permissionGroupRepository) GetGroupsByAPI(apiID int64) ([]*entity.PermissionGroup, error) {
 	// TODO: 实现权限组关联 API 路由表操作
 	return nil, nil
 }
 
 // AddBtnPermToGroup 添加按钮权限到权限组
-func (r *permissionGroupRepository) AddBtnPermToGroup(groupID, btnPermID string) error {
+func (r *permissionGroupRepository) AddBtnPermToGroup(groupID, btnPermID int64) error {
 	// TODO: 实现权限组关联按钮权限表操作
 	return nil
 }
 
 // RemoveBtnPermFromGroup 从权限组移除按钮权限
-func (r *permissionGroupRepository) RemoveBtnPermFromGroup(groupID, btnPermID string) error {
+func (r *permissionGroupRepository) RemoveBtnPermFromGroup(groupID, btnPermID int64) error {
 	// TODO: 实现权限组关联按钮权限表操作
 	return nil
 }
 
 // GetBtnPermsByGroup 获取权限组下的所有按钮权限
-func (r *permissionGroupRepository) GetBtnPermsByGroup(groupID string) ([]*entity.BtnPerm, error) {
+func (r *permissionGroupRepository) GetBtnPermsByGroup(groupID int64) ([]*entity.BtnPerm, error) {
 	// TODO: 实现权限组关联按钮权限表操作
 	return nil, nil
 }
 
 // GetGroupsByBtnPerm 获取按钮权限的所有权限组
-func (r *permissionGroupRepository) GetGroupsByBtnPerm(btnPermID string) ([]*entity.PermissionGroup, error) {
+func (r *permissionGroupRepository) GetGroupsByBtnPerm(btnPermID int64) ([]*entity.PermissionGroup, error) {
 	// TODO: 实现权限组关联按钮权限表操作
 	return nil, nil
 }
 
 // GetRolesByGroup 获取权限组的所有角色
-func (r *permissionGroupRepository) GetRolesByGroup(groupID string) ([]*entity.Role, error) {
+func (r *permissionGroupRepository) GetRolesByGroup(groupID int64) ([]*entity.Role, error) {
 	// TODO: 实现权限组关联角色表操作
 	return nil, nil
 }
 
 // GetGroupsByRole 获取角色的所有权限组
-func (r *permissionGroupRepository) GetGroupsByRole(roleID string) ([]*entity.PermissionGroup, error) {
+func (r *permissionGroupRepository) GetGroupsByRole(roleID int64) ([]*entity.PermissionGroup, error) {
 	// TODO: 实现权限组关联角色表操作
 	return nil, nil
 }

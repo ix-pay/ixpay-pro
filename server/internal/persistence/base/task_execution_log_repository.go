@@ -6,7 +6,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // taskExecutionLogModel 任务执行日志数据库模型
@@ -36,8 +35,8 @@ func (m *taskExecutionLogModel) toDomain() *entity.TaskExecutionLog {
 		return nil
 	}
 	return &entity.TaskExecutionLog{
-		ID:          common.ToString(m.ID),
-		TaskID:      common.ToString(m.TaskID),
+		ID:          m.ID,
+		TaskID:      m.TaskID,
 		TaskName:    m.TaskName,
 		Group:       m.Group,
 		ExecuteAt:   m.ExecuteAt,
@@ -47,25 +46,23 @@ func (m *taskExecutionLogModel) toDomain() *entity.TaskExecutionLog {
 		RetryCount:  m.RetryCount,
 		CronExpr:    m.CronExpr,
 		TriggerType: m.TriggerType,
-		OperatorID:  common.ToString(m.OperatorID),
-		CreatedBy:   common.ToString(m.CreatedBy),
+		OperatorID:  m.OperatorID,
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainTaskExecutionLog(log *entity.TaskExecutionLog) (*taskExecutionLogModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(log.ID, log.CreatedBy, log.UpdatedBy)
-
 	return &taskExecutionLogModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        log.ID,
+			CreatedBy: log.CreatedBy,
+			UpdatedBy: log.UpdatedBy,
 		},
-		TaskID:      common.TryParseInt64(log.TaskID),
+		TaskID:      log.TaskID,
 		TaskName:    log.TaskName,
 		Group:       log.Group,
 		ExecuteAt:   log.ExecuteAt,
@@ -75,7 +72,7 @@ func fromDomainTaskExecutionLog(log *entity.TaskExecutionLog) (*taskExecutionLog
 		RetryCount:  log.RetryCount,
 		CronExpr:    log.CronExpr,
 		TriggerType: log.TriggerType,
-		OperatorID:  common.TryParseInt64(log.OperatorID),
+		OperatorID:  log.OperatorID,
 	}, nil
 }
 
@@ -93,14 +90,9 @@ func NewTaskExecutionLogRepository(db *database.PostgresDB) repo.TaskExecutionLo
 }
 
 // GetByID 根据 ID 查询任务执行日志
-func (r *taskExecutionLogRepository) GetByID(id string) (*entity.TaskExecutionLog, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *taskExecutionLogRepository) GetByID(id int64) (*entity.TaskExecutionLog, error) {
 	var dbModel taskExecutionLogModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -120,18 +112,13 @@ func (r *taskExecutionLogRepository) Create(log *entity.TaskExecutionLog) error 
 	}
 
 	// 将生成的 ID 回写到领域实体
-	log.ID = common.ToString(dbModel.ID)
+	log.ID = dbModel.ID
 	return nil
 }
 
 // Delete 删除任务执行日志
-func (r *taskExecutionLogRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&taskExecutionLogModel{}, intID).Error
+func (r *taskExecutionLogRepository) Delete(id int64) error {
+	return r.db.Delete(&taskExecutionLogModel{}, id).Error
 }
 
 // List 分页查询任务执行日志列表
@@ -164,12 +151,11 @@ func (r *taskExecutionLogRepository) List(page, pageSize int, filters map[string
 }
 
 // GetByTaskID 根据任务 ID 查询执行日志
-func (r *taskExecutionLogRepository) GetByTaskID(taskID string, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error) {
-	intTaskID, _ := common.ParseInt64(taskID)
+func (r *taskExecutionLogRepository) GetByTaskID(taskID int64, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error) {
 	var total int64
 	var dbModels []taskExecutionLogModel
 
-	query := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ?", intTaskID)
+	query := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ?", taskID)
 
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -189,10 +175,9 @@ func (r *taskExecutionLogRepository) GetByTaskID(taskID string, page, pageSize i
 }
 
 // CountByTaskID 统计任务的执行次数
-func (r *taskExecutionLogRepository) CountByTaskID(taskID string) (int64, error) {
-	intTaskID := common.TryParseInt64(taskID)
+func (r *taskExecutionLogRepository) CountByTaskID(taskID int64) (int64, error) {
 	var count int64
-	result := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ?", intTaskID).Count(&count)
+	result := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ?", taskID).Count(&count)
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -211,11 +196,21 @@ func (r *taskExecutionLogRepository) CountByResult(result string) (int64, error)
 	return count, nil
 }
 
+// CountByTaskIDAndResult 统计指定任务和结果的执行次数
+func (r *taskExecutionLogRepository) CountByTaskIDAndResult(taskID int64, result string) (int64, error) {
+	var count int64
+	resultErr := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ? AND result = ?", taskID, result).Count(&count)
+	if resultErr.Error != nil {
+		return 0, resultErr.Error
+	}
+
+	return count, nil
+}
+
 // GetLatestByTaskID 获取任务最新的执行日志
-func (r *taskExecutionLogRepository) GetLatestByTaskID(taskID string, limit int) ([]*entity.TaskExecutionLog, error) {
-	intTaskID := common.TryParseInt64(taskID)
+func (r *taskExecutionLogRepository) GetLatestByTaskID(taskID int64, limit int) ([]*entity.TaskExecutionLog, error) {
 	var dbModels []taskExecutionLogModel
-	result := r.db.Where("task_id = ?", intTaskID).
+	result := r.db.Where("task_id = ?", taskID).
 		Order("execute_at DESC").
 		Limit(limit).
 		Find(&dbModels)
@@ -242,7 +237,7 @@ func (r *taskExecutionLogRepository) ClearExpiredLogs(beforeDate string) (int64,
 }
 
 // GetSuccessRateByTaskID 获取任务的成功率
-func (r *taskExecutionLogRepository) GetSuccessRateByTaskID(taskID string, days int) (float64, error) {
+func (r *taskExecutionLogRepository) GetSuccessRateByTaskID(taskID int64, days int) (float64, error) {
 	var totalCount, successCount int64
 
 	query := r.db.Model(&taskExecutionLogModel{}).Where("task_id = ?", taskID)

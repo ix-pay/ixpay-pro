@@ -6,7 +6,7 @@ import "time"
 // 用于保存微信登录用户的基本信息
 // 纯业务模型，无 GORM 标签
 type WXUser struct {
-	ID            string     // 微信用户 ID
+	ID            int64      // 微信用户 ID
 	OpenID        string     // 微信 OpenID，唯一标识
 	UnionID       string     // 微信 UnionID（同一开放平台下唯一）
 	Nickname      string     // 用户昵称
@@ -19,8 +19,8 @@ type WXUser struct {
 	Subscribe     bool       // 是否关注公众号
 	SubscribeTime *time.Time // 关注时间
 	Remark        string     // 备注
-	GroupID       string     // 分组 ID（string 类型，避免 JSON 精度丢失）
-	UserID        string     // 关联系统用户 ID（string 类型，避免 JSON 精度丢失）
+	GroupID       int64      // 分组 ID
+	UserID        int64      // 关联系统用户 ID
 	CreatedAt     time.Time  // 创建时间
 	UpdatedAt     time.Time  // 更新时间
 }
@@ -37,17 +37,17 @@ func (w *WXUser) HasUnionID() bool {
 
 // IsLinkedToSystemUser 检查是否已绑定系统用户
 func (w *WXUser) IsLinkedToSystemUser() bool {
-	return w.UserID != ""
+	return w.UserID != 0
 }
 
 // LinkToSystemUser 绑定到系统用户
-func (w *WXUser) LinkToSystemUser(userID string) {
+func (w *WXUser) LinkToSystemUser(userID int64) {
 	w.UserID = userID
 }
 
 // UnlinkFromSystemUser 解绑系统用户
 func (w *WXUser) UnlinkFromSystemUser() {
-	w.UserID = ""
+	w.UserID = 0
 }
 
 // UpdateProfile 更新用户资料

@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -120,7 +121,10 @@ func getRoleByID(roleID string, cacheClient cache.Cache) (*entity.Role, error) {
 
 		// 安全地提取字段
 		if id, ok := simpleRole["ID"].(string); ok {
-			role.ID = id
+			roleID, err := strconv.ParseInt(id, 10, 64)
+			if err == nil {
+				role.ID = roleID
+			}
 		}
 		if code, ok := simpleRole["Code"].(string); ok {
 			role.Code = code

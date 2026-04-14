@@ -13,13 +13,13 @@ import (
 
 // MockOnlineUserRepository 用于并发测试的 Mock 实现
 type MockOnlineUserRepository struct {
-	users map[string]*entity.OnlineUser
+	users map[int64]*entity.OnlineUser
 	mu    sync.RWMutex
 }
 
 func NewMockOnlineUserRepositoryForTest() *MockOnlineUserRepository {
 	return &MockOnlineUserRepository{
-		users: make(map[string]*entity.OnlineUser),
+		users: make(map[int64]*entity.OnlineUser),
 	}
 }
 
@@ -30,7 +30,7 @@ func (m *MockOnlineUserRepository) Add(user *entity.OnlineUser) error {
 	return nil
 }
 
-func (m *MockOnlineUserRepository) GetByUserID(userID string) (*entity.OnlineUser, error) {
+func (m *MockOnlineUserRepository) GetByUserID(userID int64) (*entity.OnlineUser, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.users[userID], nil
@@ -57,7 +57,7 @@ func (m *MockOnlineUserRepository) GetAll() ([]*entity.OnlineUser, error) {
 	return users, nil
 }
 
-func (m *MockOnlineUserRepository) Remove(userID string) error {
+func (m *MockOnlineUserRepository) Remove(userID int64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	delete(m.users, userID)
@@ -76,7 +76,7 @@ func (m *MockOnlineUserRepository) RemoveBySessionID(sessionID string) error {
 	return nil
 }
 
-func (m *MockOnlineUserRepository) UpdateActiveTime(userID string) error {
+func (m *MockOnlineUserRepository) UpdateActiveTime(userID int64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if user, exists := m.users[userID]; exists {
@@ -85,7 +85,7 @@ func (m *MockOnlineUserRepository) UpdateActiveTime(userID string) error {
 	return nil
 }
 
-func (m *MockOnlineUserRepository) Exists(userID string) (bool, error) {
+func (m *MockOnlineUserRepository) Exists(userID int64) (bool, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	_, exists := m.users[userID]
@@ -119,11 +119,11 @@ func TestOnlineUserService_ConcurrentAddUsers(t *testing.T) {
 		go func(index int) {
 			defer wg.Done()
 			err := svc.AddOnlineUser(
-				string(rune(index)),
+				int64(index),
 				"user"+string(rune(index)),
 				"用户"+string(rune(index)),
 				"session_"+string(rune(index)),
-				"192.168.1."+string(rune(index)),
+				"192.168.1."+string(rune(index%256)),
 				"测试地点",
 				"Chrome",
 				"Chrome 120",
@@ -159,7 +159,7 @@ func TestOnlineUserService_ConcurrentReadWrite(t *testing.T) {
 	// 先添加一些用户
 	for i := 0; i < 10; i++ {
 		err := svc.AddOnlineUser(
-			string(rune(i)),
+			int64(i),
 			"user"+string(rune(i)),
 			"用户"+string(rune(i)),
 			"session_"+string(rune(i)),
@@ -181,7 +181,7 @@ func TestOnlineUserService_ConcurrentReadWrite(t *testing.T) {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
-			userID := string(rune(index % 10))
+			userID := int64(index % 10)
 			_, err := svc.GetOnlineUserByID(userID)
 			if err != nil && err.Error() != "用户不在线" {
 				errChan <- err
@@ -194,7 +194,7 @@ func TestOnlineUserService_ConcurrentReadWrite(t *testing.T) {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
-			userID := string(rune(index % 10))
+			userID := int64(index % 10)
 			err := svc.UpdateUserActive(userID)
 			if err != nil {
 				errChan <- err
@@ -207,7 +207,7 @@ func TestOnlineUserService_ConcurrentReadWrite(t *testing.T) {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
-			userID := string(rune(index % 10))
+			userID := int64(index % 10)
 			_ = svc.RemoveOnlineUser(userID)
 		}(i)
 	}
@@ -217,7 +217,7 @@ func TestOnlineUserService_ConcurrentReadWrite(t *testing.T) {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
-			userID := string(rune(index % 10))
+			userID := int64(index % 10)
 			_, err := svc.IsOnline(userID)
 			if err != nil {
 				errChan <- err
@@ -242,7 +242,7 @@ func TestOnlineUserService_ConcurrentForceOffline(t *testing.T) {
 
 	// 添加一个测试用户
 	err := svc.AddOnlineUser(
-		"1",
+		int64(1),
 		"testuser",
 		"测试用户",
 		"session_1",
@@ -265,7 +265,7 @@ func TestOnlineUserService_ConcurrentForceOffline(t *testing.T) {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
-			err := svc.ForceOffline("1", string(rune(index)))
+			err := svc.ForceOffline(int64(1), string(rune(index)))
 			mu.Lock()
 			defer mu.Unlock()
 			if err == nil {
@@ -280,7 +280,7 @@ func TestOnlineUserService_ConcurrentForceOffline(t *testing.T) {
 	assert.Equal(t, 1, successCount, "应该只有一个 goroutine 成功强制下线")
 
 	// 验证用户已被移除
-	online, err := svc.IsOnline("1")
+	online, err := svc.IsOnline(int64(1))
 	assert.NoError(t, err)
 	assert.False(t, online, "用户应该已被强制下线")
 }
@@ -294,7 +294,7 @@ func TestOnlineUserService_ConcurrentGetOnlineCount(t *testing.T) {
 	// 添加一些用户
 	for i := 0; i < 10; i++ {
 		err := svc.AddOnlineUser(
-			string(rune(i)),
+			int64(i),
 			"user"+string(rune(i)),
 			"用户"+string(rune(i)),
 			"session_"+string(rune(i)),
@@ -346,7 +346,7 @@ func TestConfigService_ConcurrentAccess(t *testing.T) {
 		config := &entity.Config{
 			ConfigKey:   key,
 			ConfigValue: "value" + string(rune(i)),
-			ConfigType:  "string",
+			ConfigType:  1, // 改为 int 类型
 			Description: "测试配置",
 			Status:      1,
 		}
@@ -378,8 +378,8 @@ func TestConfigService_ConcurrentAccess(t *testing.T) {
 		go func(index int) {
 			defer wg.Done()
 			key := "test.key." + string(rune(index%5))
-			id := string(rune(index%5 + 1))
-			_ = svc.UpdateConfig(id, key, "newvalue"+string(rune(index)), "string", "更新配置", 1, "1")
+			id := int64(index%5 + 1)
+			_ = svc.UpdateConfig(id, key, "newvalue"+string(rune(index)), 1, "更新配置", 1, int64(index%10+1))
 		}(i)
 	}
 
@@ -407,16 +407,16 @@ func TestConfigService_ConcurrentAccess(t *testing.T) {
 
 // MockConfigRepository 用于并发测试的 Mock 实现
 type MockConfigRepositoryForTest struct {
-	configs map[string]*entity.Config
-	keyMap  map[string]string
+	configs map[int64]*entity.Config
+	keyMap  map[string]int64
 	mu      sync.RWMutex
-	nextID  int
+	nextID  int64
 }
 
 func NewMockConfigRepositoryForTest() *MockConfigRepositoryForTest {
 	return &MockConfigRepositoryForTest{
-		configs: make(map[string]*entity.Config),
-		keyMap:  make(map[string]string),
+		configs: make(map[int64]*entity.Config),
+		keyMap:  make(map[string]int64),
 		nextID:  1,
 	}
 }
@@ -430,7 +430,7 @@ func (m *MockConfigRepositoryForTest) GetByKey(configKey string) (*entity.Config
 	return nil, nil
 }
 
-func (m *MockConfigRepositoryForTest) GetByID(id string) (*entity.Config, error) {
+func (m *MockConfigRepositoryForTest) GetByID(id int64) (*entity.Config, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.configs[id], nil
@@ -439,7 +439,7 @@ func (m *MockConfigRepositoryForTest) GetByID(id string) (*entity.Config, error)
 func (m *MockConfigRepositoryForTest) Create(config *entity.Config) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	config.ID = string(rune(m.nextID))
+	config.ID = m.nextID
 	m.nextID++
 	m.configs[config.ID] = config
 	m.keyMap[config.ConfigKey] = config.ID
@@ -454,7 +454,7 @@ func (m *MockConfigRepositoryForTest) Update(config *entity.Config) error {
 	return nil
 }
 
-func (m *MockConfigRepositoryForTest) Delete(id string) error {
+func (m *MockConfigRepositoryForTest) Delete(id int64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	delete(m.configs, id)

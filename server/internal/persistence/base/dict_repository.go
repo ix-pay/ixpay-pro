@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // dictModel 字典数据库模型
@@ -30,14 +29,14 @@ func (m *dictModel) toDomain() *entity.Dict {
 		return nil
 	}
 	dict := &entity.Dict{
-		ID:          common.ToString(m.ID),
+		ID:          m.ID,
 		DictName:    m.DictName,
 		DictCode:    m.DictCode,
 		Description: m.Description,
 		Status:      m.Status,
-		CreatedBy:   common.ToString(m.CreatedBy),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 
@@ -55,13 +54,11 @@ func (m *dictModel) toDomain() *entity.Dict {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainDict(dict *entity.Dict) (*dictModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(dict.ID, dict.CreatedBy, dict.UpdatedBy)
-
 	return &dictModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        dict.ID,
+			CreatedBy: dict.CreatedBy,
+			UpdatedBy: dict.UpdatedBy,
 		},
 		DictName:    dict.DictName,
 		DictCode:    dict.DictCode,
@@ -84,14 +81,9 @@ func NewDictRepository(db *database.PostgresDB) repo.DictRepository {
 }
 
 // GetByID 根据 ID 查询字典并支持加载关联数据
-func (r *dictRepository) GetByID(id string, relations ...repo.DictRelation) (*entity.Dict, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *dictRepository) GetByID(id int64, relations ...repo.DictRelation) (*entity.Dict, error) {
 	var dbModel dictModel
-	query := r.db.Where("id = ?", intID)
+	query := r.db.Where("id = ?", id)
 
 	// 根据指定的关联关系进行 Preload
 	for _, relation := range relations {
@@ -136,7 +128,7 @@ func (r *dictRepository) Create(dict *entity.Dict) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	dict.ID = common.ToString(dbModel.ID)
+	dict.ID = dbModel.ID
 	return nil
 }
 
@@ -151,13 +143,8 @@ func (r *dictRepository) Update(dict *entity.Dict) error {
 }
 
 // Delete 删除字典
-func (r *dictRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&dictModel{}, intID).Error
+func (r *dictRepository) Delete(id int64) error {
+	return r.db.Delete(&dictModel{}, id).Error
 }
 
 // List 分页查询字典列表

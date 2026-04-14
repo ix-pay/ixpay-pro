@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -214,6 +215,27 @@ func (c *PositionController) CreatePosition(ctx *gin.Context) {
 		return
 	}
 
+	// 将 createdBy 转换为 int64
+	var createdByInt int64
+	var err error
+	switch v := createdBy.(type) {
+	case string:
+		createdByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		createdByInt = v
+	case int:
+		createdByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
 	// 提供默认值：status=1（启用）
 	status := req.Status
 	if status == 0 {
@@ -223,7 +245,7 @@ func (c *PositionController) CreatePosition(ctx *gin.Context) {
 	position, err := c.service.CreatePosition(
 		req.Name,
 		req.Description,
-		createdBy.(string),
+		createdByInt,
 		req.Sort,
 		status,
 	)
@@ -265,12 +287,33 @@ func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的 ID
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	var err error
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	// 调用服务层更新岗位
 	position, err := c.service.UpdatePosition(
 		req.ID,
 		req.Name,
 		req.Description,
-		updatedBy.(string),
+		updatedByInt,
 		req.Sort,
 		req.Status,
 	)
@@ -298,11 +341,18 @@ func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/position/:id [delete]
 func (c *PositionController) DeletePosition(ctx *gin.Context) {
-	// 直接使用 string 类型的岗位 ID
-	positionID := ctx.Param("id")
-	if positionID == "" {
+	// 将字符串 ID 转换为 int64
+	positionIDStr := ctx.Param("id")
+	if positionIDStr == "" {
 		c.log.Error("岗位 ID 不能为空")
 		baseRes.FailWithMessage("岗位 ID 不能为空", ctx)
+		return
+	}
+
+	positionID, err := strconv.ParseInt(positionIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", positionIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 

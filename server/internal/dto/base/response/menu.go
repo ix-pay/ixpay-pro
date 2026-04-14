@@ -2,9 +2,10 @@ package response
 
 // MenuResponse 菜单响应
 // 用于返回菜单相关信息，字段名统一使用小写（符合 JSON 规范）
+// 所有 ID 字段使用 int64 格式返回，通过 json:",string" 标签自动序列化为字符串
 type MenuResponse struct {
-	ID           string         `json:"id"`                 // 菜单 ID（字符串格式，使用 Snowflake ID）
-	ParentID     string         `json:"parentId"`           // 父菜单 ID（字符串格式，防止 string 精度丢失）
+	ID           int64          `json:"id,string"`          // 菜单 ID
+	ParentID     int64          `json:"parentId,string"`    // 父菜单 ID
 	Path         string         `json:"path"`               // 路由路径
 	Name         string         `json:"name"`               // 路由名称
 	Component    string         `json:"component"`          // 组件路径

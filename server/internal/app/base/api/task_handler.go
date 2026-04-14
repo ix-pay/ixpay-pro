@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -358,8 +359,15 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 	}
 	req.TaskID = taskID
 
+	// 将 TaskID 从 string 转换为 int64
+	taskIDInt, err := strconv.ParseInt(taskID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的 ID 格式"})
+		return
+	}
+
 	// 查询执行历史
-	logs, total, err := c.service.GetExecutionHistory(req.TaskID, req.Page, req.PageSize)
+	logs, total, err := c.service.GetExecutionHistory(taskIDInt, req.Page, req.PageSize)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询任务执行历史失败"})
 		return
@@ -369,8 +377,8 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 	logResponses := make([]response.TaskExecutionLogResponse, 0, len(logs))
 	for _, log := range logs {
 		logResponses = append(logResponses, response.TaskExecutionLogResponse{
-			ID:          log.ID,
-			TaskID:      log.TaskID,
+			ID:          strconv.FormatInt(log.ID, 10),
+			TaskID:      strconv.FormatInt(log.TaskID, 10),
 			TaskName:    log.TaskName,
 			Group:       log.Group,
 			ExecuteAt:   log.ExecuteAt,
@@ -380,7 +388,7 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 			RetryCount:  log.RetryCount,
 			CronExpr:    log.CronExpr,
 			TriggerType: log.TriggerType,
-			OperatorID:  log.OperatorID,
+			OperatorID:  strconv.FormatInt(log.OperatorID, 10),
 		})
 	}
 
@@ -426,7 +434,7 @@ func (c *TaskController) GetStatistics(ctx *gin.Context) {
 	statResponses := make([]response.TaskStatisticsResponse, 0, len(stats))
 	for _, stat := range stats {
 		statResponses = append(statResponses, response.TaskStatisticsResponse{
-			TaskID:        stat.TaskID,
+			TaskID:        strconv.FormatInt(stat.TaskID, 10),
 			TaskName:      stat.TaskName,
 			Group:         stat.Group,
 			TotalExecutes: stat.TotalExecutes,

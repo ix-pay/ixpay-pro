@@ -12,7 +12,7 @@ type PermissionAttribute struct {
 // PermissionRule 权限规则领域实体 - ABAC 核心
 // 纯业务模型，无 GORM 标签
 type PermissionRule struct {
-	ID          string                // 规则 ID
+	ID          int64                 // 规则 ID
 	Name        string                // 规则名称
 	Description string                // 规则描述
 	Effect      string                // 效果：allow, deny
@@ -23,11 +23,13 @@ type PermissionRule struct {
 	Status      int                   // 状态：1-启用，0-禁用
 	Sort        int                   // 排序
 	IsSystem    bool                  // 是否系统规则
-	RoleIds     []string              // 关联角色 ID 列表
-	UserIds     []string              // 关联用户 ID 列表
-	CreatedBy   string                // 创建人 ID
+	RoleIds     []int64               // 关联角色 ID 列表
+	Roles       []*Role               // 关联角色对象列表
+	UserIds     []int64               // 关联用户 ID 列表
+	Users       []*User               // 关联用户对象列表
+	CreatedBy   int64                 // 创建人 ID
 	CreatedAt   time.Time             // 创建时间
-	UpdatedBy   string                // 更新人 ID
+	UpdatedBy   int64                 // 更新人 ID
 	UpdatedAt   time.Time             // 更新时间
 }
 
@@ -52,7 +54,7 @@ func (p *PermissionRule) IsSystemRule() bool {
 }
 
 // HasRole 检查规则是否包含指定角色
-func (p *PermissionRule) HasRole(roleID string) bool {
+func (p *PermissionRule) HasRole(roleID int64) bool {
 	for _, rid := range p.RoleIds {
 		if rid == roleID {
 			return true
@@ -62,7 +64,7 @@ func (p *PermissionRule) HasRole(roleID string) bool {
 }
 
 // HasUser 检查规则是否包含指定用户
-func (p *PermissionRule) HasUser(userID string) bool {
+func (p *PermissionRule) HasUser(userID int64) bool {
 	for _, uid := range p.UserIds {
 		if uid == userID {
 			return true

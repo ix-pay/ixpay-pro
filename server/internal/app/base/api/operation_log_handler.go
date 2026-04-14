@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -137,9 +138,16 @@ func (c *OperationLogController) GetLogList(ctx *gin.Context) {
 //	@Router			/api/admin/logs/:id [get]
 func (c *OperationLogController) GetLogByID(ctx *gin.Context) {
 	// 解析 ID 参数
-	id := ctx.Param("id")
-	if id == "" {
+	idStr := ctx.Param("id")
+	if idStr == "" {
 		baseRes.FailWithMessage("无效的 ID 参数", ctx)
+		return
+	}
+
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -196,14 +204,21 @@ func (c *OperationLogController) GetLogByID(ctx *gin.Context) {
 //	@Router			/api/admin/logs/:id [delete]
 func (c *OperationLogController) DeleteLogByID(ctx *gin.Context) {
 	// 解析 ID 参数
-	id := ctx.Param("id")
-	if id == "" {
+	idStr := ctx.Param("id")
+	if idStr == "" {
 		baseRes.FailWithMessage("无效的 ID 参数", ctx)
 		return
 	}
 
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
 	// 删除日志
-	err := c.service.DeleteLogByID(id)
+	err = c.service.DeleteLogByID(id)
 	if err != nil {
 		baseRes.FailWithMessage("删除日志失败", ctx)
 		return

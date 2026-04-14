@@ -2,9 +2,9 @@ package entity
 
 // RolePermissions 角色权限缓存结构
 type RolePermissions struct {
-	MenuIds     []string        // 角色菜单权限 ID 列表
-	BtnPermIds  []string        // 角色按钮权限 ID 列表
-	APIRouteIds []string        // 角色通用 API 权限 ID 列表
+	MenuIds     []int64         // 角色菜单权限 ID 列表
+	BtnPermIds  []int64         // 角色按钮权限 ID 列表
+	APIRouteIds []int64         // 角色通用 API 权限 ID 列表
 	APIs        []*API          // 角色通用 API 权限
 	Menus       []*Menu         // 角色菜单权限
 	BtnPerms    []*BtnPerm      // 角色按钮权限
@@ -12,7 +12,7 @@ type RolePermissions struct {
 }
 
 // HasMenu 检查角色是否有指定菜单权限
-func (r *RolePermissions) HasMenu(menuID string) bool {
+func (r *RolePermissions) HasMenu(menuID int64) bool {
 	for _, mid := range r.MenuIds {
 		if mid == menuID {
 			return true
@@ -22,7 +22,7 @@ func (r *RolePermissions) HasMenu(menuID string) bool {
 }
 
 // HasBtnPerm 检查角色是否有指定按钮权限
-func (r *RolePermissions) HasBtnPerm(btnPermID string) bool {
+func (r *RolePermissions) HasBtnPerm(btnPermID int64) bool {
 	for _, bid := range r.BtnPermIds {
 		if bid == btnPermID {
 			return true
@@ -32,7 +32,7 @@ func (r *RolePermissions) HasBtnPerm(btnPermID string) bool {
 }
 
 // HasAPI 检查角色是否有指定 API 权限
-func (r *RolePermissions) HasAPI(apiID string) bool {
+func (r *RolePermissions) HasAPI(apiID int64) bool {
 	for _, rid := range r.APIRouteIds {
 		if rid == apiID {
 			return true

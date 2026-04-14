@@ -33,7 +33,7 @@ func (s *ConfigService) GetConfigByKey(configKey string) (*entity.Config, error)
 }
 
 // GetConfigByID 根据 ID 获取配置
-func (s *ConfigService) GetConfigByID(id string) (*entity.Config, error) {
+func (s *ConfigService) GetConfigByID(id int64) (*entity.Config, error) {
 	config, err := s.repo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取配置失败", "id", id, "error", err)
@@ -43,11 +43,11 @@ func (s *ConfigService) GetConfigByID(id string) (*entity.Config, error) {
 }
 
 // CreateConfig 创建配置
-func (s *ConfigService) CreateConfig(configKey, configValue, configType, description string, status int, createdBy string) (*entity.Config, error) {
+func (s *ConfigService) CreateConfig(configKey, configValue string, configType int, description string, status int, createdBy int64) (*entity.Config, error) {
 	// 检查配置键是否已存在
 	existingConfig, err := s.repo.GetByKey(configKey)
 	if err == nil {
-		if existingConfig.ID != "" {
+		if existingConfig.ID != 0 {
 			s.log.Error("配置键已存在", "config_key", configKey)
 			return nil, errors.New("配置键已存在")
 		}
@@ -75,7 +75,7 @@ func (s *ConfigService) CreateConfig(configKey, configValue, configType, descrip
 }
 
 // UpdateConfig 更新配置
-func (s *ConfigService) UpdateConfig(id string, configKey, configValue, configType, description string, status int, updatedBy string) error {
+func (s *ConfigService) UpdateConfig(id int64, configKey, configValue string, configType int, description string, status int, updatedBy int64) error {
 	// 获取配置
 	config, err := s.repo.GetByID(id)
 	if err != nil {
@@ -111,7 +111,7 @@ func (s *ConfigService) UpdateConfig(id string, configKey, configValue, configTy
 }
 
 // DeleteConfig 删除配置
-func (s *ConfigService) DeleteConfig(id string) error {
+func (s *ConfigService) DeleteConfig(id int64) error {
 	// 获取配置
 	_, err := s.repo.GetByID(id)
 	if err != nil {

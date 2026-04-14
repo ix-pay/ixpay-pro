@@ -17,9 +17,9 @@ const (
 // 表示支付订单的完整信息
 // 纯业务模型，无 GORM 标签
 type Payment struct {
-	ID            string         // 支付 ID（string 类型，避免 JSON 精度丢失）
+	ID            int64          // 支付 ID
 	OrderID       string         // 订单 ID
-	UserID        string         // 用户 ID（string 类型，避免 JSON 精度丢失）
+	UserID        int64          // 用户 ID
 	Amount        int64          // 金额，单位：分
 	Currency      string         // 货币类型，默认 CNY
 	Method        string         // 支付方式：wechat, alipay 等
@@ -28,9 +28,9 @@ type Payment struct {
 	Description   string         // 支付描述
 	WechatPayInfo *WechatPayInfo // 微信支付详细信息
 	PaidAt        *time.Time     // 支付成功时间
-	CreatedBy     string         // 创建人 ID
+	CreatedBy     int64          // 创建人 ID
 	CreatedAt     time.Time      // 创建时间
-	UpdatedBy     string         // 更新人 ID
+	UpdatedBy     int64          // 更新人 ID
 	UpdatedAt     time.Time      // 更新时间
 }
 

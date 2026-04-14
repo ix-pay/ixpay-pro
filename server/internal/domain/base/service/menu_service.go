@@ -138,11 +138,11 @@ func convertToMenuResponseList(menus []*entity.Menu) []response.MenuResponse {
 }
 
 // GetUserMenus 获取用户可访问的菜单列表
-func (s *MenuService) GetUserMenus(role string) ([]response.MenuResponse, error) {
-	s.log.Info("获取用户菜单列表", "role", role)
-	menus, err := s.repo.GetMenusByRole(role)
+func (s *MenuService) GetUserMenus(roleID int64) ([]response.MenuResponse, error) {
+	s.log.Info("获取用户菜单列表", "roleID", roleID)
+	menus, err := s.repo.GetMenusByRole(roleID)
 	if err != nil {
-		s.log.Error("获取用户菜单失败", "error", err, "role", role)
+		s.log.Error("获取用户菜单失败", "error", err, "roleID", roleID)
 		return nil, err
 	}
 
@@ -154,29 +154,39 @@ func (s *MenuService) GetUserMenus(role string) ([]response.MenuResponse, error)
 	// 转换为响应结构
 	menuResponses := convertToMenuResponseList(menus)
 
-	s.log.Info("获取用户菜单成功", "role", role, "count", len(menuResponses))
+	s.log.Info("获取用户菜单成功", "roleID", roleID, "count", len(menuResponses))
 	return menuResponses, nil
 }
 
 // GetDefaultRouter 获取用户默认路由
-func (s *MenuService) GetDefaultRouter(role string) (string, error) {
-	s.log.Info("获取默认路由", "role", role)
-	path, err := s.repo.GetDefaultRouter(role)
+func (s *MenuService) GetDefaultRouter(roleID int64) (string, error) {
+	s.log.Info("获取默认路由", "roleID", roleID)
+	path, err := s.repo.GetDefaultRouter(roleID)
 	if err != nil {
-		s.log.Error("获取默认路由失败", "error", err, "role", role)
+		s.log.Error("获取默认路由失败", "error", err, "roleID", roleID)
 		return "", err
 	}
-	s.log.Info("获取默认路由成功", "role", role, "path", path)
+	s.log.Info("获取默认路由成功", "roleID", roleID, "path", path)
 	return path, nil
 }
 
 // CreateMenu 创建菜单
-func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy string) error {
+func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy int64) error {
 	s.log.Info("创建菜单", "name", menu.Name, "path", menu.Path)
+
+	// 验证菜单参数
+	if menu == nil {
+		s.log.Error("菜单参数不能为空")
+		return errors.New("菜单参数不能为空")
+	}
 
 	// 检查菜单名称是否已存在
 	existingMenus, _, err := s.repo.List(1, 1, map[string]interface{}{"name = ?": menu.Name})
-	if err == nil && len(existingMenus) > 0 {
+	if err != nil {
+		s.log.Error("检查菜单名称失败", "error", err, "name", menu.Name)
+		return err
+	}
+	if len(existingMenus) > 0 {
 		s.log.Error("菜单名称已存在", "name", menu.Name)
 		return errors.New("菜单名称已存在")
 	}
@@ -196,7 +206,7 @@ func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy string) error {
 }
 
 // UpdateMenu 更新菜单
-func (s *MenuService) UpdateMenu(menu *entity.Menu, updatedBy string) error {
+func (s *MenuService) UpdateMenu(menu *entity.Menu, updatedBy int64) error {
 	s.log.Info("更新菜单", "id", menu.ID, "name", menu.Name)
 
 	// 检查菜单是否存在
@@ -229,7 +239,7 @@ func (s *MenuService) UpdateMenu(menu *entity.Menu, updatedBy string) error {
 }
 
 // UpdateMenuWithAPIs 更新菜单并处理 API 关联
-func (s *MenuService) UpdateMenuWithAPIs(menu *entity.Menu, apiRouteIDs []string, updatedBy string) error {
+func (s *MenuService) UpdateMenuWithAPIs(menu *entity.Menu, apiRouteIDs []string, updatedBy int64) error {
 	s.log.Info("更新菜单并处理 API 关联", "id", menu.ID, "api_count", len(apiRouteIDs))
 
 	// 1. 更新菜单基本信息
@@ -246,18 +256,11 @@ func (s *MenuService) UpdateMenuWithAPIs(menu *entity.Menu, apiRouteIDs []string
 }
 
 // DeleteMenu 删除菜单
-func (s *MenuService) DeleteMenu(id string) error {
+func (s *MenuService) DeleteMenu(id int64) error {
 	s.log.Info("删除菜单", "id", id)
 
-	// 检查菜单是否存在
-	menu, err := s.repo.GetByID(id)
-	if err != nil {
-		s.log.Error("获取菜单失败", "error", err, "id", id)
-		return err
-	}
-
 	// 检查是否有子菜单
-	hasChildren, err := s.hasChildren(menu.ID)
+	hasChildren, err := s.hasChildren(id)
 	if err != nil {
 		s.log.Error("检查子菜单失败", "error", err)
 		return err
@@ -297,7 +300,7 @@ func (s *MenuService) GetMenuList(page, pageSize int, filters map[string]interfa
 }
 
 // GetMenusByUserID 根据用户 ID 获取菜单列表
-func (s *MenuService) GetMenusByUserID(userID string) ([]*entity.Menu, error) {
+func (s *MenuService) GetMenusByUserID(userID int64) ([]*entity.Menu, error) {
 	s.log.Info("根据用户 ID 获取菜单列表", "userID", userID)
 	menus, err := s.repo.GetMenusByUserID(userID)
 	if err != nil {
@@ -315,7 +318,7 @@ func (s *MenuService) GetMenusByUserID(userID string) ([]*entity.Menu, error) {
 }
 
 // GetMenuTree 获取菜单树结构
-func (s *MenuService) GetMenuTree(parentID string) ([]*entity.Menu, error) {
+func (s *MenuService) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 	s.log.Info("获取菜单树结构", "parentID", parentID)
 
 	// ⭐ 优化：先获取顶级菜单，然后使用 Preload 加载关联数据
@@ -357,7 +360,7 @@ func (s *MenuService) GetAllMenuTree() ([]*entity.Menu, error) {
 }
 
 // GetMenuPath 获取菜单路径
-func (s *MenuService) GetMenuPath(menuID string) ([]*entity.Menu, error) {
+func (s *MenuService) GetMenuPath(menuID int64) ([]*entity.Menu, error) {
 	s.log.Info("获取菜单路径", "menuID", menuID)
 
 	// ⭐ 优化：使用 Preload 加载父菜单
@@ -401,7 +404,7 @@ func (s *MenuService) GetMenusByType(menuType entity.MenuType) ([]*entity.Menu, 
 }
 
 // BatchDeleteMenu 批量删除菜单
-func (s *MenuService) BatchDeleteMenu(ids []string) error {
+func (s *MenuService) BatchDeleteMenu(ids []int64) error {
 	s.log.Info("批量删除菜单", "ids", ids)
 
 	// 检查菜单是否有子菜单
@@ -430,14 +433,14 @@ func (s *MenuService) BatchDeleteMenu(ids []string) error {
 // RefreshMenuCache 刷新菜单缓存
 func (s *MenuService) RefreshMenuCache() error {
 	s.log.Info("刷新菜单缓存")
-	// 这里可以添加缓存刷新逻辑，例如使用Redis等缓存技术
+	// 这里可以添加缓存刷新逻辑，例如使用 Redis 等缓存技术
 	// 目前仅记录日志
 	s.log.Info("菜单缓存已刷新")
 	return nil
 }
 
 // CheckMenuChildren 检查菜单是否有子菜单
-func (s *MenuService) CheckMenuChildren(menuID string) (bool, error) {
+func (s *MenuService) CheckMenuChildren(menuID int64) (bool, error) {
 	s.log.Info("检查菜单是否有子菜单", "menuID", menuID)
 	hasChildren, err := s.repo.CheckMenuChildren(menuID)
 	if err != nil {
@@ -450,7 +453,7 @@ func (s *MenuService) CheckMenuChildren(menuID string) (bool, error) {
 }
 
 // 检查菜单是否有子菜单（内部使用）
-func (s *MenuService) hasChildren(parentID string) (bool, error) {
+func (s *MenuService) hasChildren(parentID int64) (bool, error) {
 	menus, _, err := s.repo.List(1, 1, map[string]interface{}{"parent_id = ?": parentID})
 	if err != nil {
 		return false, err
@@ -459,7 +462,7 @@ func (s *MenuService) hasChildren(parentID string) (bool, error) {
 }
 
 // CalculateDeleteImpact 评估删除菜单的影响范围
-func (s *MenuService) CalculateDeleteImpact(menuID string) (*entity.DeleteImpact, error) {
+func (s *MenuService) CalculateDeleteImpact(menuID int64) (*entity.DeleteImpact, error) {
 	impact := &entity.DeleteImpact{}
 
 	// 1. 统计子菜单数量

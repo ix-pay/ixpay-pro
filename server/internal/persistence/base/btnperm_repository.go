@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // btnPermModel 按钮权限数据库模型
@@ -34,14 +33,14 @@ func (m *btnPermModel) toDomain() *entity.BtnPerm {
 		return nil
 	}
 	btnPerm := &entity.BtnPerm{
-		ID:        common.ToString(m.ID),
-		MenuID:    common.ToString(m.MenuID),
+		ID:        m.ID,
+		MenuID:    m.MenuID,
 		Code:      m.Code,
 		Name:      m.Name,
 		Status:    m.Status,
-		CreatedBy: common.ToString(m.CreatedBy),
+		CreatedBy: m.CreatedBy,
 		CreatedAt: m.CreatedAt,
-		UpdatedBy: common.ToString(m.UpdatedBy),
+		UpdatedBy: m.UpdatedBy,
 		UpdatedAt: m.UpdatedAt,
 	}
 
@@ -53,10 +52,10 @@ func (m *btnPermModel) toDomain() *entity.BtnPerm {
 	// ⭐ 处理关联数据 - API 路由（同时填充 APIRouteIds 和 APIRoutes）
 	if len(m.APIRoutes) > 0 {
 		apiRoutes := make([]*entity.API, len(m.APIRoutes))
-		apiRouteIDs := make([]string, len(m.APIRoutes))
+		apiRouteIDs := make([]int64, len(m.APIRoutes))
 		for i, apiRoute := range m.APIRoutes {
 			apiRoutes[i] = apiRoute.toDomain()
-			apiRouteIDs[i] = common.ToString(apiRoute.ID)
+			apiRouteIDs[i] = apiRoute.ID
 		}
 		btnPerm.APIRoutes = apiRoutes
 		btnPerm.APIRouteIds = apiRouteIDs
@@ -67,15 +66,13 @@ func (m *btnPermModel) toDomain() *entity.BtnPerm {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainBtnPerm(btnPerm *entity.BtnPerm) (*btnPermModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(btnPerm.ID, btnPerm.CreatedBy, btnPerm.UpdatedBy)
-
 	return &btnPermModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        btnPerm.ID,
+			CreatedBy: btnPerm.CreatedBy,
+			UpdatedBy: btnPerm.UpdatedBy,
 		},
-		MenuID: common.TryParseInt64(btnPerm.MenuID),
+		MenuID: btnPerm.MenuID,
 		Code:   btnPerm.Code,
 		Name:   btnPerm.Name,
 		Status: btnPerm.Status,
@@ -96,14 +93,9 @@ func NewBtnPermRepository(db *database.PostgresDB) repo.BtnPermRepository {
 }
 
 // GetByID 根据 ID 查询按钮权限并支持加载关联数据
-func (r *btnPermRepository) GetByID(id string, relations ...repo.BtnPermRelation) (*entity.BtnPerm, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *btnPermRepository) GetByID(id int64, relations ...repo.BtnPermRelation) (*entity.BtnPerm, error) {
 	var dbModel btnPermModel
-	query := r.db.Where("id = ?", intID)
+	query := r.db.Where("id = ?", id)
 
 	// 根据指定的关联关系进行 Preload
 	for _, relation := range relations {
@@ -130,10 +122,9 @@ func (r *btnPermRepository) GetByCode(code string) (*entity.BtnPerm, error) {
 }
 
 // GetBtnPermsByMenu 根据菜单获取按钮权限
-func (r *btnPermRepository) GetBtnPermsByMenu(menuID string) ([]*entity.BtnPerm, error) {
-	intMenuID := common.TryParseInt64(menuID)
+func (r *btnPermRepository) GetBtnPermsByMenu(menuID int64) ([]*entity.BtnPerm, error) {
 	var dbModels []btnPermModel
-	result := r.db.Where("menu_id = ?", intMenuID).Find(&dbModels)
+	result := r.db.Where("menu_id = ?", menuID).Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -158,7 +149,7 @@ func (r *btnPermRepository) Create(button *entity.BtnPerm) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	button.ID = common.ToString(dbModel.ID)
+	button.ID = dbModel.ID
 	return nil
 }
 
@@ -173,13 +164,8 @@ func (r *btnPermRepository) Update(button *entity.BtnPerm) error {
 }
 
 // Delete 删除按钮权限
-func (r *btnPermRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&btnPermModel{}, intID).Error
+func (r *btnPermRepository) Delete(id int64) error {
+	return r.db.Delete(&btnPermModel{}, id).Error
 }
 
 // List 分页查询按钮权限列表
@@ -212,25 +198,25 @@ func (r *btnPermRepository) List(page, pageSize int, filters map[string]interfac
 }
 
 // AddAPIToBtnPerm 添加 API 路由到按钮权限
-func (r *btnPermRepository) AddAPIToBtnPerm(buttonID, routeID string) error {
+func (r *btnPermRepository) AddAPIToBtnPerm(buttonID, routeID int64) error {
 	// TODO: 实现按钮权限关联 API 路由表操作
 	return nil
 }
 
 // RemoveAPIFromBtnPerm 从按钮权限移除 API 路由
-func (r *btnPermRepository) RemoveAPIFromBtnPerm(buttonID, routeID string) error {
+func (r *btnPermRepository) RemoveAPIFromBtnPerm(buttonID, routeID int64) error {
 	// TODO: 实现按钮权限关联 API 路由表操作
 	return nil
 }
 
 // GetAPIsByBtnPerm 获取按钮权限下的所有 API 路由
-func (r *btnPermRepository) GetAPIsByBtnPerm(buttonID string) ([]*entity.API, error) {
+func (r *btnPermRepository) GetAPIsByBtnPerm(buttonID int64) ([]*entity.API, error) {
 	// TODO: 实现按钮权限关联 API 路由表操作
 	return nil, nil
 }
 
 // GetBtnPermsByAPI 获取 API 路由的所有按钮权限
-func (r *btnPermRepository) GetBtnPermsByAPI(routeID string) ([]*entity.BtnPerm, error) {
+func (r *btnPermRepository) GetBtnPermsByAPI(routeID int64) ([]*entity.BtnPerm, error) {
 	// TODO: 实现按钮权限关联 API 路由表操作
 	return nil, nil
 }

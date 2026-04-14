@@ -7,7 +7,7 @@ import "time"
 // 包含身份认证、个人资料、组织架构和权限相关字段
 // 纯业务模型，无 GORM 标签
 type User struct {
-	ID                      string      // 用户 ID（string 类型，避免 JSON 精度丢失）
+	ID                      int64       // 用户 ID
 	Username                string      // 用户名，唯一标识
 	PasswordHash            string      // 密码哈希值
 	Nickname                string      // 用户昵称
@@ -18,26 +18,26 @@ type User struct {
 	Gender                  int         // 性别：0-未知，1-男，2-女
 	Birthday                string      // 生日
 	Address                 string      // 地址
-	PositionID              string      // 岗位 ID
-	DepartmentID            string      // 部门 ID
+	PositionID              int64       // 岗位 ID
+	DepartmentID            int64       // 部门 ID
 	EntryDate               string      // 入职日期
 	LastLoginIP             string      // 最后登录 IP
 	LastLoginTime           string      // 最后登录时间
 	WechatOpenID            string      // 微信 OpenID，唯一
-	CreatedBy               string      // 创建人 ID
+	CreatedBy               int64       // 创建人 ID
 	CreatedAt               time.Time   // 创建时间
-	UpdatedBy               string      // 更新人 ID
+	UpdatedBy               int64       // 更新人 ID
 	UpdatedAt               time.Time   // 更新时间
-	RoleIds                 []string    // 用户关联的角色 ID 列表
+	RoleIds                 []int64     // 用户关联的角色 ID 列表
 	Roles                   []*Role     // 角色列表
 	Department              *Department // 所属部门
 	Position                *Position   // 所属岗位
-	SpecialPermissionIds    []string    // 用户特殊权限 ID 列表
-	SpecialBtnPermissionIds []string    // 用户特殊按钮权限 ID 列表
+	SpecialPermissionIds    []int64     // 用户特殊权限 ID 列表
+	SpecialBtnPermissionIds []int64     // 用户特殊按钮权限 ID 列表
 }
 
 // HasRole 检查用户是否拥有指定角色
-func (u *User) HasRole(roleID string) bool {
+func (u *User) HasRole(roleID int64) bool {
 	for _, rid := range u.RoleIds {
 		if rid == roleID {
 			return true
@@ -47,15 +47,15 @@ func (u *User) HasRole(roleID string) bool {
 }
 
 // AddRole 为用户添加角色
-func (u *User) AddRole(roleID string) {
+func (u *User) AddRole(roleID int64) {
 	if !u.HasRole(roleID) {
 		u.RoleIds = append(u.RoleIds, roleID)
 	}
 }
 
 // RemoveRole 移除用户角色
-func (u *User) RemoveRole(roleID string) {
-	newRoles := make([]string, 0, len(u.RoleIds))
+func (u *User) RemoveRole(roleID int64) {
+	newRoles := make([]int64, 0, len(u.RoleIds))
 	for _, rid := range u.RoleIds {
 		if rid != roleID {
 			newRoles = append(newRoles, rid)
@@ -70,6 +70,6 @@ func (u *User) IsActive() bool {
 }
 
 // IsAdmin 检查用户是否是管理员（通过角色判断）
-func (u *User) IsAdmin(adminRoleID string) bool {
+func (u *User) IsAdmin(adminRoleID int64) bool {
 	return u.HasRole(adminRoleID)
 }

@@ -14,7 +14,7 @@ type CreateNoticeRequest struct {
 
 // UpdateNoticeRequest 更新公告请求
 type UpdateNoticeRequest struct {
-	ID          string `json:"id" binding:"required"`      // 公告 ID
+	ID          int64  `json:"id" binding:"required"`      // 公告 ID
 	Title       string `json:"title" binding:"required"`   // 公告标题
 	Content     string `json:"content" binding:"required"` // 公告内容
 	Type        int    `json:"type" binding:"required"`    // 公告类型：1-系统公告，2-活动公告，3-普通通知，4-紧急通知
@@ -25,7 +25,7 @@ type UpdateNoticeRequest struct {
 
 // PublishNoticeRequest 发布公告请求
 type PublishNoticeRequest struct {
-	ID string `json:"id" binding:"required"` // 公告 ID
+	ID int64 `json:"id" binding:"required"` // 公告 ID
 }
 
 // GetNoticeListRequest 获取公告列表请求
@@ -39,15 +39,15 @@ type GetNoticeListRequest struct {
 
 // GetNoticeByIDRequest 获取公告详情请求
 type GetNoticeByIDRequest struct {
-	ID string `form:"id" binding:"required"` // 公告 ID
+	ID int64 `form:"id" binding:"required"` // 公告 ID
 }
 
 // DeleteNoticeRequest 删除公告请求
 type DeleteNoticeRequest struct {
-	ID string `json:"id" binding:"required"` // 公告 ID
+	ID int64 `json:"id" binding:"required"` // 公告 ID
 }
 
 // MarkNoticeAsReadRequest 标记公告已读请求
 type MarkNoticeAsReadRequest struct {
-	ID string `uri:"id" binding:"required"` // 公告 ID
+	ID int64 `uri:"id" binding:"required"` // 公告 ID
 }

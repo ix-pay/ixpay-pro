@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // positionModel 岗位数据库模型
@@ -27,27 +26,25 @@ func (m *positionModel) toDomain() *entity.Position {
 		return nil
 	}
 	return &entity.Position{
-		ID:          common.ToString(m.ID),
+		ID:          m.ID,
 		Name:        m.Name,
 		Sort:        m.Sort,
 		Status:      m.Status,
 		Description: m.Description,
-		CreatedBy:   common.ToString(m.CreatedBy),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainPosition(pos *entity.Position) (*positionModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(pos.ID, pos.CreatedBy, pos.UpdatedBy)
-
 	return &positionModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        pos.ID,
+			CreatedBy: pos.CreatedBy,
+			UpdatedBy: pos.UpdatedBy,
 		},
 		Name:        pos.Name,
 		Sort:        pos.Sort,
@@ -70,14 +67,9 @@ func NewPositionRepository(db *database.PostgresDB) repo.PositionRepository {
 }
 
 // GetByID 根据 ID 查询岗位
-func (r *positionRepository) GetByID(id string) (*entity.Position, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *positionRepository) GetByID(id int64) (*entity.Position, error) {
 	var dbModel positionModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -97,7 +89,7 @@ func (r *positionRepository) Create(position *entity.Position) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	position.ID = common.ToString(dbModel.ID)
+	position.ID = dbModel.ID
 	return nil
 }
 
@@ -112,13 +104,8 @@ func (r *positionRepository) Update(position *entity.Position) error {
 }
 
 // Delete 删除岗位
-func (r *positionRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&positionModel{}, intID).Error
+func (r *positionRepository) Delete(id int64) error {
+	return r.db.Delete(&positionModel{}, id).Error
 }
 
 // List 分页查询岗位列表

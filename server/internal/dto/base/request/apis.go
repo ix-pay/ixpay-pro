@@ -24,7 +24,7 @@ type CreateAPIRequest struct {
 
 // UpdateAPIRequest 更新 API 路由请求
 type UpdateAPIRequest struct {
-	ID           string   `json:"id" binding:"required"`
+	ID           int64    `json:"id" binding:"required"`
 	Path         string   `json:"path" binding:"required,max=255"`
 	Method       string   `json:"method" binding:"required,oneof=GET POST PUT DELETE PATCH HEAD OPTIONS"`
 	Group        string   `json:"group" binding:"max=100"`

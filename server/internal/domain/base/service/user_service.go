@@ -183,13 +183,13 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 		if err != nil {
 			s.log.Error("获取验证码失败", "error", err)
 			// 记录失败的登录日志（验证码错误）
-			s.loginLogService.RecordLogin("", username, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
+			s.loginLogService.RecordLogin(0, username, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
 			return nil, "", "", time.Time{}, time.Time{}, errors.New("验证码已过期或无效")
 		}
 
 		if !ok {
 			// 记录失败的登录日志（验证码错误）
-			s.loginLogService.RecordLogin("", username, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
+			s.loginLogService.RecordLogin(0, username, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
 			return nil, "", "", time.Time{}, time.Time{}, errors.New("验证码错误")
 		}
 	}
@@ -199,7 +199,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	if err != nil {
 		s.log.Error("查找用户失败", "error", err)
 		// 记录失败的登录日志（用户不存在）
-		s.loginLogService.RecordLogin("", username, ip, loginPlace, device, browser, os, userAgent, false, "用户不存在")
+		s.loginLogService.RecordLogin(0, username, ip, loginPlace, device, browser, os, userAgent, false, "用户不存在")
 		return nil, "", "", time.Time{}, time.Time{}, errors.New("用户名或密码错误")
 	}
 
@@ -224,7 +224,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 		s.log.Error("获取用户角色失败", "userID", user.ID, "error", err)
 	} else {
 		// 将角色 ID 填充到 user.RoleIds
-		roleIds := make([]string, len(userRoles))
+		roleIds := make([]int64, len(userRoles))
 		for i, role := range userRoles {
 			roleIds[i] = role.ID
 		}
@@ -251,7 +251,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	if nickname == "" {
 		nickname = user.Username
 	}
-	accessToken, refreshToken, accessExpire, refreshExpire, err := s.jwtAuth.GenerateToken(user.ID, user.Username, nickname, role, "password")
+	accessToken, refreshToken, accessExpire, refreshExpire, err := s.jwtAuth.GenerateToken(fmt.Sprintf("%d", user.ID), user.Username, nickname, role, "password")
 	if err != nil {
 		s.log.Error("生成令牌失败", "error", err)
 		// 记录失败的登录日志（令牌生成失败）
@@ -262,7 +262,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	s.log.Info("用户登录成功", "username", username)
 
 	// 【新增】登录成功后，清除用户之前的角色选择缓存，确保使用默认角色
-	currentRoleKey := fmt.Sprintf("user:current_role:%s", user.ID)
+	currentRoleKey := fmt.Sprintf("user:current_role:%d", user.ID)
 	s.cache.Delete(currentRoleKey)
 
 	s.log.Info("已清除用户角色缓存", "userID", user.ID)
@@ -273,7 +273,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 }
 
 // GetUserInfo 获取用户信息
-func (s *UserService) GetUserInfo(userID string) (*entity.User, error) {
+func (s *UserService) GetUserInfo(userID int64) (*entity.User, error) {
 	user, err := s.repo.GetByID(userID, repo.DEPARTMENT, repo.POSITION, repo.ROLES)
 
 	if err != nil {
@@ -284,9 +284,9 @@ func (s *UserService) GetUserInfo(userID string) (*entity.User, error) {
 }
 
 // UpdateUserInfo 更新用户信息
-func (s *UserService) UpdateUserInfo(user *entity.User, updatedBy string) error {
+func (s *UserService) UpdateUserInfo(user *entity.User, updatedBy int64) error {
 	// 验证 updatedBy 参数不能为空
-	if updatedBy == "" {
+	if updatedBy == 0 {
 		return errors.New("updatedBy 不能为空")
 	}
 	user.UpdatedBy = updatedBy
@@ -299,7 +299,7 @@ func (s *UserService) UpdateUserInfo(user *entity.User, updatedBy string) error 
 }
 
 // UpdateUserDepartment 更新用户部门
-func (s *UserService) UpdateUserDepartment(userID, departmentID string, updatedBy string) error {
+func (s *UserService) UpdateUserDepartment(userID int64, departmentID int64, updatedBy int64) error {
 	// 获取用户
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -321,7 +321,7 @@ func (s *UserService) UpdateUserDepartment(userID, departmentID string, updatedB
 }
 
 // UpdateUserPosition 更新用户岗位
-func (s *UserService) UpdateUserPosition(userID, positionID string, updatedBy string) error {
+func (s *UserService) UpdateUserPosition(userID int64, positionID int64, updatedBy int64) error {
 	// 获取用户
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -343,7 +343,7 @@ func (s *UserService) UpdateUserPosition(userID, positionID string, updatedBy st
 }
 
 // UpdateUserStatus 更新用户状态
-func (s *UserService) UpdateUserStatus(userID string, status int, updatedBy string) error {
+func (s *UserService) UpdateUserStatus(userID int64, status int, updatedBy int64) error {
 	// 获取用户
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -365,7 +365,7 @@ func (s *UserService) UpdateUserStatus(userID string, status int, updatedBy stri
 }
 
 // ChangePassword 更改密码
-func (s *UserService) ChangePassword(userID string, oldPassword, newPassword string) error {
+func (s *UserService) ChangePassword(userID int64, oldPassword, newPassword string) error {
 	// 获取用户
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -448,7 +448,7 @@ func (s *UserService) GetUserList(page, pageSize int, filters map[string]interfa
 }
 
 // AddUser 增加用户（管理员功能）
-func (s *UserService) AddUser(username, password, email, nickname, phone, avatar string, departmentID, positionID, createdBy string, status int) (*entity.User, error) {
+func (s *UserService) AddUser(username, password, email, nickname, phone, avatar string, departmentID, positionID int64, createdBy string, status int) (*entity.User, error) {
 	// 检查用户是否已存在
 	_, err := s.repo.GetByUsername(username)
 	if err == nil {
@@ -494,7 +494,7 @@ func (s *UserService) AddUser(username, password, email, nickname, phone, avatar
 }
 
 // assignDefaultRole 为用户分配默认角色
-func (s *UserService) assignDefaultRole(userID string) error {
+func (s *UserService) assignDefaultRole(userID int64) error {
 	// 获取所有角色
 	roles, err := s.roleService.GetAllRoles()
 	if err != nil {
@@ -518,7 +518,7 @@ func (s *UserService) assignDefaultRole(userID string) error {
 		s.log.Info("为用户分配默认角色成功", "userID", userID, "roleID", userRole.ID, "roleName", userRole.Name)
 
 		// 【新增】加载角色权限到 Redis 缓存
-		if err := s.rolePermissionService.LoadRolePermissionsToRedis(userRole.ID); err != nil {
+		if err := s.rolePermissionService.LoadRolePermissionsToRedis(fmt.Sprintf("%d", userRole.ID)); err != nil {
 			s.log.Error("加载默认角色权限缓存失败", "error", err, "roleID", userRole.ID)
 		}
 	}
@@ -527,7 +527,7 @@ func (s *UserService) assignDefaultRole(userID string) error {
 }
 
 // DeleteUser 删除用户（管理员功能）
-func (s *UserService) DeleteUser(userID string) error {
+func (s *UserService) DeleteUser(userID int64) error {
 	// 获取用户
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -546,7 +546,7 @@ func (s *UserService) DeleteUser(userID string) error {
 }
 
 // ResetPassword 重置密码（管理员功能）
-func (s *UserService) ResetPassword(userID string, newPassword string, updatedBy string) error {
+func (s *UserService) ResetPassword(userID int64, newPassword string, updatedBy int64) error {
 	// 检查用户是否存在
 	_, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -561,7 +561,7 @@ func (s *UserService) ResetPassword(userID string, newPassword string, updatedBy
 		return err
 	}
 
-	// 只更新密码和更新时间字段，避免更新wechat_open_id字段
+	// 只更新密码和更新时间字段，避免更新 wechat_open_id 字段
 	updates := map[string]interface{}{
 		"password_hash": passwordHash,
 		"updated_at":    time.Now(),
@@ -578,7 +578,7 @@ func (s *UserService) ResetPassword(userID string, newPassword string, updatedBy
 }
 
 // GetSelfSetting 获取用户设置
-func (s *UserService) GetSelfSetting(userID string) (*entity.UserSetting, error) {
+func (s *UserService) GetSelfSetting(userID int64) (*entity.UserSetting, error) {
 
 	// 尝试从数据库获取设置
 	setting, err := s.settingRepo.GetByUserID(userID)
@@ -617,11 +617,11 @@ func (s *UserService) GetSelfSetting(userID string) (*entity.UserSetting, error)
 }
 
 // SetSelfSetting 保存用户设置
-func (s *UserService) SetSelfSetting(userID string, setting *entity.UserSetting) (*entity.UserSetting, error) {
+func (s *UserService) SetSelfSetting(userID int64, setting *entity.UserSetting) (*entity.UserSetting, error) {
 
 	// 验证用户 ID 匹配
-	if setting.UserID != "" && setting.UserID != userID {
-		return nil, errors.New("用户ID不匹配")
+	if setting.UserID != 0 && setting.UserID != userID {
+		return nil, errors.New("用户 ID 不匹配")
 	}
 
 	// 尝试从数据库获取现有设置
@@ -664,14 +664,14 @@ func (s *UserService) SetSelfSetting(userID string, setting *entity.UserSetting)
 }
 
 // BatchDeleteUsers 批量删除用户（管理员功能）
-func (s *UserService) BatchDeleteUsers(userIDs []string) error {
+func (s *UserService) BatchDeleteUsers(userIDs []int64) error {
 	// 批量获取用户信息
 	for _, userID := range userIDs {
 		// 检查用户是否存在
 		_, err := s.repo.GetByID(userID)
 		if err != nil {
 			s.log.Error("查找用户失败", "error", err)
-			return fmt.Errorf("用户 %s 不存在", userID)
+			return fmt.Errorf("用户 %d 不存在", userID)
 		}
 	}
 
@@ -687,18 +687,18 @@ func (s *UserService) BatchDeleteUsers(userIDs []string) error {
 	return nil
 }
 
-// SetUserSpecialPermissions 设置用户特殊API权限
-func (s *UserService) SetUserSpecialPermissions(userID string, apiIDs []string) error {
+// SetUserSpecialPermissions 设置用户特殊 API 权限
+func (s *UserService) SetUserSpecialPermissions(userID int64, apiIDs []int64) error {
 	if err := s.repo.SetUserSpecialPermissions(userID, apiIDs); err != nil {
-		s.log.Error("设置用户特殊API权限失败", "userID", userID, "error", err)
+		s.log.Error("设置用户特殊 API 权限失败", "userID", userID, "error", err)
 		return err
 	}
-	s.log.Info("设置用户特殊API权限成功", "userID", userID, "apiCount", len(apiIDs))
+	s.log.Info("设置用户特殊 API 权限成功", "userID", userID, "apiCount", len(apiIDs))
 	return nil
 }
 
 // SetUserSpecialBtnPermissions 设置用户特殊按钮权限
-func (s *UserService) SetUserSpecialBtnPermissions(userID string, btnPermIDs []string) error {
+func (s *UserService) SetUserSpecialBtnPermissions(userID int64, btnPermIDs []int64) error {
 	if err := s.repo.SetUserSpecialBtnPermissions(userID, btnPermIDs); err != nil {
 		s.log.Error("设置用户特殊按钮权限失败", "userID", userID, "error", err)
 		return err
@@ -707,8 +707,8 @@ func (s *UserService) SetUserSpecialBtnPermissions(userID string, btnPermIDs []s
 	return nil
 }
 
-// GetUserSpecialPermissions 获取用户特殊API权限
-func (s *UserService) GetUserSpecialPermissions(userID string) ([]*entity.API, error) {
+// GetUserSpecialPermissions 获取用户特殊 API 权限
+func (s *UserService) GetUserSpecialPermissions(userID int64) ([]*entity.API, error) {
 	apis, err := s.repo.GetUserSpecialPermissions(userID)
 	if err != nil {
 		s.log.Error("获取用户特殊API权限失败", "userID", userID, "error", err)
@@ -763,12 +763,12 @@ func (s *UserService) ImportUsers(users []*entity.User, createdBy string) (int, 
 	return count, nil
 }
 
-// GetUserPermissions 获取用户所有API权限
+// GetUserPermissions 获取用户所有 API 权限
 // 包括：
-// 1. 用户关联的所有角色的API权限（包含权限继承）
-// 2. 用户特殊的API权限
-// 返回去重后的API权限列表
-func (s *UserService) GetUserPermissions(userID string) ([]*entity.API, error) {
+// 1. 用户关联的所有角色的 API 权限（包含权限继承）
+// 2. 用户特殊的 API 权限
+// 返回去重后的 API 权限列表
+func (s *UserService) GetUserPermissions(userID int64) ([]*entity.API, error) {
 	// 1. 获取用户信息
 	_, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -776,37 +776,37 @@ func (s *UserService) GetUserPermissions(userID string) ([]*entity.API, error) {
 		return nil, errors.New("用户不存在")
 	}
 
-	// 使用map存储API权限，键为API权限ID，用于去重
-	apiMap := make(map[string]*entity.API)
+	// 使用 map 存储 API 权限，键为 API 权限 ID，用于去重
+	apiMap := make(map[int64]*entity.API)
 
-	// 2. 获取用户关联的所有角色的API权限
+	// 2. 获取用户关联的所有角色的 API 权限
 	roles, err := s.roleService.GetRolesForUser(userID)
 	if err != nil {
 		s.log.Error("获取用户角色失败", "userID", userID, "error", err)
 		return nil, err
 	}
 
-	// 遍历所有角色，获取API权限
+	// 遍历所有角色，获取 API 权限
 	for _, role := range roles {
 		// 检查角色状态，只获取启用的角色权限
 		if role.Status != 1 {
 			continue
 		}
 
-		// 获取角色及其所有父角色的API权限（实现权限继承）
+		// 获取角色及其所有父角色的 API 权限（实现权限继承）
 		roleAPIs, err := s.roleService.GetAllInheritedPermissions(role.ID)
 		if err != nil {
-			s.log.Error("获取角色API权限失败", "roleID", role.ID, "error", err)
+			s.log.Error("获取角色 API 权限失败", "roleID", role.ID, "error", err)
 			continue
 		}
 
-		// 将角色API权限添加到map中去重
+		// 将角色 API 权限添加到 map 中去重
 		for _, api := range roleAPIs {
 			apiMap[api.ID] = api
 		}
 	}
 
-	// 3. 获取用户特殊的API权限
+	// 3. 获取用户特殊的 API 权限
 	userSpecialAPIs, err := s.GetUserSpecialPermissions(userID)
 	if err != nil {
 		s.log.Error("获取用户特殊API权限失败", "userID", userID, "error", err)
@@ -833,7 +833,7 @@ func (s *UserService) GetUserPermissions(userID string) ([]*entity.API, error) {
 // 1. 用户关联的所有角色的按钮权限（包含权限继承）
 // 2. 用户特殊的按钮权限
 // 返回去重后的按钮权限列表
-func (s *UserService) GetUserBtnPermissions(userID string) ([]*entity.BtnPerm, error) {
+func (s *UserService) GetUserBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
 	// 1. 获取用户信息
 	_, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -841,8 +841,8 @@ func (s *UserService) GetUserBtnPermissions(userID string) ([]*entity.BtnPerm, e
 		return nil, errors.New("用户不存在")
 	}
 
-	// 使用map存储按钮权限，键为按钮权限ID，用于去重
-	btnPermMap := make(map[string]*entity.BtnPerm)
+	// 使用 map 存储按钮权限，键为按钮权限 ID，用于去重
+	btnPermMap := make(map[int64]*entity.BtnPerm)
 
 	// 2. 获取用户关联的所有角色的按钮权限
 	roles, err := s.roleService.GetRolesForUser(userID)
@@ -865,7 +865,7 @@ func (s *UserService) GetUserBtnPermissions(userID string) ([]*entity.BtnPerm, e
 			continue
 		}
 
-		// 将角色按钮权限添加到map中去重
+		// 将角色按钮权限添加到 map 中去重
 		for _, btnPerm := range roleBtnPerms {
 			// 检查按钮权限状态，只获取启用的权限
 			if btnPerm.Status == 1 {
@@ -900,7 +900,7 @@ func (s *UserService) GetUserBtnPermissions(userID string) ([]*entity.BtnPerm, e
 }
 
 // GetUserSpecialBtnPermissions 获取用户特殊按钮权限
-func (s *UserService) GetUserSpecialBtnPermissions(userID string) ([]*entity.BtnPerm, error) {
+func (s *UserService) GetUserSpecialBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
 	btnPerms, err := s.repo.GetUserSpecialBtnPermissions(userID)
 	if err != nil {
 		s.log.Error("获取用户特殊按钮权限失败", "userID", userID, "error", err)
@@ -910,7 +910,7 @@ func (s *UserService) GetUserSpecialBtnPermissions(userID string) ([]*entity.Btn
 }
 
 // UpdateUserRoles 更新用户角色
-func (s *UserService) UpdateUserRoles(userID string, roleIDs []string) error {
+func (s *UserService) UpdateUserRoles(userID int64, roleIDs []int64) error {
 	// 检查用户是否存在
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -1020,7 +1020,7 @@ func (s *UserService) UpdateUserRoles(userID string, roleIDs []string) error {
 
 // SwitchRole 切换用户当前角色
 // 该方法仅改变用户的当前活动角色，不修改用户的角色关联关系
-func (s *UserService) SwitchRole(userID string, roleID string) error {
+func (s *UserService) SwitchRole(userID int64, roleID int64) error {
 	// 检查用户是否存在
 	user, err := s.repo.GetByID(userID)
 	if err != nil {
@@ -1063,7 +1063,7 @@ func (s *UserService) SwitchRole(userID string, roleID string) error {
 
 	// 将用户的当前角色信息存储到缓存中
 	// key: "user:current_role:{userID}", value: roleID
-	currentRoleKey := fmt.Sprintf("user:current_role:%s", userID)
+	currentRoleKey := fmt.Sprintf("user:current_role:%d", userID)
 	if err := s.cache.Set(currentRoleKey, roleID, 24*time.Hour); err != nil {
 		s.log.Error("保存当前角色到缓存失败", "error", err, "userID", userID, "roleID", roleID)
 		// 不返回错误，因为角色切换逻辑已经成功
@@ -1071,7 +1071,7 @@ func (s *UserService) SwitchRole(userID string, roleID string) error {
 
 	// 【新增】缓存角色信息到缓存，供认证中间件使用
 	// key: "role:info:{roleID}", value: 简化的角色 JSON（只包含必要字段）
-	roleCacheKey := fmt.Sprintf("role:info:%s", roleID)
+	roleCacheKey := fmt.Sprintf("role:info:%d", roleID)
 
 	// 创建简化的角色对象，只包含必要字段，避免序列化关联关系
 	simpleRole := map[string]interface{}{
@@ -1118,7 +1118,7 @@ func (s *UserService) GetCurrentRoleID(userID string) (string, error) {
 
 // GetRoleByID 根据 ID 获取角色信息
 // 用于 API Handler 获取用户角色详情
-func (s *UserService) GetRoleByID(id string) (*entity.Role, error) {
+func (s *UserService) GetRoleByID(id int64) (*entity.Role, error) {
 	return s.roleService.GetRoleByID(id)
 }
 

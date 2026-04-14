@@ -6,7 +6,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // permissionRuleModel 权限规则数据库模型
@@ -40,7 +39,7 @@ func (m *permissionRuleModel) toDomain() *entity.PermissionRule {
 	}
 
 	return &entity.PermissionRule{
-		ID:          common.ToString(m.ID),
+		ID:          m.ID,
 		Name:        m.Name,
 		Description: m.Description,
 		Effect:      m.Effect,
@@ -51,17 +50,15 @@ func (m *permissionRuleModel) toDomain() *entity.PermissionRule {
 		Status:      m.Status,
 		Sort:        m.Sort,
 		IsSystem:    m.IsSystem,
-		CreatedBy:   common.ToString(m.CreatedBy),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainPermissionRule(rule *entity.PermissionRule) (*permissionRuleModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(rule.ID, rule.CreatedBy, rule.UpdatedBy)
-
 	conditionsJSON := ""
 	if len(rule.Attributes) > 0 {
 		jsonData, err := json.Marshal(rule.Attributes)
@@ -73,9 +70,9 @@ func fromDomainPermissionRule(rule *entity.PermissionRule) (*permissionRuleModel
 
 	return &permissionRuleModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        rule.ID,
+			CreatedBy: rule.CreatedBy,
+			UpdatedBy: rule.UpdatedBy,
 		},
 		Name:        rule.Name,
 		Description: rule.Description,
@@ -103,14 +100,9 @@ func NewPermissionRuleRepository(db *database.PostgresDB) repo.PermissionRuleRep
 }
 
 // GetByID 根据 ID 查询权限规则
-func (r *permissionRuleRepository) GetByID(id string) (*entity.PermissionRule, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *permissionRuleRepository) GetByID(id int64) (*entity.PermissionRule, error) {
 	var dbModel permissionRuleModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -141,7 +133,7 @@ func (r *permissionRuleRepository) Create(rule *entity.PermissionRule) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	rule.ID = common.ToString(dbModel.ID)
+	rule.ID = dbModel.ID
 	return nil
 }
 
@@ -156,13 +148,8 @@ func (r *permissionRuleRepository) Update(rule *entity.PermissionRule) error {
 }
 
 // Delete 删除权限规则
-func (r *permissionRuleRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&permissionRuleModel{}, intID).Error
+func (r *permissionRuleRepository) Delete(id int64) error {
+	return r.db.Delete(&permissionRuleModel{}, id).Error
 }
 
 // List 分页查询权限规则列表
@@ -227,49 +214,49 @@ func (r *permissionRuleRepository) GetRulesByStatus(status int) ([]*entity.Permi
 }
 
 // AddRoleToRule 添加角色到权限规则
-func (r *permissionRuleRepository) AddRoleToRule(ruleID, roleID string) error {
+func (r *permissionRuleRepository) AddRoleToRule(ruleID, roleID int64) error {
 	// TODO: 实现权限规则关联角色表操作
 	return nil
 }
 
 // RemoveRoleFromRule 从权限规则移除角色
-func (r *permissionRuleRepository) RemoveRoleFromRule(ruleID, roleID string) error {
+func (r *permissionRuleRepository) RemoveRoleFromRule(ruleID, roleID int64) error {
 	// TODO: 实现权限规则关联角色表操作
 	return nil
 }
 
 // GetRolesByRule 获取权限规则的所有角色
-func (r *permissionRuleRepository) GetRolesByRule(ruleID string) ([]*entity.Role, error) {
+func (r *permissionRuleRepository) GetRolesByRule(ruleID int64) ([]*entity.Role, error) {
 	// TODO: 实现权限规则关联角色表操作
 	return nil, nil
 }
 
 // GetRulesByRole 获取角色的所有权限规则
-func (r *permissionRuleRepository) GetRulesByRole(roleID string) ([]*entity.PermissionRule, error) {
+func (r *permissionRuleRepository) GetRulesByRole(roleID int64) ([]*entity.PermissionRule, error) {
 	// TODO: 实现权限规则关联角色表操作
 	return nil, nil
 }
 
 // AddUserToRule 添加用户到权限规则
-func (r *permissionRuleRepository) AddUserToRule(ruleID, userID string) error {
+func (r *permissionRuleRepository) AddUserToRule(ruleID, userID int64) error {
 	// TODO: 实现权限规则关联用户表操作
 	return nil
 }
 
 // RemoveUserFromRule 从权限规则移除用户
-func (r *permissionRuleRepository) RemoveUserFromRule(ruleID, userID string) error {
+func (r *permissionRuleRepository) RemoveUserFromRule(ruleID, userID int64) error {
 	// TODO: 实现权限规则关联用户表操作
 	return nil
 }
 
 // GetUsersByRule 获取权限规则的所有用户
-func (r *permissionRuleRepository) GetUsersByRule(ruleID string) ([]*entity.User, error) {
+func (r *permissionRuleRepository) GetUsersByRule(ruleID int64) ([]*entity.User, error) {
 	// TODO: 实现权限规则关联用户表操作
 	return nil, nil
 }
 
 // GetRulesByUser 获取用户的所有权限规则
-func (r *permissionRuleRepository) GetRulesByUser(userID string) ([]*entity.PermissionRule, error) {
+func (r *permissionRuleRepository) GetRulesByUser(userID int64) ([]*entity.PermissionRule, error) {
 	// TODO: 实现权限规则关联用户表操作
 	return nil, nil
 }

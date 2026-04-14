@@ -1,12 +1,9 @@
 package persistence
 
 import (
-	"strconv"
-
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // departmentModel 部门数据库模型
@@ -35,16 +32,16 @@ func (m *departmentModel) toDomain() *entity.Department {
 		return nil
 	}
 	dept := &entity.Department{
-		ID:          common.ToString(m.ID),
+		ID:          m.ID,
 		Name:        m.Name,
-		ParentID:    common.ToString(m.ParentID),
-		LeaderID:    common.ToString(m.LeaderID),
+		ParentID:    m.ParentID,
+		LeaderID:    m.LeaderID,
 		Sort:        m.Sort,
 		Status:      m.Status,
 		Description: m.Description,
-		CreatedBy:   common.ToString(m.CreatedBy),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 
@@ -72,17 +69,15 @@ func (m *departmentModel) toDomain() *entity.Department {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainDepartment(dept *entity.Department) (*departmentModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(dept.ID, dept.CreatedBy, dept.UpdatedBy)
-
 	return &departmentModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        dept.ID,
+			CreatedBy: dept.CreatedBy,
+			UpdatedBy: dept.UpdatedBy,
 		},
 		Name:        dept.Name,
-		ParentID:    common.TryParseInt64(dept.ParentID),
-		LeaderID:    common.TryParseInt64(dept.LeaderID),
+		ParentID:    dept.ParentID,
+		LeaderID:    dept.LeaderID,
 		Sort:        dept.Sort,
 		Status:      dept.Status,
 		Description: dept.Description,
@@ -103,14 +98,9 @@ func NewDepartmentRepository(db *database.PostgresDB) repo.DepartmentRepository 
 }
 
 // GetByID 根据 ID 查询部门并支持加载关联数据
-func (r *departmentRepository) GetByID(id string, relations ...repo.DepartmentRelation) (*entity.Department, error) {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *departmentRepository) GetByID(id int64, relations ...repo.DepartmentRelation) (*entity.Department, error) {
 	var dbModel departmentModel
-	query := r.db.Where("id = ?", intID)
+	query := r.db.Where("id = ?", id)
 
 	// 根据指定的关联关系进行 Preload
 	for _, relation := range relations {
@@ -137,7 +127,7 @@ func (r *departmentRepository) Create(department *entity.Department) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	department.ID = common.ToString(dbModel.ID)
+	department.ID = dbModel.ID
 	return nil
 }
 
@@ -152,13 +142,8 @@ func (r *departmentRepository) Update(department *entity.Department) error {
 }
 
 // Delete 删除部门
-func (r *departmentRepository) Delete(id string) error {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&departmentModel{}, intID).Error
+func (r *departmentRepository) Delete(id int64) error {
+	return r.db.Delete(&departmentModel{}, id).Error
 }
 
 // List 分页查询部门列表
@@ -207,10 +192,9 @@ func (r *departmentRepository) GetAll() ([]*entity.Department, error) {
 }
 
 // GetChildrenByParentID 根据父部门 ID 获取子部门
-func (r *departmentRepository) GetChildrenByParentID(parentID string) ([]*entity.Department, error) {
-	intParentID, _ := strconv.ParseInt(parentID, 10, 64)
+func (r *departmentRepository) GetChildrenByParentID(parentID int64) ([]*entity.Department, error) {
 	var dbModels []departmentModel
-	result := r.db.Where("parent_id = ?", intParentID).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("parent_id = ?", parentID).Order("sort ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -229,7 +213,7 @@ func (r *departmentRepository) GetDepartmentTree() ([]*entity.Department, error)
 }
 
 // GetDepartmentPath 获取部门路径
-func (r *departmentRepository) GetDepartmentPath(id string) ([]*entity.Department, error) {
+func (r *departmentRepository) GetDepartmentPath(id int64) ([]*entity.Department, error) {
 	// TODO: 实现部门路径查询
 	return nil, nil
 }

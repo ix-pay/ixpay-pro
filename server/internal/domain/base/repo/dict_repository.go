@@ -13,23 +13,23 @@ const (
 type DictRepository interface {
 	// GetByID 根据 ID 查询字典并支持加载关联数据
 	// relations 参数使用 DictRelation 类型，提供编译期类型检查
-	GetByID(id string, relations ...DictRelation) (*entity.Dict, error)
+	GetByID(id int64, relations ...DictRelation) (*entity.Dict, error)
 	// GetByCode 根据编码查询字典并支持加载关联数据
 	GetByCode(dictCode string, relations ...DictRelation) (*entity.Dict, error)
 	Create(dict *entity.Dict) error
 	Update(dict *entity.Dict) error
-	Delete(id string) error
+	Delete(id int64) error
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.Dict, int64, error)
 	GetAllActive() ([]*entity.Dict, error)
 }
 
 // DictItemRepository 字典项仓库接口
 type DictItemRepository interface {
-	GetByID(id string) (*entity.DictItem, error)
-	GetByDictID(dictID string) ([]*entity.DictItem, error)
+	GetByID(id int64) (*entity.DictItem, error)
+	GetByDictID(dictID int64) ([]*entity.DictItem, error)
 	Create(dictItem *entity.DictItem) error
 	Update(dictItem *entity.DictItem) error
-	Delete(id string) error
+	Delete(id int64) error
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.DictItem, int64, error)
-	GetActiveByDictID(dictID string) ([]*entity.DictItem, error)
+	GetActiveByDictID(dictID int64) ([]*entity.DictItem, error)
 }

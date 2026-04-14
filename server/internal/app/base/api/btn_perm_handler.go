@@ -1,6 +1,9 @@
 package baseapi
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
@@ -28,6 +31,25 @@ func NewBtnPermController(btnPermService *service.BtnPermService, permissionServ
 	}
 }
 
+// convertUserIDToInt64 将 context 中的 userID 转换为 int64
+func (c *BtnPermController) convertUserIDToInt64(ctx *gin.Context) (int64, error) {
+	userID, _ := ctx.Get("userID")
+	switch v := userID.(type) {
+	case string:
+		id, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return 0, err
+		}
+		return id, nil
+	case int64:
+		return v, nil
+	case int:
+		return int64(v), nil
+	default:
+		return 0, fmt.Errorf("用户 ID 类型错误：%T", v)
+	}
+}
+
 // CreateBtnPerm 创建按钮权限
 //
 //	@Summary		创建按钮权限
@@ -47,7 +69,13 @@ func (c *BtnPermController) CreateBtnPerm(ctx *gin.Context) {
 		return
 	}
 
-	userID, _ := ctx.Get("userID")
+	userIDInt, err := c.convertUserIDToInt64(ctx)
+	if err != nil {
+		c.log.Error("获取用户 ID 失败", "error", err)
+		baseRes.FailWithMessage("获取用户 ID 失败", ctx)
+		return
+	}
+
 	// 创建 BtnPerm 结构体实例
 	btnPerm := &entity.BtnPerm{
 		MenuID:      req.MenuID,
@@ -58,7 +86,7 @@ func (c *BtnPermController) CreateBtnPerm(ctx *gin.Context) {
 	}
 
 	// 调用服务层创建按钮权限
-	err := c.btnPermService.CreateBtnPerm(btnPerm, userID.(string))
+	err = c.btnPermService.CreateBtnPerm(btnPerm, userIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("创建按钮权限失败", ctx)
 		return
@@ -114,7 +142,13 @@ func (c *BtnPermController) UpdateBtnPerm(ctx *gin.Context) {
 		return
 	}
 
-	userID, _ := ctx.Get("userID")
+	userIDInt, err := c.convertUserIDToInt64(ctx)
+	if err != nil {
+		c.log.Error("获取用户 ID 失败", "error", err)
+		baseRes.FailWithMessage("获取用户 ID 失败", ctx)
+		return
+	}
+
 	// 创建 BtnPerm 结构体实例
 	btnPerm := &entity.BtnPerm{
 		MenuID:      req.MenuID,
@@ -124,13 +158,13 @@ func (c *BtnPermController) UpdateBtnPerm(ctx *gin.Context) {
 		Status:      req.Status,
 	}
 	// 调用 UpdateBtnPerm 方法
-	err := c.btnPermService.UpdateBtnPerm(btnPerm, userID.(string))
+	err = c.btnPermService.UpdateBtnPerm(btnPerm, userIDInt)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "更新按钮权限失败", ctx)
 		return
 	}
 
-	c.log.Info("更新按钮权限成功", "userID", userID, "btnPermID", req.ID)
+	c.log.Info("更新按钮权限成功", "userID", userIDInt, "btnPermID", req.ID)
 	baseRes.OkWithMessage("更新按钮权限成功", ctx)
 }
 
@@ -190,7 +224,7 @@ func (c *BtnPermController) GetBtnPermList(ctx *gin.Context) {
 
 	// 构建过滤条件
 	filters := make(map[string]interface{})
-	if req.MenuID != "" {
+	if req.MenuID != 0 {
 		filters["menu_id"] = req.MenuID
 	}
 	if req.Code != "" {
@@ -218,28 +252,35 @@ func (c *BtnPermController) GetBtnPermList(ctx *gin.Context) {
 	}, "获取按钮权限列表成功", ctx)
 }
 
-// AssignToBtnPerm 为按钮权限分配API路由
+// AssignToBtnPerm 为按钮权限分配 API 路由
 //
-//	@Summary		为按钮权限分配API路由
-//	@Description	为按钮权限分配API路由
+//	@Summary		为按钮权限分配 API 路由
+//	@Description	为按钮权限分配 API 路由
 //	@Tags			按钮权限管理
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			data	body		request.AssignToBtnPermRequest	true	"按钮ID和API路由ID列表"
+//	@Param			data	body		request.AssignToBtnPermRequest	true	"按钮 ID 和 API 路由 ID 列表"
 //	@Success		200		{object}	baseRes.Response
 //	@Router			/api/admin/btn-perms/assign-api-routes [post]
 func (c *BtnPermController) AssignToBtnPerm(ctx *gin.Context) {
 	var req request.AssignToBtnPermRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("分配API路由到按钮参数验证失败", "error", err.Error())
+		c.log.Error("分配 API 路由到按钮参数验证失败", "error", err.Error())
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "参数验证失败", ctx)
 		return
 	}
 
-	userID, _ := ctx.Get("userID")
-	// 遍历 API 路由 ID 列表，为每个 ID 调用 AssignToBtnPerm 方法
-	for _, routeID := range req.IDs {
+	// 将字符串 ID 数组转换为 int64 数组
+	routeIDs, err := convertStringSliceToInt64Slice(req.IDs)
+	if err != nil {
+		c.log.Error("API 路由 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("API 路由 ID 格式错误", ctx)
+		return
+	}
+
+	// 遍历 API 路由 ID 列表，为每个 ID 调用 AssignAPIToBtnPerm 方法
+	for _, routeID := range routeIDs {
 		err := c.btnPermService.AssignAPIToBtnPerm(req.BtnPermID, routeID)
 		if err != nil {
 			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配 API 路由到按钮失败", ctx)
@@ -247,8 +288,8 @@ func (c *BtnPermController) AssignToBtnPerm(ctx *gin.Context) {
 		}
 	}
 
-	c.log.Info("分配API路由到按钮成功", "userID", userID, "btnPermID", req.BtnPermID, "routeCount", len(req.IDs))
-	baseRes.OkWithMessage("分配API路由到按钮成功", ctx)
+	c.log.Info("分配 API 路由到按钮成功", "btnPermID", req.BtnPermID, "routeCount", len(routeIDs))
+	baseRes.OkWithMessage("分配 API 路由到按钮成功", ctx)
 }
 
 // RevokeFromBtnPerm 从按钮权限撤销API路由
@@ -289,7 +330,7 @@ func (c *BtnPermController) RevokeFromBtnPerm(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			data	body		request.AssignBtnPermToRoleRequest	true	"角色ID和按钮权限ID列表"
+//	@Param			data	body		request.AssignBtnPermToRoleRequest	true	"角色 ID 和按钮权限 ID 列表"
 //	@Success		200		{object}	baseRes.Response
 //	@Router			/api/admin/btn-perms/assign-to-role [post]
 func (c *BtnPermController) AssignBtnPermToRole(ctx *gin.Context) {
@@ -300,15 +341,22 @@ func (c *BtnPermController) AssignBtnPermToRole(ctx *gin.Context) {
 		return
 	}
 
-	userID, _ := ctx.Get("userID")
+	// 将字符串 ID 数组转换为 int64 数组
+	btnPermIDs, err := convertStringSliceToInt64Slice(req.BtnPermIDs)
+	if err != nil {
+		c.log.Error("按钮权限 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
+		return
+	}
+
 	// 使用角色服务批量分配按钮权限
-	err := c.roleService.BatchAssignBtnPermsToRole(req.RoleID, req.BtnPermIDs)
+	err = c.roleService.BatchAssignBtnPermsToRole(req.RoleID, btnPermIDs)
 	if err != nil {
 		baseRes.FailWithMessage("分配按钮权限到角色失败", ctx)
 		return
 	}
 
-	c.log.Info("分配按钮权限到角色成功", "userID", userID, "roleID", req.RoleID, "btnPermCount", len(req.BtnPermIDs))
+	c.log.Info("分配按钮权限到角色成功", "roleID", req.RoleID, "btnPermCount", len(btnPermIDs))
 	baseRes.OkWithMessage("分配按钮权限到角色成功", ctx)
 }
 
@@ -343,10 +391,10 @@ func (c *BtnPermController) RevokeBtnPermFromRole(ctx *gin.Context) {
 	baseRes.OkWithMessage("从角色撤销按钮权限成功", ctx)
 }
 
-// GetAPIRoutesByBtnPerm 获取按钮权限关联的API路由
+// GetAPIRoutesByBtnPerm 获取按钮权限关联的 API 路由
 //
-//	@Summary		获取按钮权限关联的API路由
-//	@Description	获取按钮权限关联的API路由
+//	@Summary		获取按钮权限关联的 API 路由
+//	@Description	获取按钮权限关联的 API 路由
 //	@Tags			按钮权限管理
 //	@Accept			json
 //	@Produce		json
@@ -356,10 +404,10 @@ func (c *BtnPermController) RevokeBtnPermFromRole(ctx *gin.Context) {
 //	@Router			/api/admin/btn-perms/api-routes [get]
 func (c *BtnPermController) GetAPIRoutesByBtnPerm(ctx *gin.Context) {
 	var req struct {
-		BtnPermID string `form:"btnPermId" binding:"required,gte=1"`
+		BtnPermID int64 `form:"btnPermId" binding:"required,gte=1"`
 	}
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		c.log.Error("获取按钮关联API路由参数验证失败", "error", err.Error())
+		c.log.Error("获取按钮关联 API 路由参数验证失败", "error", err.Error())
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "参数验证失败", ctx)
 		return
 	}
@@ -370,14 +418,14 @@ func (c *BtnPermController) GetAPIRoutesByBtnPerm(ctx *gin.Context) {
 		return
 	}
 
-	c.log.Info("获取按钮关联API路由成功", "btnPermID", req.BtnPermID, "routeCount", len(apiRoutes))
-	baseRes.OkWithDetailed(apiRoutes, "获取按钮关联API路由成功", ctx)
+	c.log.Info("获取按钮关联 API 路由成功", "btnPermID", req.BtnPermID, "routeCount", len(apiRoutes))
+	baseRes.OkWithDetailed(apiRoutes, "获取按钮关联 API 路由成功", ctx)
 }
 
-// GetBtnPermsByAPIRoute 获取API路由关联的按钮权限
+// GetBtnPermsByAPIRoute 获取 API 路由关联的按钮权限
 //
-//	@Summary		获取API路由关联的按钮权限
-//	@Description	获取API路由关联的按钮权限
+//	@Summary		获取 API 路由关联的按钮权限
+//	@Description	获取 API 路由关联的按钮权限
 //	@Tags			按钮权限管理
 //	@Accept			json
 //	@Produce		json
@@ -387,7 +435,7 @@ func (c *BtnPermController) GetAPIRoutesByBtnPerm(ctx *gin.Context) {
 //	@Router			/api/admin/btn-perms/for-route [get]
 func (c *BtnPermController) GetBtnPermsByAPIRoute(ctx *gin.Context) {
 	var req struct {
-		RouteID string `form:"routeId" binding:"required,gte=1"`
+		RouteID int64 `form:"routeId" binding:"required,gte=1"`
 	}
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		c.log.Error("获取路由关联按钮权限参数验证失败", "error", err.Error())
@@ -418,7 +466,7 @@ func (c *BtnPermController) GetBtnPermsByAPIRoute(ctx *gin.Context) {
 //	@Router			/api/admin/btn-perms/by-role [get]
 func (c *BtnPermController) GetBtnPermsByRole(ctx *gin.Context) {
 	var req struct {
-		RoleID string `form:"roleId" binding:"required"`
+		RoleID int64 `form:"roleId" binding:"required"`
 	}
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		c.log.Error("获取角色关联按钮权限参数验证失败", "error", err.Error())
@@ -464,7 +512,7 @@ func (c *BtnPermController) GetBtnPermsByRole(ctx *gin.Context) {
 //	@Router			/api/admin/btn-perms/by-menu [get]
 func (c *BtnPermController) GetBtnPermsByMenu(ctx *gin.Context) {
 	var req struct {
-		MenuID string `form:"menuId" binding:"required,gte=1"`
+		MenuID int64 `form:"menuId" binding:"required,gte=1"`
 	}
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		c.log.Error("获取菜单关联按钮权限参数验证失败", "error", err.Error())

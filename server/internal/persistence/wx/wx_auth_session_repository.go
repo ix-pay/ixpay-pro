@@ -1,12 +1,12 @@
 package persistence
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // wxAuthSessionModel 微信授权会话数据库模型
@@ -32,8 +32,8 @@ func (m *wxAuthSessionModel) toDomain() *entity.WXAuthSession {
 		return nil
 	}
 	return &entity.WXAuthSession{
-		ID:           common.ToString(m.ID),
-		WXUserID:     common.ToString(m.WXUserID),
+		ID:           m.ID,
+		WXUserID:     m.WXUserID,
 		AccessToken:  m.AccessToken,
 		RefreshToken: m.RefreshToken,
 		ExpiresIn:    m.ExpiresIn,
@@ -47,15 +47,13 @@ func (m *wxAuthSessionModel) toDomain() *entity.WXAuthSession {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainWXAuthSession(session *entity.WXAuthSession) (*wxAuthSessionModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(session.ID, "", "")
-
 	return &wxAuthSessionModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        session.ID,
+			CreatedBy: 0,
+			UpdatedBy: 0,
 		},
-		WXUserID:     common.TryParseInt64(session.WXUserID),
+		WXUserID:     session.WXUserID,
 		AccessToken:  session.AccessToken,
 		RefreshToken: session.RefreshToken,
 		ExpiresIn:    session.ExpiresIn,
@@ -79,13 +77,9 @@ func NewWXAuthSessionRepository(db *database.PostgresDB) repo.WXAuthSessionRepos
 }
 
 // GetByID 根据 ID 查询微信授权会话
-func (r *wxAuthSessionRepository) GetByID(id string) (*entity.WXAuthSession, error) {
-	idInt, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
+func (r *wxAuthSessionRepository) GetByID(id int64) (*entity.WXAuthSession, error) {
 	var dbModel wxAuthSessionModel
-	result := r.db.Where("id = ?", idInt).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -94,13 +88,9 @@ func (r *wxAuthSessionRepository) GetByID(id string) (*entity.WXAuthSession, err
 }
 
 // GetActiveSessionByWXUserID 获取指定微信用户的有效会话
-func (r *wxAuthSessionRepository) GetActiveSessionByWXUserID(wxUserID string) (*entity.WXAuthSession, error) {
-	wxUserIDInt, err := common.ParseInt64(wxUserID)
-	if err != nil {
-		return nil, err
-	}
+func (r *wxAuthSessionRepository) GetActiveSessionByWXUserID(wxUserID int64) (*entity.WXAuthSession, error) {
 	var dbModel wxAuthSessionModel
-	result := r.db.Where("wx_user_id = ? AND is_active = ? AND expires_at > ?", wxUserIDInt, true, time.Now()).
+	result := r.db.Where("wx_user_id = ? AND is_active = ? AND expires_at > ?", wxUserID, true, time.Now()).
 		Order("expires_at DESC").
 		First(&dbModel)
 	if result.Error != nil {
@@ -114,15 +104,15 @@ func (r *wxAuthSessionRepository) GetActiveSessionByWXUserID(wxUserID string) (*
 func (r *wxAuthSessionRepository) Create(session *entity.WXAuthSession) error {
 	dbModel, err := fromDomainWXAuthSession(session)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to convert domain to db model: %w", err)
 	}
 
 	if err := r.db.Create(dbModel).Error; err != nil {
-		return err
+		return fmt.Errorf("failed to create wx auth session: %w", err)
 	}
 
 	// 将生成的 ID 回写到领域实体
-	session.ID = common.ToString(dbModel.ID)
+	session.ID = dbModel.ID
 	return nil
 }
 
@@ -136,24 +126,16 @@ func (r *wxAuthSessionRepository) Update(session *entity.WXAuthSession) error {
 	return r.db.Save(dbModel).Error
 }
 
-// InvalidateSession 使指定会话失效
-func (r *wxAuthSessionRepository) InvalidateSession(id string) error {
-	idInt, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
+// InvalidateSession 使会话失效
+func (r *wxAuthSessionRepository) InvalidateSession(id int64) error {
 	return r.db.Model(&wxAuthSessionModel{}).
-		Where("id = ?", idInt).
+		Where("id = ?", id).
 		Update("is_active", false).Error
 }
 
 // InvalidateAllSessionsByWXUserID 使指定微信用户的所有会话失效
-func (r *wxAuthSessionRepository) InvalidateAllSessionsByWXUserID(wxUserID string) error {
-	wxUserIDInt, err := common.ParseInt64(wxUserID)
-	if err != nil {
-		return err
-	}
+func (r *wxAuthSessionRepository) InvalidateAllSessionsByWXUserID(wxUserID int64) error {
 	return r.db.Model(&wxAuthSessionModel{}).
-		Where("wx_user_id = ?", wxUserIDInt).
+		Where("wx_user_id = ?", wxUserID).
 		Update("is_active", false).Error
 }

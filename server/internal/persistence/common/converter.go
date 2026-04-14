@@ -24,6 +24,11 @@ func ToString(id int64) string {
 	return strconv.FormatInt(id, 10)
 }
 
+// Int64ToString 将 int64 转换为 string（新增函数，与 ToString 功能相同）
+func Int64ToString(id int64) string {
+	return strconv.FormatInt(id, 10)
+}
+
 // StringToInt64s 将 string ID 数组转换为 int64 数组
 func StringToInt64s(ids []string) ([]int64, error) {
 	result := make([]int64, len(ids))

@@ -31,8 +31,8 @@ type MenuMeta struct {
 // 包含菜单的基本信息、路由信息和权限信息
 // 纯业务模型，无 GORM 标签
 type Menu struct {
-	ID           string     // 菜单 ID
-	ParentID     string     // 父菜单 ID，0 表示顶级菜单
+	ID           int64      // 菜单 ID
+	ParentID     int64      // 父菜单 ID，0 表示顶级菜单
 	Path         string     // 路由路径
 	Name         string     // 路由名称，前端组件名
 	Component    string     // 组件路径
@@ -55,15 +55,15 @@ type Menu struct {
 	Meta         MenuMeta   // 菜单元数据
 	Children     []*Menu    // 子菜单
 	Parent       *Menu      // 父菜单（新增）
-	BtnPermIds   []string   // 菜单下的按钮权限 ID 列表
+	BtnPermIds   []int64    // 菜单下的按钮权限 ID 列表
 	BtnPerms     []*BtnPerm // 菜单下的按钮权限列表（新增）
-	RoleIds      []string   // 关联的角色 ID 列表
+	RoleIds      []int64    // 关联的角色 ID 列表
 	Roles        []*Role    // 关联的角色列表（新增）
-	APIRouteIds  []string   // 关联的 API 路由 ID 列表
+	APIRouteIds  []int64    // 关联的 API 路由 ID 列表
 	APIRoutes    []*API     // 关联的 API 路由列表（新增）
-	CreatedBy    string     // 创建人 ID
+	CreatedBy    int64      // 创建人 ID
 	CreatedAt    time.Time  // 创建时间
-	UpdatedBy    string     // 更新人 ID
+	UpdatedBy    int64      // 更新人 ID
 	UpdatedAt    time.Time  // 更新时间
 }
 

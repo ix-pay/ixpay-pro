@@ -9,6 +9,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	model "github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 
 	"github.com/robfig/cron/v3"
 )
@@ -394,7 +395,7 @@ func (tm *TaskManager) recordExecutionLog(
 	// 异步记录日志到数据库
 	go func() {
 		log := &entity.TaskExecutionLog{
-			TaskID:      taskID,
+			TaskID:      common.TryParseInt64(taskID),
 			TaskName:    taskName,
 			Group:       group,
 			ExecuteAt:   time.Now().Format(time.RFC3339),
@@ -404,7 +405,7 @@ func (tm *TaskManager) recordExecutionLog(
 			RetryCount:  retryCount,
 			CronExpr:    cronExpr,
 			TriggerType: triggerType,
-			OperatorID:  operatorID,
+			OperatorID:  common.TryParseInt64(operatorID),
 		}
 
 		if err := repo.Create(log); err != nil {

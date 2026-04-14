@@ -23,7 +23,7 @@ func NewDictService(repo repo.DictRepository, log logger.Logger) *DictService {
 }
 
 // GetDictByID 根据 ID 获取字典
-func (s *DictService) GetDictByID(id string) (*entity.Dict, error) {
+func (s *DictService) GetDictByID(id int64) (*entity.Dict, error) {
 	// ⭐ 优化：使用 Preload 一次性加载字典及其字典项
 	dict, err := s.repo.GetByID(id, repo.DictRelationItems)
 	if err != nil {
@@ -45,11 +45,11 @@ func (s *DictService) GetDictByCode(dictCode string) (*entity.Dict, error) {
 }
 
 // CreateDict 创建字典
-func (s *DictService) CreateDict(dictName, dictCode, description string, status int, createdBy string) (*entity.Dict, error) {
+func (s *DictService) CreateDict(dictName, dictCode, description string, status int, createdBy int64) (*entity.Dict, error) {
 	// 检查字典编码是否已存在
 	existingDict, err := s.repo.GetByCode(dictCode)
 	if err == nil {
-		if existingDict.ID != "" {
+		if existingDict.ID != 0 {
 			s.log.Error("字典编码已存在", "dict_code", dictCode)
 			return nil, errors.New("字典编码已存在")
 		}
@@ -76,7 +76,7 @@ func (s *DictService) CreateDict(dictName, dictCode, description string, status 
 }
 
 // UpdateDict 更新字典
-func (s *DictService) UpdateDict(id string, dictName, dictCode, description string, status int, updatedBy string) error {
+func (s *DictService) UpdateDict(id int64, dictName, dictCode, description string, status int, updatedBy int64) error {
 	// 获取字典
 	dict, err := s.repo.GetByID(id)
 	if err != nil {
@@ -111,7 +111,7 @@ func (s *DictService) UpdateDict(id string, dictName, dictCode, description stri
 }
 
 // DeleteDict 删除字典
-func (s *DictService) DeleteDict(id string) error {
+func (s *DictService) DeleteDict(id int64) error {
 	// 获取字典
 	_, err := s.repo.GetByID(id)
 	if err != nil {
@@ -166,7 +166,7 @@ func NewDictItemService(repo repo.DictItemRepository, dictRepo repo.DictReposito
 }
 
 // GetDictItemByID 根据 ID 获取字典项
-func (s *DictItemService) GetDictItemByID(id string) (*entity.DictItem, error) {
+func (s *DictItemService) GetDictItemByID(id int64) (*entity.DictItem, error) {
 	dictItem, err := s.repo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取字典项失败", "id", id, "error", err)
@@ -176,7 +176,7 @@ func (s *DictItemService) GetDictItemByID(id string) (*entity.DictItem, error) {
 }
 
 // GetDictItemsByDictID 根据字典 ID 获取字典项列表
-func (s *DictItemService) GetDictItemsByDictID(dictID string) ([]*entity.DictItem, error) {
+func (s *DictItemService) GetDictItemsByDictID(dictID int64) ([]*entity.DictItem, error) {
 	// 检查字典是否存在
 	_, err := s.dictRepo.GetByID(dictID)
 	if err != nil {
@@ -193,7 +193,7 @@ func (s *DictItemService) GetDictItemsByDictID(dictID string) ([]*entity.DictIte
 }
 
 // CreateDictItem 创建字典项
-func (s *DictItemService) CreateDictItem(dictID string, itemKey, itemValue, description string, sort, status int, createdBy string) (*entity.DictItem, error) {
+func (s *DictItemService) CreateDictItem(dictID int64, itemKey, itemValue, description string, sort, status int, createdBy int64) (*entity.DictItem, error) {
 	// 检查字典是否存在
 	_, err := s.dictRepo.GetByID(dictID)
 	if err != nil {
@@ -235,7 +235,7 @@ func (s *DictItemService) CreateDictItem(dictID string, itemKey, itemValue, desc
 }
 
 // UpdateDictItem 更新字典项
-func (s *DictItemService) UpdateDictItem(id string, dictID string, itemKey, itemValue, description string, sort, status int, updatedBy string) error {
+func (s *DictItemService) UpdateDictItem(id int64, dictID int64, itemKey, itemValue, description string, sort, status int, updatedBy int64) error {
 	// 获取字典项
 	dictItem, err := s.repo.GetByID(id)
 	if err != nil {
@@ -283,7 +283,7 @@ func (s *DictItemService) UpdateDictItem(id string, dictID string, itemKey, item
 }
 
 // DeleteDictItem 删除字典项
-func (s *DictItemService) DeleteDictItem(id string) error {
+func (s *DictItemService) DeleteDictItem(id int64) error {
 	// 获取字典项
 	_, err := s.repo.GetByID(id)
 	if err != nil {
@@ -312,7 +312,7 @@ func (s *DictItemService) GetDictItemList(page, pageSize int, filters map[string
 }
 
 // GetActiveDictItemsByDictID 获取指定字典的所有启用项
-func (s *DictItemService) GetActiveDictItemsByDictID(dictID string) ([]*entity.DictItem, error) {
+func (s *DictItemService) GetActiveDictItemsByDictID(dictID int64) ([]*entity.DictItem, error) {
 	// 检查字典是否存在
 	_, err := s.dictRepo.GetByID(dictID)
 	if err != nil {

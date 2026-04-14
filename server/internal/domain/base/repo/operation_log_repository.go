@@ -10,14 +10,14 @@ import (
 type OperationLogRepository interface {
 	Create(log *entity.OperationLog) error
 	BatchCreate(logs []*entity.OperationLog) error
-	GetByID(id string) (*entity.OperationLog, error)
+	GetByID(id int64) (*entity.OperationLog, error)
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.OperationLog, int64, error)
-	Delete(id string) error
-	BatchDelete(ids []string) error
+	Delete(id int64) error
+	BatchDelete(ids []int64) error
 	DeleteByTimeRange(startTime, endTime time.Time) error
 	CountByDate(date time.Time) (int64, error)
 	CountByModule(module string) (int64, error)
-	CountByUser(userID string) (int64, error)
+	CountByUser(userID int64) (int64, error)
 	CountByOperationType(operationType entity.OperationType) (int64, error)
 	CountByResult(isSuccess bool) (int64, error)
 }

@@ -14,17 +14,17 @@ const (
 type BtnPermRepository interface {
 	// GetByID 根据 ID 查询按钮权限并支持加载关联数据
 	// relations 参数使用 BtnPermRelation 类型，提供编译期类型检查
-	GetByID(id string, relations ...BtnPermRelation) (*entity.BtnPerm, error)
+	GetByID(id int64, relations ...BtnPermRelation) (*entity.BtnPerm, error)
 	GetByCode(code string) (*entity.BtnPerm, error)
-	GetBtnPermsByMenu(menuID string) ([]*entity.BtnPerm, error)
+	GetBtnPermsByMenu(menuID int64) ([]*entity.BtnPerm, error)
 	Create(button *entity.BtnPerm) error
 	Update(button *entity.BtnPerm) error
-	Delete(id string) error
+	Delete(id int64) error
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.BtnPerm, int64, error)
 
 	// 按钮权限关联 API 路由操作
-	AddAPIToBtnPerm(buttonID, routeID string) error
-	RemoveAPIFromBtnPerm(buttonID, routeID string) error
-	GetAPIsByBtnPerm(buttonID string) ([]*entity.API, error)
-	GetBtnPermsByAPI(routeID string) ([]*entity.BtnPerm, error)
+	AddAPIToBtnPerm(buttonID int64, routeID int64) error
+	RemoveAPIFromBtnPerm(buttonID int64, routeID int64) error
+	GetAPIsByBtnPerm(buttonID int64) ([]*entity.API, error)
+	GetBtnPermsByAPI(routeID int64) ([]*entity.BtnPerm, error)
 }

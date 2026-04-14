@@ -92,21 +92,21 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		}
 
 		// 获取用户的按钮权限（用于按钮级权限控制）
-		userIDStr := ""
+		var userIDInt int64
 		switch v := userID.(type) {
 		case string:
-			userIDStr = v
+			userIDInt, _ = strconv.ParseInt(v, 10, 64)
 		case int:
-			userIDStr = strconv.Itoa(v)
+			userIDInt = int64(v)
 		case int64:
-			userIDStr = strconv.FormatInt(v, 10)
+			userIDInt = v
 		default:
-			userIDStr = fmt.Sprintf("%v", v)
+			userIDInt = 0
 		}
 
-		userButtons, err := getBtnPermsByUserId(userIDStr, permissionService, log)
+		userButtons, err := getBtnPermsByUserId(userIDInt, permissionService, log)
 		if err != nil {
-			log.Error("获取用户按钮权限失败", "error", err, "userID", userIDStr)
+			log.Error("获取用户按钮权限失败", "error", err, "userID", userIDInt)
 		}
 
 		// 将按钮权限存储在上下文中
@@ -183,7 +183,7 @@ func checkPermissionFromCache(roleRepo repo.RoleRepository, role, method, path s
 	}
 
 	// 构建缓存 Key
-	cacheKey := fmt.Sprintf("role:perms:%s", roleObj.ID)
+	cacheKey := fmt.Sprintf("role:perms:%d", roleObj.ID)
 
 	// 从缓存获取缓存数据
 	data, err := cacheClient.Get(cacheKey)
@@ -215,7 +215,7 @@ func checkPermissionFromCache(roleRepo repo.RoleRepository, role, method, path s
 }
 
 // loadAndCacheRolePermissions 从数据库加载角色权限并缓存
-func loadAndCacheRolePermissions(roleID string, roleRepo repo.RoleRepository, log logger.Logger, cacheClient cache.Cache, method, path string) (bool, error) {
+func loadAndCacheRolePermissions(roleID int64, roleRepo repo.RoleRepository, log logger.Logger, cacheClient cache.Cache, method, path string) (bool, error) {
 	// 从数据库加载角色权限
 	menus, err := roleRepo.GetMenusByRole(roleID)
 	if err != nil {
@@ -256,7 +256,7 @@ func loadAndCacheRolePermissions(roleID string, roleRepo repo.RoleRepository, lo
 		return false, fmt.Errorf("序列化角色权限失败：%w", err)
 	}
 
-	cacheKey := fmt.Sprintf("role:perms:%s", roleID)
+	cacheKey := fmt.Sprintf("role:perms:%d", roleID)
 	// 缓存 24 小时
 	if err := cacheClient.Set(cacheKey, string(jsonData), 24*time.Hour); err != nil {
 		log.Error("缓存角色权限失败", "error", err, "roleID", roleID)
@@ -270,8 +270,8 @@ func loadAndCacheRolePermissions(roleID string, roleRepo repo.RoleRepository, lo
 }
 
 // getBtnPermsByUserId 根据用户 ID 获取按钮权限
-func getBtnPermsByUserId(userId string, permissionService *service.PermissionService, log logger.Logger) ([]string, error) {
-	// 通过用户ID获取角色
+func getBtnPermsByUserId(userId int64, permissionService *service.PermissionService, log logger.Logger) ([]string, error) {
+	// 通过用户 ID 获取角色
 	roles, err := permissionService.GetRolesByUserId(userId)
 	if err != nil {
 		log.Error("Failed to get roles by user ID", "error", err, "userId", userId)
@@ -328,7 +328,7 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 			return
 		}
 
-		// 从gin.Context中获取用户ID
+		// 从 gin.Context 中获取用户 ID
 		userID, exists := c.Get("userID")
 		if !exists {
 			httpresponse.UnauthorizedResponse(c, "User not authenticated")
@@ -336,13 +336,15 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 			return
 		}
 
-		// 尝试将 userID 转换为 string 类型
-		var userIDStr string
+		// 尝试将 userID 转换为 int64 类型
+		var userIDInt int64
 		switch v := userID.(type) {
 		case string:
-			userIDStr = v
-		case int, int64:
-			userIDStr = fmt.Sprintf("%v", v)
+			userIDInt, _ = strconv.ParseInt(v, 10, 64)
+		case int:
+			userIDInt = int64(v)
+		case int64:
+			userIDInt = v
 		default:
 			httpresponse.BadRequestResponse(c, "Invalid user ID format")
 			c.Abort()
@@ -350,7 +352,7 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 		}
 
 		// 获取用户所有角色
-		roles, err := roleRepo.GetRolesByUser(userIDStr)
+		roles, err := roleRepo.GetRolesByUser(userIDInt)
 		if err != nil {
 			httpresponse.InternalServerErrorResponse(c, "Failed to get user roles")
 			c.Abort()

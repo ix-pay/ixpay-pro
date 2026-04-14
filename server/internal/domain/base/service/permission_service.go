@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
@@ -45,7 +46,7 @@ func NewPermissionService(
 }
 
 // GetRolesByUserId 根据用户 ID 获取角色列表
-func (p *PermissionService) GetRolesByUserId(userId string) ([]entity.Role, error) {
+func (p *PermissionService) GetRolesByUserId(userId int64) ([]entity.Role, error) {
 	// 使用 RoleService 获取用户的角色列表
 	roles, err := p.roleService.GetRolesForUser(userId)
 	if err != nil {
@@ -53,7 +54,7 @@ func (p *PermissionService) GetRolesByUserId(userId string) ([]entity.Role, erro
 		return nil, err
 	}
 
-	// 将[]*entity.Role 转换为 []entity.Role
+	// 将 []*entity.Role 转换为 []entity.Role
 	result := make([]entity.Role, 0, len(roles))
 	for _, role := range roles {
 		if role != nil {
@@ -65,12 +66,12 @@ func (p *PermissionService) GetRolesByUserId(userId string) ([]entity.Role, erro
 }
 
 // GetBtnPermsByRole 根据角色 ID 获取按钮权限列表
-func (p *PermissionService) GetBtnPermsByRole(roleId string) ([]*entity.BtnPerm, error) {
+func (p *PermissionService) GetBtnPermsByRole(roleId int64) ([]*entity.BtnPerm, error) {
 	return p.roleRepo.GetBtnPermsByRole(roleId)
 }
 
 // AssignBtnPermToRole 为角色分配按钮权限
-func (p *PermissionService) AssignBtnPermToRole(roleId string, btnPermIds []string) error {
+func (p *PermissionService) AssignBtnPermToRole(roleId int64, btnPermIds []int64) error {
 	// 检查角色是否存在
 	role, err := p.roleService.GetRoleByID(roleId)
 	if err != nil {
@@ -113,7 +114,7 @@ func (p *PermissionService) AssignBtnPermToRole(roleId string, btnPermIds []stri
 }
 
 // RevokeBtnPermFromRole 从角色撤销按钮权限
-func (p *PermissionService) RevokeBtnPermFromRole(roleId string, btnPermId string) error {
+func (p *PermissionService) RevokeBtnPermFromRole(roleId int64, btnPermId int64) error {
 	// 检查角色是否存在
 	role, err := p.roleService.GetRoleByID(roleId)
 	if err != nil {
@@ -151,7 +152,7 @@ func (p *PermissionService) RevokeBtnPermFromRole(roleId string, btnPermId strin
 }
 
 // CheckAPIAccess 检查用户是否有 API 访问权限（支持 RBAC+ABAC）
-func (p *PermissionService) CheckAPIAccess(userId string, apiPath, method string) (bool, error) {
+func (p *PermissionService) CheckAPIAccess(userId int64, apiPath, method string) (bool, error) {
 	user, err := p.userService.GetUserInfo(userId)
 	if err != nil {
 		p.logger.Error("用户不存在", "error", err, "userId", userId)
@@ -220,9 +221,9 @@ func (p *PermissionService) CheckAPIAccess(userId string, apiPath, method string
 	// 4. 检查 ABAC 权限规则
 	// 评估规则
 	allow, err := p.permissionRuleRepo.FindMatchingRules(apiPath, method, []entity.PermissionAttribute{
-		{Key: "user_id", Value: userId, Type: "user"},
-		{Key: "department_id", Value: user.DepartmentID, Type: "user"},
-		{Key: "position_id", Value: user.PositionID, Type: "user"},
+		{Key: "user_id", Value: fmt.Sprintf("%d", userId), Type: "user"},
+		{Key: "department_id", Value: fmt.Sprintf("%d", user.DepartmentID), Type: "user"},
+		{Key: "position_id", Value: fmt.Sprintf("%d", user.PositionID), Type: "user"},
 	})
 	if err != nil {
 		p.logger.Error("评估权限规则失败", "error", err, "userId", userId, "apiPath", apiPath, "method", method)
@@ -240,7 +241,7 @@ func (p *PermissionService) CheckAPIAccess(userId string, apiPath, method string
 }
 
 // CheckBtnPermission 检查用户是否有按钮权限（支持 RBAC+ABAC）
-func (p *PermissionService) CheckBtnPermission(userId, btnPermCode string) (bool, error) {
+func (p *PermissionService) CheckBtnPermission(userId int64, btnPermCode string) (bool, error) {
 	// 1. 检查用户是否存在
 	_, err := p.userService.GetUserInfo(userId)
 	if err != nil {
@@ -314,7 +315,7 @@ func (p *PermissionService) CheckBtnPermission(userId, btnPermCode string) (bool
 }
 
 // GetUserAPIPermissions 获取用户的所有 API 权限（包括继承和特殊权限）
-func (p *PermissionService) GetUserAPIPermissions(userId string) ([]*entity.API, error) {
+func (p *PermissionService) GetUserAPIPermissions(userId int64) ([]*entity.API, error) {
 	// 1. 检查用户是否存在
 	_, err := p.userService.GetUserInfo(userId)
 	if err != nil {
@@ -391,7 +392,7 @@ func (p *PermissionService) GetUserAPIPermissions(userId string) ([]*entity.API,
 }
 
 // GetUserBtnPermissions 获取用户的所有按钮权限（包括继承和特殊权限）
-func (p *PermissionService) GetUserBtnPermissions(userId string) ([]*entity.BtnPerm, error) {
+func (p *PermissionService) GetUserBtnPermissions(userId int64) ([]*entity.BtnPerm, error) {
 	// 1. 检查用户是否存在
 	_, err := p.userService.GetUserInfo(userId)
 	if err != nil {
@@ -465,7 +466,7 @@ func (p *PermissionService) GetUserBtnPermissions(userId string) ([]*entity.BtnP
 }
 
 // CheckResourceAccess 检查用户对资源的访问权限（ABAC）
-func (p *PermissionService) CheckResourceAccess(userId string, resourceType string, resourceID string, action string) (bool, error) {
+func (p *PermissionService) CheckResourceAccess(userId int64, resourceType string, resourceID string, action string) (bool, error) {
 	// 1. 检查用户是否存在
 	_, err := p.userService.GetUserInfo(userId)
 	if err != nil {
@@ -489,8 +490,8 @@ func (p *PermissionService) CheckResourceAccess(userId string, resourceType stri
 		return false, nil
 	}
 
-	// 4. 检查ABAC规则
-	// 构建用户属性 - 暂时注释，等待实现完整的ABAC规则匹配逻辑
+	// 4. 检查 ABAC 规则
+	// 构建用户属性 - 暂时注释，等待实现完整的 ABAC 规则匹配逻辑
 	// attributes := []repo.PermissionAttribute{
 	// 	{Key: "user_id", Value: strconv.FormatInt(userId, 10), Type: "user"},
 	// 	{Key: "department_id", Value: strconv.FormatInt(user.DepartmentID, 10), Type: "user"},
@@ -532,7 +533,7 @@ func (p *PermissionService) CheckResourceAccess(userId string, resourceType stri
 }
 
 // RefreshPermissionCache 刷新用户权限缓存
-func (p *PermissionService) RefreshPermissionCache(userId string) error {
+func (p *PermissionService) RefreshPermissionCache(userId int64) error {
 	// TODO: 实现权限缓存刷新逻辑
 	// 例如：清除 Redis 中的用户权限缓存
 	p.logger.Info("用户权限缓存已刷新", "userId", userId)
@@ -540,7 +541,7 @@ func (p *PermissionService) RefreshPermissionCache(userId string) error {
 }
 
 // GetPermissionRules 获取用户的权限规则（ABAC）
-func (p *PermissionService) GetPermissionRules(userId string) ([]*entity.PermissionRule, error) {
+func (p *PermissionService) GetPermissionRules(userId int64) ([]*entity.PermissionRule, error) {
 	// 检查用户是否存在
 	_, err := p.userService.GetUserInfo(userId)
 	if err != nil {

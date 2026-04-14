@@ -116,7 +116,18 @@ func (c *MenuController) GetMenuList(ctx *gin.Context) {
 		return
 	}
 
-	menus, err := c.service.GetUserMenus(role.(string))
+	// 将 role 转换为 int64
+	var roleID int64
+	switch v := role.(type) {
+	case string:
+		roleID, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		roleID = v
+	case int:
+		roleID = int64(v)
+	}
+
+	menus, err := c.service.GetUserMenus(roleID)
 	if err != nil {
 		baseRes.FailWithMessage("获取菜单列表失败", ctx)
 		return
@@ -134,20 +145,32 @@ func (c *MenuController) AddMenu(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的 ParentID
-	// 将字符串类型的 Status 转换为 int
-	status, err := strconv.Atoi(req.Status)
-	if err != nil {
-		c.log.Error("Status 格式错误", "error", err, "status", req.Status)
-		baseRes.FailWithMessage("Status 格式错误", ctx)
-		return
-	}
-
 	// 获取当前登录用户 ID 作为创建者
 	createdBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未登录")
 		baseRes.NoAuth("未登录", ctx)
+		return
+	}
+
+	// 将 createdBy 转换为 int64
+	var createdByInt int64
+	var err error
+	switch v := createdBy.(type) {
+	case string:
+		createdByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		createdByInt = v
+	case int:
+		createdByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
 		return
 	}
 
@@ -160,7 +183,7 @@ func (c *MenuController) AddMenu(ctx *gin.Context) {
 		Component:    req.Component,
 		Icon:         req.Icon,
 		Sort:         req.Sort,
-		Status:       status,
+		Status:       req.Status,
 		Type:         entity.MenuType(req.Type),
 		Hidden:       req.Hidden,
 		IsExt:        req.IsExt,
@@ -175,7 +198,7 @@ func (c *MenuController) AddMenu(ctx *gin.Context) {
 	}
 
 	// 调用服务层创建菜单
-	if err := c.service.CreateMenu(&menu, createdBy.(string)); err != nil {
+	if err := c.service.CreateMenu(&menu, createdByInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -209,21 +232,32 @@ func (c *MenuController) UpdateMenu(ctx *gin.Context) {
 		return
 	}
 
-	// 将字符串类型的 ID 转换为 int64
-	// 直接使用 string 类型的 ID 和 ParentID
-	// 将字符串类型的 Status 转换为 int
-	status, err := strconv.Atoi(req.Status)
-	if err != nil {
-		c.log.Error("Status 格式错误", "error", err, "status", req.Status)
-		baseRes.FailWithMessage("Status 格式错误", ctx)
-		return
-	}
-
 	// 获取当前登录用户 ID 作为修改者
 	updatedBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未登录")
 		baseRes.NoAuth("未登录", ctx)
+		return
+	}
+
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	var err error
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
 		return
 	}
 
@@ -236,7 +270,7 @@ func (c *MenuController) UpdateMenu(ctx *gin.Context) {
 		Component:    req.Component,
 		Icon:         req.Icon,
 		Sort:         req.Sort,
-		Status:       status,
+		Status:       req.Status,
 		Type:         entity.MenuType(req.Type),
 		Hidden:       req.Hidden,
 		IsExt:        req.IsExt,
@@ -252,7 +286,7 @@ func (c *MenuController) UpdateMenu(ctx *gin.Context) {
 	menu.ID = req.ID
 
 	// 调用服务层更新菜单（包含 API 关联）
-	if err := c.service.UpdateMenuWithAPIs(&menu, req.ApiIds, updatedBy.(string)); err != nil {
+	if err := c.service.UpdateMenuWithAPIs(&menu, req.ApiIds, updatedByInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -292,11 +326,19 @@ func (c *MenuController) UpdateMenu(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/menu/:id [delete]
 func (c *MenuController) DeleteMenu(ctx *gin.Context) {
-	// 解析菜单ID
-	menuID := ctx.Param("id")
-	if menuID == "" {
+	// 解析菜单 ID
+	menuIDStr := ctx.Param("id")
+	if menuIDStr == "" {
 		c.log.Error("菜单 ID 不能为空")
 		baseRes.FailWithMessage("菜单 ID 不能为空", ctx)
+		return
+	}
+
+	// 将字符串 ID 转换为 int64
+	menuID, err := strconv.ParseInt(menuIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", menuIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -378,10 +420,18 @@ func (c *MenuController) GetMenuPage(ctx *gin.Context) {
 //	@Router			/api/admin/menu/:id/delete-impact [get]
 func (c *MenuController) GetMenuDeleteImpact(ctx *gin.Context) {
 	// 获取菜单 ID
-	menuID := ctx.Param("id")
-	if menuID == "" {
+	menuIDStr := ctx.Param("id")
+	if menuIDStr == "" {
 		c.log.Error("菜单 ID 不能为空")
 		baseRes.FailWithMessage("菜单 ID 不能为空", ctx)
+		return
+	}
+
+	// 将字符串 ID 转换为 int64
+	menuID, err := strconv.ParseInt(menuIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", menuIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 

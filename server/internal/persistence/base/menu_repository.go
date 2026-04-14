@@ -1,12 +1,9 @@
 package persistence
 
 import (
-	"strconv"
-
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // menuModel 菜单数据库模型
@@ -51,8 +48,8 @@ func (m *menuModel) toDomain() *entity.Menu {
 		return nil
 	}
 	menu := &entity.Menu{
-		ID:         strconv.FormatInt(m.ID, 10),
-		ParentID:   strconv.FormatInt(m.ParentID, 10),
+		ID:         m.ID,
+		ParentID:   m.ParentID,
 		Path:       m.Path,
 		Name:       m.Name,
 		Component:  m.Component,
@@ -66,9 +63,9 @@ func (m *menuModel) toDomain() *entity.Menu {
 		Permission: m.Permission,
 		Type:       entity.MenuType(m.Type),
 		FrameSrc:   m.FrameSrc,
-		CreatedBy:  strconv.FormatInt(m.CreatedBy, 10),
+		CreatedBy:  m.CreatedBy,
 		CreatedAt:  m.CreatedAt,
-		UpdatedBy:  strconv.FormatInt(m.UpdatedBy, 10),
+		UpdatedBy:  m.UpdatedBy,
 		UpdatedAt:  m.UpdatedAt,
 	}
 
@@ -89,10 +86,10 @@ func (m *menuModel) toDomain() *entity.Menu {
 	// ⭐ 处理关联数据 - API 路由（同时填充 APIRouteIds 和 APIRoutes）
 	if len(m.APIRoutes) > 0 {
 		apiRoutes := make([]*entity.API, len(m.APIRoutes))
-		apiRouteIDs := make([]string, len(m.APIRoutes))
+		apiRouteIDs := make([]int64, len(m.APIRoutes))
 		for i, apiRoute := range m.APIRoutes {
 			apiRoutes[i] = apiRoute.toDomain()
-			apiRouteIDs[i] = strconv.FormatInt(apiRoute.ID, 10)
+			apiRouteIDs[i] = apiRoute.ID
 		}
 		menu.APIRoutes = apiRoutes
 		menu.APIRouteIds = apiRouteIDs
@@ -101,10 +98,10 @@ func (m *menuModel) toDomain() *entity.Menu {
 	// ⭐ 处理关联数据 - 按钮权限（同时填充 BtnPermIds 和 BtnPerms）
 	if len(m.BtnPerms) > 0 {
 		btnPerms := make([]*entity.BtnPerm, len(m.BtnPerms))
-		btnPermIDs := make([]string, len(m.BtnPerms))
+		btnPermIDs := make([]int64, len(m.BtnPerms))
 		for i, btnPerm := range m.BtnPerms {
 			btnPerms[i] = btnPerm.toDomain()
-			btnPermIDs[i] = strconv.FormatInt(btnPerm.ID, 10)
+			btnPermIDs[i] = btnPerm.ID
 		}
 		menu.BtnPerms = btnPerms
 		menu.BtnPermIds = btnPermIDs
@@ -115,38 +112,13 @@ func (m *menuModel) toDomain() *entity.Menu {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainMenu(menu *entity.Menu) (*menuModel, error) {
-	var id int64
-	var err error
-
-	if menu.ID != "" {
-		id, err = strconv.ParseInt(menu.ID, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	var parentID int64
-	if menu.ParentID != "" {
-		parentID, _ = strconv.ParseInt(menu.ParentID, 10, 64)
-	}
-
-	var createdBy int64
-	if menu.CreatedBy != "" {
-		createdBy, _ = strconv.ParseInt(menu.CreatedBy, 10, 64)
-	}
-
-	var updatedBy int64
-	if menu.UpdatedBy != "" {
-		updatedBy, _ = strconv.ParseInt(menu.UpdatedBy, 10, 64)
-	}
-
 	return &menuModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        menu.ID,
+			CreatedBy: menu.CreatedBy,
+			UpdatedBy: menu.UpdatedBy,
 		},
-		ParentID:   parentID,
+		ParentID:   menu.ParentID,
 		Path:       menu.Path,
 		Name:       menu.Name,
 		Component:  menu.Component,
@@ -177,14 +149,9 @@ func NewMenuRepository(db *database.PostgresDB) repo.MenuRepository {
 }
 
 // GetByID 根据 ID 查询菜单并支持加载关联数据
-func (r *menuRepository) GetByID(id string, relations ...repo.MenuRelation) (*entity.Menu, error) {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *menuRepository) GetByID(id int64, relations ...repo.MenuRelation) (*entity.Menu, error) {
 	var dbModel menuModel
-	query := r.db.Where("id = ?", intID)
+	query := r.db.Where("id = ?", id)
 
 	// 根据指定的关联关系进行 Preload
 	for _, relation := range relations {
@@ -238,13 +205,28 @@ func (r *menuRepository) GetAll() ([]*entity.Menu, error) {
 }
 
 // GetMenusByRole 根据角色获取菜单
-func (r *menuRepository) GetMenusByRole(role string) ([]*entity.Menu, error) {
-	// TODO: 实现角色关联菜单查询
-	return nil, nil
+func (r *menuRepository) GetMenusByRole(roleID int64) ([]*entity.Menu, error) {
+	var dbModels []menuModel
+	// 通过角色 - 菜单关联表查询
+	result := r.db.Joins("JOIN base_role_menus ON base_role_menus.menu_id = base_menus.id").
+		Where("base_role_menus.role_id = ?", roleID).
+		Where("base_menus.status = ?", 1).
+		Order("base_menus.sort ASC").
+		Find(&dbModels)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	menus := make([]*entity.Menu, len(dbModels))
+	for i, model := range dbModels {
+		menus[i] = model.toDomain()
+	}
+
+	return menus, nil
 }
 
 // GetMenusByUserID 根据用户 ID 获取菜单
-func (r *menuRepository) GetMenusByUserID(userID string) ([]*entity.Menu, error) {
+func (r *menuRepository) GetMenusByUserID(userID int64) ([]*entity.Menu, error) {
 	// TODO: 实现用户菜单查询
 	return nil, nil
 }
@@ -266,16 +248,15 @@ func (r *menuRepository) GetMenusByType(menuType entity.MenuType) ([]*entity.Men
 }
 
 // GetDefaultRouter 获取默认路由
-func (r *menuRepository) GetDefaultRouter(role string) (string, error) {
+func (r *menuRepository) GetDefaultRouter(roleID int64) (string, error) {
 	// TODO: 实现默认路由查询
 	return "", nil
 }
 
 // GetMenuTree 获取菜单树
-func (r *menuRepository) GetMenuTree(parentID string) ([]*entity.Menu, error) {
-	intParentID, _ := strconv.ParseInt(parentID, 10, 64)
+func (r *menuRepository) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 	var dbModels []menuModel
-	result := r.db.Where("parent_id = ?", intParentID).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("parent_id = ?", parentID).Order("sort ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -305,7 +286,7 @@ func (r *menuRepository) GetAllMenuTree() ([]*entity.Menu, error) {
 }
 
 // GetMenuPath 获取菜单路径
-func (r *menuRepository) GetMenuPath(menuID string) ([]*entity.Menu, error) {
+func (r *menuRepository) GetMenuPath(menuID int64) ([]*entity.Menu, error) {
 	// TODO: 实现菜单路径查询
 	return nil, nil
 }
@@ -322,7 +303,7 @@ func (r *menuRepository) Create(menu *entity.Menu) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	menu.ID = common.ToString(dbModel.ID)
+	menu.ID = dbModel.ID
 	return nil
 }
 
@@ -337,13 +318,8 @@ func (r *menuRepository) Update(menu *entity.Menu) error {
 }
 
 // Delete 删除菜单
-func (r *menuRepository) Delete(id string) error {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&menuModel{}, intID).Error
+func (r *menuRepository) Delete(id int64) error {
+	return r.db.Delete(&menuModel{}, id).Error
 }
 
 // List 分页查询菜单列表
@@ -376,24 +352,14 @@ func (r *menuRepository) List(page, pageSize int, filters map[string]interface{}
 }
 
 // BatchDelete 批量删除菜单
-func (r *menuRepository) BatchDelete(ids []string) error {
-	intIDs, err := common.StringToInt64s(ids)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Where("id IN ?", intIDs).Delete(&menuModel{}).Error
+func (r *menuRepository) BatchDelete(ids []int64) error {
+	return r.db.Where("id IN ?", ids).Delete(&menuModel{}).Error
 }
 
 // CheckMenuChildren 检查菜单是否有子菜单
-func (r *menuRepository) CheckMenuChildren(menuID string) (bool, error) {
-	intID, err := strconv.ParseInt(menuID, 10, 64)
-	if err != nil {
-		return false, err
-	}
-
+func (r *menuRepository) CheckMenuChildren(menuID int64) (bool, error) {
 	var count int64
-	result := r.db.Model(&menuModel{}).Where("parent_id = ?", intID).Count(&count)
+	result := r.db.Model(&menuModel{}).Where("parent_id = ?", menuID).Count(&count)
 	if result.Error != nil {
 		return false, result.Error
 	}

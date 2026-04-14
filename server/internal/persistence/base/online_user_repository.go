@@ -2,6 +2,8 @@ package persistence
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -36,8 +38,8 @@ func (r *onlineUserRepository) Add(user *entity.OnlineUser) error {
 		return err
 	}
 
-	// 存储用户数据
-	userKey := onlineUserKeyPrefix + user.UserID
+	// 存储用户数据 - 使用 fmt.Sprintf 将 int64 转换为 string 作为缓存 key
+	userKey := onlineUserKeyPrefix + fmt.Sprintf("%d", user.UserID)
 	if err := r.cache.Set(userKey, string(data), onlineUserExpire); err != nil {
 		return err
 	}
@@ -53,14 +55,15 @@ func (r *onlineUserRepository) Add(user *entity.OnlineUser) error {
 
 	// 检查是否已存在，不存在则添加
 	exists := false
+	userIDStr := fmt.Sprintf("%d", user.UserID)
 	for _, id := range userIDs {
-		if id == user.UserID {
+		if id == userIDStr {
 			exists = true
 			break
 		}
 	}
 	if !exists {
-		userIDs = append(userIDs, user.UserID)
+		userIDs = append(userIDs, userIDStr)
 		listData, _ := json.Marshal(userIDs)
 		r.cache.Set(onlineUsersListKey, string(listData), onlineUserExpire)
 	}
@@ -69,8 +72,8 @@ func (r *onlineUserRepository) Add(user *entity.OnlineUser) error {
 }
 
 // GetByUserID 根据用户 ID 获取在线用户
-func (r *onlineUserRepository) GetByUserID(userID string) (*entity.OnlineUser, error) {
-	userKey := onlineUserKeyPrefix + userID
+func (r *onlineUserRepository) GetByUserID(userID int64) (*entity.OnlineUser, error) {
+	userKey := onlineUserKeyPrefix + fmt.Sprintf("%d", userID)
 	data, err := r.cache.Get(userKey)
 	if err != nil {
 		return nil, err
@@ -100,7 +103,11 @@ func (r *onlineUserRepository) GetBySessionID(sessionID string) (*entity.OnlineU
 	}
 
 	for _, userID := range userIDs {
-		user, err := r.GetByUserID(userID)
+		userIDInt, err := strconv.ParseInt(userID, 10, 64)
+		if err != nil {
+			continue
+		}
+		user, err := r.GetByUserID(userIDInt)
 		if err != nil {
 			continue
 		}
@@ -113,7 +120,7 @@ func (r *onlineUserRepository) GetBySessionID(sessionID string) (*entity.OnlineU
 }
 
 // UpdateActiveTime 更新用户活跃时间
-func (r *onlineUserRepository) UpdateActiveTime(userID string) error {
+func (r *onlineUserRepository) UpdateActiveTime(userID int64) error {
 	// 刷新过期时间（通过重新设置缓存实现）
 	user, err := r.GetByUserID(userID)
 	if err != nil {
@@ -128,8 +135,8 @@ func (r *onlineUserRepository) UpdateActiveTime(userID string) error {
 }
 
 // Remove 移除在线用户
-func (r *onlineUserRepository) Remove(userID string) error {
-	userKey := onlineUserKeyPrefix + userID
+func (r *onlineUserRepository) Remove(userID int64) error {
+	userKey := onlineUserKeyPrefix + fmt.Sprintf("%d", userID)
 
 	// 删除用户数据
 	if err := r.cache.Delete(userKey); err != nil {
@@ -150,8 +157,9 @@ func (r *onlineUserRepository) Remove(userID string) error {
 
 	// 移除该用户
 	newUserIDs := make([]string, 0)
+	userIDStr := fmt.Sprintf("%d", userID)
 	for _, id := range userIDs {
-		if id != userID {
+		if id != userIDStr {
 			newUserIDs = append(newUserIDs, id)
 		}
 	}
@@ -192,7 +200,12 @@ func (r *onlineUserRepository) GetAll() ([]*entity.OnlineUser, error) {
 	}
 
 	users := make([]*entity.OnlineUser, 0, len(userIDs))
-	for _, userID := range userIDs {
+	for _, userIDStr := range userIDs {
+		// 将 string 转换为 int64
+		userID, err := strconv.ParseInt(userIDStr, 10, 64)
+		if err != nil {
+			continue
+		}
 		user, err := r.GetByUserID(userID)
 		if err != nil {
 			continue
@@ -223,8 +236,8 @@ func (r *onlineUserRepository) GetCount() (int, error) {
 }
 
 // Exists 检查用户是否在线
-func (r *onlineUserRepository) Exists(userID string) (bool, error) {
-	userKey := onlineUserKeyPrefix + userID
+func (r *onlineUserRepository) Exists(userID int64) (bool, error) {
+	userKey := onlineUserKeyPrefix + fmt.Sprintf("%d", userID)
 	_, err := r.cache.Get(userKey)
 	if err != nil {
 		return false, err
@@ -288,8 +301,8 @@ func deserialize(data string) (*entity.OnlineUser, error) {
 }
 
 // generateUserKey 生成用户缓存键
-func generateUserKey(userID string) string {
-	return onlineUserKeyPrefix + userID
+func generateUserKey(userID int64) string {
+	return onlineUserKeyPrefix + fmt.Sprintf("%d", userID)
 }
 
 // generateSessionKey 生成会话缓存键（可选，用于 sessionID 到 userID 的映射）

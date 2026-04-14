@@ -15,13 +15,13 @@ const (
 type DepartmentRepository interface {
 	// GetByID 根据 ID 查询部门并支持加载关联数据
 	// relations 参数使用 DepartmentRelation 类型，提供编译期类型检查
-	GetByID(id string, relations ...DepartmentRelation) (*entity.Department, error)
+	GetByID(id int64, relations ...DepartmentRelation) (*entity.Department, error)
 	Create(department *entity.Department) error
 	Update(department *entity.Department) error
-	Delete(id string) error
+	Delete(id int64) error
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.Department, int64, error)
 	GetAll() ([]*entity.Department, error)
-	GetChildrenByParentID(parentID string) ([]*entity.Department, error)
+	GetChildrenByParentID(parentID int64) ([]*entity.Department, error)
 	GetDepartmentTree() ([]*entity.Department, error)
-	GetDepartmentPath(id string) ([]*entity.Department, error)
+	GetDepartmentPath(id int64) ([]*entity.Department, error)
 }

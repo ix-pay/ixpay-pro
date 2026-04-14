@@ -1,6 +1,8 @@
 package baseapi
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
@@ -151,11 +153,18 @@ func (c *NoticeController) GetNoticeByID(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的公告 ID
-	noticeID := ctx.Param("id")
-	if noticeID == "" {
+	// 将字符串 ID 转换为 int64
+	noticeIDStr := ctx.Param("id")
+	if noticeIDStr == "" {
 		c.log.Error("公告 ID 不能为空")
 		baseRes.FailWithMessage("公告 ID 不能为空", ctx)
+		return
+	}
+
+	noticeID, err := strconv.ParseInt(noticeIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", noticeIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -216,6 +225,27 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		return
 	}
 
+	// 将 publisherID 转换为 int64
+	var publisherIDInt int64
+	var err error
+	switch v := publisherID.(type) {
+	case string:
+		publisherIDInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		publisherIDInt = v
+	case int:
+		publisherIDInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
 	// 提供默认值：sort=0（不置顶）
 	sort := req.Sort
 
@@ -224,7 +254,7 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		req.Content,
 		req.Description,
 		entity.NoticeType(req.Type),
-		publisherID.(string),
+		publisherIDInt,
 		req.IsTop,
 		sort,
 	)
@@ -285,14 +315,35 @@ func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的 ID
+	// 将 publisherID 转换为 int64
+	var publisherIDInt int64
+	var err error
+	switch v := publisherID.(type) {
+	case string:
+		publisherIDInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		publisherIDInt = v
+	case int:
+		publisherIDInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	// 调用服务层更新公告
 	notice, err := c.service.UpdateNotice(
 		req.ID,
 		req.Title,
 		req.Content,
 		req.Description,
 		entity.NoticeType(req.Type),
-		publisherID.(string),
+		publisherIDInt,
 		req.IsTop,
 		req.Sort,
 	)
@@ -339,11 +390,18 @@ func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/notices/:id [delete]
 func (c *NoticeController) DeleteNotice(ctx *gin.Context) {
-	// 直接使用 string 类型的公告 ID
-	noticeID := ctx.Param("id")
-	if noticeID == "" {
+	// 将字符串 ID 转换为 int64
+	noticeIDStr := ctx.Param("id")
+	if noticeIDStr == "" {
 		c.log.Error("公告 ID 不能为空")
 		baseRes.FailWithMessage("公告 ID 不能为空", ctx)
+		return
+	}
+
+	noticeID, err := strconv.ParseInt(noticeIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", noticeIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -370,11 +428,18 @@ func (c *NoticeController) DeleteNotice(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/notices/:id/publish [post]
 func (c *NoticeController) PublishNotice(ctx *gin.Context) {
-	// 直接使用 string 类型的公告 ID
-	noticeID := ctx.Param("id")
-	if noticeID == "" {
+	// 将字符串 ID 转换为 int64
+	noticeIDStr := ctx.Param("id")
+	if noticeIDStr == "" {
 		c.log.Error("公告 ID 不能为空")
 		baseRes.FailWithMessage("公告 ID 不能为空", ctx)
+		return
+	}
+
+	noticeID, err := strconv.ParseInt(noticeIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", noticeIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -386,12 +451,23 @@ func (c *NoticeController) PublishNotice(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.service.PublishNotice(noticeID, publisherID.(string)); err != nil {
+	// 将 publisherID 转换为 int64
+	var publisherIDInt int64
+	switch v := publisherID.(type) {
+	case string:
+		publisherIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		publisherIDInt = v
+	case int:
+		publisherIDInt = int64(v)
+	}
+
+	if err := c.service.PublishNotice(noticeID, publisherIDInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("发布公告成功", "id", noticeID, "publisher_id", publisherID)
+	c.log.Info("发布公告成功", "id", noticeID, "publisher_id", publisherIDInt)
 	baseRes.OkWithMessage("发布公告成功", ctx)
 }
 
@@ -410,11 +486,18 @@ func (c *NoticeController) PublishNotice(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/notices/:id/read [post]
 func (c *NoticeController) MarkAsRead(ctx *gin.Context) {
-	// 直接使用 string 类型的公告 ID
-	noticeID := ctx.Param("id")
-	if noticeID == "" {
+	// 将字符串 ID 转换为 int64
+	noticeIDStr := ctx.Param("id")
+	if noticeIDStr == "" {
 		c.log.Error("公告 ID 不能为空")
 		baseRes.FailWithMessage("公告 ID 不能为空", ctx)
+		return
+	}
+
+	noticeID, err := strconv.ParseInt(noticeIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", noticeIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -426,12 +509,23 @@ func (c *NoticeController) MarkAsRead(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.service.MarkAsRead(noticeID, userID.(string)); err != nil {
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	if err := c.service.MarkAsRead(noticeID, userIDInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("标记公告已读", "id", noticeID, "user_id", userID)
+	c.log.Info("标记公告已读成功", "notice_id", noticeID, "user_id", userIDInt)
 	baseRes.OkWithMessage("标记公告已读成功", ctx)
 }
 
@@ -488,11 +582,18 @@ func (c *NoticeController) GetStatistics(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string						"服务器内部错误"
 //	@Router			/api/admin/notices/:id/is-read [get]
 func (c *NoticeController) CheckIsRead(ctx *gin.Context) {
-	// 直接使用 string 类型的公告 ID
-	noticeID := ctx.Param("id")
-	if noticeID == "" {
+	// 将字符串 ID 转换为 int64
+	noticeIDStr := ctx.Param("id")
+	if noticeIDStr == "" {
 		c.log.Error("公告 ID 不能为空")
 		baseRes.FailWithMessage("公告 ID 不能为空", ctx)
+		return
+	}
+
+	noticeID, err := strconv.ParseInt(noticeIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", noticeIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -504,7 +605,18 @@ func (c *NoticeController) CheckIsRead(ctx *gin.Context) {
 		return
 	}
 
-	isRead, err := c.service.IsRead(noticeID, userID.(string))
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	isRead, err := c.service.IsRead(noticeID, userIDInt)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return

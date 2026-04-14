@@ -20,7 +20,7 @@ func NewNoticeReadRecordService(repo repo.NoticeReadRecordRepository, log logger
 }
 
 // CreateReadRecord 创建阅读记录
-func (s *NoticeReadRecordService) CreateReadRecord(noticeID string, userID string) error {
+func (s *NoticeReadRecordService) CreateReadRecord(noticeID int64, userID int64) error {
 	if err := s.repo.CreateOrUpdate(noticeID, userID); err != nil {
 		s.log.Error("创建阅读记录失败", "error", err, "notice_id", noticeID, "user_id", userID)
 		return err
@@ -31,7 +31,7 @@ func (s *NoticeReadRecordService) CreateReadRecord(noticeID string, userID strin
 }
 
 // GetReadUserCount 获取公告阅读人数
-func (s *NoticeReadRecordService) GetReadUserCount(noticeID string) (int64, error) {
+func (s *NoticeReadRecordService) GetReadUserCount(noticeID int64) (int64, error) {
 	count, err := s.repo.GetReadUserCount(noticeID)
 	if err != nil {
 		s.log.Error("获取阅读人数失败", "error", err, "notice_id", noticeID)

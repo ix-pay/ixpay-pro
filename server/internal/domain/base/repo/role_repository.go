@@ -19,38 +19,38 @@ const (
 type RoleRepository interface {
 	// GetByID 根据 ID 查询角色并支持加载关联数据
 	// relations 参数使用 RoleRelation 类型，提供编译期类型检查
-	GetByID(id string, relations ...RoleRelation) (*entity.Role, error)
+	GetByID(id int64, relations ...RoleRelation) (*entity.Role, error)
 	GetByName(name string) (*entity.Role, error)
 	GetByCode(code string) (*entity.Role, error)
 	Create(role *entity.Role) error
 	Update(role *entity.Role) error
-	Delete(id string) error
+	Delete(id int64) error
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.Role, int64, error)
 	GetAllRoles() ([]*entity.Role, error)
 
 	// 角色关联用户操作
-	AddUserToRole(roleID, userID string) error
-	RemoveUserFromRole(roleID, userID string) error
-	ExistsUserInRole(roleID, userID string) (bool, error)
-	GetUsersByRole(roleID string) ([]*entity.User, error)
-	GetRolesByUser(userID string) ([]*entity.Role, error)
+	AddUserToRole(roleID, userID int64) error
+	RemoveUserFromRole(roleID, userID int64) error
+	ExistsUserInRole(roleID, userID int64) (bool, error)
+	GetUsersByRole(roleID int64) ([]*entity.User, error)
+	GetRolesByUser(userID int64) ([]*entity.Role, error)
 
 	// 角色关联菜单操作
-	AddMenuToRole(roleID, menuID string) error
-	RemoveMenuFromRole(roleID, menuID string) error
-	GetMenusByRole(roleID string) ([]*entity.Menu, error)
-	GetRolesByMenu(menuID string) ([]*entity.Role, error)
+	AddMenuToRole(roleID, menuID int64) error
+	RemoveMenuFromRole(roleID, menuID int64) error
+	GetMenusByRole(roleID int64) ([]*entity.Menu, error)
+	GetRolesByMenu(menuID int64) ([]*entity.Role, error)
 
 	// 角色关联接口路由操作
-	AddToRole(roleID, routeID string) error
-	RemoveFromRole(roleID, routeID string) error
-	GetsByRole(roleID string) ([]*entity.API, error)
-	GetRolesBy(routeID string) ([]*entity.Role, error)
+	AddToRole(roleID, routeID int64) error
+	RemoveFromRole(roleID, routeID int64) error
+	GetsByRole(roleID int64) ([]*entity.API, error)
+	GetRolesBy(routeID int64) ([]*entity.Role, error)
 	GetAPIByPathAndMethod(path, method string) (*entity.API, error)
 
 	// 角色关联按钮权限操作
-	AddBtnPermToRole(roleID, btnPermID string) error
-	RemoveBtnPermFromRole(roleID, btnPermID string) error
-	GetBtnPermsByRole(roleID string) ([]*entity.BtnPerm, error)
-	GetRolesByBtnPerm(btnPermID string) ([]*entity.Role, error)
+	AddBtnPermToRole(roleID, btnPermID int64) error
+	RemoveBtnPermFromRole(roleID, btnPermID int64) error
+	GetBtnPermsByRole(roleID int64) ([]*entity.BtnPerm, error)
+	GetRolesByBtnPerm(btnPermID int64) ([]*entity.Role, error)
 }

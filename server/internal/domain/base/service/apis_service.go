@@ -29,7 +29,7 @@ func (s *APIService) GetRoutes() ([]*entity.API, error) {
 }
 
 // GetRouteByID 根据 ID 获取 API 路由
-func (s *APIService) GetRouteByID(id string) (*entity.API, error) {
+func (s *APIService) GetRouteByID(id int64) (*entity.API, error) {
 	s.log.Info("根据 ID 获取 API 路由", "id", id)
 	route, err := s.repo.GetByID(id)
 	if err != nil {
@@ -60,19 +60,20 @@ func (s *APIService) BatchUpdateRoutes(routes []*entity.API) error {
 }
 
 // Create 创建 API 路由
-func (s *APIService) Create(route *entity.API, createdBy string) error {
+func (s *APIService) Create(route *entity.API, createdBy int64) error {
 	s.log.Info("创建 API 路由", "path", route.Path, "method", route.Method)
 	return s.repo.Create(route)
 }
 
 // Update 更新 API 路由
-func (s *APIService) Update(route *entity.API, updatedBy string) error {
+func (s *APIService) Update(route *entity.API, updatedBy int64) error {
 	s.log.Info("更新 API 路由", "id", route.ID, "path", route.Path, "method", route.Method)
+	route.UpdatedBy = updatedBy
 	return s.repo.Update(route)
 }
 
 // Delete 删除 API 路由
-func (s *APIService) Delete(id string) error {
+func (s *APIService) Delete(id int64) error {
 	s.log.Info("删除 API 路由", "id", id)
 	return s.repo.Delete(id)
 }
@@ -97,7 +98,7 @@ func (s *APIService) CheckRouteAuth(path, method string) (bool, error) {
 }
 
 // CreateAPIRoute 创建 API 路由
-func (s *APIService) CreateAPIRoute(route *entity.API, createdBy string) error {
+func (s *APIService) CreateAPIRoute(route *entity.API, createdBy int64) error {
 	s.log.Info("创建 API 路由", "path", route.Path, "method", route.Method)
 
 	// 检查路由是否已存在
@@ -122,7 +123,7 @@ func (s *APIService) CreateAPIRoute(route *entity.API, createdBy string) error {
 }
 
 // UpdateAPIRoute 更新 API 路由
-func (s *APIService) UpdateAPIRoute(route *entity.API, updatedBy string) error {
+func (s *APIService) UpdateAPIRoute(route *entity.API, updatedBy int64) error {
 	s.log.Info("更新 API 路由", "id", route.ID)
 
 	// 检查路由是否存在
@@ -155,7 +156,7 @@ func (s *APIService) UpdateAPIRoute(route *entity.API, updatedBy string) error {
 }
 
 // DeleteAPIRoute 删除 API 路由
-func (s *APIService) DeleteAPIRoute(id string) error {
+func (s *APIService) DeleteAPIRoute(id int64) error {
 	s.log.Info("删除 API 路由", "id", id)
 
 	// 检查路由是否存在

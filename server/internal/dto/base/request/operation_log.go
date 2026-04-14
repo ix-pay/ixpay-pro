@@ -14,12 +14,12 @@ type GetOperationLogListRequest struct {
 
 // GetOperationLogByIDRequest 根据 ID 获取操作日志请求参数
 type GetOperationLogByIDRequest struct {
-	ID string `json:"id" form:"id" binding:"required"`
+	ID int64 `json:"id" form:"id" binding:"required"`
 }
 
 // BatchDeleteOperationLogRequest 批量删除操作日志请求参数
 type BatchDeleteOperationLogRequest struct {
-	IDs []string `json:"ids" binding:"required"`
+	IDs []int64 `json:"ids" binding:"required"`
 }
 
 // GetOperationLogStatisticsRequest 获取操作日志统计请求参数

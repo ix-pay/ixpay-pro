@@ -6,7 +6,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // wxUserModel 微信用户数据库模型
@@ -39,7 +38,7 @@ func (m *wxUserModel) toDomain() *entity.WXUser {
 		return nil
 	}
 	return &entity.WXUser{
-		ID:            common.ToString(m.ID),
+		ID:            m.ID,
 		OpenID:        m.OpenID,
 		UnionID:       m.UnionID,
 		Nickname:      m.Nickname,
@@ -52,8 +51,8 @@ func (m *wxUserModel) toDomain() *entity.WXUser {
 		Subscribe:     m.Subscribe,
 		SubscribeTime: m.SubscribeTime,
 		Remark:        m.Remark,
-		GroupID:       common.ToString(m.GroupID),
-		UserID:        common.ToString(m.UserID),
+		GroupID:       m.GroupID,
+		UserID:        m.UserID,
 		CreatedAt:     m.CreatedAt,
 		UpdatedAt:     m.UpdatedAt,
 	}
@@ -61,13 +60,11 @@ func (m *wxUserModel) toDomain() *entity.WXUser {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainWXUser(user *entity.WXUser) (*wxUserModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(user.ID, "", "")
-
 	return &wxUserModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        user.ID,
+			CreatedBy: 0,
+			UpdatedBy: 0,
 		},
 		OpenID:        user.OpenID,
 		UnionID:       user.UnionID,
@@ -81,8 +78,8 @@ func fromDomainWXUser(user *entity.WXUser) (*wxUserModel, error) {
 		Subscribe:     user.Subscribe,
 		SubscribeTime: user.SubscribeTime,
 		Remark:        user.Remark,
-		GroupID:       common.TryParseInt64(user.GroupID),
-		UserID:        common.TryParseInt64(user.UserID),
+		GroupID:       user.GroupID,
+		UserID:        user.UserID,
 	}, nil
 }
 
@@ -100,13 +97,9 @@ func NewWXUserRepository(db *database.PostgresDB) repo.WXUserRepository {
 }
 
 // GetByID 根据 ID 查询微信用户
-func (r *wxUserRepository) GetByID(id string) (*entity.WXUser, error) {
-	idInt, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
+func (r *wxUserRepository) GetByID(id int64) (*entity.WXUser, error) {
 	var dbModel wxUserModel
-	result := r.db.Where("id = ?", idInt).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -137,7 +130,7 @@ func (r *wxUserRepository) GetByUnionID(unionID string) (*entity.WXUser, error) 
 }
 
 // GetByUserID 根据系统用户 ID 查询微信用户
-func (r *wxUserRepository) GetByUserID(userID string) (*entity.WXUser, error) {
+func (r *wxUserRepository) GetByUserID(userID int64) (*entity.WXUser, error) {
 	var dbModel wxUserModel
 	result := r.db.Where("user_id = ?", userID).First(&dbModel)
 	if result.Error != nil {
@@ -159,7 +152,7 @@ func (r *wxUserRepository) Create(user *entity.WXUser) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	user.ID = common.ToString(dbModel.ID)
+	user.ID = dbModel.ID
 	return nil
 }
 
@@ -174,7 +167,7 @@ func (r *wxUserRepository) Update(user *entity.WXUser) error {
 }
 
 // Delete 删除微信用户
-func (r *wxUserRepository) Delete(id string) error {
+func (r *wxUserRepository) Delete(id int64) error {
 	return r.db.Delete(&wxUserModel{}, id).Error
 }
 

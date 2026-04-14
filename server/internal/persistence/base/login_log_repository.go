@@ -1,13 +1,11 @@
 package persistence
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // loginLogModel 登录日志数据库模型
@@ -37,8 +35,8 @@ func (m *loginLogModel) toDomain() *entity.LoginLog {
 		return nil
 	}
 	return &entity.LoginLog{
-		ID:         common.ToString(m.ID),
-		UserID:     common.ToString(m.UserID),
+		ID:         m.ID,
+		UserID:     m.UserID,
 		Username:   m.Username,
 		LoginIP:    m.LoginIP,
 		LoginTime:  m.LoginTime,
@@ -49,24 +47,22 @@ func (m *loginLogModel) toDomain() *entity.LoginLog {
 		Result:     entity.LoginResult(m.Result),
 		ErrorMsg:   m.ErrorMsg,
 		UserAgent:  m.UserAgent,
-		CreatedBy:  common.ToString(m.CreatedBy),
+		CreatedBy:  m.CreatedBy,
 		CreatedAt:  m.CreatedAt,
-		UpdatedBy:  common.ToString(m.UpdatedBy),
+		UpdatedBy:  m.UpdatedBy,
 		UpdatedAt:  m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainLoginLog(log *entity.LoginLog) (*loginLogModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(log.ID, log.CreatedBy, log.UpdatedBy)
-
 	return &loginLogModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        log.ID,
+			CreatedBy: log.CreatedBy,
+			UpdatedBy: log.UpdatedBy,
 		},
-		UserID:     common.TryParseInt64(log.UserID),
+		UserID:     log.UserID,
 		Username:   log.Username,
 		LoginIP:    log.LoginIP,
 		LoginTime:  log.LoginTime,
@@ -105,19 +101,14 @@ func (r *loginLogRepository) Create(log *entity.LoginLog) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	log.ID = common.ToString(dbModel.ID)
+	log.ID = dbModel.ID
 	return nil
 }
 
 // GetByID 根据 ID 查询登录日志
-func (r *loginLogRepository) GetByID(id string) (*entity.LoginLog, error) {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *loginLogRepository) GetByID(id int64) (*entity.LoginLog, error) {
 	var dbModel loginLogModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -155,12 +146,11 @@ func (r *loginLogRepository) List(page, pageSize int, filters map[string]interfa
 }
 
 // GetByUserID 根据用户 ID 查询登录日志
-func (r *loginLogRepository) GetByUserID(userID string, page, pageSize int) ([]*entity.LoginLog, int64, error) {
-	intUserID, _ := strconv.ParseInt(userID, 10, 64)
+func (r *loginLogRepository) GetByUserID(userID int64, page, pageSize int) ([]*entity.LoginLog, int64, error) {
 	var total int64
 	var dbModels []loginLogModel
 
-	query := r.db.Model(&loginLogModel{}).Where("user_id = ?", intUserID)
+	query := r.db.Model(&loginLogModel{}).Where("user_id = ?", userID)
 
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -265,10 +255,9 @@ func (r *loginLogRepository) CountByDate(date time.Time) (int64, error) {
 }
 
 // CountByUser 统计用户的登录次数
-func (r *loginLogRepository) CountByUser(userID string) (int64, error) {
-	intUserID, _ := strconv.ParseInt(userID, 10, 64)
+func (r *loginLogRepository) CountByUser(userID int64) (int64, error) {
 	var count int64
-	result := r.db.Model(&loginLogModel{}).Where("user_id = ?", intUserID).Count(&count)
+	result := r.db.Model(&loginLogModel{}).Where("user_id = ?", userID).Count(&count)
 	if result.Error != nil {
 		return 0, result.Error
 	}

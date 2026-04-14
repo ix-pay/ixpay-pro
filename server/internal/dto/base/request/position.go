@@ -12,7 +12,7 @@ type CreatePositionRequest struct {
 
 // UpdatePositionRequest 更新岗位请求
 type UpdatePositionRequest struct {
-	ID          string `json:"id" binding:"required"`   // 岗位 ID
+	ID          int64  `json:"id" binding:"required"`   // 岗位 ID
 	Name        string `json:"name" binding:"required"` // 岗位名称
 	Sort        int    `json:"sort"`                    // 排序
 	Status      int    `json:"status"`                  // 状态：1-正常，0-禁用
@@ -28,10 +28,10 @@ type GetPositionListRequest struct {
 
 // GetPositionByIDRequest 获取岗位详情请求
 type GetPositionByIDRequest struct {
-	ID string `form:"id" binding:"required"` // 岗位 ID
+	ID int64 `form:"id" binding:"required"` // 岗位 ID
 }
 
 // DeletePositionRequest 删除岗位请求
 type DeletePositionRequest struct {
-	ID string `json:"id" binding:"required"` // 岗位 ID
+	ID int64 `json:"id" binding:"required"` // 岗位 ID
 }

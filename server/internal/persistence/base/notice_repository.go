@@ -6,7 +6,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // noticeModel 公告数据库模型
@@ -35,39 +34,37 @@ func (m *noticeModel) toDomain() *entity.Notice {
 		return nil
 	}
 	return &entity.Notice{
-		ID:          common.ToString(m.ID),
+		ID:          m.ID,
 		Title:       m.Title,
 		Content:     m.Content,
 		Type:        entity.NoticeType(m.Type),
 		Status:      entity.NoticeStatus(m.Status),
-		PublisherID: common.ToString(m.PublisherID),
+		PublisherID: m.PublisherID,
 		PublishTime: m.PublishTime,
 		ViewCount:   m.ViewCount,
 		IsTop:       m.IsTop,
 		Sort:        m.Sort,
 		Description: m.Description,
-		CreatedBy:   common.ToString(m.CreatedBy),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   common.ToString(m.UpdatedBy),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainNotice(notice *entity.Notice) (*noticeModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(notice.ID, notice.CreatedBy, notice.UpdatedBy)
-
 	return &noticeModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        notice.ID,
+			CreatedBy: notice.CreatedBy,
+			UpdatedBy: notice.UpdatedBy,
 		},
 		Title:       notice.Title,
 		Content:     notice.Content,
 		Type:        int(notice.Type),
 		Status:      int(notice.Status),
-		PublisherID: common.TryParseInt64(notice.PublisherID),
+		PublisherID: notice.PublisherID,
 		PublishTime: notice.PublishTime,
 		ViewCount:   notice.ViewCount,
 		IsTop:       notice.IsTop,
@@ -95,29 +92,21 @@ func (m *noticeReadRecordModel) toDomain() *entity.NoticeReadRecord {
 		return nil
 	}
 	return &entity.NoticeReadRecord{
-		ID:       common.ToString(m.ID),
-		NoticeID: common.ToString(m.NoticeID),
-		UserID:   common.ToString(m.UserID),
+		ID:       m.ID,
+		NoticeID: m.NoticeID,
+		UserID:   m.UserID,
 		ReadTime: m.ReadTime,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainNoticeReadRecord(record *entity.NoticeReadRecord) (*noticeReadRecordModel, error) {
-	id, err := common.ParseInt64(record.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	noticeID, _ := common.ParseInt64(record.NoticeID)
-	userID, _ := common.ParseInt64(record.UserID)
-
 	return &noticeReadRecordModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID: id,
+			ID: record.ID,
 		},
-		NoticeID: noticeID,
-		UserID:   userID,
+		NoticeID: record.NoticeID,
+		UserID:   record.UserID,
 		ReadTime: record.ReadTime,
 	}, nil
 }
@@ -136,14 +125,9 @@ func NewNoticeRepository(db *database.PostgresDB) repo.NoticeRepository {
 }
 
 // GetByID 根据 ID 查询公告
-func (r *noticeRepository) GetByID(id string) (*entity.Notice, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *noticeRepository) GetByID(id int64) (*entity.Notice, error) {
 	var dbModel noticeModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -163,7 +147,7 @@ func (r *noticeRepository) Create(notice *entity.Notice) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	notice.ID = common.ToString(dbModel.ID)
+	notice.ID = dbModel.ID
 	return nil
 }
 
@@ -178,13 +162,8 @@ func (r *noticeRepository) Update(notice *entity.Notice) error {
 }
 
 // Delete 删除公告
-func (r *noticeRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&noticeModel{}, intID).Error
+func (r *noticeRepository) Delete(id int64) error {
+	return r.db.Delete(&noticeModel{}, id).Error
 }
 
 // List 分页查询公告列表
@@ -246,9 +225,8 @@ func (r *noticeRepository) GetPublishedList(page, pageSize int, filters map[stri
 }
 
 // IncrementViewCount 增加浏览次数
-func (r *noticeRepository) IncrementViewCount(id string) error {
-	intID := common.TryParseInt64(id)
-	return r.db.Exec("UPDATE base_notices SET view_count = view_count + 1 WHERE id = ?", intID).Error
+func (r *noticeRepository) IncrementViewCount(id int64) error {
+	return r.db.Exec("UPDATE base_notices SET view_count = view_count + 1 WHERE id = ?", id).Error
 }
 
 // GetStatistics 获取公告统计信息
@@ -307,7 +285,7 @@ func (r *noticeReadRecordRepository) Create(record *entity.NoticeReadRecord) err
 }
 
 // CreateOrUpdate 创建或更新阅读记录
-func (r *noticeReadRecordRepository) CreateOrUpdate(noticeID, userID string) error {
+func (r *noticeReadRecordRepository) CreateOrUpdate(noticeID, userID int64) error {
 	// 先检查是否已存在
 	existing, _ := r.GetByNoticeIDAndUserID(noticeID, userID)
 	if existing != nil {
@@ -324,12 +302,9 @@ func (r *noticeReadRecordRepository) CreateOrUpdate(noticeID, userID string) err
 }
 
 // GetByNoticeIDAndUserID 根据公告 ID 和用户 ID 查询阅读记录
-func (r *noticeReadRecordRepository) GetByNoticeIDAndUserID(noticeID, userID string) (*entity.NoticeReadRecord, error) {
-	intNoticeID := common.TryParseInt64(noticeID)
-	intUserID := common.TryParseInt64(noticeID)
-
+func (r *noticeReadRecordRepository) GetByNoticeIDAndUserID(noticeID, userID int64) (*entity.NoticeReadRecord, error) {
 	var dbModel noticeReadRecordModel
-	result := r.db.Where("notice_id = ? AND user_id = ?", intNoticeID, intUserID).First(&dbModel)
+	result := r.db.Where("notice_id = ? AND user_id = ?", noticeID, userID).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -338,10 +313,9 @@ func (r *noticeReadRecordRepository) GetByNoticeIDAndUserID(noticeID, userID str
 }
 
 // GetReadUserCount 获取公告的阅读用户数
-func (r *noticeReadRecordRepository) GetReadUserCount(noticeID string) (int64, error) {
-	intNoticeID := common.TryParseInt64(noticeID)
+func (r *noticeReadRecordRepository) GetReadUserCount(noticeID int64) (int64, error) {
 	var count int64
-	result := r.db.Model(&noticeReadRecordModel{}).Where("notice_id = ?", intNoticeID).Count(&count)
+	result := r.db.Model(&noticeReadRecordModel{}).Where("notice_id = ?", noticeID).Count(&count)
 	if result.Error != nil {
 		return 0, result.Error
 	}

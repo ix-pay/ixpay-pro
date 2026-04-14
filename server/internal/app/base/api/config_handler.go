@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -38,7 +39,7 @@ func convertToConfigResponse(config *entity.Config) response.ConfigResponse {
 		ID:          config.ID,
 		ConfigKey:   config.ConfigKey,
 		ConfigValue: config.ConfigValue,
-		ConfigType:  config.ConfigType,
+		ConfigType:  fmt.Sprintf("%d", config.ConfigType),
 		Description: config.Description,
 		Status:      config.Status,
 		CreatedAt:   config.CreatedAt.Format(time.RFC3339),
@@ -97,7 +98,15 @@ func (c *ConfigController) GetConfigByKey(ctx *gin.Context) {
 func (c *ConfigController) GetConfigByID(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 
-	config, err := c.service.GetConfigByID(idStr)
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	config, err := c.service.GetConfigByID(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -131,7 +140,7 @@ func (c *ConfigController) CreateConfig(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	createdBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
@@ -139,13 +148,42 @@ func (c *ConfigController) CreateConfig(ctx *gin.Context) {
 		return
 	}
 
+	// 将 createdBy 转换为 int64
+	var createdByInt int64
+	var err error
+	switch v := createdBy.(type) {
+	case string:
+		createdByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		createdByInt = v
+	case int:
+		createdByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	// 将 ConfigType 从 string 转换为 int
+	configType, err := strconv.Atoi(req.ConfigType)
+	if err != nil {
+		c.log.Error("配置类型格式错误", "error", err)
+		baseRes.FailWithMessage("配置类型格式错误", ctx)
+		return
+	}
+
 	config, err := c.service.CreateConfig(
 		req.ConfigKey,
 		req.ConfigValue,
-		req.ConfigType,
+		configType,
 		req.Description,
 		req.Status,
-		createdBy.(string),
+		createdByInt,
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
@@ -180,7 +218,7 @@ func (c *ConfigController) UpdateConfig(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	updatedBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
@@ -188,14 +226,43 @@ func (c *ConfigController) UpdateConfig(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.UpdateConfig(
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	var err error
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	// 将 ConfigType 从 string 转换为 int
+	configType, err := strconv.Atoi(req.ConfigType)
+	if err != nil {
+		c.log.Error("配置类型格式错误", "error", err)
+		baseRes.FailWithMessage("配置类型格式错误", ctx)
+		return
+	}
+
+	err = c.service.UpdateConfig(
 		req.ID,
 		req.ConfigKey,
 		req.ConfigValue,
-		req.ConfigType,
+		configType,
 		req.Description,
 		req.Status,
-		updatedBy.(string),
+		updatedByInt,
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
@@ -227,7 +294,15 @@ func (c *ConfigController) DeleteConfig(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.DeleteConfig(idStr)
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	err = c.service.DeleteConfig(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return

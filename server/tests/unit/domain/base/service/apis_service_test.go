@@ -20,7 +20,7 @@ func TestAPIService_PathValidation(t *testing.T) {
 		{"无效路径 - 不以/开头", "api/admin/user", true, "路径应该以/开头"},
 		{"无效路径 - 空字符串", "", true, "路径不能为空"},
 		{"无效路径 - 只有/", "/", true, "路径不应该只包含/"},
-		{"无效路径 - 连续/", "/api/admin", true, "路径不应该包含连续的/"},
+		{"无效路径 - 连续/", "/api//admin", true, "路径不应该包含连续的/"},
 	}
 
 	for _, tc := range testCases {

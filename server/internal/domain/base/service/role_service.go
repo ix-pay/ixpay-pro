@@ -35,7 +35,7 @@ func NewRoleService(roleRepo repo.RoleRepository, userRepo repo.UserRepository, 
 }
 
 // CreateRole 创建角色
-func (s *RoleService) CreateRole(name, code, description, parentID string, roleType int64, createdBy string, status, sort int, isSystem bool) (*entity.Role, error) {
+func (s *RoleService) CreateRole(name, code, description string, parentID int64, roleType int64, createdBy int64, status, sort int, isSystem bool) (*entity.Role, error) {
 	// 检查角色名称是否已存在
 	existingRole, err := s.roleRepo.GetByName(name)
 	if err == nil && existingRole != nil {
@@ -71,7 +71,7 @@ func (s *RoleService) CreateRole(name, code, description, parentID string, roleT
 }
 
 // UpdateRole 更新角色
-func (s *RoleService) UpdateRole(id, name, code, description, parentID string, roleType int64, updatedBy string, status, sort int, isSystem bool) error {
+func (s *RoleService) UpdateRole(id int64, name, code, description string, parentID int64, roleType int64, updatedBy int64, status, sort int, isSystem bool) error {
 	role, err := s.roleRepo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取角色失败", "error", err, "id", id)
@@ -118,7 +118,7 @@ func (s *RoleService) UpdateRole(id, name, code, description, parentID string, r
 }
 
 // DeleteRole 删除角色
-func (s *RoleService) DeleteRole(id string) error {
+func (s *RoleService) DeleteRole(id int64) error {
 	role, err := s.roleRepo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取角色失败", "error", err, "id", id)
@@ -152,7 +152,7 @@ func (s *RoleService) DeleteRole(id string) error {
 }
 
 // GetRoleByID 根据 ID 获取角色
-func (s *RoleService) GetRoleByID(id string) (*entity.Role, error) {
+func (s *RoleService) GetRoleByID(id int64) (*entity.Role, error) {
 	role, err := s.roleRepo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取角色失败", "error", err, "id", id)
@@ -226,7 +226,7 @@ func (s *RoleService) GetAllRoles() ([]*entity.Role, error) {
 }
 
 // AssignUserToRole 分配用户到角色
-func (s *RoleService) AssignUserToRole(roleID, userID string) error {
+func (s *RoleService) AssignUserToRole(roleID, userID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -258,7 +258,7 @@ func (s *RoleService) AssignUserToRole(roleID, userID string) error {
 }
 
 // RevokeUserFromRole 从角色中撤销用户
-func (s *RoleService) RevokeUserFromRole(roleID string, userID string) error {
+func (s *RoleService) RevokeUserFromRole(roleID int64, userID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -296,7 +296,7 @@ func (s *RoleService) RevokeUserFromRole(roleID string, userID string) error {
 }
 
 // GetUsersForRole 获取角色的所有用户
-func (s *RoleService) GetUsersForRole(roleID string) ([]*entity.User, error) {
+func (s *RoleService) GetUsersForRole(roleID int64) ([]*entity.User, error) {
 	users, err := s.roleRepo.GetUsersByRole(roleID)
 	if err != nil {
 		s.log.Error("获取角色关联用户失败", "error", err, "role_id", roleID)
@@ -306,7 +306,7 @@ func (s *RoleService) GetUsersForRole(roleID string) ([]*entity.User, error) {
 }
 
 // GetRolesForUser 获取用户的所有角色
-func (s *RoleService) GetRolesForUser(userID string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolesForUser(userID int64) ([]*entity.Role, error) {
 	roles, err := s.roleRepo.GetRolesByUser(userID)
 	if err != nil {
 		s.log.Error("获取用户关联角色失败", "error", err, "user_id", userID)
@@ -316,7 +316,7 @@ func (s *RoleService) GetRolesForUser(userID string) ([]*entity.Role, error) {
 }
 
 // AssignMenuToRole 分配菜单到角色
-func (s *RoleService) AssignMenuToRole(roleID string, menuID string) error {
+func (s *RoleService) AssignMenuToRole(roleID int64, menuID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -410,7 +410,7 @@ func (s *RoleService) AssignMenuToRole(roleID string, menuID string) error {
 }
 
 // RevokeMenuFromRole 从角色中撤销菜单
-func (s *RoleService) RevokeMenuFromRole(roleID, menuID string) error {
+func (s *RoleService) RevokeMenuFromRole(roleID, menuID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -448,7 +448,7 @@ func (s *RoleService) RevokeMenuFromRole(roleID, menuID string) error {
 }
 
 // GetMenusForRole 获取角色的所有菜单
-func (s *RoleService) GetMenusForRole(roleID string) ([]*entity.Menu, error) {
+func (s *RoleService) GetMenusForRole(roleID int64) ([]*entity.Menu, error) {
 	menus, err := s.roleRepo.GetMenusByRole(roleID)
 	if err != nil {
 		s.log.Error("获取角色关联菜单失败", "error", err, "role_id", roleID)
@@ -464,7 +464,7 @@ func (s *RoleService) GetMenusForRole(roleID string) ([]*entity.Menu, error) {
 }
 
 // BatchAssignMenusToRole 批量分配菜单到角色
-func (s *RoleService) BatchAssignMenusToRole(roleID string, menuIDs []string) error {
+func (s *RoleService) BatchAssignMenusToRole(roleID int64, menuIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -477,7 +477,7 @@ func (s *RoleService) BatchAssignMenusToRole(roleID string, menuIDs []string) er
 		_, err := s.menuRepo.GetByID(menuID)
 		if err != nil {
 			s.log.Error("菜单不存在", "menu_id", menuID)
-			return fmt.Errorf("菜单 %s 不存在", menuID)
+			return fmt.Errorf("菜单 %d 不存在", menuID)
 		}
 	}
 
@@ -494,7 +494,7 @@ func (s *RoleService) BatchAssignMenusToRole(roleID string, menuIDs []string) er
 }
 
 // BatchRevokeMenusFromRole 批量从角色中撤销菜单
-func (s *RoleService) BatchRevokeMenusFromRole(roleID string, menuIDs []string) error {
+func (s *RoleService) BatchRevokeMenusFromRole(roleID int64, menuIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -514,8 +514,8 @@ func (s *RoleService) BatchRevokeMenusFromRole(roleID string, menuIDs []string) 
 	return nil
 }
 
-// AssignAPIToRole 分配API到角色
-func (s *RoleService) AssignAPIToRole(roleID, apiID string) error {
+// AssignAPIToRole 分配 API 到角色
+func (s *RoleService) AssignAPIToRole(roleID, apiID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -523,38 +523,38 @@ func (s *RoleService) AssignAPIToRole(roleID, apiID string) error {
 		return errors.New("角色不存在")
 	}
 
-	// 检查API是否存在
+	// 检查 API 是否存在
 	api, err := s.apiRepo.GetByID(apiID)
 	if err != nil {
-		s.log.Error("API不存在", "api_id", apiID)
-		return errors.New("API不存在")
+		s.log.Error("API 不存在", "api_id", apiID)
+		return errors.New("API 不存在")
 	}
 
-	// 检查API是否已分配给角色
+	// 检查 API 是否已分配给角色
 	apis, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
-		s.log.Error("获取角色关联API失败", "error", err, "role_id", roleID)
+		s.log.Error("获取角色关联 API 失败", "error", err, "role_id", roleID)
 		return err
 	}
 
 	for _, a := range apis {
 		if a.ID == apiID {
-			s.log.Error("API已分配给角色", "role_id", roleID, "api_id", apiID)
-			return errors.New("API已分配给角色")
+			s.log.Error("API 已分配给角色", "role_id", roleID, "api_id", apiID)
+			return errors.New("API 已分配给角色")
 		}
 	}
 
 	if err := s.roleRepo.AddToRole(roleID, apiID); err != nil {
-		s.log.Error("分配API到角色失败", "error", err, "role_id", roleID, "api_id", apiID)
+		s.log.Error("分配 API 到角色失败", "error", err, "role_id", roleID, "api_id", apiID)
 		return err
 	}
 
-	s.log.Info("分配API到角色成功", "role_id", roleID, "role_name", role.Name, "api_id", apiID, "api_path", api.Path)
+	s.log.Info("分配 API 到角色成功", "role_id", roleID, "role_name", role.Name, "api_id", apiID, "api_path", api.Path)
 	return nil
 }
 
-// RevokeAPIFromRole 从角色中撤销API
-func (s *RoleService) RevokeAPIFromRole(roleID, apiID string) error {
+// RevokeAPIFromRole 从角色中撤销 API
+func (s *RoleService) RevokeAPIFromRole(roleID, apiID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -562,17 +562,17 @@ func (s *RoleService) RevokeAPIFromRole(roleID, apiID string) error {
 		return errors.New("角色不存在")
 	}
 
-	// 检查API是否存在
+	// 检查 API 是否存在
 	api, err := s.apiRepo.GetByID(apiID)
 	if err != nil {
-		s.log.Error("API不存在", "api_id", apiID)
-		return errors.New("API不存在")
+		s.log.Error("API 不存在", "api_id", apiID)
+		return errors.New("API 不存在")
 	}
 
-	// 检查API是否已分配给角色
+	// 检查 API 是否已分配给角色
 	apis, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
-		s.log.Error("获取角色关联API失败", "error", err, "role_id", roleID)
+		s.log.Error("获取角色关联 API 失败", "error", err, "role_id", roleID)
 		return err
 	}
 
@@ -599,7 +599,7 @@ func (s *RoleService) RevokeAPIFromRole(roleID, apiID string) error {
 }
 
 // GetAPIsForRole 获取角色的所有 API
-func (s *RoleService) GetAPIsForRole(roleID string) ([]*entity.API, error) {
+func (s *RoleService) GetAPIsForRole(roleID int64) ([]*entity.API, error) {
 	apis, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
 		s.log.Error("获取角色关联 API 失败", "error", err, "role_id", roleID)
@@ -609,17 +609,17 @@ func (s *RoleService) GetAPIsForRole(roleID string) ([]*entity.API, error) {
 }
 
 // GetRolesForAPI 获取 API 的所有角色
-func (s *RoleService) GetRolesForAPI(apiID string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolesForAPI(apiID int64) ([]*entity.Role, error) {
 	roles, err := s.roleRepo.GetRolesBy(apiID)
 	if err != nil {
-		s.log.Error("获取API关联角色失败", "error", err, "api_id", apiID)
+		s.log.Error("获取 API 关联角色失败", "error", err, "api_id", apiID)
 		return nil, err
 	}
 	return roles, nil
 }
 
 // BatchAssignAPIsToRole 批量分配 API 到角色
-func (s *RoleService) BatchAssignAPIsToRole(roleID string, apiIDs []string) error {
+func (s *RoleService) BatchAssignAPIsToRole(roleID int64, apiIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -654,8 +654,8 @@ func (s *RoleService) BatchAssignAPIsToRole(roleID string, apiIDs []string) erro
 	return nil
 }
 
-// BatchRevokeAPIsFromRole 批量从角色中撤销API
-func (s *RoleService) BatchRevokeAPIsFromRole(roleID string, apiIDs []string) error {
+// BatchRevokeAPIsFromRole 批量从角色中撤销 API
+func (s *RoleService) BatchRevokeAPIsFromRole(roleID int64, apiIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -663,20 +663,20 @@ func (s *RoleService) BatchRevokeAPIsFromRole(roleID string, apiIDs []string) er
 		return errors.New("角色不存在")
 	}
 
-	// 批量移除API关联
+	// 批量移除 API 关联
 	for _, apiID := range apiIDs {
 		if err := s.roleRepo.RemoveFromRole(roleID, apiID); err != nil {
-			s.log.Error("从角色中撤销API失败", "error", err, "role_id", roleID, "api_id", apiID)
+			s.log.Error("从角色中撤销 API 失败", "error", err, "role_id", roleID, "api_id", apiID)
 			return err
 		}
 	}
 
-	s.log.Info("批量从角色中撤销API成功", "role_id", roleID, "role_name", role.Name, "api_count", len(apiIDs))
+	s.log.Info("批量从角色中撤销 API 成功", "role_id", roleID, "role_name", role.Name, "api_count", len(apiIDs))
 	return nil
 }
 
 // GetRolesForMenu 获取菜单的所有角色
-func (s *RoleService) GetRolesForMenu(menuID string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolesForMenu(menuID int64) ([]*entity.Role, error) {
 	roles, err := s.roleRepo.GetRolesByMenu(menuID)
 	if err != nil {
 		s.log.Error("获取菜单关联角色失败", "error", err, "menu_id", menuID)
@@ -686,7 +686,7 @@ func (s *RoleService) GetRolesForMenu(menuID string) ([]*entity.Role, error) {
 }
 
 // GetRolesForBtnPerm 获取按钮权限的所有角色
-func (s *RoleService) GetRolesForBtnPerm(btnPermID string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolesForBtnPerm(btnPermID int64) ([]*entity.Role, error) {
 	roles, err := s.roleRepo.GetRolesByBtnPerm(btnPermID)
 	if err != nil {
 		s.log.Error("获取按钮权限关联角色失败", "error", err, "btn_perm_id", btnPermID)
@@ -696,7 +696,7 @@ func (s *RoleService) GetRolesForBtnPerm(btnPermID string) ([]*entity.Role, erro
 }
 
 // AssignToRole 分配接口路由到角色
-func (s *RoleService) AssignToRole(roleID, routeID string) error {
+func (s *RoleService) AssignToRole(roleID, routeID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -728,7 +728,7 @@ func (s *RoleService) AssignToRole(roleID, routeID string) error {
 }
 
 // RevokeFromRole 从角色中撤销接口路由
-func (s *RoleService) RevokeFromRole(roleID, routeID string) error {
+func (s *RoleService) RevokeFromRole(roleID, routeID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -766,7 +766,7 @@ func (s *RoleService) RevokeFromRole(roleID, routeID string) error {
 }
 
 // BatchAssignBtnPermsToRole 批量分配按钮权限给角色
-func (s *RoleService) BatchAssignBtnPermsToRole(roleID string, btnPermIDs []string) error {
+func (s *RoleService) BatchAssignBtnPermsToRole(roleID int64, btnPermIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -781,8 +781,8 @@ func (s *RoleService) BatchAssignBtnPermsToRole(roleID string, btnPermIDs []stri
 		return err
 	}
 
-	// 创建已存在按钮权限ID的映射，用于快速检查
-	existingBtnPermMap := make(map[string]bool)
+	// 创建已存在按钮权限 ID 的映射，用于快速检查
+	existingBtnPermMap := make(map[int64]bool)
 	for _, btnPerm := range existingBtnPerms {
 		existingBtnPermMap[btnPerm.ID] = true
 	}
@@ -798,7 +798,7 @@ func (s *RoleService) BatchAssignBtnPermsToRole(roleID string, btnPermIDs []stri
 		_, err := s.btnPermRepo.GetByID(btnPermID)
 		if err != nil {
 			s.log.Error("按钮权限不存在", "btn_perm_id", btnPermID)
-			return fmt.Errorf("按钮权限 %s 不存在", btnPermID)
+			return fmt.Errorf("按钮权限 %d 不存在", btnPermID)
 		}
 
 		if err := s.roleRepo.AddBtnPermToRole(roleID, btnPermID); err != nil {
@@ -812,7 +812,7 @@ func (s *RoleService) BatchAssignBtnPermsToRole(roleID string, btnPermIDs []stri
 }
 
 // BatchRevokeBtnPermsFromRole 批量从角色中撤销按钮权限
-func (s *RoleService) BatchRevokeBtnPermsFromRole(roleID string, btnPermIDs []string) error {
+func (s *RoleService) BatchRevokeBtnPermsFromRole(roleID int64, btnPermIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -833,7 +833,7 @@ func (s *RoleService) BatchRevokeBtnPermsFromRole(roleID string, btnPermIDs []st
 }
 
 // BatchAssignUsersToRole 批量分配用户到角色
-func (s *RoleService) BatchAssignUsersToRole(roleID string, userIDs []string) error {
+func (s *RoleService) BatchAssignUsersToRole(roleID int64, userIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -846,7 +846,7 @@ func (s *RoleService) BatchAssignUsersToRole(roleID string, userIDs []string) er
 		_, err := s.userRepo.GetByID(userID)
 		if err != nil {
 			s.log.Error("用户不存在", "user_id", userID)
-			return fmt.Errorf("用户 %s 不存在", userID)
+			return fmt.Errorf("用户 %d 不存在", userID)
 		}
 	}
 
@@ -880,7 +880,7 @@ func (s *RoleService) BatchAssignUsersToRole(roleID string, userIDs []string) er
 }
 
 // GetsForRole 获取角色的所有接口路由
-func (s *RoleService) GetsForRole(roleID string) ([]*entity.API, error) {
+func (s *RoleService) GetsForRole(roleID int64) ([]*entity.API, error) {
 	routes, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
 		s.log.Error("获取角色关联接口路由失败", "error", err, "role_id", roleID)
@@ -890,7 +890,7 @@ func (s *RoleService) GetsForRole(roleID string) ([]*entity.API, error) {
 }
 
 // AssignBtnPermToRole 分配按钮权限给角色
-func (s *RoleService) AssignBtnPermToRole(roleID, buttonID string) error {
+func (s *RoleService) AssignBtnPermToRole(roleID, buttonID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -929,7 +929,7 @@ func (s *RoleService) AssignBtnPermToRole(roleID, buttonID string) error {
 }
 
 // RevokeBtnPermFromRole 从角色中撤销按钮权限
-func (s *RoleService) RevokeBtnPermFromRole(roleID, buttonID string) error {
+func (s *RoleService) RevokeBtnPermFromRole(roleID, buttonID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -967,7 +967,7 @@ func (s *RoleService) RevokeBtnPermFromRole(roleID, buttonID string) error {
 }
 
 // GetBtnPermsForRole 获取角色的所有按钮权限
-func (s *RoleService) GetBtnPermsForRole(roleID string) ([]*entity.BtnPerm, error) {
+func (s *RoleService) GetBtnPermsForRole(roleID int64) ([]*entity.BtnPerm, error) {
 	buttons, err := s.roleRepo.GetBtnPermsByRole(roleID)
 	if err != nil {
 		s.log.Error("获取角色关联按钮权限失败", "error", err, "role_id", roleID)
@@ -977,7 +977,7 @@ func (s *RoleService) GetBtnPermsForRole(roleID string) ([]*entity.BtnPerm, erro
 }
 
 // GetRolesFor 获取接口路由的所有角色
-func (s *RoleService) GetRolesFor(routeID string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolesFor(routeID int64) ([]*entity.Role, error) {
 	roles, err := s.roleRepo.GetRolesBy(routeID)
 	if err != nil {
 		s.log.Error("获取接口路由关联角色失败", "error", err, "route_id", routeID)
@@ -987,7 +987,7 @@ func (s *RoleService) GetRolesFor(routeID string) ([]*entity.Role, error) {
 }
 
 // BatchRevokeUsersFromRole 批量从角色中撤销用户
-func (s *RoleService) BatchRevokeUsersFromRole(roleID string, userIDs []string) error {
+func (s *RoleService) BatchRevokeUsersFromRole(roleID int64, userIDs []int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1025,7 +1025,7 @@ func (s *RoleService) BatchRevokeUsersFromRole(roleID string, userIDs []string) 
 }
 
 // AssignPermissionGroupToRole 分配权限组到角色
-func (s *RoleService) AssignPermissionGroupToRole(roleID, groupID string) error {
+func (s *RoleService) AssignPermissionGroupToRole(roleID, groupID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1068,7 +1068,7 @@ func (s *RoleService) AssignPermissionGroupToRole(roleID, groupID string) error 
 }
 
 // RevokePermissionGroupFromRole 从角色中撤销权限组
-func (s *RoleService) RevokePermissionGroupFromRole(roleID, groupID string) error {
+func (s *RoleService) RevokePermissionGroupFromRole(roleID, groupID int64) error {
 	// 检查角色是否存在
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1102,7 +1102,7 @@ func (s *RoleService) RevokePermissionGroupFromRole(roleID, groupID string) erro
 }
 
 // GetPermissionGroupsForRole 获取角色的所有权限组
-func (s *RoleService) GetPermissionGroupsForRole(roleID string) ([]*entity.PermissionGroup, error) {
+func (s *RoleService) GetPermissionGroupsForRole(roleID int64) ([]*entity.PermissionGroup, error) {
 	// 检查角色是否存在
 	_, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1129,10 +1129,10 @@ func (s *RoleService) GetRoleTree() ([]*entity.Role, error) {
 	}
 
 	// 构建角色树结构
-	roleMap := make(map[string]*entity.Role)
+	roleMap := make(map[int64]*entity.Role)
 	rootRoles := []*entity.Role{}
 
-	// 首先将所有角色放入map中
+	// 首先将所有角色放入 map 中
 	for i := range roles {
 		roleMap[roles[i].ID] = roles[i]
 	}
@@ -1140,11 +1140,11 @@ func (s *RoleService) GetRoleTree() ([]*entity.Role, error) {
 	// 然后构建树形结构
 	for i := range roles {
 		role := roles[i]
-		if role.ParentID == "" {
+		if role.ParentID == 0 {
 			// 根角色
 			rootRoles = append(rootRoles, role)
 		} else {
-			// 子角色，添加到父角色的Children中
+			// 子角色，添加到父角色的 Children 中
 			if parent, exists := roleMap[role.ParentID]; exists {
 				parent.Children = append(parent.Children, role)
 			}
@@ -1155,7 +1155,7 @@ func (s *RoleService) GetRoleTree() ([]*entity.Role, error) {
 }
 
 // GetRolePath 获取角色路径
-func (s *RoleService) GetRolePath(id string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolePath(id int64) ([]*entity.Role, error) {
 	// 获取当前角色
 	currentRole, err := s.roleRepo.GetByID(id)
 	if err != nil {
@@ -1168,7 +1168,7 @@ func (s *RoleService) GetRolePath(id string) ([]*entity.Role, error) {
 
 	// 向上遍历直到根角色
 	currentID := currentRole.ParentID
-	for currentID != "" {
+	for currentID != 0 {
 		parentRole, err := s.roleRepo.GetByID(currentID)
 		if err != nil {
 			s.log.Error("获取父角色失败", "error", err, "id", currentID)
@@ -1184,7 +1184,7 @@ func (s *RoleService) GetRolePath(id string) ([]*entity.Role, error) {
 }
 
 // GetRolesForPermissionGroup 获取权限组的所有角色
-func (s *RoleService) GetRolesForPermissionGroup(groupID string) ([]*entity.Role, error) {
+func (s *RoleService) GetRolesForPermissionGroup(groupID int64) ([]*entity.Role, error) {
 	// 检查权限组是否存在
 	_, err := s.permissionGroupRepo.GetByID(groupID)
 	if err != nil {
@@ -1202,7 +1202,7 @@ func (s *RoleService) GetRolesForPermissionGroup(groupID string) ([]*entity.Role
 }
 
 // GetAllInheritedBtnPerms 获取角色及其所有父角色的按钮权限
-func (s *RoleService) GetAllInheritedBtnPerms(roleID string) ([]*entity.BtnPerm, error) {
+func (s *RoleService) GetAllInheritedBtnPerms(roleID int64) ([]*entity.BtnPerm, error) {
 	// 获取所有父角色（包括当前角色）
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1210,12 +1210,12 @@ func (s *RoleService) GetAllInheritedBtnPerms(roleID string) ([]*entity.BtnPerm,
 		return nil, errors.New("角色不存在")
 	}
 
-	// 获取所有父角色ID（包括当前角色）
-	var roleIDs []string
+	// 获取所有父角色 ID（包括当前角色）
+	var roleIDs []int64
 	currentRole := role
 	for currentRole != nil {
 		roleIDs = append(roleIDs, currentRole.ID)
-		if currentRole.ParentID == "" {
+		if currentRole.ParentID == 0 {
 			break
 		}
 		currentRole, err = s.roleRepo.GetByID(currentRole.ParentID)
@@ -1226,7 +1226,7 @@ func (s *RoleService) GetAllInheritedBtnPerms(roleID string) ([]*entity.BtnPerm,
 	}
 
 	// 收集所有角色的按钮权限
-	allBtnPerms := make(map[string]*entity.BtnPerm)
+	allBtnPerms := make(map[int64]*entity.BtnPerm)
 	for _, id := range roleIDs {
 		btnPerms, err := s.roleRepo.GetBtnPermsByRole(id)
 		if err != nil {
@@ -1247,8 +1247,8 @@ func (s *RoleService) GetAllInheritedBtnPerms(roleID string) ([]*entity.BtnPerm,
 	return result, nil
 }
 
-// GetAllInheritedPermissions 获取角色及其所有父角色的API权限
-func (s *RoleService) GetAllInheritedPermissions(roleID string) ([]*entity.API, error) {
+// GetAllInheritedPermissions 获取角色及其所有父角色的 API 权限
+func (s *RoleService) GetAllInheritedPermissions(roleID int64) ([]*entity.API, error) {
 	// 获取所有父角色（包括当前角色）
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1256,12 +1256,12 @@ func (s *RoleService) GetAllInheritedPermissions(roleID string) ([]*entity.API, 
 		return nil, errors.New("角色不存在")
 	}
 
-	// 获取所有父角色ID（包括当前角色）
-	var roleIDs []string
+	// 获取所有父角色 ID（包括当前角色）
+	var roleIDs []int64
 	currentRole := role
 	for currentRole != nil {
 		roleIDs = append(roleIDs, currentRole.ID)
-		if currentRole.ParentID == "" {
+		if currentRole.ParentID == 0 {
 			break
 		}
 		currentRole, err = s.roleRepo.GetByID(currentRole.ParentID)
@@ -1271,12 +1271,12 @@ func (s *RoleService) GetAllInheritedPermissions(roleID string) ([]*entity.API, 
 		}
 	}
 
-	// 收集所有角色的API权限
-	allAPIs := make(map[string]*entity.API)
+	// 收集所有角色的 API 权限
+	allAPIs := make(map[int64]*entity.API)
 	for _, id := range roleIDs {
 		apis, err := s.roleRepo.GetsByRole(id)
 		if err != nil {
-			s.log.Error("获取角色API权限失败", "error", err, "role_id", id)
+			s.log.Error("获取角色 API 权限失败", "error", err, "role_id", id)
 			continue
 		}
 		for _, api := range apis {
@@ -1294,7 +1294,7 @@ func (s *RoleService) GetAllInheritedPermissions(roleID string) ([]*entity.API, 
 }
 
 // GetAllInheritedMenus 获取角色及其所有父角色的菜单
-func (s *RoleService) GetAllInheritedMenus(roleID string) ([]*entity.Menu, error) {
+func (s *RoleService) GetAllInheritedMenus(roleID int64) ([]*entity.Menu, error) {
 	// 获取所有父角色（包括当前角色）
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
@@ -1302,12 +1302,12 @@ func (s *RoleService) GetAllInheritedMenus(roleID string) ([]*entity.Menu, error
 		return nil, errors.New("角色不存在")
 	}
 
-	// 获取所有父角色ID（包括当前角色）
-	var roleIDs []string
+	// 获取所有父角色 ID（包括当前角色）
+	var roleIDs []int64
 	currentRole := role
 	for currentRole != nil {
 		roleIDs = append(roleIDs, currentRole.ID)
-		if currentRole.ParentID == "" {
+		if currentRole.ParentID == 0 {
 			break
 		}
 		currentRole, err = s.roleRepo.GetByID(currentRole.ParentID)
@@ -1318,7 +1318,7 @@ func (s *RoleService) GetAllInheritedMenus(roleID string) ([]*entity.Menu, error
 	}
 
 	// 收集所有角色的菜单
-	allMenus := make(map[string]*entity.Menu)
+	allMenus := make(map[int64]*entity.Menu)
 	for _, id := range roleIDs {
 		menus, err := s.roleRepo.GetMenusByRole(id)
 		if err != nil {

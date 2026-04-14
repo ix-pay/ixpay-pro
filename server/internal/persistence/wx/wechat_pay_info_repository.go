@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // wechatPayInfoModel 微信支付信息数据库模型
@@ -39,8 +38,8 @@ func (m *wechatPayInfoModel) toDomain() *entity.WechatPayInfo {
 		return nil
 	}
 	return &entity.WechatPayInfo{
-		ID:         common.ToString(m.ID),
-		PaymentID:  common.ToString(m.PaymentID),
+		ID:         m.ID,
+		PaymentID:  m.PaymentID,
 		AppID:      m.AppID,
 		MCHID:      m.MCHID,
 		NonceStr:   m.NonceStr,
@@ -56,26 +55,22 @@ func (m *wechatPayInfoModel) toDomain() *entity.WechatPayInfo {
 		ErrCode:    m.ErrCode,
 		ErrCodeDes: m.ErrCodeDes,
 		NotifyData: m.NotifyData,
-		CreatedBy:  common.ToString(m.CreatedBy),
+		CreatedBy:  m.CreatedBy,
 		CreatedAt:  m.CreatedAt,
-		UpdatedBy:  common.ToString(m.UpdatedBy),
+		UpdatedBy:  m.UpdatedBy,
 		UpdatedAt:  m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainWechatPayInfo(info *entity.WechatPayInfo) (*wechatPayInfoModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(info.ID, info.CreatedBy, info.UpdatedBy)
-
-	wechatPayInfoID := common.TryParseInt64(info.PaymentID)
-
 	return &wechatPayInfoModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        info.ID,
+			CreatedBy: info.CreatedBy,
+			UpdatedBy: info.UpdatedBy,
 		},
-		PaymentID:  wechatPayInfoID,
+		PaymentID:  info.PaymentID,
 		AppID:      info.AppID,
 		MCHID:      info.MCHID,
 		NonceStr:   info.NonceStr,
@@ -108,13 +103,9 @@ func NewWechatPayInfoRepository(db *database.PostgresDB) repo.WechatPayInfoRepos
 }
 
 // GetByID 根据 ID 查询支付记录
-func (r *wechatPayInfoRepository) GetByID(id string) (*entity.WechatPayInfo, error) {
-	idInt, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
+func (r *wechatPayInfoRepository) GetByID(id int64) (*entity.WechatPayInfo, error) {
 	var dbModel wechatPayInfoModel
-	result := r.db.Where("id = ?", idInt).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -156,7 +147,7 @@ func (r *wechatPayInfoRepository) Create(WechatPayInfo *entity.WechatPayInfo) er
 	}
 
 	// 将生成的 ID 回写到领域实体
-	WechatPayInfo.ID = common.ToString(dbModel.ID)
+	WechatPayInfo.ID = dbModel.ID
 	return nil
 }
 
@@ -171,25 +162,16 @@ func (r *wechatPayInfoRepository) Update(WechatPayInfo *entity.WechatPayInfo) er
 }
 
 // Delete 删除支付记录
-func (r *wechatPayInfoRepository) Delete(id string) error {
-	idInt, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-	return r.db.Delete(&wechatPayInfoModel{}, idInt).Error
+func (r *wechatPayInfoRepository) Delete(id int64) error {
+	return r.db.Delete(&wechatPayInfoModel{}, id).Error
 }
 
 // ListByUser 根据用户 ID 查询支付列表
-func (r *wechatPayInfoRepository) ListByUser(userID string, page, pageSize int) ([]*entity.WechatPayInfo, int, error) {
+func (r *wechatPayInfoRepository) ListByUser(userID int64, page, pageSize int) ([]*entity.WechatPayInfo, int, error) {
 	var total64 int64
 	var dbModels []wechatPayInfoModel
 
-	userIDint, err := common.ParseInt64(userID)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	query := r.db.Model(&wechatPayInfoModel{}).Where("user_id = ?", userIDint)
+	query := r.db.Model(&wechatPayInfoModel{}).Where("user_id = ?", userID)
 
 	if err := query.Count(&total64).Error; err != nil {
 		return nil, 0, err

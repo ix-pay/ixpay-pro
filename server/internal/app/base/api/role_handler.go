@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -68,16 +69,27 @@ func (c *RoleController) CreateRole(ctx *gin.Context) {
 	}
 
 	userID, _ := ctx.Get("userID")
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
 	// 使用名称的小写加下划线作为默认编码
 	code := strings.ToLower(strings.ReplaceAll(req.Name, " ", "_"))
-	// 提供默认值：roleType=1（普通角色）, parentID="0"（顶级角色）, sort=0, isSystem=false
-	role, err := c.roleService.CreateRole(req.Name, code, req.Description, "0", 1, userID.(string), req.Status, 0, false)
+	// 提供默认值：roleType=1（普通角色）, parentID=0（顶级角色）, sort=0, isSystem=false
+	role, err := c.roleService.CreateRole(req.Name, code, req.Description, 0, 1, userIDInt, req.Status, 0, false)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "创建角色失败", ctx)
 		return
 	}
 
-	c.log.Info("创建角色成功", "userID", userID, "roleName", req.Name)
+	c.log.Info("创建角色成功", "userID", userIDInt, "roleName", req.Name)
 	baseRes.OkWithDetailed(convertToRoleResponse(role), "创建角色成功", ctx)
 }
 
@@ -142,16 +154,27 @@ func (c *RoleController) UpdateRole(ctx *gin.Context) {
 	}
 
 	userID, _ := ctx.Get("userID")
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
 	// 使用名称的小写加下划线作为默认编码
 	code := strings.ToLower(strings.ReplaceAll(req.Name, " ", "_"))
 	// 更新角色时保持原有角色类型、父级、排序和系统标识不变
-	err := c.roleService.UpdateRole(req.ID, req.Name, code, req.Description, "0", 1, userID.(string), req.Status, 0, false)
+	err := c.roleService.UpdateRole(req.ID, req.Name, code, req.Description, 0, 1, userIDInt, req.Status, 0, false)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "更新角色失败", ctx)
 		return
 	}
 
-	c.log.Info("更新角色成功", "userID", userID, "roleID", req.ID)
+	c.log.Info("更新角色成功", "userID", userIDInt, "roleID", req.ID)
 	baseRes.OkWithMessage("更新角色成功", ctx)
 }
 
@@ -262,8 +285,16 @@ func (c *RoleController) AssignUserToRole(ctx *gin.Context) {
 		return
 	}
 
-	// 遍历用户ID列表，逐个分配
-	for _, userID := range req.UserIDs {
+	// 将字符串 ID 数组转换为 int64 数组
+	userIDs, err := convertStringSliceToInt64Slice(req.UserIDs)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
+	}
+
+	// 遍历用户 ID 列表，逐个分配
+	for _, userID := range userIDs {
 		err := c.roleService.AssignUserToRole(req.RoleID, userID)
 		if err != nil {
 			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配用户到角色失败", ctx)
@@ -271,7 +302,7 @@ func (c *RoleController) AssignUserToRole(ctx *gin.Context) {
 		}
 	}
 
-	c.log.Info("分配用户到角色成功", "roleID", req.RoleID, "userCount", len(req.UserIDs))
+	c.log.Info("分配用户到角色成功", "roleID", req.RoleID, "userCount", len(userIDs))
 	baseRes.OkWithMessage("分配用户到角色成功", ctx)
 }
 
@@ -294,8 +325,16 @@ func (c *RoleController) AssignMenuToRole(ctx *gin.Context) {
 		return
 	}
 
-	// 遍历菜单ID列表，逐个分配
-	for _, menuID := range req.MenuIDs {
+	// 将字符串 ID 数组转换为 int64 数组
+	menuIDs, err := convertStringSliceToInt64Slice(req.MenuIDs)
+	if err != nil {
+		c.log.Error("菜单 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
+		return
+	}
+
+	// 遍历菜单 ID 列表，逐个分配
+	for _, menuID := range menuIDs {
 		err := c.roleService.AssignMenuToRole(req.RoleID, menuID)
 		if err != nil {
 			baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配菜单到角色失败", ctx)
@@ -303,7 +342,7 @@ func (c *RoleController) AssignMenuToRole(ctx *gin.Context) {
 		}
 	}
 
-	c.log.Info("分配菜单到角色成功", "roleID", req.RoleID, "menuCount", len(req.MenuIDs))
+	c.log.Info("分配菜单到角色成功", "roleID", req.RoleID, "menuCount", len(menuIDs))
 	baseRes.OkWithMessage("分配菜单到角色成功", ctx)
 }
 
@@ -326,15 +365,23 @@ func (c *RoleController) AssignAPIToRole(ctx *gin.Context) {
 		return
 	}
 
+	// 将字符串 ID 数组转换为 int64 数组
+	apiIDs, err := convertStringSliceToInt64Slice(req.IDs)
+	if err != nil {
+		c.log.Error("API 路由 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("API 路由 ID 格式错误", ctx)
+		return
+	}
+
 	// 使用批量分配方法，更高效
-	err := c.roleService.BatchAssignAPIsToRole(req.RoleID, req.IDs)
+	err = c.roleService.BatchAssignAPIsToRole(req.RoleID, apiIDs)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "分配 API 路由到角色失败", ctx)
 		return
 	}
 
-	c.log.Info("分配API路由到角色成功", "roleID", req.RoleID, "routeCount", len(req.IDs))
-	baseRes.OkWithMessage("分配API路由到角色成功", ctx)
+	c.log.Info("分配 API 路由到角色成功", "roleID", req.RoleID, "apiCount", len(apiIDs))
+	baseRes.OkWithMessage("分配 API 路由到角色成功", ctx)
 }
 
 // GetAllRoles 获取所有角色
@@ -371,8 +418,20 @@ func (c *RoleController) GetAllRoles(ctx *gin.Context) {
 //	@Success		200		{object}	baseRes.Response
 //	@Router			/api/admin/role/:id/permissions [post]
 func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
-	// 直接使用 string 类型的 ID
-	roleID := ctx.Param("id")
+	// 将字符串 ID 转换为 int64
+	roleIDStr := ctx.Param("id")
+	if roleIDStr == "" {
+		c.log.Error("角色 ID 不能为空")
+		baseRes.FailWithMessage("角色 ID 不能为空", ctx)
+		return
+	}
+
+	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", roleIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
 
 	var req request.SaveRolePermissionsRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -381,23 +440,52 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 		return
 	}
 
-	// 获取操作人 ID
+	// 获取操作人 ID 并转换为 int64
 	operatorID, _ := ctx.Get("userID")
+	var operatorIDInt int64
+	switch v := operatorID.(type) {
+	case string:
+		operatorIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		operatorIDInt = v
+	case int:
+		operatorIDInt = int64(v)
+	}
+
+	// 将字符串数组转换为 int64 数组
+	menuIds, err := convertStringSliceToInt64Slice(req.MenuIds)
+	if err != nil {
+		c.log.Error("菜单 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
+		return
+	}
+	btnPermIds, err := convertStringSliceToInt64Slice(req.BtnPermIds)
+	if err != nil {
+		c.log.Error("按钮权限 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
+		return
+	}
+	apiRouteIds, err := convertStringSliceToInt64Slice(req.ApiRouteIds)
+	if err != nil {
+		c.log.Error("API 路由 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("API 路由 ID 格式错误", ctx)
+		return
+	}
 
 	// 保存权限
-	err := c.rolePermissionService.SaveRolePermissions(
+	err = c.rolePermissionService.SaveRolePermissions(
 		roleID,
-		req.MenuIds,
-		req.BtnPermIds,
-		req.ApiRouteIds,
-		operatorID.(string),
+		menuIds,
+		btnPermIds,
+		apiRouteIds,
+		strconv.FormatInt(operatorIDInt, 10),
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("保存角色权限成功", "roleID", roleID, "menuCount", len(req.MenuIds), "btnPermCount", len(req.BtnPermIds), "apiCount", len(req.ApiRouteIds))
+	c.log.Info("保存角色权限成功", "roleID", roleID, "menuCount", len(menuIds), "btnPermCount", len(btnPermIds), "apiCount", len(apiRouteIds))
 	baseRes.OkWithMessage("保存角色权限成功", ctx)
 }
 
@@ -413,8 +501,20 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 //	@Success	200	{object}	entity.Role
 //	@Router			/api/admin/role/:id/detail [get]
 func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
-	// 直接使用 string 类型的 ID
-	roleID := ctx.Param("id")
+	// 将字符串 ID 转换为 int64
+	roleIDStr := ctx.Param("id")
+	if roleIDStr == "" {
+		c.log.Error("角色 ID 不能为空")
+		baseRes.FailWithMessage("角色 ID 不能为空", ctx)
+		return
+	}
+
+	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", roleIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
 
 	roleDetail, err := c.roleService.GetRoleByID(roleID)
 	if err != nil {
@@ -438,8 +538,20 @@ func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=[]response.APIResponse}
 //	@Router			/api/admin/role/:id/available-apis [get]
 func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
-	// 直接使用 string 类型的 ID
-	roleID := ctx.Param("id")
+	// 将字符串 ID 转换为 int64
+	roleIDStr := ctx.Param("id")
+	if roleIDStr == "" {
+		c.log.Error("角色 ID 不能为空")
+		baseRes.FailWithMessage("角色 ID 不能为空", ctx)
+		return
+	}
+
+	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", roleIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
 
 	// 获取该角色已分配的 API 列表
 	assignedAPIs, err := c.roleService.GetAPIsForRole(roleID)
@@ -449,7 +561,7 @@ func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 	}
 
 	// 创建已分配 API ID 的 map，用于快速查找
-	assignedAPIMap := make(map[string]bool)
+	assignedAPIMap := make(map[int64]bool)
 	for _, api := range assignedAPIs {
 		assignedAPIMap[api.ID] = true
 	}

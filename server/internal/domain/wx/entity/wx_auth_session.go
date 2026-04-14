@@ -6,8 +6,8 @@ import "time"
 // 用于保存微信登录授权的会话信息
 // 纯业务模型，无 GORM 标签
 type WXAuthSession struct {
-	ID           string    // 授权会话 ID
-	WXUserID     string    // 微信用户 ID（string 类型，避免 JSON 精度丢失）
+	ID           int64     // 授权会话 ID
+	WXUserID     int64     // 微信用户 ID（int64 类型）
 	AccessToken  string    // 访问令牌
 	RefreshToken string    // 刷新令牌
 	ExpiresIn    int64     // 过期时间（秒）

@@ -26,7 +26,7 @@ func NewOnlineUserService(repo repo.OnlineUserRepository, log logger.Logger) *On
 
 // AddOnlineUser 添加用户到在线列表
 func (s *OnlineUserService) AddOnlineUser(
-	userID string,
+	userID int64,
 	username, nickname, sessionID, ip, place, device, browser, os, userAgent string,
 ) error {
 	now := time.Now()
@@ -56,7 +56,7 @@ func (s *OnlineUserService) AddOnlineUser(
 }
 
 // UpdateUserActive 更新用户活跃状态
-func (s *OnlineUserService) UpdateUserActive(userID string) error {
+func (s *OnlineUserService) UpdateUserActive(userID int64) error {
 	if err := s.repo.UpdateActiveTime(userID); err != nil {
 		s.log.Error("更新用户活跃状态失败", "error", err, "user_id", userID)
 		return err
@@ -65,7 +65,7 @@ func (s *OnlineUserService) UpdateUserActive(userID string) error {
 }
 
 // RemoveOnlineUser 移除在线用户（登出）
-func (s *OnlineUserService) RemoveOnlineUser(userID string) error {
+func (s *OnlineUserService) RemoveOnlineUser(userID int64) error {
 	if err := s.repo.Remove(userID); err != nil {
 		s.log.Error("移除在线用户失败", "error", err, "user_id", userID)
 		return err
@@ -99,7 +99,7 @@ func (s *OnlineUserService) GetOnlineUserList() ([]*entity.OnlineUser, error) {
 }
 
 // GetOnlineUserByID 获取在线用户详情
-func (s *OnlineUserService) GetOnlineUserByID(userID string) (*entity.OnlineUser, error) {
+func (s *OnlineUserService) GetOnlineUserByID(userID int64) (*entity.OnlineUser, error) {
 	user, err := s.repo.GetByUserID(userID)
 	if err != nil {
 		s.log.Error("获取在线用户详情失败", "error", err, "user_id", userID)
@@ -131,7 +131,7 @@ func (s *OnlineUserService) GetOnlineUserBySessionID(sessionID string) (*entity.
 // ForceOffline 强制用户下线
 // 该方法会移除用户的在线状态，但不会使 JWT token 失效
 // 如果需要完全禁止用户访问，需要配合 JWT 黑名单机制
-func (s *OnlineUserService) ForceOffline(userID string, operatorID string) error {
+func (s *OnlineUserService) ForceOffline(userID int64, operatorID string) error {
 	// 检查用户是否在线
 	online, err := s.repo.Exists(userID)
 	if err != nil {
@@ -176,13 +176,13 @@ func (s *OnlineUserService) GetOnlineCount() (int, error) {
 }
 
 // IsOnline 检查用户是否在线
-func (s *OnlineUserService) IsOnline(userID string) (bool, error) {
+func (s *OnlineUserService) IsOnline(userID int64) (bool, error) {
 	return s.repo.Exists(userID)
 }
 
 // KickoutUser 踢出用户（用于管理员强制下线）
 // 与 ForceOffline 类似，但会记录更详细的日志
-func (s *OnlineUserService) KickoutUser(userID string, reason string, operatorID string) error {
+func (s *OnlineUserService) KickoutUser(userID int64, reason string, operatorID string) error {
 	// 检查用户是否在线
 	online, err := s.repo.Exists(userID)
 	if err != nil {
@@ -234,7 +234,7 @@ func (s *OnlineUserService) GetOnlineUsersByCondition(condition map[string]inter
 
 // RefreshUserExpiration 刷新用户会话过期时间
 // 当用户活跃时，可以调用此方法延长会话时间
-func (s *OnlineUserService) RefreshUserExpiration(userID string) error {
+func (s *OnlineUserService) RefreshUserExpiration(userID int64) error {
 	// 先更新活跃时间
 	if err := s.UpdateUserActive(userID); err != nil {
 		return err
@@ -245,7 +245,7 @@ func (s *OnlineUserService) RefreshUserExpiration(userID string) error {
 }
 
 // BatchKickoutUsers 批量踢出用户
-func (s *OnlineUserService) BatchKickoutUsers(userIDs []string, reason string, operatorID string) error {
+func (s *OnlineUserService) BatchKickoutUsers(userIDs []int64, reason string, operatorID string) error {
 	successCount := 0
 	failCount := 0
 

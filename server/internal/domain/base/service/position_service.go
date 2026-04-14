@@ -23,7 +23,7 @@ func NewPositionService(repo repo.PositionRepository, log logger.Logger) *Positi
 }
 
 // CreatePosition 创建岗位
-func (s *PositionService) CreatePosition(name, description string, createdBy string, sort, status int) (*entity.Position, error) {
+func (s *PositionService) CreatePosition(name, description string, createdBy int64, sort, status int) (*entity.Position, error) {
 	// 参数验证
 	if name == "" {
 		return nil, errors.New("岗位名称不能为空")
@@ -55,7 +55,7 @@ func (s *PositionService) CreatePosition(name, description string, createdBy str
 }
 
 // UpdatePosition 更新岗位
-func (s *PositionService) UpdatePosition(id string, name, description string, updatedBy string, sort, status int) (*entity.Position, error) {
+func (s *PositionService) UpdatePosition(id int64, name, description string, updatedBy int64, sort, status int) (*entity.Position, error) {
 	// 获取岗位
 	position, err := s.repo.GetByID(id)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *PositionService) UpdatePosition(id string, name, description string, up
 }
 
 // DeletePosition 删除岗位
-func (s *PositionService) DeletePosition(id string) error {
+func (s *PositionService) DeletePosition(id int64) error {
 	// 获取岗位
 	position, err := s.repo.GetByID(id)
 	if err != nil {
@@ -108,7 +108,7 @@ func (s *PositionService) DeletePosition(id string) error {
 }
 
 // GetPositionByID 获取岗位详情
-func (s *PositionService) GetPositionByID(id string) (*entity.Position, error) {
+func (s *PositionService) GetPositionByID(id int64) (*entity.Position, error) {
 	position, err := s.repo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取岗位失败", "error", err, "id", id)

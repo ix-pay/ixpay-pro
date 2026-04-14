@@ -92,7 +92,15 @@ func (c *DictController) GetDictByID(ctx *gin.Context) {
 		return
 	}
 
-	dict, err := c.dictService.GetDictByID(idStr)
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	dict, err := c.dictService.GetDictByID(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -181,11 +189,32 @@ func (c *DictController) CreateDict(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	createdBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
 		baseRes.NoAuth("未授权", ctx)
+		return
+	}
+
+	// 将 createdBy 转换为 int64
+	var createdByInt int64
+	var err error
+	switch v := createdBy.(type) {
+	case string:
+		createdByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		createdByInt = v
+	case int:
+		createdByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
 		return
 	}
 
@@ -194,7 +223,7 @@ func (c *DictController) CreateDict(ctx *gin.Context) {
 		req.DictName,
 		req.Description,
 		req.Status,
-		createdBy.(string),
+		createdByInt,
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
@@ -238,7 +267,7 @@ func (c *DictController) UpdateDict(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	updatedBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
@@ -246,13 +275,34 @@ func (c *DictController) UpdateDict(ctx *gin.Context) {
 		return
 	}
 
-	err := c.dictService.UpdateDict(
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	var err error
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	err = c.dictService.UpdateDict(
 		req.ID,
 		req.DictCode,
 		req.DictName,
 		req.Description,
 		req.Status,
-		updatedBy.(string),
+		updatedByInt,
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
@@ -284,7 +334,15 @@ func (c *DictController) DeleteDict(ctx *gin.Context) {
 		return
 	}
 
-	err := c.dictService.DeleteDict(idStr)
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	err = c.dictService.DeleteDict(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -391,7 +449,15 @@ func (c *DictController) GetDictItemByID(ctx *gin.Context) {
 		return
 	}
 
-	dictItem, err := c.dictItemService.GetDictItemByID(idStr)
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	dictItem, err := c.dictItemService.GetDictItemByID(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -425,7 +491,15 @@ func (c *DictController) GetDictItemsByDictID(ctx *gin.Context) {
 		return
 	}
 
-	dictItems, err := c.dictItemService.GetDictItemsByDictID(dictIDStr)
+	// 将字符串 ID 转换为 int64
+	dictID, err := strconv.ParseInt(dictIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "dict_id", dictIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	dictItems, err := c.dictItemService.GetDictItemsByDictID(dictID)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -472,11 +546,32 @@ func (c *DictController) CreateDictItem(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	createdBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
 		baseRes.NoAuth("未授权", ctx)
+		return
+	}
+
+	// 将 createdBy 转换为 int64
+	var createdByInt int64
+	var err error
+	switch v := createdBy.(type) {
+	case string:
+		createdByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		createdByInt = v
+	case int:
+		createdByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
 		return
 	}
 
@@ -487,7 +582,7 @@ func (c *DictController) CreateDictItem(ctx *gin.Context) {
 		req.Description,
 		req.Sort,
 		req.Status,
-		createdBy.(string),
+		createdByInt,
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
@@ -522,7 +617,7 @@ func (c *DictController) UpdateDictItem(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	updatedBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
@@ -530,7 +625,28 @@ func (c *DictController) UpdateDictItem(ctx *gin.Context) {
 		return
 	}
 
-	err := c.dictItemService.UpdateDictItem(
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	var err error
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	err = c.dictItemService.UpdateDictItem(
 		req.ID,
 		req.DictID,
 		req.ItemKey,
@@ -538,7 +654,7 @@ func (c *DictController) UpdateDictItem(ctx *gin.Context) {
 		req.Description,
 		req.Sort,
 		req.Status,
-		updatedBy.(string),
+		updatedByInt,
 	)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
@@ -570,7 +686,15 @@ func (c *DictController) DeleteDictItem(ctx *gin.Context) {
 		return
 	}
 
-	err := c.dictItemService.DeleteDictItem(idStr)
+	// 将字符串 ID 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	err = c.dictItemService.DeleteDictItem(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return

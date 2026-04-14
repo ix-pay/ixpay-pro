@@ -74,12 +74,12 @@ func (ds *DictSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 // getDictionaries 获取所有字典定义
 func (ds *DictSeed) getDictionaries() []*entity.Dict {
 	now := time.Now()
-	systemUserID := "system"
+	var systemUserID int64 = 0 // 系统用户 ID 使用 0
 
 	return []*entity.Dict{
 		// ==================== 用户类型 ====================
 		{
-			ID:          "dict_user_type",
+			ID:          1000, // 字典 ID 使用固定值
 			DictName:    "用户类型",
 			DictCode:    "user_type",
 			Description: "用户类型分类",
@@ -90,8 +90,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 			UpdatedAt:   now,
 			DictItems: []entity.DictItem{
 				{
-					ID:          "dict_user_type_admin",
-					DictID:      "dict_user_type",
+					ID:          1001,
+					DictID:      1000,
 					ItemKey:     "admin",
 					ItemValue:   "管理员",
 					Sort:        1,
@@ -103,8 +103,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_user_type_normal",
-					DictID:      "dict_user_type",
+					ID:          1002,
+					DictID:      1000,
 					ItemKey:     "normal",
 					ItemValue:   "普通用户",
 					Sort:        2,
@@ -116,8 +116,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_user_type_guest",
-					DictID:      "dict_user_type",
+					ID:          1003,
+					DictID:      1000,
 					ItemKey:     "guest",
 					ItemValue:   "访客",
 					Sort:        3,
@@ -133,7 +133,7 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 
 		// ==================== 性别 ====================
 		{
-			ID:          "dict_gender",
+			ID:          2000,
 			DictName:    "性别",
 			DictCode:    "gender",
 			Description: "性别分类",
@@ -144,8 +144,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 			UpdatedAt:   now,
 			DictItems: []entity.DictItem{
 				{
-					ID:          "dict_gender_unknown",
-					DictID:      "dict_gender",
+					ID:          2001,
+					DictID:      2000,
 					ItemKey:     "unknown",
 					ItemValue:   "未知",
 					Sort:        0,
@@ -157,8 +157,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_gender_male",
-					DictID:      "dict_gender",
+					ID:          2002,
+					DictID:      2000,
 					ItemKey:     "male",
 					ItemValue:   "男",
 					Sort:        1,
@@ -170,8 +170,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_gender_female",
-					DictID:      "dict_gender",
+					ID:          2003,
+					DictID:      2000,
 					ItemKey:     "female",
 					ItemValue:   "女",
 					Sort:        2,
@@ -187,7 +187,7 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 
 		// ==================== 公告类型 ====================
 		{
-			ID:          "dict_notice_type",
+			ID:          3000,
 			DictName:    "公告类型",
 			DictCode:    "notice_type",
 			Description: "公告类型分类",
@@ -198,8 +198,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 			UpdatedAt:   now,
 			DictItems: []entity.DictItem{
 				{
-					ID:          "dict_notice_type_system",
-					DictID:      "dict_notice_type",
+					ID:          3001,
+					DictID:      3000,
 					ItemKey:     "system",
 					ItemValue:   "系统公告",
 					Sort:        1,
@@ -211,8 +211,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_notice_type_activity",
-					DictID:      "dict_notice_type",
+					ID:          3002,
+					DictID:      3000,
 					ItemKey:     "activity",
 					ItemValue:   "活动公告",
 					Sort:        2,
@@ -224,8 +224,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_notice_type_notice",
-					DictID:      "dict_notice_type",
+					ID:          3003,
+					DictID:      3000,
 					ItemKey:     "notice",
 					ItemValue:   "通知",
 					Sort:        3,
@@ -241,7 +241,7 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 
 		// ==================== 任务类型 ====================
 		{
-			ID:          "dict_task_type",
+			ID:          4000,
 			DictName:    "任务类型",
 			DictCode:    "task_type",
 			Description: "任务类型分类",
@@ -252,8 +252,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 			UpdatedAt:   now,
 			DictItems: []entity.DictItem{
 				{
-					ID:          "dict_task_type_data_sync",
-					DictID:      "dict_task_type",
+					ID:          4001,
+					DictID:      4000,
 					ItemKey:     "data_sync",
 					ItemValue:   "数据同步",
 					Sort:        1,
@@ -265,8 +265,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_task_type_report",
-					DictID:      "dict_task_type",
+					ID:          4002,
+					DictID:      4000,
 					ItemKey:     "report",
 					ItemValue:   "报表生成",
 					Sort:        2,
@@ -278,8 +278,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_task_type_clean",
-					DictID:      "dict_task_type",
+					ID:          4003,
+					DictID:      4000,
 					ItemKey:     "clean",
 					ItemValue:   "清理任务",
 					Sort:        3,
@@ -295,7 +295,7 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 
 		// ==================== 配置类型 ====================
 		{
-			ID:          "dict_config_type",
+			ID:          5000,
 			DictName:    "配置类型",
 			DictCode:    "config_type",
 			Description: "系统配置类型分类",
@@ -306,8 +306,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 			UpdatedAt:   now,
 			DictItems: []entity.DictItem{
 				{
-					ID:          "dict_config_type_system",
-					DictID:      "dict_config_type",
+					ID:          5001,
+					DictID:      5000,
 					ItemKey:     "system",
 					ItemValue:   "系统配置",
 					Sort:        1,
@@ -319,8 +319,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_config_type_wechat",
-					DictID:      "dict_config_type",
+					ID:          5002,
+					DictID:      5000,
 					ItemKey:     "wechat",
 					ItemValue:   "微信配置",
 					Sort:        2,
@@ -332,8 +332,8 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 					UpdatedAt:   now,
 				},
 				{
-					ID:          "dict_config_type_business",
-					DictID:      "dict_config_type",
+					ID:          5003,
+					DictID:      5000,
 					ItemKey:     "business",
 					ItemValue:   "业务配置",
 					Sort:        3,

@@ -26,7 +26,7 @@ func NewLoginLogService(repo repo.LoginLogRepository, log logger.Logger) *LoginL
 
 // RecordLogin 记录登录日志
 func (s *LoginLogService) RecordLogin(
-	userID string,
+	userID int64,
 	username, ip, place, device, browser, os, userAgent string,
 	success bool,
 	errorMsg string,
@@ -60,7 +60,7 @@ func (s *LoginLogService) RecordLogin(
 }
 
 // GetLoginLogByID 获取登录日志详情
-func (s *LoginLogService) GetLoginLogByID(id string) (*entity.LoginLog, error) {
+func (s *LoginLogService) GetLoginLogByID(id int64) (*entity.LoginLog, error) {
 	log, err := s.repo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取登录日志失败", "error", err, "id", id)
@@ -77,7 +77,7 @@ func (s *LoginLogService) GetLoginLogList(page, pageSize int, filters map[string
 }
 
 // GetUserLoginLogs 获取用户登录日志列表
-func (s *LoginLogService) GetUserLoginLogs(userID string, page, pageSize int) ([]*entity.LoginLog, int64, error) {
+func (s *LoginLogService) GetUserLoginLogs(userID int64, page, pageSize int) ([]*entity.LoginLog, int64, error) {
 	s.log.Info("获取用户登录日志列表", "user_id", userID, "page", page, "pageSize", pageSize)
 	list, total, err := s.repo.GetByUserID(userID, page, pageSize)
 	return list, total, err

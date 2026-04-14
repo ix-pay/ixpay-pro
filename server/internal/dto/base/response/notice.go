@@ -3,13 +3,14 @@ package response
 import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
 // NoticeResponse 公告响应 DTO
+// 所有 ID 字段使用 int64 格式，通过 json:",string" 标签自动序列化为字符串
 type NoticeResponse struct {
-	ID          string `json:"id,string"`
+	ID          int64  `json:"id,string"`
 	Title       string `json:"title"`
 	Content     string `json:"content"`
 	Type        int    `json:"type"`
 	Status      int    `json:"status"`
-	PublisherID string `json:"publisherId,string"`
+	PublisherID int64  `json:"publisherId,string"`
 	PublishTime string `json:"publishTime,omitempty"`
 	ViewCount   int64  `json:"viewCount"`
 	IsTop       bool   `json:"isTop"`

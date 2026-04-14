@@ -3,9 +3,9 @@ package response
 import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
 // ConfigResponse 配置响应模型
-// 所有 ID 字段使用 string 格式，避免前端精度丢失
+// 所有 ID 字段使用 int64 格式，通过 json:",string" 标签自动序列化为字符串
 type ConfigResponse struct {
-	ID          string `json:"id,string"`   // 配置 ID
+	ID          int64  `json:"id,string"`   // 配置 ID
 	ConfigKey   string `json:"configKey"`   // 配置键
 	ConfigValue string `json:"configValue"` // 配置值
 	ConfigType  string `json:"configType"`  // 配置类型

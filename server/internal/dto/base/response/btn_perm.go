@@ -8,8 +8,8 @@ import (
 // BtnPermResponse 按钮权限响应模型
 // 用于返回按钮权限的基本信息
 type BtnPermResponse struct {
-	ID          string    `json:"id"`
-	MenuID      string    `json:"menuId"`
+	ID          int64     `json:"id,string"`
+	MenuID      int64     `json:"menuId,string"`
 	Code        string    `json:"code"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
@@ -36,8 +36,8 @@ type BtnPermListResponse struct {
 // BtnPermForRole 角色关联的按钮权限响应模型
 // 用于返回角色拥有的按钮权限信息
 type BtnPermForRole struct {
-	ID          string `json:"id"`
-	MenuID      string `json:"menuId"`
+	ID          int64  `json:"id,string"`
+	MenuID      int64  `json:"menuId,string"`
 	Code        string `json:"code"`
 	Name        string `json:"name"`
 	Description string `json:"description"`

@@ -6,7 +6,7 @@ import "time"
 // 存储在 Redis 中，用于实时跟踪在线用户状态
 // 纯业务模型，无 GORM 标签
 type OnlineUser struct {
-	UserID       string    // 用户 ID
+	UserID       int64     // 用户 ID
 	Username     string    // 用户名
 	Nickname     string    // 用户昵称
 	SessionID    string    // 会话 ID

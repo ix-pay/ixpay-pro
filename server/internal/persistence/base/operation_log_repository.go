@@ -1,13 +1,11 @@
 package persistence
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // operationLogModel 操作日志数据库模型
@@ -43,8 +41,8 @@ func (m *operationLogModel) toDomain() *entity.OperationLog {
 		return nil
 	}
 	return &entity.OperationLog{
-		ID:            common.ToString(m.ID),
-		UserID:        common.ToString(m.UserID),
+		ID:            m.ID,
+		UserID:        m.UserID,
 		Username:      m.Username,
 		Nickname:      m.Nickname,
 		OperationType: entity.OperationType(m.OperationType),
@@ -60,24 +58,22 @@ func (m *operationLogModel) toDomain() *entity.OperationLog {
 		Duration:      m.Duration,
 		ErrorMessage:  m.ErrorMessage,
 		IsSuccess:     m.IsSuccess,
-		CreatedBy:     common.ToString(m.CreatedBy),
+		CreatedBy:     m.CreatedBy,
 		CreatedAt:     m.CreatedAt,
-		UpdatedBy:     common.ToString(m.UpdatedBy),
+		UpdatedBy:     m.UpdatedBy,
 		UpdatedAt:     m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainOperationLog(log *entity.OperationLog) (*operationLogModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(log.ID, log.CreatedBy, log.UpdatedBy)
-
 	return &operationLogModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        log.ID,
+			CreatedBy: log.CreatedBy,
+			UpdatedBy: log.UpdatedBy,
 		},
-		UserID:        common.TryParseInt64(log.UserID),
+		UserID:        log.UserID,
 		Username:      log.Username,
 		Nickname:      log.Nickname,
 		OperationType: int(log.OperationType),
@@ -122,7 +118,7 @@ func (r *operationLogRepository) Create(log *entity.OperationLog) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	log.ID = common.ToString(dbModel.ID)
+	log.ID = dbModel.ID
 	return nil
 }
 
@@ -145,14 +141,9 @@ func (r *operationLogRepository) BatchCreate(logs []*entity.OperationLog) error 
 }
 
 // GetByID 根据 ID 查询操作日志
-func (r *operationLogRepository) GetByID(id string) (*entity.OperationLog, error) {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *operationLogRepository) GetByID(id int64) (*entity.OperationLog, error) {
 	var dbModel operationLogModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -190,33 +181,18 @@ func (r *operationLogRepository) List(page, pageSize int, filters map[string]int
 }
 
 // Delete 删除操作日志
-func (r *operationLogRepository) Delete(id string) error {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&operationLogModel{}, intID).Error
+func (r *operationLogRepository) Delete(id int64) error {
+	return r.db.Delete(&operationLogModel{}, id).Error
 }
 
 // DeleteByID 根据 ID 删除操作日志
-func (r *operationLogRepository) DeleteByID(id string) error {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&operationLogModel{}, intID).Error
+func (r *operationLogRepository) DeleteByID(id int64) error {
+	return r.db.Delete(&operationLogModel{}, id).Error
 }
 
 // BatchDelete 批量删除操作日志
-func (r *operationLogRepository) BatchDelete(ids []string) error {
-	intIDs, err := common.StringToInt64s(ids)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Where("id IN ?", intIDs).Delete(&operationLogModel{}).Error
+func (r *operationLogRepository) BatchDelete(ids []int64) error {
+	return r.db.Where("id IN ?", ids).Delete(&operationLogModel{}).Error
 }
 
 // DeleteByTimeRange 根据时间范围删除操作日志
@@ -253,10 +229,9 @@ func (r *operationLogRepository) CountByModule(module string) (int64, error) {
 }
 
 // CountByUser 统计用户的操作日志数
-func (r *operationLogRepository) CountByUser(userID string) (int64, error) {
-	intUserID, _ := strconv.ParseInt(userID, 10, 64)
+func (r *operationLogRepository) CountByUser(userID int64) (int64, error) {
 	var count int64
-	result := r.db.Model(&operationLogModel{}).Where("user_id = ?", intUserID).Count(&count)
+	result := r.db.Model(&operationLogModel{}).Where("user_id = ?", userID).Count(&count)
 	if result.Error != nil {
 		return 0, result.Error
 	}

@@ -5,8 +5,8 @@ package request
 // CreateDepartmentRequest 创建部门请求
 type CreateDepartmentRequest struct {
 	Name        string `json:"name" binding:"required"` // 部门名称
-	ParentID    string `json:"parentId"`                // 父部门 ID，默认为 0（顶级部门）
-	LeaderID    string `json:"leaderId"`                // 部门负责人 ID
+	ParentID    int64  `json:"parentId"`                // 父部门 ID，默认为 0（顶级部门）
+	LeaderID    int64  `json:"leaderId"`                // 部门负责人 ID
 	Sort        int    `json:"sort"`                    // 排序，默认为 0
 	Status      int    `json:"status"`                  // 状态：1-正常，0-禁用，默认为 1
 	Description string `json:"description"`             // 部门描述
@@ -14,10 +14,10 @@ type CreateDepartmentRequest struct {
 
 // UpdateDepartmentRequest 更新部门请求
 type UpdateDepartmentRequest struct {
-	ID          string `json:"id" binding:"required"`   // 部门 ID
+	ID          int64  `json:"id" binding:"required"`   // 部门 ID
 	Name        string `json:"name" binding:"required"` // 部门名称
-	ParentID    string `json:"parentId"`                // 父部门 ID
-	LeaderID    string `json:"leaderId"`                // 部门负责人 ID
+	ParentID    int64  `json:"parentId"`                // 父部门 ID
+	LeaderID    int64  `json:"leaderId"`                // 部门负责人 ID
 	Sort        int    `json:"sort"`                    // 排序
 	Status      int    `json:"status"`                  // 状态：1-正常，0-禁用
 	Description string `json:"description"`             // 部门描述
@@ -25,7 +25,7 @@ type UpdateDepartmentRequest struct {
 
 // UpdateDepartmentLeaderRequest 更新部门负责人请求
 type UpdateDepartmentLeaderRequest struct {
-	LeaderID string `json:"leaderId" binding:"required"` // 部门负责人 ID
+	LeaderID int64 `json:"leaderId" binding:"required"` // 部门负责人 ID
 }
 
 // GetDepartmentListRequest 获取部门列表请求
@@ -38,10 +38,10 @@ type GetDepartmentListRequest struct {
 
 // GetDepartmentByIDRequest 获取部门详情请求
 type GetDepartmentByIDRequest struct {
-	ID string `form:"id" binding:"required"` // 部门 ID
+	ID int64 `form:"id" binding:"required"` // 部门 ID
 }
 
 // DeleteDepartmentRequest 删除部门请求
 type DeleteDepartmentRequest struct {
-	ID string `json:"id" binding:"required"` // 部门 ID
+	ID int64 `json:"id" binding:"required"` // 部门 ID
 }

@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -126,14 +127,25 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	user, err := c.service.GetUserInfo(userID.(string))
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	user, err := c.service.GetUserInfo(userIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("获取用户信息失败", ctx)
 		return
 	}
 
 	// 从 Redis 获取用户的当前角色 ID
-	currentRoleIDStr, err := c.service.GetCurrentRoleID(userID.(string))
+	currentRoleIDStr, err := c.service.GetCurrentRoleID(strconv.FormatInt(userIDInt, 10))
 	if err != nil {
 		c.log.Warn("获取当前角色 ID 失败", "error", err)
 		// 不返回错误，继续执行
@@ -162,12 +174,14 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 	}
 
 	// 确定当前角色
-	var finalRoleID string
+	var finalRoleID int64
 	var finalRoleName string
 	if currentRoleIDStr != "" {
+		// 将 currentRoleIDStr 转换为 int64
+		currentRoleID, _ := strconv.ParseInt(currentRoleIDStr, 10, 64)
 		// 检查当前角色 ID 是否在用户的角色列表中
 		for _, roleInfo := range roleInfos {
-			if roleInfo.ID == currentRoleIDStr {
+			if roleInfo.ID == currentRoleID {
 				finalRoleID = roleInfo.ID
 				finalRoleName = roleInfo.Name
 				break
@@ -176,7 +190,7 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 	}
 
 	// 如果 Redis 中没有存储或角色不在列表中，使用第一个角色作为当前角色
-	if finalRoleID == "" && len(roleInfos) > 0 {
+	if finalRoleID == 0 && len(roleInfos) > 0 {
 		finalRoleID = roleInfos[0].ID
 		finalRoleName = roleInfos[0].Name
 	}
@@ -317,7 +331,14 @@ func (c *UserController) AddUser(ctx *gin.Context) {
 
 	// 分配角色
 	if len(req.Roles) > 0 {
-		if err := c.service.UpdateUserRoles(user.ID, req.Roles); err != nil {
+		// 将字符串数组转换为 int64 数组
+		roleIDs, err := convertStringSliceToInt64Slice(req.Roles)
+		if err != nil {
+			c.log.Error("角色 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+			return
+		}
+		if err := c.service.UpdateUserRoles(user.ID, roleIDs); err != nil {
 			baseRes.FailWithMessage("分配用户角色失败", ctx)
 			return
 		}
@@ -382,15 +403,33 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 		user.Status = req.Status
 	}
 
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	}
+
 	// 调用服务层更新用户信息
-	if err := c.service.UpdateUserInfo(user, updatedBy.(string)); err != nil {
+	if err := c.service.UpdateUserInfo(user, updatedByInt); err != nil {
 		baseRes.FailWithMessage("更新用户信息失败", ctx)
 		return
 	}
 
 	// 更新用户角色
 	if len(req.Roles) > 0 {
-		if err := c.service.UpdateUserRoles(user.ID, req.Roles); err != nil {
+		// 将字符串数组转换为 int64 数组
+		roleIDs, err := convertStringSliceToInt64Slice(req.Roles)
+		if err != nil {
+			c.log.Error("角色 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+			return
+		}
+		if err := c.service.UpdateUserRoles(user.ID, roleIDs); err != nil {
 			baseRes.FailWithMessage("更新用户角色失败", ctx)
 			return
 		}
@@ -416,11 +455,18 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/user/{id} [delete]
 func (c *UserController) DeleteUser(ctx *gin.Context) {
-	// 解析用户 ID（直接使用 string 类型）
-	userID := ctx.Param("id")
-	if userID == "" {
+	// 解析用户 ID 并转换为 int64
+	userIDStr := ctx.Param("id")
+	if userIDStr == "" {
 		c.log.Error("用户 ID 不能为空")
 		baseRes.FailWithMessage("用户 ID 不能为空", ctx)
+		return
+	}
+
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", userIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -429,6 +475,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
+	c.log.Info("删除用户成功", "userID", userID)
 	baseRes.OkWithMessage("删除用户成功", ctx)
 }
 
@@ -454,7 +501,7 @@ func (c *UserController) ChangePassword(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	userID, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未登录")
@@ -462,7 +509,18 @@ func (c *UserController) ChangePassword(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.service.ChangePassword(userID.(string), req.OldPassword, req.NewPassword); err != nil {
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	if err := c.service.ChangePassword(userIDInt, req.OldPassword, req.NewPassword); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -492,7 +550,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	// 获取当前登录用户ID作为修改者
+	// 获取当前登录用户 ID 作为修改者
 	updatedBy, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未登录")
@@ -500,15 +558,21 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的 UserID
-	userID := req.UserID
-	if userID == "" {
-		c.log.Error("用户 ID 不能为空")
-		baseRes.FailWithMessage("用户 ID 不能为空", ctx)
-		return
+	// 直接使用 int64 类型的 UserID
+	userIDInt := req.UserID
+
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
 	}
 
-	if err := c.service.ResetPassword(userID, "123456", updatedBy.(string)); err != nil {
+	if err := c.service.ResetPassword(userIDInt, "123456", updatedByInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
@@ -529,7 +593,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string												"服务器内部错误"
 //	@Router			/api/admin/user/getSelfSetting [get]
 func (c *UserController) GetSelfSetting(ctx *gin.Context) {
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	userID, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未登录")
@@ -537,7 +601,18 @@ func (c *UserController) GetSelfSetting(ctx *gin.Context) {
 		return
 	}
 
-	setting, err := c.service.GetSelfSetting(userID.(string))
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	setting, err := c.service.GetSelfSetting(userIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("获取用户设置失败", ctx)
 		return
@@ -572,7 +647,7 @@ func (c *UserController) SetSelfSetting(ctx *gin.Context) {
 		return
 	}
 
-	// 从上下文中获取用户ID
+	// 从上下文中获取用户 ID
 	userID, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未登录")
@@ -580,7 +655,18 @@ func (c *UserController) SetSelfSetting(ctx *gin.Context) {
 		return
 	}
 
-	setting, err := c.service.SetSelfSetting(userID.(string), &req)
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	setting, err := c.service.SetSelfSetting(userIDInt, &req)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -623,8 +709,27 @@ func (c *UserController) SwitchRole(ctx *gin.Context) {
 		return
 	}
 
-	// 调用服务层切换角色（使用 string 类型）
-	if err := c.service.SwitchRole(userID.(string), req.RoleID); err != nil {
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := userID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	// 将 RoleID 从 string 转换为 int64
+	roleIDInt, err := strconv.ParseInt(req.RoleID, 10, 64)
+	if err != nil {
+		c.log.Error("角色 ID 格式错误", "role_id", req.RoleID, "error", err)
+		baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+		return
+	}
+
+	// 调用服务层切换角色
+	if err := c.service.SwitchRole(userIDInt, roleIDInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

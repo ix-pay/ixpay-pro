@@ -1,6 +1,8 @@
 package wxapi
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/service"
 	"github.com/ix-pay/ixpay-pro/internal/dto/wx/request"
@@ -55,7 +57,7 @@ func (c *AuthController) LoginByCode(ctx *gin.Context) {
 
 	// 转换为响应格式
 	userInfoResponse := response.WXUserInfoResponse{
-		ID:       wxUser.ID,
+		ID:       fmt.Sprintf("%d", wxUser.ID),
 		Username: wxUser.Nickname,
 		Nickname: wxUser.Nickname,
 		Avatar:   wxUser.Avatar,

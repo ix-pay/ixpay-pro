@@ -5,8 +5,8 @@ import "time"
 // TaskExecutionLog 任务执行日志领域实体
 // 纯业务模型，无 GORM 标签
 type TaskExecutionLog struct {
-	ID          string    // 日志 ID
-	TaskID      string    // 任务 ID
+	ID          int64     // 日志 ID
+	TaskID      int64     // 任务 ID
 	TaskName    string    // 任务名称
 	Group       string    // 任务分组
 	ExecuteAt   string    // 执行时间
@@ -16,10 +16,10 @@ type TaskExecutionLog struct {
 	RetryCount  int       // 重试次数
 	CronExpr    string    // Cron 表达式
 	TriggerType string    // 触发类型：cron/manual/retry
-	OperatorID  string    // 操作人 ID（手动触发时）
-	CreatedBy   string    // 创建人 ID
+	OperatorID  int64     // 操作人 ID（手动触发时）
+	CreatedBy   int64     // 创建人 ID
 	CreatedAt   time.Time // 创建时间
-	UpdatedBy   string    // 更新人 ID
+	UpdatedBy   int64     // 更新人 ID
 	UpdatedAt   time.Time // 更新时间
 }
 
@@ -45,7 +45,7 @@ func (t *TaskExecutionLog) IsRetry() bool {
 
 // TaskStatistics 任务统计信息
 type TaskStatistics struct {
-	TaskID        string  // 任务 ID
+	TaskID        int64   // 任务 ID
 	TaskName      string  // 任务名称
 	Group         string  // 任务分组
 	TotalExecutes int64   // 总执行次数

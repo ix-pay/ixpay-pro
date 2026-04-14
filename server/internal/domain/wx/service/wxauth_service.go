@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	baseRepo "github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
@@ -66,7 +67,7 @@ func (s *WXAuthService) LoginByCode(code string) (*entity.WXUser, string, string
 
 	// 3. 生成会话 token 返回给客户端
 	// 微信用户没有 nickname 字段，使用空字符串
-	accessToken, refreshToken, accessExpire, refreshExpire, err := s.auth.GenerateToken(wxUser.ID, "", "", "user", "wechat")
+	accessToken, refreshToken, accessExpire, refreshExpire, err := s.auth.GenerateToken(fmt.Sprintf("%d", wxUser.ID), "", "", "user", "wechat")
 	if err != nil {
 		s.log.Error("生成令牌失败", "error", err)
 		return nil, "", "", time.Time{}, time.Time{}, err
@@ -106,10 +107,15 @@ func (s *WXAuthService) RefreshToken(refreshToken string) (string, string, time.
 		return "", "", time.Time{}, time.Time{}, err
 	}
 
-	wxUserID := claims.UserID
+	// wxUserID 从 claims 中获取，是 string 类型，需要转换为 int64
+	wxUserIDInt, err := strconv.ParseInt(claims.UserID, 10, 64)
+	if err != nil {
+		s.log.Error("解析用户 ID 失败", "error", err)
+		return "", "", time.Time{}, time.Time{}, err
+	}
 
 	// 更新会话信息
-	session, err := s.wxAuthSessionRepo.GetActiveSessionByWXUserID(wxUserID)
+	session, err := s.wxAuthSessionRepo.GetActiveSessionByWXUserID(wxUserIDInt)
 	if err != nil {
 		s.log.Error("获取活跃会话失败", "error", err)
 		return newAccessToken, newRefreshToken, accessExpire, refreshExpire, nil // 即使更新会话失败，也返回新令牌
@@ -124,7 +130,7 @@ func (s *WXAuthService) RefreshToken(refreshToken string) (string, string, time.
 		s.log.Error("更新会话失败", "error", err)
 	}
 
-	s.log.Info("令牌刷新成功", "wxUserId", wxUserID)
+	s.log.Info("令牌刷新成功", "wxUserId", wxUserIDInt)
 	return newAccessToken, newRefreshToken, accessExpire, refreshExpire, nil
 }
 
@@ -138,7 +144,12 @@ func (s *WXAuthService) GetUserInfo(accessToken string) (*entity.WXUser, error) 
 		return nil, err
 	}
 
-	wxUserID := claims.UserID
+	// wxUserID 从 claims 中获取，是 string 类型，需要转换为 int64
+	wxUserID, err := strconv.ParseInt(claims.UserID, 10, 64)
+	if err != nil {
+		s.log.Error("解析用户 ID 失败", "error", err)
+		return nil, err
+	}
 
 	// 查询用户信息
 	user, err := s.wxUserRepo.GetByID(wxUserID)
@@ -250,7 +261,7 @@ func (s *WXAuthService) getUserInfo(accessToken, openID string) (*response.WXUse
 }
 
 // BindWXUserToSystemUser 绑定微信用户到系统用户
-func (s *WXAuthService) BindWXUserToSystemUser(openID string, userID string) error {
+func (s *WXAuthService) BindWXUserToSystemUser(openID string, userID int64) error {
 	// 查询微信用户
 	wxUser, err := s.wxUserRepo.GetByOpenID(openID)
 	if err != nil {
@@ -278,8 +289,8 @@ func (s *WXAuthService) UnbindWXUserFromSystemUser(openID string) error {
 		return fmt.Errorf("微信用户不存在：%w", err)
 	}
 
-	// 解绑系统用户 ID（设置为空字符串）
-	wxUser.UserID = ""
+	// 解绑系统用户 ID（设置为 0）
+	wxUser.UserID = 0
 	if err := s.wxUserRepo.Update(wxUser); err != nil {
 		s.log.Error("更新微信用户失败", "error", err)
 		return fmt.Errorf("解绑用户失败：%w", err)
@@ -335,7 +346,12 @@ func (s *WXAuthService) Logout(accessToken string) error {
 		return err
 	}
 
-	wxUserID := claims.UserID
+	// wxUserID 从 claims 中获取，是 string 类型，需要转换为 int64
+	wxUserID, err := strconv.ParseInt(claims.UserID, 10, 64)
+	if err != nil {
+		s.log.Error("解析用户 ID 失败", "error", err)
+		return err
+	}
 
 	// 查询用户会话
 	session, err := s.wxAuthSessionRepo.GetActiveSessionByWXUserID(wxUserID)

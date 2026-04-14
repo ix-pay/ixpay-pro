@@ -1,6 +1,8 @@
 package baseapi
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
@@ -84,7 +86,7 @@ func (c *OnlineUserController) GetOnlineUserList(ctx *gin.Context) {
 	userResponses := make([]response.OnlineUserResponse, len(pageUsers))
 	for i, user := range pageUsers {
 		userResponses[i] = response.OnlineUserResponse{
-			UserID:       user.UserID,
+			UserID:       strconv.FormatInt(user.UserID, 10),
 			Username:     user.Username,
 			Nickname:     user.Nickname,
 			SessionID:    user.SessionID,
@@ -136,11 +138,18 @@ func (c *OnlineUserController) GetOnlineUserByID(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的用户 ID
-	userID := ctx.Param("user_id")
-	if userID == "" {
+	// 将字符串 ID 转换为 int64
+	userIDStr := ctx.Param("user_id")
+	if userIDStr == "" {
 		c.log.Error("用户 ID 不能为空")
 		baseRes.FailWithMessage("用户 ID 不能为空", ctx)
+		return
+	}
+
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "user_id", userIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -152,7 +161,7 @@ func (c *OnlineUserController) GetOnlineUserByID(ctx *gin.Context) {
 
 	// 转换为响应 DTO
 	userResponse := response.OnlineUserResponse{
-		UserID:       user.UserID,
+		UserID:       strconv.FormatInt(user.UserID, 10),
 		Username:     user.Username,
 		Nickname:     user.Nickname,
 		SessionID:    user.SessionID,
@@ -194,28 +203,40 @@ func (c *OnlineUserController) ForceOffline(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的用户 ID
-	userID := ctx.Param("user_id")
-	if userID == "" {
+	// 将字符串 ID 转换为 int64
+	userIDStr := ctx.Param("user_id")
+	if userIDStr == "" {
 		c.log.Error("用户 ID 不能为空")
 		baseRes.FailWithMessage("用户 ID 不能为空", ctx)
 		return
 	}
 
-	// 获取下线原因（从请求体）
-	var req struct {
-		Reason string `json:"reason"`
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "user_id", userIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
 	}
-	ctx.ShouldBindJSON(&req)
+
+	// 将 operatorID 转换为 int64
+	var operatorIDInt int64
+	switch v := operatorID.(type) {
+	case string:
+		operatorIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		operatorIDInt = v
+	case int:
+		operatorIDInt = int64(v)
+	}
 
 	// 强制用户下线
-	if err := c.service.ForceOffline(userID, operatorID.(string)); err != nil {
+	if err := c.service.ForceOffline(userID, strconv.FormatInt(operatorIDInt, 10)); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("强制用户下线成功", "user_id", userID, "operator_id", operatorID, "reason", req.Reason)
-	baseRes.OkWithMessage("强制下线成功", ctx)
+	c.log.Info("强制用户下线成功", "user_id", userID, "operator_id", operatorIDInt)
+	baseRes.OkWithMessage("强制用户下线成功", ctx)
 }
 
 // GetOnlineCount 获取在线用户数量
@@ -327,12 +348,31 @@ func (c *OnlineUserController) BatchForceOffline(ctx *gin.Context) {
 		return
 	}
 
+	// 将字符串 ID 数组转换为 int64 数组
+	userIDs, err := convertStringSliceToInt64Slice(req.UserIDs)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
+	}
+
+	// 将 operatorID 转换为 int64
+	var operatorIDInt int64
+	switch v := operatorID.(type) {
+	case string:
+		operatorIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		operatorIDInt = v
+	case int:
+		operatorIDInt = int64(v)
+	}
+
 	// 批量强制用户下线
-	if err := c.service.BatchKickoutUsers(req.UserIDs, req.Reason, operatorID.(string)); err != nil {
+	if err := c.service.BatchKickoutUsers(userIDs, req.Reason, strconv.FormatInt(operatorIDInt, 10)); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("批量强制用户下线成功", "count", len(req.UserIDs), "operator_id", operatorID)
+	c.log.Info("批量强制用户下线成功", "count", len(userIDs), "operator_id", operatorIDInt)
 	baseRes.OkWithMessage("批量强制下线成功", ctx)
 }

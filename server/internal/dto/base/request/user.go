@@ -9,7 +9,7 @@ type RegisterRequest struct {
 
 // UpdateUserRequest 更新用户信息请求参数
 type UpdateUserRequest struct {
-	ID       string   `json:"id" binding:"required"`
+	ID       int64    `json:"id" binding:"required"`
 	Nickname string   `json:"nickname" binding:"max=50"`
 	Email    string   `json:"email" binding:"email"`
 	Phone    string   `json:"phone" binding:"max=20"`
@@ -26,7 +26,7 @@ type ChangePasswordRequest struct {
 
 // ResetPasswordRequest 重置密码请求参数
 type ResetPasswordRequest struct {
-	UserID string `json:"userId" binding:"required"`
+	UserID int64 `json:"userId" binding:"required"`
 }
 
 // AddUserRequest 增加用户请求参数
@@ -37,8 +37,8 @@ type AddUserRequest struct {
 	Nickname     string   `json:"nickname" binding:"max=50"`
 	Phone        string   `json:"phone" binding:"max=20"`
 	Avatar       string   `json:"avatar" binding:"max=255"`
-	DepartmentID string   `json:"departmentId" binding:"omitempty,min=1"`
-	PositionID   string   `json:"positionId" binding:"omitempty,min=1"`
+	DepartmentID int64    `json:"departmentId" binding:"omitempty,min=1"`
+	PositionID   int64    `json:"positionId" binding:"omitempty,min=1"`
 	Status       int      `json:"status" binding:"omitempty,min=0,max=1"`
 	Roles        []string `json:"roles" binding:"omitempty"`
 }

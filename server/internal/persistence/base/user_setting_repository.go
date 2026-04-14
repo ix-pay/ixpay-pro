@@ -1,12 +1,9 @@
 package persistence
 
 import (
-	"strconv"
-
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // userSettingModel 用户设置数据库模型
@@ -33,8 +30,8 @@ func (m *userSettingModel) toDomain() *entity.UserSetting {
 		return nil
 	}
 	return &entity.UserSetting{
-		ID:               common.ToString(m.ID),
-		UserID:           common.ToString(m.UserID),
+		ID:               m.ID,
+		UserID:           m.UserID,
 		ThemeColor:       m.ThemeColor,
 		SidebarColor:     m.SidebarColor,
 		NavbarColor:      m.NavbarColor,
@@ -42,24 +39,22 @@ func (m *userSettingModel) toDomain() *entity.UserSetting {
 		Language:         m.Language,
 		AutoLogin:        m.AutoLogin,
 		RememberPassword: m.RememberPassword,
-		CreatedBy:        common.ToString(m.CreatedBy),
+		CreatedBy:        m.CreatedBy,
 		CreatedAt:        m.CreatedAt,
-		UpdatedBy:        common.ToString(m.UpdatedBy),
+		UpdatedBy:        m.UpdatedBy,
 		UpdatedAt:        m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainUserSetting(setting *entity.UserSetting) (*userSettingModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(setting.ID, setting.CreatedBy, setting.UpdatedBy)
-
 	return &userSettingModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        setting.ID,
+			CreatedBy: setting.CreatedBy,
+			UpdatedBy: setting.UpdatedBy,
 		},
-		UserID:           common.TryParseInt64(setting.UserID),
+		UserID:           setting.UserID,
 		ThemeColor:       setting.ThemeColor,
 		SidebarColor:     setting.SidebarColor,
 		NavbarColor:      setting.NavbarColor,
@@ -84,11 +79,9 @@ func NewUserSettingRepository(db *database.PostgresDB) repo.UserSettingRepositor
 }
 
 // GetByUserID 根据用户 ID 查询用户设置
-func (r *userSettingRepository) GetByUserID(userID string) (*entity.UserSetting, error) {
-	intUserID, _ := strconv.ParseInt(userID, 10, 64)
-
+func (r *userSettingRepository) GetByUserID(userID int64) (*entity.UserSetting, error) {
 	var dbModel userSettingModel
-	result := r.db.Where("user_id = ?", intUserID).First(&dbModel)
+	result := r.db.Where("user_id = ?", userID).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -108,7 +101,7 @@ func (r *userSettingRepository) Create(setting *entity.UserSetting) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	setting.ID = common.ToString(dbModel.ID)
+	setting.ID = dbModel.ID
 	return nil
 }
 
@@ -123,8 +116,6 @@ func (r *userSettingRepository) Update(setting *entity.UserSetting) error {
 }
 
 // Delete 删除用户设置
-func (r *userSettingRepository) Delete(userID string) error {
-	intUserID, _ := strconv.ParseInt(userID, 10, 64)
-
-	return r.db.Where("user_id = ?", intUserID).Delete(&userSettingModel{}).Error
+func (r *userSettingRepository) Delete(userID int64) error {
+	return r.db.Where("user_id = ?", userID).Delete(&userSettingModel{}).Error
 }

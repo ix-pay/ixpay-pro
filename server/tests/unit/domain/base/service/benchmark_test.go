@@ -15,7 +15,7 @@ func BenchmarkOnlineUserService_AddOnlineUser(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		userID := string(rune(i + 1))
+		userID := int64(i + 1)
 		err := service.AddOnlineUser(
 			userID,
 			"user"+string(rune(i+1)),
@@ -42,7 +42,7 @@ func BenchmarkOnlineUserService_GetOnlineUser(b *testing.B) {
 
 	// 准备测试数据
 	for i := 0; i < 100; i++ {
-		userID := string(rune(i + 1))
+		userID := int64(i + 1)
 		_ = service.AddOnlineUser(
 			userID,
 			"user"+string(rune(i+1)),
@@ -59,7 +59,7 @@ func BenchmarkOnlineUserService_GetOnlineUser(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		userID := string(rune(i%100 + 1))
+		userID := int64(i%100 + 1)
 		_, _ = service.GetOnlineUserByID(userID)
 	}
 }
@@ -72,7 +72,7 @@ func BenchmarkOnlineUserService_GetOnlineUserList(b *testing.B) {
 
 	// 准备大量测试数据
 	for i := 0; i < 1000; i++ {
-		userID := string(rune(i + 1))
+		userID := int64(i + 1)
 		_ = service.AddOnlineUser(
 			userID,
 			"user"+string(rune(i+1)),
@@ -105,7 +105,7 @@ func BenchmarkConfigService_GetConfigByKey(b *testing.B) {
 		config := &entity.Config{
 			ConfigKey:   key,
 			ConfigValue: "value_" + string(rune(i+1)),
-			ConfigType:  "string",
+			ConfigType:  1, // 改为 int 类型
 			Description: "基准测试配置",
 			Status:      1,
 		}
@@ -131,7 +131,7 @@ func BenchmarkConfigService_GetConfigList(b *testing.B) {
 		config := &entity.Config{
 			ConfigKey:   key,
 			ConfigValue: "value_" + string(rune(i+1)),
-			ConfigType:  "string",
+			ConfigType:  1, // 改为 int 类型
 			Description: "基准测试配置",
 			Status:      1,
 		}

@@ -1,6 +1,9 @@
 package wxapi
 
 import (
+	"fmt"
+	"strconv"
+
 	wxService "github.com/ix-pay/ixpay-pro/internal/domain/wx/service"
 	"github.com/ix-pay/ixpay-pro/internal/dto/wx/request"
 	"github.com/ix-pay/ixpay-pro/internal/dto/wx/response"
@@ -57,11 +60,19 @@ func (c *PaymentController) CreatePayment(ctx *gin.Context) {
 		return
 	}
 
+	// 将 userID 从 string 转换为 int64
+	userIDInt, err := strconv.ParseInt(userID.(string), 10, 64)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
+	}
+
 	// 将金额从元转换为分
 	amount := int64(req.Amount * 100)
 
 	payment, err := c.service.CreatePayment(
-		userID.(string),
+		userIDInt,
 		req.OrderID,
 		amount,
 		req.PaymentMethod,
@@ -74,9 +85,9 @@ func (c *PaymentController) CreatePayment(ctx *gin.Context) {
 
 	// 构建响应
 	paymentResponse := response.PaymentResponse{
-		ID:            payment.ID,
+		ID:            fmt.Sprintf("%d", payment.ID),
 		OrderID:       payment.OrderID,
-		UserID:        payment.UserID,
+		UserID:        fmt.Sprintf("%d", payment.UserID),
 		Amount:        req.Amount,
 		Currency:      req.Currency,
 		PaymentMethod: payment.Method,
@@ -112,7 +123,15 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 		return
 	}
 
-	payment, err := c.service.GetPayment(paymentID)
+	// 将 paymentID 从 string 转换为 int64
+	paymentIDInt, err := strconv.ParseInt(paymentID, 10, 64)
+	if err != nil {
+		c.log.Error("支付 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("支付 ID 格式错误", ctx)
+		return
+	}
+
+	payment, err := c.service.GetPayment(paymentIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("查询支付失败", ctx)
 		return
@@ -126,7 +145,8 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 		return
 	}
 
-	if payment.UserID != userID.(string) {
+	userIDInt, _ := strconv.ParseInt(userID.(string), 10, 64)
+	if payment.UserID != userIDInt {
 		c.log.Error("无权限")
 		baseRes.NoAuth("无权限", ctx)
 		return
@@ -134,9 +154,9 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 
 	// 构建响应，将金额从分转换为元
 	paymentResponse := response.PaymentResponse{
-		ID:            payment.ID,
+		ID:            fmt.Sprintf("%d", payment.ID),
 		OrderID:       payment.OrderID,
-		UserID:        payment.UserID,
+		UserID:        fmt.Sprintf("%d", payment.UserID),
 		Amount:        float64(payment.Amount) / 100.0,
 		Currency:      payment.Currency,
 		PaymentMethod: payment.Method,
@@ -211,29 +231,45 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 		return
 	}
 
+	// 将 paymentID 从 string 转换为 int64
+	paymentIDInt, err := strconv.ParseInt(paymentID, 10, 64)
+	if err != nil {
+		c.log.Error("支付 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("支付 ID 格式错误", ctx)
+		return
+	}
+
+	// 将 userID 从 string 转换为 int64
+	userIDInt, err := strconv.ParseInt(userID.(string), 10, 64)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
+	}
+
 	// 获取支付记录以验证用户权限
-	payment, err := c.service.GetPayment(paymentID)
+	payment, err := c.service.GetPayment(paymentIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
 
 	// 检查权限
-	if payment.UserID != userID.(string) {
+	if payment.UserID != userIDInt {
 		c.log.Error("无权限")
 		baseRes.NoAuth("无权限", ctx)
 		return
 	}
 
 	// 取消支付
-	err = c.service.CancelPayment(paymentID)
+	err = c.service.CancelPayment(paymentIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
 	}
 
 	// 重新获取支付记录以获取更新后的状态
-	payment, err = c.service.GetPayment(paymentID)
+	payment, err = c.service.GetPayment(paymentIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("取消支付失败", ctx)
 		return
@@ -241,9 +277,9 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 
 	// 构建响应，将金额从分转换为元
 	paymentResponse := response.PaymentResponse{
-		ID:            payment.ID,
+		ID:            fmt.Sprintf("%d", payment.ID),
 		OrderID:       payment.OrderID,
-		UserID:        payment.UserID,
+		UserID:        fmt.Sprintf("%d", payment.UserID),
 		Amount:        float64(payment.Amount) / 100.0,
 		Currency:      payment.Currency,
 		PaymentMethod: payment.Method,

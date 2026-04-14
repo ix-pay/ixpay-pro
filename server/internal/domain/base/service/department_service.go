@@ -23,7 +23,7 @@ func NewDepartmentService(repo repo.DepartmentRepository, log logger.Logger) *De
 }
 
 // CreateDepartment 创建部门
-func (s *DepartmentService) CreateDepartment(name, description, parentID, leaderID string, createdBy string, sort, status int) (*entity.Department, error) {
+func (s *DepartmentService) CreateDepartment(name, description string, parentID, leaderID int64, createdBy int64, sort, status int) (*entity.Department, error) {
 	// 检查部门名称是否已存在（在同一父部门下）
 	existingDepts, err := s.repo.GetChildrenByParentID(parentID)
 	if err != nil {
@@ -39,7 +39,7 @@ func (s *DepartmentService) CreateDepartment(name, description, parentID, leader
 	}
 
 	// 如果指定了父部门，验证父部门是否存在
-	if parentID != "" {
+	if parentID != 0 {
 		_, err := s.repo.GetByID(parentID)
 		if err != nil {
 			s.log.Error("父部门不存在", "error", err, "parent_id", parentID)
@@ -72,7 +72,7 @@ func (s *DepartmentService) CreateDepartment(name, description, parentID, leader
 }
 
 // UpdateDepartment 更新部门
-func (s *DepartmentService) UpdateDepartment(id, name, description, parentID, leaderID string, updatedBy string, sort, status int) (*entity.Department, error) {
+func (s *DepartmentService) UpdateDepartment(id int64, name, description string, parentID, leaderID int64, updatedBy int64, sort, status int) (*entity.Department, error) {
 	// 获取部门
 	department, err := s.repo.GetByID(id)
 	if err != nil {
@@ -111,7 +111,7 @@ func (s *DepartmentService) UpdateDepartment(id, name, description, parentID, le
 		}
 
 		// 验证新父部门是否存在
-		if parentID != "" {
+		if parentID != 0 {
 			_, err := s.repo.GetByID(parentID)
 			if err != nil {
 				s.log.Error("新父部门不存在", "error", err, "parent_id", parentID)
@@ -152,7 +152,7 @@ func (s *DepartmentService) UpdateDepartment(id, name, description, parentID, le
 }
 
 // isDescendant 递归检查是否是子孙部门
-func (s *DepartmentService) isDescendant(children []*entity.Department, targetID string) bool {
+func (s *DepartmentService) isDescendant(children []*entity.Department, targetID int64) bool {
 	for _, child := range children {
 		if child.ID == targetID {
 			return true
@@ -169,7 +169,7 @@ func (s *DepartmentService) isDescendant(children []*entity.Department, targetID
 }
 
 // DeleteDepartment 删除部门
-func (s *DepartmentService) DeleteDepartment(id string) error {
+func (s *DepartmentService) DeleteDepartment(id int64) error {
 	// 获取部门
 	department, err := s.repo.GetByID(id)
 	if err != nil {
@@ -200,7 +200,7 @@ func (s *DepartmentService) DeleteDepartment(id string) error {
 }
 
 // GetDepartmentByID 获取部门详情
-func (s *DepartmentService) GetDepartmentByID(id string) (*entity.Department, error) {
+func (s *DepartmentService) GetDepartmentByID(id int64) (*entity.Department, error) {
 	// ⭐ 优化：使用 Preload 加载子部门、父部门、负责人
 	department, err := s.repo.GetByID(id,
 		repo.DepartmentRelationChildren,
@@ -236,7 +236,7 @@ func (s *DepartmentService) GetDepartmentTree() ([]*entity.Department, error) {
 }
 
 // GetDepartmentPath 获取部门路径
-func (s *DepartmentService) GetDepartmentPath(id string) ([]*entity.Department, error) {
+func (s *DepartmentService) GetDepartmentPath(id int64) ([]*entity.Department, error) {
 	// ⭐ 优化：使用 Preload 加载父部门
 	department, err := s.repo.GetByID(id, repo.DepartmentRelationParent)
 	if err != nil {
@@ -256,7 +256,7 @@ func (s *DepartmentService) GetDepartmentPath(id string) ([]*entity.Department, 
 }
 
 // UpdateDepartmentLeader 更新部门负责人
-func (s *DepartmentService) UpdateDepartmentLeader(id, leaderID string, updatedBy string) error {
+func (s *DepartmentService) UpdateDepartmentLeader(id, leaderID int64, updatedBy int64) error {
 	// 获取部门
 	department, err := s.repo.GetByID(id)
 	if err != nil {

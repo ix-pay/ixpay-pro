@@ -1,12 +1,9 @@
 package persistence
 
 import (
-	"strconv"
-
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // configModel 配置数据库模型
@@ -14,7 +11,7 @@ type configModel struct {
 	database.SnowflakeBaseModel
 	ConfigKey   string `gorm:"size:100;not null"`
 	ConfigValue string `gorm:"type:text"`
-	ConfigType  string `gorm:"size:20"`
+	ConfigType  int    `gorm:"default:1"`
 	Description string `gorm:"size:255"`
 	Status      int    `gorm:"default:1"`
 }
@@ -30,46 +27,26 @@ func (m *configModel) toDomain() *entity.Config {
 		return nil
 	}
 	return &entity.Config{
-		ID:          strconv.FormatInt(m.ID, 10),
+		ID:          m.ID,
 		ConfigKey:   m.ConfigKey,
 		ConfigValue: m.ConfigValue,
 		ConfigType:  m.ConfigType,
 		Description: m.Description,
 		Status:      m.Status,
-		CreatedBy:   strconv.FormatInt(m.CreatedBy, 10),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
-		UpdatedBy:   strconv.FormatInt(m.UpdatedBy, 10),
+		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainConfig(config *entity.Config) (*configModel, error) {
-	var id int64
-	var err error
-
-	if config.ID != "" {
-		id, err = strconv.ParseInt(config.ID, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	var createdBy int64
-	if config.CreatedBy != "" {
-		createdBy, _ = strconv.ParseInt(config.CreatedBy, 10, 64)
-	}
-
-	var updatedBy int64
-	if config.UpdatedBy != "" {
-		updatedBy, _ = strconv.ParseInt(config.UpdatedBy, 10, 64)
-	}
-
 	return &configModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        config.ID,
+			CreatedBy: config.CreatedBy,
+			UpdatedBy: config.UpdatedBy,
 		},
 		ConfigKey:   config.ConfigKey,
 		ConfigValue: config.ConfigValue,
@@ -93,14 +70,9 @@ func NewConfigRepository(db *database.PostgresDB) repo.ConfigRepository {
 }
 
 // GetByID 根据 ID 查询配置
-func (r *configRepository) GetByID(id string) (*entity.Config, error) {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *configRepository) GetByID(id int64) (*entity.Config, error) {
 	var dbModel configModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -131,7 +103,7 @@ func (r *configRepository) Create(config *entity.Config) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	config.ID = common.ToString(dbModel.ID)
+	config.ID = dbModel.ID
 	return nil
 }
 
@@ -146,13 +118,8 @@ func (r *configRepository) Update(config *entity.Config) error {
 }
 
 // Delete 删除配置
-func (r *configRepository) Delete(id string) error {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&configModel{}, intID).Error
+func (r *configRepository) Delete(id int64) error {
+	return r.db.Delete(&configModel{}, id).Error
 }
 
 // List 分页查询配置列表

@@ -1,12 +1,9 @@
 package persistence
 
 import (
-	"strconv"
-
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // apiModel API 路由数据库模型
@@ -32,7 +29,7 @@ func (m *apiModel) toDomain() *entity.API {
 		return nil
 	}
 	return &entity.API{
-		ID:           common.ToString(m.ID),
+		ID:           m.ID,
 		Path:         m.Path,
 		Method:       m.Method,
 		Group:        m.Group,
@@ -40,22 +37,20 @@ func (m *apiModel) toDomain() *entity.API {
 		AuthType:     m.AuthType,
 		Description:  m.Description,
 		Status:       m.Status,
-		CreatedBy:    common.ToString(m.CreatedBy),
+		CreatedBy:    m.CreatedBy,
 		CreatedAt:    m.CreatedAt,
-		UpdatedBy:    common.ToString(m.UpdatedBy),
+		UpdatedBy:    m.UpdatedBy,
 		UpdatedAt:    m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainAPI(api *entity.API) (*apiModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(api.ID, api.CreatedBy, api.UpdatedBy)
-
 	return &apiModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        api.ID,
+			CreatedBy: api.CreatedBy,
+			UpdatedBy: api.UpdatedBy,
 		},
 		Path:         api.Path,
 		Method:       api.Method,
@@ -87,14 +82,9 @@ func (r *apiRepository) BatchSave(routes []*entity.API) error {
 }
 
 // GetByID 根据 ID 查询 API 路由
-func (r *apiRepository) GetByID(id string) (*entity.API, error) {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *apiRepository) GetByID(id int64) (*entity.API, error) {
 	var dbModel apiModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -141,7 +131,7 @@ func (r *apiRepository) Create(route *entity.API) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	route.ID = common.ToString(dbModel.ID)
+	route.ID = dbModel.ID
 	return nil
 }
 
@@ -156,13 +146,8 @@ func (r *apiRepository) Update(route *entity.API) error {
 }
 
 // Delete 删除 API 路由
-func (r *apiRepository) Delete(id string) error {
-	intID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&apiModel{}, intID).Error
+func (r *apiRepository) Delete(id int64) error {
+	return r.db.Delete(&apiModel{}, id).Error
 }
 
 // List 分页查询 API 路由列表
@@ -195,7 +180,7 @@ func (r *apiRepository) List(page, pageSize int, filters map[string]interface{})
 }
 
 // GetAPIsByRole 根据角色获取 API 路由
-func (r *apiRepository) GetAPIsByRole(roleID string) ([]*entity.API, error) {
+func (r *apiRepository) GetAPIsByRole(roleID int64) ([]*entity.API, error) {
 	// TODO: 实现角色关联 API 路由查询
 	return nil, nil
 }

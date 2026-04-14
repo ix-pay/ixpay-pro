@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -27,11 +28,18 @@ func NewTaskExecutionLogService(repo repo.TaskExecutionLogRepository, log logger
 func (s *TaskExecutionLogService) RecordExecution(
 	taskID, taskName, group, cronExpr, triggerType string,
 	duration int64, result string, errorInfo string,
-	retryCount int, operatorID string,
+	retryCount int, operatorID int64,
 ) error {
+	// 将 taskID 从 string 转换为 int64
+	taskIDInt, err := strconv.ParseInt(taskID, 10, 64)
+	if err != nil {
+		s.log.Error("任务 ID 格式错误", "task_id", taskID, "error", err)
+		return errors.New("任务 ID 格式错误")
+	}
+
 	// 创建执行日志记录
 	log := &entity.TaskExecutionLog{
-		TaskID:      taskID,
+		TaskID:      taskIDInt,
 		TaskName:    taskName,
 		Group:       group,
 		ExecuteAt:   time.Now().Format(time.RFC3339),
@@ -55,7 +63,7 @@ func (s *TaskExecutionLogService) RecordExecution(
 }
 
 // GetExecutionHistory 查询任务执行历史
-func (s *TaskExecutionLogService) GetExecutionHistory(taskID string, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error) {
+func (s *TaskExecutionLogService) GetExecutionHistory(taskID int64, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -73,7 +81,7 @@ func (s *TaskExecutionLogService) GetExecutionHistory(taskID string, page, pageS
 }
 
 // GetTaskStatistics 统计任务执行情况
-func (s *TaskExecutionLogService) GetTaskStatistics(taskID string) (*entity.TaskStatistics, error) {
+func (s *TaskExecutionLogService) GetTaskStatistics(taskID int64) (*entity.TaskStatistics, error) {
 	// 获取最近执行记录
 	latestLogs, err := s.repo.GetLatestByTaskID(taskID, 1)
 	if err != nil {
@@ -89,7 +97,7 @@ func (s *TaskExecutionLogService) GetTaskStatistics(taskID string) (*entity.Task
 	}
 
 	// 获取成功次数
-	successCount, err := s.repo.CountByResult("success")
+	successCount, err := s.repo.CountByTaskIDAndResult(taskID, "success")
 	if err != nil {
 		s.log.Error("统计任务成功次数失败", "task_id", taskID, "error", err)
 		return nil, errors.New("获取任务统计失败")
@@ -141,7 +149,7 @@ func (s *TaskExecutionLogService) GetAllTaskStatistics() ([]*entity.TaskStatisti
 	}
 
 	// 按任务 ID 分组统计
-	taskMap := make(map[string]*entity.TaskStatistics)
+	taskMap := make(map[int64]*entity.TaskStatistics)
 	for _, log := range logs {
 		if _, exists := taskMap[log.TaskID]; !exists {
 			taskMap[log.TaskID] = &entity.TaskStatistics{

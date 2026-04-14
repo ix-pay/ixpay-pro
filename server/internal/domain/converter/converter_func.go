@@ -126,15 +126,19 @@ func RoleToDTO(role *entity.Role) response.RoleResponse {
 	}
 }
 
-// DepartmentToDTO 转换为部门 DTO
+// DepartmentToDTO 转换为部门响应
 func DepartmentToDTO(dept *entity.Department) response.DepartmentResponse {
+	leaderName := ""
+	if dept.Leader != nil {
+		leaderName = dept.Leader.Nickname
+	}
 	return response.DepartmentResponse{
 		ID:        dept.ID,
 		Name:      dept.Name,
 		ParentID:  dept.ParentID,
 		Sort:      dept.Sort,
 		Status:    dept.Status,
-		Leader:    dept.LeaderID,
+		Leader:    leaderName,
 		CreatedAt: dept.CreatedAt.Format(time.RFC3339),
 	}
 }

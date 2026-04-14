@@ -23,12 +23,12 @@ func NewBtnPermService(btnPermRepo repo.BtnPermRepository, logger logger.Logger)
 }
 
 // CreateBtnPerm 创建按钮权限
-func (s *BtnPermService) CreateBtnPerm(btnPerm *entity.BtnPerm, createdBy string) error {
+func (s *BtnPermService) CreateBtnPerm(btnPerm *entity.BtnPerm, createdBy int64) error {
 	// 验证参数
 	if btnPerm == nil {
 		return errors.New("无效的参数")
 	}
-	if btnPerm.MenuID == "" {
+	if btnPerm.MenuID == 0 {
 		return errors.New("菜单 ID 不能为空")
 	}
 	if btnPerm.Name == "" {
@@ -64,12 +64,12 @@ func (s *BtnPermService) CreateBtnPerm(btnPerm *entity.BtnPerm, createdBy string
 }
 
 // UpdateBtnPerm 更新按钮权限
-func (s *BtnPermService) UpdateBtnPerm(btnPerm *entity.BtnPerm, updatedBy string) error {
+func (s *BtnPermService) UpdateBtnPerm(btnPerm *entity.BtnPerm, updatedBy int64) error {
 	// 验证参数
-	if btnPerm == nil || btnPerm.ID == "" {
+	if btnPerm == nil || btnPerm.ID == 0 {
 		return errors.New("无效的参数")
 	}
-	if btnPerm.MenuID == "" {
+	if btnPerm.MenuID == 0 {
 		return errors.New("菜单 ID 不能为空")
 	}
 	if btnPerm.Name == "" {
@@ -114,9 +114,9 @@ func (s *BtnPermService) UpdateBtnPerm(btnPerm *entity.BtnPerm, updatedBy string
 }
 
 // DeleteBtnPerm 删除按钮权限
-func (s *BtnPermService) DeleteBtnPerm(id string) error {
+func (s *BtnPermService) DeleteBtnPerm(id int64) error {
 	// 验证参数
-	if id == "" {
+	if id == 0 {
 		return errors.New("无效的参数")
 	}
 
@@ -139,9 +139,9 @@ func (s *BtnPermService) DeleteBtnPerm(id string) error {
 }
 
 // GetBtnPermByID 获取按钮权限详情
-func (s *BtnPermService) GetBtnPermByID(id string) (*entity.BtnPerm, error) {
+func (s *BtnPermService) GetBtnPermByID(id int64) (*entity.BtnPerm, error) {
 	// 验证参数
-	if id == "" {
+	if id == 0 {
 		return nil, errors.New("无效的参数")
 	}
 
@@ -178,9 +178,9 @@ func (s *BtnPermService) GetBtnPermList(page, pageSize int, filters map[string]i
 }
 
 // GetBtnPermsByMenu 获取菜单下的所有按钮权限
-func (s *BtnPermService) GetBtnPermsByMenu(menuID string) ([]*entity.BtnPerm, error) {
+func (s *BtnPermService) GetBtnPermsByMenu(menuID int64) ([]*entity.BtnPerm, error) {
 	// 验证参数
-	if menuID == "" {
+	if menuID == 0 {
 		return nil, errors.New("无效的参数")
 	}
 
@@ -195,9 +195,9 @@ func (s *BtnPermService) GetBtnPermsByMenu(menuID string) ([]*entity.BtnPerm, er
 }
 
 // AssignAPIToBtnPerm 分配 API 路由到按钮权限
-func (s *BtnPermService) AssignAPIToBtnPerm(btnPermID, routeID string) error {
+func (s *BtnPermService) AssignAPIToBtnPerm(btnPermID, routeID int64) error {
 	// 验证参数
-	if btnPermID == "" || routeID == "" {
+	if btnPermID == 0 || routeID == 0 {
 		return errors.New("无效的参数")
 	}
 
@@ -220,9 +220,9 @@ func (s *BtnPermService) AssignAPIToBtnPerm(btnPermID, routeID string) error {
 }
 
 // RevokeAPIFromBtnPerm 撤销 API 路由从按钮权限
-func (s *BtnPermService) RevokeAPIFromBtnPerm(btnPermID, routeID string) error {
+func (s *BtnPermService) RevokeAPIFromBtnPerm(btnPermID, routeID int64) error {
 	// 验证参数
-	if btnPermID == "" || routeID == "" {
+	if btnPermID == 0 || routeID == 0 {
 		return errors.New("无效的参数")
 	}
 
@@ -238,9 +238,9 @@ func (s *BtnPermService) RevokeAPIFromBtnPerm(btnPermID, routeID string) error {
 }
 
 // GetAPIsForBtnPerm 获取按钮权限关联的 API 路由
-func (s *BtnPermService) GetAPIsForBtnPerm(btnPermID string) ([]*entity.API, error) {
+func (s *BtnPermService) GetAPIsForBtnPerm(btnPermID int64) ([]*entity.API, error) {
 	// 验证参数
-	if btnPermID == "" {
+	if btnPermID == 0 {
 		return nil, errors.New("无效的参数")
 	}
 
@@ -255,9 +255,9 @@ func (s *BtnPermService) GetAPIsForBtnPerm(btnPermID string) ([]*entity.API, err
 }
 
 // GetBtnPermsForAPI 获取关联指定 API 路由的所有按钮权限
-func (s *BtnPermService) GetBtnPermsForAPI(routeID string) ([]*entity.BtnPerm, error) {
+func (s *BtnPermService) GetBtnPermsForAPI(routeID int64) ([]*entity.BtnPerm, error) {
 	// 验证参数
-	if routeID == "" {
+	if routeID == 0 {
 		return nil, errors.New("无效的参数")
 	}
 

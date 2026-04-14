@@ -35,7 +35,7 @@ func (s *OperationLogService) BatchCreateLog(logs []*entity.OperationLog) error 
 }
 
 // GetLogByID 根据 ID 获取操作日志
-func (s *OperationLogService) GetLogByID(id string) (*entity.OperationLog, error) {
+func (s *OperationLogService) GetLogByID(id int64) (*entity.OperationLog, error) {
 	s.log.Info("根据 ID 获取操作日志", "id", id)
 	return s.repo.GetByID(id)
 }
@@ -48,13 +48,13 @@ func (s *OperationLogService) GetLogList(page, pageSize int, filters map[string]
 }
 
 // DeleteLogByID 根据 ID 删除操作日志
-func (s *OperationLogService) DeleteLogByID(id string) error {
+func (s *OperationLogService) DeleteLogByID(id int64) error {
 	s.log.Info("根据 ID 删除操作日志", "id", id)
 	return s.repo.Delete(id)
 }
 
 // BatchDeleteLog 批量删除操作日志
-func (s *OperationLogService) BatchDeleteLog(ids []string) error {
+func (s *OperationLogService) BatchDeleteLog(ids []int64) error {
 	s.log.Info("批量删除操作日志", "ids", ids)
 	return s.repo.BatchDelete(ids)
 }

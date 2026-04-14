@@ -6,8 +6,8 @@ import "time"
 // 存储微信支付的详细信息，包括预支付、签名、回调等
 // 纯业务模型，无 GORM 标签
 type WechatPayInfo struct {
-	ID         string    // 微信支付信息 ID
-	PaymentID  string    // 关联的支付 ID
+	ID         int64     // 微信支付信息 ID
+	PaymentID  int64     // 关联的支付 ID
 	AppID      string    // 微信公众号/小程序 AppID
 	MCHID      string    // 商户号
 	NonceStr   string    // 随机字符串
@@ -23,9 +23,9 @@ type WechatPayInfo struct {
 	ErrCode    string    // 错误码
 	ErrCodeDes string    // 错误描述
 	NotifyData string    // 回调原始数据
-	CreatedBy  string    // 创建人 ID
+	CreatedBy  int64     // 创建人 ID
 	CreatedAt  time.Time // 创建时间
-	UpdatedBy  string    // 更新人 ID
+	UpdatedBy  int64     // 更新人 ID
 	UpdatedAt  time.Time // 更新时间
 }
 

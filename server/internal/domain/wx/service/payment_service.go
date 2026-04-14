@@ -32,7 +32,7 @@ func NewPaymentService(repo repo.PaymentRepository, taskManager *task.TaskManage
 }
 
 // CreatePayment 创建支付记录
-func (s *PaymentService) CreatePayment(userID string, orderID string, amount int64, method string, description string) (*entity.Payment, error) {
+func (s *PaymentService) CreatePayment(userID int64, orderID string, amount int64, method string, description string) (*entity.Payment, error) {
 	// 检查订单 ID 是否已存在
 	_, err := s.repo.GetByOrderID(orderID)
 	if err == nil {
@@ -68,7 +68,7 @@ func (s *PaymentService) CreatePayment(userID string, orderID string, amount int
 }
 
 // GetPayment 获取支付记录
-func (s *PaymentService) GetPayment(paymentID string) (*entity.Payment, error) {
+func (s *PaymentService) GetPayment(paymentID int64) (*entity.Payment, error) {
 	payment, err := s.repo.GetByID(paymentID)
 	if err != nil {
 		s.log.Error("获取支付记录失败", "error", err)
@@ -88,7 +88,7 @@ func (s *PaymentService) GetPaymentByOrderID(orderID string) (*entity.Payment, e
 }
 
 // UpdatePaymentStatus 更新支付状态
-func (s *PaymentService) UpdatePaymentStatus(paymentID string, status entity.PaymentStatus) error {
+func (s *PaymentService) UpdatePaymentStatus(paymentID int64, status entity.PaymentStatus) error {
 	// 获取支付记录
 	payment, err := s.repo.GetByID(paymentID)
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *PaymentService) UpdatePaymentStatus(paymentID string, status entity.Pay
 }
 
 // CreateWechatPayment 创建微信支付
-func (s *PaymentService) CreateWechatPayment(userID string, orderID string, amount int64, description string) (*entity.Payment, error) {
+func (s *PaymentService) CreateWechatPayment(userID int64, orderID string, amount int64, description string) (*entity.Payment, error) {
 	// 创建支付记录
 	payment, err := s.CreatePayment(userID, orderID, amount, "wechat", description)
 	if err != nil {
@@ -224,7 +224,7 @@ func (s *PaymentService) HandleWXAuthPayNotify(notifyData []byte) (map[string]in
 }
 
 // CheckPaymentStatus 检查支付状态
-func (s *PaymentService) CheckPaymentStatus(paymentID string) (entity.PaymentStatus, error) {
+func (s *PaymentService) CheckPaymentStatus(paymentID int64) (entity.PaymentStatus, error) {
 	payment, err := s.repo.GetByID(paymentID)
 	if err != nil {
 		s.log.Error("获取支付记录失败", "error", err)
@@ -234,12 +234,12 @@ func (s *PaymentService) CheckPaymentStatus(paymentID string) (entity.PaymentSta
 }
 
 // CancelPayment 取消支付
-func (s *PaymentService) CancelPayment(paymentID string) error {
+func (s *PaymentService) CancelPayment(paymentID int64) error {
 	return s.UpdatePaymentStatus(paymentID, entity.PaymentStatusCancelled)
 }
 
 // RefundPayment 退款
-func (s *PaymentService) RefundPayment(paymentID string, refundAmount int64) error {
+func (s *PaymentService) RefundPayment(paymentID int64, refundAmount int64) error {
 	// 获取支付记录
 	payment, err := s.repo.GetByID(paymentID)
 	if err != nil {
@@ -260,7 +260,7 @@ func (s *PaymentService) RefundPayment(paymentID string, refundAmount int64) err
 	}
 
 	// 这里应该实现退款逻辑
-	// 实际实现需要调用支付渠道的退款API
+	// 实际实现需要调用支付渠道的退款 API
 
 	// 更新支付状态为已退款
 	return s.UpdatePaymentStatus(paymentID, entity.PaymentStatusRefunded)
@@ -268,14 +268,14 @@ func (s *PaymentService) RefundPayment(paymentID string, refundAmount int64) err
 
 // PaymentTimeoutCheckTask 支付超时检查任务
 type PaymentTimeoutCheckTask struct {
-	paymentID string
+	paymentID int64
 	service   *PaymentService
 	log       logger.Logger
 }
 
 // GetName 获取任务名称
 func (t *PaymentTimeoutCheckTask) GetName() string {
-	return fmt.Sprintf("payment_timeout_check_%s", t.paymentID)
+	return fmt.Sprintf("payment_timeout_check_%d", t.paymentID)
 }
 
 // Run 运行任务

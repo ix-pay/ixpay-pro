@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -268,8 +269,16 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 		return
 	}
 
+	// 将 UserID 从 string 转换为 int64
+	userIDInt, err := strconv.ParseInt(req.UserID, 10, 64)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "user_id", req.UserID, "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
+	}
+
 	if err := c.service.RecordLogin(
-		req.UserID,
+		userIDInt,
 		req.Username,
 		req.IP,
 		req.Place,
@@ -284,7 +293,7 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 		return
 	}
 
-	c.log.Info("记录登录日志成功", "user_id", req.UserID, "username", req.Username, "operator_id", userID)
+	c.log.Info("记录登录日志成功", "user_id", userIDInt, "username", req.Username, "operator_id", userID)
 	baseRes.OkWithMessage("记录登录日志成功", ctx)
 }
 
@@ -311,11 +320,18 @@ func (c *LoginLogController) GetLoginLogByID(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的登录日志 ID
-	logID := ctx.Param("id")
-	if logID == "" {
+	// 将字符串 ID 转换为 int64
+	logIDStr := ctx.Param("id")
+	if logIDStr == "" {
 		c.log.Error("登录日志 ID 不能为空")
 		baseRes.FailWithMessage("登录日志 ID 不能为空", ctx)
+		return
+	}
+
+	logID, err := strconv.ParseInt(logIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", logIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 

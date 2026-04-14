@@ -3,9 +3,9 @@ package response
 import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
 // PositionResponse 岗位响应模型
-// 所有 ID 字段使用 string 格式，避免前端精度丢失
+// 所有 ID 字段使用 int64 格式，通过 json:",string" 标签自动序列化为字符串
 type PositionResponse struct {
-	ID          string `json:"id,string"`   // 岗位 ID
+	ID          int64  `json:"id,string"`   // 岗位 ID
 	Name        string `json:"name"`        // 岗位名称
 	Code        string `json:"code"`        // 岗位编码
 	Sort        int    `json:"sort"`        // 排序

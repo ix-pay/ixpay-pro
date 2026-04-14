@@ -3,10 +3,10 @@ package response
 import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
 // DepartmentResponse 部门响应模型
-// 所有 ID 字段使用 string 格式，避免前端精度丢失
+// 所有 ID 字段使用 int64 格式，通过 json:",string" 标签自动序列化为字符串
 type DepartmentResponse struct {
-	ID        string `json:"id,string"`       // 部门 ID
-	ParentID  string `json:"parentId,string"` // 父部门 ID
+	ID        int64  `json:"id,string"`       // 部门 ID
+	ParentID  int64  `json:"parentId,string"` // 父部门 ID
 	Name      string `json:"name"`            // 部门名称
 	Code      string `json:"code"`            // 部门编码
 	Sort      int    `json:"sort"`            // 排序

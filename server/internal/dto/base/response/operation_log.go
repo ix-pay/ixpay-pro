@@ -3,9 +3,10 @@ package response
 import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 
 // OperationLogResponse 操作日志响应 DTO
+// 所有 ID 字段使用 int64 格式，通过 json:",string" 标签自动序列化为字符串
 type OperationLogResponse struct {
-	ID            string `json:"id,string"`
-	UserID        string `json:"userId,string"`
+	ID            int64  `json:"id,string"`
+	UserID        int64  `json:"userId,string"`
 	Username      string `json:"username"`
 	Nickname      string `json:"nickname"`
 	OperationType int    `json:"operationType"`

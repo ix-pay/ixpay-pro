@@ -4,7 +4,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // dictItemModel 字典项数据库模型
@@ -29,30 +28,28 @@ func (m *dictItemModel) toDomain() *entity.DictItem {
 		return nil
 	}
 	return &entity.DictItem{
-		ID:        common.ToString(m.ID),
-		DictID:    common.ToString(m.DictID),
+		ID:        m.ID,
+		DictID:    m.DictID,
 		ItemKey:   m.ItemKey,
 		ItemValue: m.ItemValue,
 		Sort:      m.Sort,
 		Status:    m.Status,
-		CreatedBy: common.ToString(m.CreatedBy),
+		CreatedBy: m.CreatedBy,
 		CreatedAt: m.CreatedAt,
-		UpdatedBy: common.ToString(m.UpdatedBy),
+		UpdatedBy: m.UpdatedBy,
 		UpdatedAt: m.UpdatedAt,
 	}
 }
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainDictItem(dictItem *entity.DictItem) (*dictItemModel, error) {
-	id, createdBy, updatedBy := common.SetBaseFields(dictItem.ID, dictItem.CreatedBy, dictItem.UpdatedBy)
-
 	return &dictItemModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
-			ID:        id,
-			CreatedBy: createdBy,
-			UpdatedBy: updatedBy,
+			ID:        dictItem.ID,
+			CreatedBy: dictItem.CreatedBy,
+			UpdatedBy: dictItem.UpdatedBy,
 		},
-		DictID:    common.TryParseInt64(dictItem.DictID),
+		DictID:    dictItem.DictID,
 		ItemKey:   dictItem.ItemKey,
 		ItemValue: dictItem.ItemValue,
 		Sort:      dictItem.Sort,
@@ -74,14 +71,9 @@ func NewDictItemRepository(db *database.PostgresDB) repo.DictItemRepository {
 }
 
 // GetByID 根据 ID 查询字典项
-func (r *dictItemRepository) GetByID(id string) (*entity.DictItem, error) {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *dictItemRepository) GetByID(id int64) (*entity.DictItem, error) {
 	var dbModel dictItemModel
-	result := r.db.Where("id = ?", intID).First(&dbModel)
+	result := r.db.Where("id = ?", id).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -90,10 +82,9 @@ func (r *dictItemRepository) GetByID(id string) (*entity.DictItem, error) {
 }
 
 // GetByDictID 根据字典 ID 查询字典项
-func (r *dictItemRepository) GetByDictID(dictID string) ([]*entity.DictItem, error) {
-	intDictID := common.TryParseInt64(dictID)
+func (r *dictItemRepository) GetByDictID(dictID int64) ([]*entity.DictItem, error) {
 	var dbModels []dictItemModel
-	result := r.db.Where("dict_id = ?", intDictID).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("dict_id = ?", dictID).Order("sort ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -118,7 +109,7 @@ func (r *dictItemRepository) Create(dictItem *entity.DictItem) error {
 	}
 
 	// 将生成的 ID 回写到领域实体
-	dictItem.ID = common.ToString(dbModel.ID)
+	dictItem.ID = dbModel.ID
 	return nil
 }
 
@@ -133,13 +124,8 @@ func (r *dictItemRepository) Update(dictItem *entity.DictItem) error {
 }
 
 // Delete 删除字典项
-func (r *dictItemRepository) Delete(id string) error {
-	intID, err := common.ParseInt64(id)
-	if err != nil {
-		return err
-	}
-
-	return r.db.Delete(&dictItemModel{}, intID).Error
+func (r *dictItemRepository) Delete(id int64) error {
+	return r.db.Delete(&dictItemModel{}, id).Error
 }
 
 // List 分页查询字典项列表
@@ -172,10 +158,9 @@ func (r *dictItemRepository) List(page, pageSize int, filters map[string]interfa
 }
 
 // GetActiveByDictID 根据字典 ID 获取启用的字典项
-func (r *dictItemRepository) GetActiveByDictID(dictID string) ([]*entity.DictItem, error) {
-	intDictID := common.TryParseInt64(dictID)
+func (r *dictItemRepository) GetActiveByDictID(dictID int64) ([]*entity.DictItem, error) {
 	var dbModels []dictItemModel
-	result := r.db.Where("dict_id = ? AND status = ?", intDictID, 1).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("dict_id = ? AND status = ?", dictID, 1).Order("sort ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}

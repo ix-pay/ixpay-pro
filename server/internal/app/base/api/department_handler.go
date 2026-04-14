@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -221,6 +222,27 @@ func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 		return
 	}
 
+	// 将 createdBy 转换为 int64
+	var createdByInt int64
+	var err error
+	switch v := createdBy.(type) {
+	case string:
+		createdByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		createdByInt = v
+	case int:
+		createdByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
 	// 提供默认值：sort=0, status=1（启用）
 	sort := req.Sort
 	if sort == 0 {
@@ -236,7 +258,7 @@ func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 		req.Description,
 		req.ParentID,
 		req.LeaderID,
-		createdBy.(string),
+		createdByInt,
 		sort,
 		status,
 	)
@@ -278,14 +300,35 @@ func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 		return
 	}
 
-	// 直接使用 string 类型的 ID
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	var err error
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	// 直接使用 int64 类型的 ID
 	department, err := c.service.UpdateDepartment(
 		req.ID,
 		req.Name,
 		req.Description,
 		req.ParentID,
 		req.LeaderID,
-		updatedBy.(string),
+		updatedByInt,
 		req.Sort,
 		req.Status,
 	)
@@ -313,11 +356,19 @@ func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string				"服务器内部错误"
 //	@Router			/api/admin/dept/:id [delete]
 func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
-	// 直接使用 string 类型的部门 ID
-	departmentID := ctx.Param("id")
-	if departmentID == "" {
+	// 获取部门 ID 并转换为 int64
+	departmentIDStr := ctx.Param("id")
+	if departmentIDStr == "" {
 		c.log.Error("部门 ID 不能为空")
 		baseRes.FailWithMessage("部门 ID 不能为空", ctx)
+		return
+	}
+
+	// 将字符串 ID 转换为 int64
+	departmentID, err := strconv.ParseInt(departmentIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", departmentIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -326,7 +377,8 @@ func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
 		return
 	}
 
-	baseRes.OkWithMessage("删除部门成功", ctx)
+	c.log.Info("删除部门成功", "id", departmentID)
+	baseRes.OkWithMessage("删除成功", ctx)
 }
 
 // UpdateDepartmentLeader 更新部门负责人
@@ -345,11 +397,19 @@ func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
 //	@Failure		500		{object}	map[string]string						"服务器内部错误"
 //	@Router			/api/admin/dept/:id/leader [put]
 func (c *DepartmentController) UpdateDepartmentLeader(ctx *gin.Context) {
-	// 直接使用 string 类型的部门 ID
-	departmentID := ctx.Param("id")
-	if departmentID == "" {
+	// 获取部门 ID 并转换为 int64
+	departmentIDStr := ctx.Param("id")
+	if departmentIDStr == "" {
 		c.log.Error("部门 ID 不能为空")
 		baseRes.FailWithMessage("部门 ID 不能为空", ctx)
+		return
+	}
+
+	// 将字符串 ID 转换为 int64
+	departmentID, err := strconv.ParseInt(departmentIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", departmentIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}
 
@@ -367,11 +427,31 @@ func (c *DepartmentController) UpdateDepartmentLeader(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.service.UpdateDepartmentLeader(departmentID, req.LeaderID, updatedBy.(string)); err != nil {
+	// 将 updatedBy 转换为 int64
+	var updatedByInt int64
+	switch v := updatedBy.(type) {
+	case string:
+		updatedByInt, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			c.log.Error("用户 ID 格式错误", "error", err)
+			baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+			return
+		}
+	case int64:
+		updatedByInt = v
+	case int:
+		updatedByInt = int64(v)
+	default:
+		c.log.Error("用户 ID 类型错误", "actual_type", v)
+		baseRes.FailWithMessage("用户 ID 类型错误", ctx)
+		return
+	}
+
+	if err := c.service.UpdateDepartmentLeader(departmentID, req.LeaderID, updatedByInt); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("更新部门负责人成功", "id", departmentID, "leader_id", req.LeaderID)
-	baseRes.OkWithMessage("更新部门负责人成功", ctx)
+	c.log.Info("更新部门负责人成功", "id", departmentID, "leaderID", req.LeaderID)
+	baseRes.OkWithMessage("更新成功", ctx)
 }

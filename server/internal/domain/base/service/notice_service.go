@@ -26,7 +26,7 @@ func NewNoticeService(repo repo.NoticeRepository, recordRepo repo.NoticeReadReco
 }
 
 // CreateNotice 创建公告
-func (s *NoticeService) CreateNotice(title, content, description string, noticeType entity.NoticeType, publisherID string, isTop bool, sort int) (*entity.Notice, error) {
+func (s *NoticeService) CreateNotice(title, content, description string, noticeType entity.NoticeType, publisherID int64, isTop bool, sort int) (*entity.Notice, error) {
 	// 验证公告类型
 	if noticeType < entity.NoticeTypeSystem || noticeType > entity.NoticeTypeEmergency {
 		s.log.Error("无效的公告类型", "type", noticeType)
@@ -57,7 +57,7 @@ func (s *NoticeService) CreateNotice(title, content, description string, noticeT
 }
 
 // UpdateNotice 更新公告
-func (s *NoticeService) UpdateNotice(id string, title, content, description string, noticeType entity.NoticeType, publisherID string, isTop bool, sort int) (*entity.Notice, error) {
+func (s *NoticeService) UpdateNotice(id int64, title, content, description string, noticeType entity.NoticeType, publisherID int64, isTop bool, sort int) (*entity.Notice, error) {
 	// 获取公告
 	notice, err := s.repo.GetByID(id)
 	if err != nil {
@@ -96,7 +96,7 @@ func (s *NoticeService) UpdateNotice(id string, title, content, description stri
 }
 
 // PublishNotice 发布公告
-func (s *NoticeService) PublishNotice(id string, publisherID string) error {
+func (s *NoticeService) PublishNotice(id int64, publisherID int64) error {
 	// 获取公告
 	notice, err := s.repo.GetByID(id)
 	if err != nil {
@@ -131,7 +131,7 @@ func (s *NoticeService) PublishNotice(id string, publisherID string) error {
 }
 
 // DeleteNotice 删除公告
-func (s *NoticeService) DeleteNotice(id string) error {
+func (s *NoticeService) DeleteNotice(id int64) error {
 	// 获取公告
 	notice, err := s.repo.GetByID(id)
 	if err != nil {
@@ -150,7 +150,7 @@ func (s *NoticeService) DeleteNotice(id string) error {
 }
 
 // GetNoticeByID 获取公告详情
-func (s *NoticeService) GetNoticeByID(id string) (*entity.Notice, error) {
+func (s *NoticeService) GetNoticeByID(id int64) (*entity.Notice, error) {
 	notice, err := s.repo.GetByID(id)
 	if err != nil {
 		s.log.Error("获取公告失败", "error", err, "id", id)
@@ -180,7 +180,7 @@ func (s *NoticeService) GetPublishedNoticeList(page, pageSize int, filters map[s
 }
 
 // MarkAsRead 标记公告为已读
-func (s *NoticeService) MarkAsRead(noticeID string, userID string) error {
+func (s *NoticeService) MarkAsRead(noticeID int64, userID int64) error {
 	// 检查公告是否存在
 	_, err := s.repo.GetByID(noticeID)
 	if err != nil {
@@ -205,7 +205,7 @@ func (s *NoticeService) MarkAsRead(noticeID string, userID string) error {
 }
 
 // IsRead 检查用户是否已读公告
-func (s *NoticeService) IsRead(noticeID string, userID string) (bool, error) {
+func (s *NoticeService) IsRead(noticeID int64, userID int64) (bool, error) {
 	_, err := s.recordRepo.GetByNoticeIDAndUserID(noticeID, userID)
 	if err != nil {
 		// 如果没有找到记录，返回 false

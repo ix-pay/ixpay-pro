@@ -2,6 +2,7 @@ package baseapi
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -175,7 +176,15 @@ func (c *APIController) GetRouteByID(ctx *gin.Context) {
 		return
 	}
 
-	route, err := c.apisService.GetRouteByID(id)
+	// 将字符串 ID 转换为 int64
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", id, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	route, err := c.apisService.GetRouteByID(idInt)
 	if err != nil {
 		c.log.Error("Failed to get route by ID", "error", err, "id", id)
 		baseRes.FailWithMessage("获取路由信息失败", ctx)
@@ -215,6 +224,34 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 		return
 	}
 
+	// 将字符串数组转换为 int64 数组
+	roleIds, err := convertStringSliceToInt64Slice(req.RoleIds)
+	if err != nil {
+		c.log.Error("角色 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+		return
+	}
+	menuIds, err := convertStringSliceToInt64Slice(req.MenuIds)
+	if err != nil {
+		c.log.Error("菜单 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
+		return
+	}
+	btnPermIds, err := convertStringSliceToInt64Slice(req.BtnPermIds)
+	if err != nil {
+		c.log.Error("按钮权限 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
+		return
+	}
+
+	// 将 operatorID 转换为 int64
+	operatorIDInt, err := strconv.ParseInt(operatorID, 10, 64)
+	if err != nil {
+		c.log.Error("操作员 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("操作员 ID 格式错误", ctx)
+		return
+	}
+
 	route := &entity.API{
 		Path:         req.Path,
 		Method:       req.Method,
@@ -223,12 +260,12 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 		AuthType:     req.AuthType,
 		Description:  req.Description,
 		Status:       req.Status,
-		RoleIds:      req.RoleIds,
-		MenuIds:      req.MenuIds,
-		BtnPermIds:   req.BtnPermIds,
+		RoleIds:      roleIds,
+		MenuIds:      menuIds,
+		BtnPermIds:   btnPermIds,
 	}
 
-	if err := c.apisService.CreateAPIRoute(route, operatorID); err != nil {
+	if err := c.apisService.CreateAPIRoute(route, operatorIDInt); err != nil {
 		c.log.Error("Failed to create API route", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -269,6 +306,34 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 		return
 	}
 
+	// 将字符串数组转换为 int64 数组
+	roleIds, err := convertStringSliceToInt64Slice(req.RoleIds)
+	if err != nil {
+		c.log.Error("角色 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+		return
+	}
+	menuIds, err := convertStringSliceToInt64Slice(req.MenuIds)
+	if err != nil {
+		c.log.Error("菜单 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
+		return
+	}
+	btnPermIds, err := convertStringSliceToInt64Slice(req.BtnPermIds)
+	if err != nil {
+		c.log.Error("按钮权限 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
+		return
+	}
+
+	// 将 operatorID 转换为 int64
+	operatorIDInt, err := strconv.ParseInt(operatorID, 10, 64)
+	if err != nil {
+		c.log.Error("操作员 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("操作员 ID 格式错误", ctx)
+		return
+	}
+
 	route := &entity.API{
 		ID:           req.ID,
 		Path:         req.Path,
@@ -278,12 +343,12 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 		AuthType:     req.AuthType,
 		Description:  req.Description,
 		Status:       req.Status,
-		RoleIds:      req.RoleIds,
-		MenuIds:      req.MenuIds,
-		BtnPermIds:   req.BtnPermIds,
+		RoleIds:      roleIds,
+		MenuIds:      menuIds,
+		BtnPermIds:   btnPermIds,
 	}
 
-	if err := c.apisService.UpdateAPIRoute(route, operatorID); err != nil {
+	if err := c.apisService.UpdateAPIRoute(route, operatorIDInt); err != nil {
 		c.log.Error("Failed to update API route", "error", err, "id", route.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -323,7 +388,15 @@ func (c *APIController) DeleteAPI(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.apisService.DeleteAPIRoute(id); err != nil {
+	// 将字符串 ID 转换为 int64
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", id, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	if err := c.apisService.DeleteAPIRoute(idInt); err != nil {
 		c.log.Error("Failed to delete API route", "error", err, "id", id)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return

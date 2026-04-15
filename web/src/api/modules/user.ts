@@ -3,10 +3,10 @@ import type { ApiResponse, UserInfo, CaptchaResponse } from '@/types'
 
 // @Summary 用户登录
 // @Produce  application/json
-// @Param data body {username:"string",password:"string"}
+// @Param data body {userName:"string",password:"string"}
 // @Router /auth/login [post]
 export const login = (data: {
-  username: string
+  userName: string
   password: string
   captcha?: string
   captchaId?: string
@@ -31,9 +31,9 @@ export const captcha = (): Promise<ApiResponse<CaptchaResponse>> => {
 
 // @Summary 用户注册
 // @Produce  application/json
-// @Param data body {username:"string",password:"string"}
+// @Param data body {userName:"string",password:"string"}
 // @Router /auth/resige [post]
-export const register = (data: { username: string; password: string }): Promise<ApiResponse> => {
+export const register = (data: { userName: string; password: string }): Promise<ApiResponse> => {
   return service({
     url: '/auth/register',
     method: 'post',
@@ -85,7 +85,7 @@ export const changePassword = (data: {
 export const getUserList = (params: {
   page: number
   pageSize: number
-  username?: string
+  userName?: string
   email?: string
   role?: string
   status?: number
@@ -134,11 +134,11 @@ export const deleteUser = (id: string): Promise<ApiResponse> => {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body {username:"string",password:"string",email:"string",nickname:"string",phone:"string",avatar:"string",departmentId:"number",positionId:"number",status:"number",roles:"array"} true "增加用户请求参数"
+// @Param data body {userName:"string",password:"string",email:"string",nickname:"string",phone:"string",avatar:"string",departmentId:"number",positionId:"number",status:"number",roles:"array"} true "增加用户请求参数"
 // @Success 201 {string} string "{"success":true,"data":{},"msg":"添加成功"}"
 // @Router /user [post]
 export const addUser = (data: {
-  username: string
+  userName: string
   password: string
   email: string
   nickname?: string

@@ -18,7 +18,7 @@
           class="w-64"
         />
         <el-input
-          v-model="searchForm.username"
+          v-model="searchForm.userName"
           placeholder="用户名"
           clearable
           size="small"
@@ -56,7 +56,9 @@
           <el-option label="失败" :value="false" />
         </el-select>
         <el-button type="primary" size="small" @click="loadLogList">
-          <el-icon><Search /></el-icon>
+          <el-icon>
+            <Search />
+          </el-icon>
           搜索
         </el-button>
         <el-button size="small" @click="handleReset">重置</el-button>
@@ -68,11 +70,15 @@
           @click="handleBatchDelete"
           :disabled="selectedIds.length === 0"
         >
-          <el-icon><Delete /></el-icon>
+          <el-icon>
+            <Delete />
+          </el-icon>
           批量删除
         </el-button>
         <el-button type="warning" size="small" @click="handleClearLogs">
-          <el-icon><Delete /></el-icon>
+          <el-icon>
+            <Delete />
+          </el-icon>
           清空日志
         </el-button>
       </div>
@@ -89,7 +95,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="45" />
-        <el-table-column prop="username" label="用户名" width="100" />
+        <el-table-column prop="userName" label="用户名" width="100" />
         <el-table-column prop="module" label="模块" width="120" />
         <el-table-column
           prop="description"
@@ -153,7 +159,7 @@
     <el-dialog v-model="detailDialogVisible" title="日志详情" width="700px">
       <el-descriptions :column="2" border v-if="currentLog">
         <el-descriptions-item label="日志 ID">{{ currentLog.id }}</el-descriptions-item>
-        <el-descriptions-item label="用户名">{{ currentLog.username }}</el-descriptions-item>
+        <el-descriptions-item label="用户名">{{ currentLog.userName }}</el-descriptions-item>
         <el-descriptions-item label="操作模块">{{ currentLog.module }}</el-descriptions-item>
         <el-descriptions-item label="操作类型">
           <el-tag :type="getOperationTypeTag(currentLog.operationType)">
@@ -249,7 +255,7 @@ defineOptions({
 
 interface OperationLog {
   id: string
-  username: string
+  userName: string
   module: string
   description: string
   operationType: number
@@ -274,7 +280,7 @@ const pagination = reactive({
 })
 // 搜索表单
 const searchForm = reactive({
-  username: '',
+  userName: '',
   module: '',
   operationType: undefined as number | undefined,
   isSuccess: undefined as boolean | undefined,
@@ -330,14 +336,14 @@ const loadLogList = async () => {
       pageSize: number
       startTime?: string
       endTime?: string
-      username?: string
+      userName?: string
       module?: string
       operationType?: number
       isSuccess?: boolean
     } = {
       page: pagination.page,
       pageSize: pagination.pageSize,
-      ...(searchForm.username ? { username: searchForm.username } : {}),
+      ...(searchForm.userName ? { userName: searchForm.userName } : {}),
       ...(searchForm.module ? { module: searchForm.module } : {}),
       ...(searchForm.operationType !== undefined
         ? { operationType: searchForm.operationType }
@@ -364,7 +370,7 @@ const loadLogList = async () => {
 
 // 重置搜索条件
 const handleReset = () => {
-  searchForm.username = ''
+  searchForm.userName = ''
   searchForm.module = ''
   searchForm.operationType = undefined
   searchForm.isSuccess = undefined

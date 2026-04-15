@@ -98,7 +98,7 @@ func (c *UserController) GetUser(ctx *gin.Context) {
 **正面示例**：
 ```go
 type RegisterRequest struct {
-    Username string `json:"username" binding:"required" validate:"required,min=3,max=20"`
+    Username string `json:"userName" binding:"required" validate:"required,min=3,max=20"`
     Password string `json:"password" binding:"required" validate:"required,min=6"`
     Email    string `json:"email" binding:"required" validate:"required,email"`
 }
@@ -113,7 +113,7 @@ type RegisterRequest struct {
 ```go
 c.log.Info("用户登录成功", 
     "user_id", user.ID, 
-    "username", user.Username,
+    "userName", user.Username,
     "ip", ctx.ClientIP(),
 )
 ```

@@ -25,11 +25,16 @@
         <el-button size="small" @click="handleReset">重置</el-button>
       </div>
       <div class="flex items-center gap-2">
-        <el-button type="info" size="small" @click="(e) => handleRunTask(e as MouseEvent)">
+        <el-button
+          type="info"
+          size="small"
+          v-auth-btn="'task:task:execute'"
+          @click="(e) => handleRunTask(e as MouseEvent)"
+        >
           <el-icon><VideoPlay /></el-icon>
           执行任务
         </el-button>
-        <el-button type="primary" size="small" @click="handleAddTask">
+        <el-button type="primary" size="small" v-auth-btn="'task:task:add'" @click="handleAddTask">
           <el-icon><Plus /></el-icon>
           添加任务
         </el-button>
@@ -69,10 +74,17 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditTask(scope.row)">
+              <el-button
+                v-auth-btn="'task:task:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditTask(scope.row)"
+              >
                 编辑
               </el-button>
               <el-button
+                v-auth-btn="'task:task:execute'"
                 size="small"
                 type="success"
                 link
@@ -83,7 +95,13 @@
               <el-button size="small" type="primary" link @click="handleViewLog(scope.row)">
                 日志
               </el-button>
-              <el-button size="small" type="danger" link @click="handleDeleteTask(scope.row.id)">
+              <el-button
+                v-auth-btn="'task:task:delete'"
+                size="small"
+                type="danger"
+                link
+                @click="handleDeleteTask(scope.row.id)"
+              >
                 删除
               </el-button>
             </div>

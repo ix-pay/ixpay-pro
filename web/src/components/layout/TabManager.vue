@@ -87,12 +87,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick, computed, type Component } from 'vue'
+import { ref, onMounted, watch, nextTick, computed, type Component, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useRouterStore } from '@/stores/modules/router'
 import type { ExtendedRouteRecordRaw } from '@/stores/modules/router'
 import { storeToRefs } from 'pinia'
 import { DArrowLeft, DArrowRight, CloseBold, FolderDelete } from '@element-plus/icons-vue'
+import { emitter } from '@/utils/bus'
 
 const router = useRouter()
 const route = useRoute()
@@ -461,6 +462,38 @@ const closeAllTabs = () => {
   saveTabsToStorage()
 }
 
+// 重置所有 tabs（用于角色切换等场景）
+const resetTabs = () => {
+  // 保留首页 tab
+  const homeTab = tabs.value.find((tab) => tab.path === '/index')
+
+  // 清空所有 tabs
+  tabs.value = []
+
+  // 清空 keep-alive 缓存
+  routerStore.clearAllKeepAlive()
+
+  // 清空 localStorage
+  localStorage.removeItem('tabManagerTabs')
+  localStorage.removeItem('tabManagerActiveTab')
+
+  // 如果之前有首页 tab，重新添加首页
+  if (homeTab) {
+    tabs.value.push(homeTab)
+  } else {
+    // 否则创建新的首页 tab
+    tabs.value.push({
+      path: '/index',
+      label: '首页',
+      keepAlive: true,
+    })
+  }
+
+  // 重定向到首页
+  activeTab.value = '/index'
+  router.push('/index')
+}
+
 // 监听路由变化，自动添加标签页并同步 activeTab
 watch(
   () => route.path,
@@ -510,6 +543,21 @@ onMounted(() => {
     // 保存更新后的标签页状态
     saveTabsToStorage()
   }, 100)
+})
+
+// 暴露方法给父组件
+defineExpose({
+  resetTabs,
+})
+
+// 监听重置 tabs 的事件
+onMounted(() => {
+  emitter.on('resetTabManager', resetTabs)
+})
+
+// 组件卸载时移除监听器
+onUnmounted(() => {
+  emitter.off('resetTabManager', resetTabs)
 })
 </script>
 

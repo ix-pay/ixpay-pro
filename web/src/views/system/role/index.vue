@@ -31,7 +31,7 @@
           搜索
         </el-button>
       </div>
-      <el-button type="primary" size="small" @click="handleAddRole">
+      <el-button type="primary" size="small" v-auth-btn="'system:role:add'" @click="handleAddRole">
         <el-icon><Plus /></el-icon>
         添加角色
       </el-button>
@@ -55,6 +55,7 @@
             <div class="flex gap-1">
               <el-button
                 v-if="!scope.row.is_system"
+                v-auth-btn="'system:role:edit'"
                 size="small"
                 type="primary"
                 link
@@ -64,6 +65,7 @@
               </el-button>
               <el-button
                 v-if="!scope.row.is_system"
+                v-auth-btn="'system:role:assign'"
                 size="small"
                 type="primary"
                 link
@@ -73,6 +75,7 @@
               </el-button>
               <el-button
                 v-if="!scope.row.is_system"
+                v-auth-btn="'system:role:delete'"
                 size="small"
                 type="danger"
                 link

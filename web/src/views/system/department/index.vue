@@ -7,7 +7,12 @@
       class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
     >
       <span class="text-sm text-gray-600 dark:text-gray-400">部门列表</span>
-      <el-button type="primary" size="small" @click="handleAddDepartment">
+      <el-button
+        type="primary"
+        size="small"
+        v-auth-btn="'system:department:add'"
+        @click="handleAddDepartment"
+      >
         <el-icon><Plus /></el-icon>
         添加部门
       </el-button>
@@ -37,10 +42,17 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditDepartment(scope.row)">
+              <el-button
+                v-auth-btn="'system:department:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditDepartment(scope.row)"
+              >
                 编辑
               </el-button>
               <el-button
+                v-auth-btn="'system:department:delete'"
                 size="small"
                 type="danger"
                 link

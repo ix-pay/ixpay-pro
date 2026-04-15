@@ -29,7 +29,12 @@
           <el-icon><Refresh /></el-icon>
           刷新
         </el-button>
-        <el-button type="primary" size="small" @click="handleAddApiRoute">
+        <el-button
+          type="primary"
+          size="small"
+          v-auth-btn="'system:api-route:add'"
+          @click="handleAddApiRoute"
+        >
           <el-icon><Plus /></el-icon>
           添加 API
         </el-button>
@@ -69,10 +74,17 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditApiRoute(scope.row)">
+              <el-button
+                v-auth-btn="'system:api-route:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditApiRoute(scope.row)"
+              >
                 编辑
               </el-button>
               <el-button
+                v-auth-btn="'system:api-route:delete'"
                 size="small"
                 type="danger"
                 link

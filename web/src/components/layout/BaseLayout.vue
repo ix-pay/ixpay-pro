@@ -47,7 +47,7 @@
 
       <!-- 内容区域 -->
       <el-main class="!p-0 flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
-        <tab-manager />
+        <tab-manager ref="tabManagerRef" />
       </el-main>
 
       <!-- 页脚 -->
@@ -118,6 +118,9 @@ const toggleSidebar = () => {
 
 // 获取用户存储
 const userStore = useUserStore()
+
+// TabManager 引用
+const tabManagerRef = ref<InstanceType<typeof TabManager> | null>(null)
 
 // 面包屑项接口
 interface BreadcrumbItem {

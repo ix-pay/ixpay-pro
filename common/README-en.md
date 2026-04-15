@@ -406,7 +406,7 @@ docker run -d --name ixpay-server \
 - **Symptom**: Database connection error when starting service
 - **Solutions**:
   - Check if PostgreSQL service is running
-  - Verify database connection parameters (host, port, username, password)
+  - Verify database connection parameters (host, port, userName, password)
   - Check if database user has correct permissions
   - Verify if database is created
 
@@ -471,7 +471,7 @@ Backend logs are saved in `server/logs/` directory by default, classified by lev
    # Test login interface
    curl -X POST http://localhost:8586/api/admin/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"username": "admin", "password": "password123"}'
+     -d '{"userName": "admin", "password": "password123"}'
    ```
 
 4. **Check Database Status**:

@@ -1,6 +1,6 @@
 import { asyncRouterHandle } from '@/utils/asyncRouter'
 import { emitter } from '@/utils/bus'
-import { asyncMenu } from '@/api/modules/menu'
+import { getMenuList } from '@/api/modules/menu'
 import { defineStore } from 'pinia'
 import { ref, watchEffect } from 'vue'
 import pathInfo from '@/pathInfo.json'
@@ -8,6 +8,7 @@ import { useRoute } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { hasMenuPermission } from '@/utils/permission'
 import type { ApiMenuItem } from '@/types/menu'
+import { MenuType } from '@/types/menu'
 
 // 定义路由元信息接口
 export interface RouteMeta {
@@ -43,6 +44,11 @@ export interface HistoryItem {
 // 递归过滤路由，只保留用户有权限的路由
 const filterRoutesByPermission = (routes: ExtendedRouteRecordRaw[]): ExtendedRouteRecordRaw[] => {
   return routes.filter((route) => {
+    // 过滤掉 type: 3 的按钮数据（按钮不应该出现在菜单中）
+    if ((route as ApiMenuItem).type === 3) {
+      return false
+    }
+
     // 检查当前路由是否有权限
     // 由于 route 是 ExtendedRouteRecordRaw 类型，我们需要创建一个兼容的对象
     const menuForPermission = {
@@ -68,6 +74,16 @@ const formatRouter = (
   notLayoutRouterArr: ExtendedRouteRecordRaw[],
 ) => {
   routes.forEach((item) => {
+    // 过滤掉 type: 3 的按钮数据（按钮不应该出现在菜单中）
+    if ((item as ApiMenuItem).type === 3) {
+      console.log(
+        'formatRouter - Skipping button type menu item:',
+        item.name,
+        (item as ApiMenuItem).title,
+      )
+      return
+    }
+
     item.parent = parent
     // 确保 meta 对象存在
     if (!item.meta) {
@@ -107,21 +123,51 @@ const formatRouter = (
       routeMap[item.name] = item
     }
 
+    // 递归处理子路由前，先过滤掉 type: 3 的按钮数据
     if (item.children && item.children.length > 0) {
-      formatRouter(item.children, routeMap, item, notLayoutRouterArr)
+      // 过滤掉 type: 3 的按钮
+      item.children = item.children.filter((child) => (child as ApiMenuItem).type !== 3)
+
+      if (item.children.length > 0) {
+        formatRouter(item.children, routeMap, item, notLayoutRouterArr)
+      }
     }
   })
 }
 
 export const useRouterStore = defineStore('router', () => {
   const keepAliveRouters = ref<string[]>([])
-  // 每次初始化时重置为0，确保刷新页面时能重新加载动态路由
+  // 每次初始化时重置为 0，确保刷新页面时能重新加载动态路由
   const asyncRouterFlag = ref<number>(0)
 
   const setAsyncRouterFlag = (value: number) => {
     asyncRouterFlag.value = value
   }
   const routeMap: Record<string, ExtendedRouteRecordRaw> = {}
+
+  // 存储按钮权限列表
+  const buttonPermissions = ref<string[]>([])
+
+  // 从菜单数据中提取按钮权限（type: 3 的菜单项）
+  const extractButtonPermissions = (menus: ApiMenuItem[]): string[] => {
+    const buttons: string[] = []
+
+    const traverse = (items: ApiMenuItem[]) => {
+      for (const item of items) {
+        // 提取 type: 3 的按钮权限
+        if (item.type === MenuType.BUTTON && item.permission) {
+          buttons.push(item.permission)
+        }
+        // 递归处理子菜单
+        if (item.children && item.children.length > 0) {
+          traverse(item.children)
+        }
+      }
+    }
+
+    traverse(menus)
+    return buttons
+  }
 
   // 存储keep-alive相关的信息
   const keepAliveInfo = ref<{ keepAliveRouters: string[]; nameMap: Record<string, string> }>({
@@ -164,6 +210,20 @@ export const useRouterStore = defineStore('router', () => {
         keepAliveRouters.value.splice(index, 1)
       }
     }
+  }
+
+  // 清理所有 keep-alive 缓存
+  const clearAllKeepAlive = () => {
+    keepAliveRouters.value = []
+    keepAliveInfo.value = {
+      keepAliveRouters: [],
+      nameMap: {},
+    }
+  }
+
+  // 通过事件通知 TabManager 重置
+  const resetTabManager = () => {
+    emitter.emit('resetTabManager')
   }
 
   const route = useRoute()
@@ -280,9 +340,9 @@ export const useRouterStore = defineStore('router', () => {
     console.log('SetAsyncRouter - Updated asyncRouterFlag:', asyncRouterFlag.value)
 
     try {
-      // 调用asyncMenu函数获取菜单数据（仅包含登录后的页面路由）
+      // 调用 getMenuList 函数获取菜单数据（仅包含登录后的页面路由）
       console.log('SetAsyncRouter - Getting menu data from API...')
-      const asyncRouterRes = await asyncMenu()
+      const asyncRouterRes = await getMenuList()
       console.log('SetAsyncRouter - Menu API response:', asyncRouterRes)
 
       // 检查菜单数据是否有效
@@ -293,7 +353,7 @@ export const useRouterStore = defineStore('router', () => {
         return []
       }
 
-      // 由于 asyncMenu 函数已经处理了响应格式，直接使用返回的菜单数组
+      // 直接使用返回的菜单数组
       let dynamicRoutes: ExtendedRouteRecordRaw[] = []
       if (Array.isArray(asyncRouterRes?.data)) {
         dynamicRoutes = asyncRouterRes.data
@@ -320,6 +380,10 @@ export const useRouterStore = defineStore('router', () => {
       })
       console.log('SetAsyncRouter - After filtering predefined routes:', dynamicRoutes.length)
 
+      // 先提取按钮权限（在过滤路由之前提取，因为过滤会移除 type: 3 的按钮数据）
+      buttonPermissions.value = extractButtonPermissions(dynamicRoutes as ApiMenuItem[])
+      console.log('SetAsyncRouter - Extracted button permissions:', buttonPermissions.value)
+
       // 根据用户权限过滤路由
       dynamicRoutes = filterRoutesByPermission(dynamicRoutes)
       console.log('SetAsyncRouter - Permission filtered routes:', dynamicRoutes)
@@ -329,17 +393,25 @@ export const useRouterStore = defineStore('router', () => {
       // 格式化路由
       console.log('SetAsyncRouter - Formatting dynamic routes')
       console.log('SetAsyncRouter - Before format - routes count:', dynamicRoutes.length)
+      console.log(
+        'SetAsyncRouter - First route before format:',
+        JSON.stringify(dynamicRoutes[0], null, 2),
+      )
 
       try {
         formatRouter(dynamicRoutes, routeMap, null, notLayoutRouterArr)
         console.log('SetAsyncRouter - After format - routes count:', dynamicRoutes.length)
+        console.log(
+          'SetAsyncRouter - First route after format:',
+          JSON.stringify(dynamicRoutes[0], null, 2),
+        )
       } catch (error) {
         console.error('SetAsyncRouter - Error formatting routes:', error)
         console.error('SetAsyncRouter - Error details:', JSON.stringify(error, null, 2))
         throw error
       }
 
-      // 确保路由路径是相对路径（相对于layout）
+      // 确保路由路径是相对路径（相对于 layout）
       const normalizedRoutes = dynamicRoutes.map((route) => {
         const normalizedRoute = { ...route }
         // 如果路径是绝对路径，将其转换为相对路径
@@ -354,7 +426,11 @@ export const useRouterStore = defineStore('router', () => {
         }
         return normalizedRoute
       })
-      console.log('SetAsyncRouter - Normalized routes:', normalizedRoutes)
+      console.log('SetAsyncRouter - Normalized routes count:', normalizedRoutes.length)
+      console.log(
+        'SetAsyncRouter - First normalized route:',
+        JSON.stringify(normalizedRoutes[0], null, 2),
+      )
 
       // 更新父属性引用
       normalizedRoutes.forEach((route) => {
@@ -372,13 +448,37 @@ export const useRouterStore = defineStore('router', () => {
           (route) => route && typeof route === 'object',
         )
         if (validNotLayoutRoutes.length > 0) {
-          console.log('SetAsyncRouter - Adding non-layout routes:', validNotLayoutRoutes)
+          console.log('SetAsyncRouter - Adding non-layout routes:', validNotLayoutRoutes.length)
           finalRoutes.push(...validNotLayoutRoutes)
         }
       }
 
+      console.log(
+        'SetAsyncRouter - finalRoutes count before asyncRouterHandle:',
+        finalRoutes.length,
+      )
+      console.log(
+        'SetAsyncRouter - First route before asyncRouterHandle:',
+        JSON.stringify(finalRoutes[0], null, 2),
+      )
+
       // 处理路由组件
       asyncRouterHandle(finalRoutes)
+
+      console.log(
+        'SetAsyncRouter - After asyncRouterHandle - First route:',
+        JSON.stringify(finalRoutes[0], null, 2),
+      )
+      console.log('SetAsyncRouter - Checking routes before final filter...')
+      finalRoutes.forEach((route, index) => {
+        console.log(`SetAsyncRouter - Route ${index}:`, {
+          name: route.name,
+          path: route.path,
+          hasComponent: !!route.component,
+          componentType: typeof route.component,
+          childrenCount: route.children?.length || 0,
+        })
+      })
 
       // 过滤掉无效路由（没有组件或没有 name 的路由）
       const validFinalRoutes = finalRoutes.filter((route) => {
@@ -445,5 +545,8 @@ export const useRouterStore = defineStore('router', () => {
     SetAsyncRouter,
     routeMap,
     removeKeepAliveRouter,
+    clearAllKeepAlive,
+    resetTabManager,
+    buttonPermissions,
   }
 })

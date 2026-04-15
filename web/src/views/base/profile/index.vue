@@ -15,8 +15,8 @@
           label-width="120px"
           class="profile-form"
         >
-          <el-form-item label="用户名" prop="username">
-            <el-input v-model="profileForm.username" placeholder="请输入用户名" disabled />
+          <el-form-item label="用户名" prop="userName">
+            <el-input v-model="profileForm.userName" placeholder="请输入用户名" disabled />
           </el-form-item>
           <el-form-item label="昵称" prop="nickname">
             <el-input v-model="profileForm.nickname" placeholder="请输入昵称" />
@@ -98,7 +98,7 @@ defineOptions({
 
 interface UserProfile {
   id: string
-  username: string
+  userName: string
   nickname: string
   email: string
   phone: string
@@ -118,7 +118,7 @@ const passwordFormRef = ref()
 // 个人资料表单数据
 const profileForm = reactive<UserProfile>({
   id: '',
-  username: '',
+  userName: '',
   nickname: '',
   email: '',
   phone: '',
@@ -180,7 +180,7 @@ const loadUserProfile = async () => {
       const userInfo = res.data.userInfo
       Object.assign(profileForm, {
         id: String(userInfo.id || ''),
-        username: userInfo.username || '',
+        userName: userInfo.userName || '',
         nickname: userInfo.nickname || '',
         email: userInfo.email || '',
         phone: userInfo.phone || '',

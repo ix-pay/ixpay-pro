@@ -125,7 +125,7 @@
       <!-- 表格卡片 -->
       <IxCard title="用户列表" hover-effect>
         <el-table :data="users" class="w-full">
-          <el-table-column prop="username" label="用户名" />
+          <el-table-column prop="userName" label="用户名" />
           <el-table-column prop="email" label="邮箱" />
         </el-table>
       </IxCard>

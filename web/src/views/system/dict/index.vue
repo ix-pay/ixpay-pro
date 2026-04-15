@@ -7,7 +7,7 @@
       class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
     >
       <span class="text-sm text-gray-600 dark:text-gray-400">字典列表</span>
-      <el-button type="primary" size="small" @click="handleAddDict">
+      <el-button type="primary" size="small" v-auth-btn="'system:dict:add'" @click="handleAddDict">
         <el-icon><Plus /></el-icon>
         添加字典
       </el-button>
@@ -30,10 +30,22 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditDict(scope.row)">
+              <el-button
+                v-auth-btn="'system:dict:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditDict(scope.row)"
+              >
                 编辑
               </el-button>
-              <el-button size="small" type="danger" link @click="handleDeleteDict(scope.row.id)">
+              <el-button
+                v-auth-btn="'system:dict:delete'"
+                size="small"
+                type="danger"
+                link
+                @click="handleDeleteDict(scope.row.id)"
+              >
                 删除
               </el-button>
             </div>

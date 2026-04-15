@@ -6,7 +6,7 @@ import type { Role } from './role'
 // 用户信息响应（GET /api/admin/user/info）
 export interface UserInfo {
   id: string // 用户 ID，string 格式
-  username: string // 用户名
+  userName: string // 用户名
   nickname: string // 昵称
   email: string // 邮箱
   phone: string // 手机号
@@ -30,7 +30,7 @@ export interface UserResponse {
 // 用户列表项
 export interface UserListItem {
   id: string
-  username: string
+  userName: string
   nickname: string
   email: string
   phone: string
@@ -51,7 +51,7 @@ export interface UserListResponse {
 
 // 创建用户请求
 export interface CreateUserRequest {
-  username: string
+  userName: string
   password: string
   nickname?: string
   email?: string
@@ -64,7 +64,7 @@ export interface CreateUserRequest {
 // 更新用户请求
 export interface UpdateUserRequest {
   id: string
-  username?: string
+  userName?: string
   nickname?: string
   email?: string
   phone?: string

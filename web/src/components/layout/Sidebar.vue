@@ -23,7 +23,7 @@
     <!-- 菜单 -->
     <el-menu
       :default-active="currentRoute"
-      class="border-r-0 border-t-0 border-b-0 h-[calc(100vh-64px-60px)] flex flex-col bg-[var(--sidebar-bg)] [--el-menu-text-color:var(--sidebar-text)] [--el-menu-hover-text-color:var(--sidebar-text)] [--el-menu-bg-color:var(--sidebar-bg)] [--el-menu-hover-bg-color:var(--sidebar-hover-bg)] [--el-menu-active-color:var(--sidebar-active-text)] [--el-menu-active-bg-color:var(--sidebar-active-bg)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] py-[var(--space-sm)] overflow-y-auto overflow-x-visible relative z-[101] not-[:is(.el-menu--collapse)]:shadow-[4px_0_12px_rgba(0,0,0,0.15)] not-[:is(.el-menu--collapse)]:border-r"
+      class="border-r-0 border-t-0 border-b-0 h-[calc(100vh-64px-60px)] flex flex-col bg-[var(--sidebar-bg)] [--el-menu-text-color:var(--sidebar-text)] [--el-menu-hover-text-color:var(--sidebar-text)] [--el-menu-bg-color:var(--sidebar-bg)] [--el-menu-hover-bg-color:var(--sidebar-hover-bg)] [--el-menu-active-color:var(--sidebar-active-text)] [--el-menu-active-bg-color:var(--sidebar-active-bg)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] py-[var(--space-sm)] overflow-y-auto overflow-x-hidden relative z-[101] not-[:is(.el-menu--collapse)]:shadow-[4px_0_12px_rgba(0,0,0,0.15)]"
       unique-opened
       :collapse="isCollapsed"
       :collapse-transition="true"

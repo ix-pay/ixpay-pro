@@ -9,7 +9,7 @@
     >
       <div class="flex flex-wrap items-center gap-3">
         <el-input
-          v-model="searchForm.username"
+          v-model="searchForm.userName"
           placeholder="请输入用户名"
           clearable
           size="default"
@@ -36,7 +36,7 @@
         </el-button>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <el-button type="primary" @click="handleAddUser">
+        <el-button type="primary" v-auth-btn="'system:user:add'" @click="handleAddUser">
           <el-icon>
             <Plus />
           </el-icon>
@@ -74,7 +74,7 @@
     <!-- 表格区域 - 占满剩余空间 -->
     <div class="flex-1 overflow-hidden">
       <el-table v-loading="loading" :data="userList" stripe class="w-full h-full" :height="'100%'">
-        <el-table-column prop="username" label="用户名" width="160" />
+        <el-table-column prop="userName" label="用户名" width="160" />
         <el-table-column prop="nickname" label="昵称" min-width="100" />
         <el-table-column prop="email" label="邮箱" min-width="180" />
         <el-table-column prop="phone" label="电话" min-width="120" />
@@ -98,12 +98,19 @@
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditUser(scope.row)">
+              <el-button
+                v-auth-btn="'system:user:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditUser(scope.row)"
+              >
                 编辑
               </el-button>
               <!-- 管理员账户不允许删除 -->
               <el-button
                 v-if="!isAdminUser(scope.row)"
+                v-auth-btn="'system:user:delete'"
                 size="small"
                 type="danger"
                 link
@@ -112,6 +119,7 @@
                 删除
               </el-button>
               <el-button
+                v-auth-btn="'system:user:view'"
                 size="small"
                 type="warning"
                 link
@@ -145,8 +153,8 @@
     <!-- 用户表单对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
       <el-form ref="userFormRef" :model="userForm" :rules="formRules" label-width="100px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="userForm.username" placeholder="请输入用户名" />
+        <el-form-item label="用户名" prop="userName">
+          <el-input v-model="userForm.userName" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="!userForm.id">
           <el-input type="password" v-model="userForm.password" placeholder="请输入密码" />
@@ -217,7 +225,7 @@ defineOptions({
 // 用户类型定义
 interface User {
   id: string
-  username: string
+  userName: string
   nickname: string
   email: string
   phone: string
@@ -229,12 +237,12 @@ interface User {
 // 判断用户是否为管理员
 const isAdminUser = (user: User): boolean => {
   // 用户名为 admin 或者拥有 admin 角色的用户都是管理员
-  return user.username === 'admin' || user.roles?.some((role) => role.code === 'admin') || false
+  return user.userName === 'admin' || user.roles?.some((role) => role.code === 'admin') || false
 }
 
 // 表单验证规则类型
 interface UserFormRules {
-  username: Array<
+  userName: Array<
     | { required: boolean; message: string; trigger: string }
     | { min: number; max: number; message: string; trigger: string }
   >
@@ -271,7 +279,7 @@ const pagination = reactive({
 })
 // 搜索表单
 const searchForm = reactive({
-  username: '',
+  userName: '',
 })
 // 角色列表
 const roleList = ref<RoleType[]>([])
@@ -283,7 +291,7 @@ const userFormRef = ref<FormInstance | null>(null)
 // 用户表单数据
 const userForm = reactive({
   id: '',
-  username: '',
+  userName: '',
   password: '',
   nickname: '',
   email: '',
@@ -320,7 +328,7 @@ const loadUserList = async () => {
     const response = await getUserList({
       page: pagination.page,
       pageSize: pagination.pageSize,
-      ...(searchForm.username ? { username: searchForm.username } : {}),
+      ...(searchForm.userName ? { userName: searchForm.userName } : {}),
     })
     const pageData = response.data as Record<string, unknown>
     userList.value = (pageData?.list as User[]) || []
@@ -339,7 +347,7 @@ const loadUserList = async () => {
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.username = ''
+  searchForm.userName = ''
   pagination.page = 1
   loadUserList()
 }
@@ -361,7 +369,7 @@ const handleAddUser = () => {
   dialogTitle.value = '添加用户'
   Object.assign(userForm, {
     id: '',
-    username: '',
+    userName: '',
     password: '',
     nickname: '',
     email: '',
@@ -377,7 +385,7 @@ const handleEditUser = (user: User) => {
   dialogTitle.value = '编辑用户'
   Object.assign(userForm, {
     id: user.id,
-    username: user.username,
+    userName: user.userName,
     nickname: user.nickname,
     email: user.email,
     phone: user.phone,
@@ -483,7 +491,7 @@ const formatDate = (date: string | null | undefined) => {
 
 // 表单验证规则
 const formRules = reactive<UserFormRules>({
-  username: [
+  userName: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
     { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' },
   ],

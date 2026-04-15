@@ -18,6 +18,13 @@ export interface RouterMenuItem {
   children?: RouterMenuItem[]
 }
 
+// 菜单类型枚举
+export enum MenuType {
+  GROUP = 1, // 不可打开页面的菜单（父级菜单，用于分组）
+  MENU = 2, // 可以打开页面的菜单（实际可访问的页面）
+  BUTTON = 3, // 按钮权限数据（不是菜单，是页面内的操作按钮）
+}
+
 // 后端 API 返回的菜单数据结构（所有字段名统一使用小写，符合 JSON 规范）
 export interface ApiMenuItem {
   id: string
@@ -38,7 +45,7 @@ export interface ApiMenuItem {
   breadcrumb: boolean
   activeMenu: string
   affix: boolean
-  type: number
+  type: MenuType | number // 1: 目录，2: 菜单，3: 按钮
   frameLoading: boolean
   apiIds?: string[]
   meta?: {
@@ -52,6 +59,16 @@ export interface ApiMenuItem {
     frameLoading: boolean
   }
   children?: ApiMenuItem[]
+}
+
+// 按钮权限数据结构
+export interface ButtonPermission {
+  id: string
+  name: string // 按钮名称，如 "UserAdd"
+  title: string // 按钮标题，如 "新增用户"
+  permission: string // 权限标识，如 "system:user:add"
+  icon: string // 按钮图标
+  parentId: string // 所属页面菜单的 ID
 }
 
 // 菜单删除影响评估

@@ -353,7 +353,7 @@ npm run lint
 **位置**：src/types/user.ts:10
 **问题**：TypeScript 接口字段使用 snake_case
 **当前**：user_name: string
-**建议**：username: string
+**建议**：userName: string
 ```
 
 #### 2.10 组件结构检查
@@ -443,7 +443,7 @@ npm run lint
 【前端】
 4. ⚠️ src/types/user.ts:10
    字段命名使用 snake_case
-   建议：user_name → username
+   建议：user_name → userName
 
 **修复建议**：
 1. 立即修复：ID 字段类型问题（影响功能）
@@ -678,7 +678,7 @@ npm run lint
 4. ⚠️ src/types/user.ts:10
    字段命名使用 snake_case
    当前：`user_name: string`
-   建议：`username: string`
+   建议：`userName: string`
 
 **修复建议**：
 1. 立即修复：ID 字段类型问题（影响功能）

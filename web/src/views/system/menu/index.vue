@@ -34,19 +34,27 @@
         </el-button>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <el-button type="primary" @click="handleAddDirectory">
+        <el-button type="primary" v-auth-btn="'system:menu:add'" @click="handleAddDirectory">
           <el-icon>
             <FolderAdd />
           </el-icon>
           新增目录
         </el-button>
-        <el-button type="success" @click="(e) => handleAddMenu(e as MouseEvent)">
+        <el-button
+          type="success"
+          v-auth-btn="'system:menu:add'"
+          @click="(e) => handleAddMenu(e as MouseEvent)"
+        >
           <el-icon>
             <Menu />
           </el-icon>
           新增菜单
         </el-button>
-        <el-button type="warning" @click="(e) => handleAddButton(e as MouseEvent)">
+        <el-button
+          type="warning"
+          v-auth-btn="'system:menu:add'"
+          @click="(e) => handleAddButton(e as MouseEvent)"
+        >
           <el-icon>
             <Operation />
           </el-icon>
@@ -174,10 +182,17 @@
             <div style="display: flex; align-items: center; gap: 4px">
               <!-- 目录的操作 -->
               <template v-if="scope.row.type === 1">
-                <el-button size="small" type="primary" link @click="handleEditMenu(scope.row)">
+                <el-button
+                  v-auth-btn="'system:menu:edit'"
+                  size="small"
+                  type="primary"
+                  link
+                  @click="handleEditMenu(scope.row)"
+                >
                   编辑
                 </el-button>
                 <el-button
+                  v-auth-btn="'system:menu:add'"
                   size="small"
                   type="success"
                   link
@@ -189,10 +204,17 @@
 
               <!-- 菜单的操作 -->
               <template v-else-if="scope.row.type === 2">
-                <el-button size="small" type="primary" link @click="handleEditMenu(scope.row)">
+                <el-button
+                  v-auth-btn="'system:menu:edit'"
+                  size="small"
+                  type="primary"
+                  link
+                  @click="handleEditMenu(scope.row)"
+                >
                   编辑
                 </el-button>
                 <el-button
+                  v-auth-btn="'system:menu:add'"
                   size="small"
                   type="warning"
                   link
@@ -204,7 +226,13 @@
 
               <!-- 按钮的操作 -->
               <template v-else-if="scope.row.type === 3">
-                <el-button size="small" type="primary" link @click="handleEditMenu(scope.row)">
+                <el-button
+                  v-auth-btn="'system:menu:edit'"
+                  size="small"
+                  type="primary"
+                  link
+                  @click="handleEditMenu(scope.row)"
+                >
                   编辑
                 </el-button>
               </template>
@@ -212,7 +240,9 @@
               <!-- 删除按钮 -->
               <el-popconfirm title="确定要删除吗？" @confirm="handleDeleteMenu(scope.row.id)">
                 <template #reference>
-                  <el-button size="small" type="danger" link> 删除 </el-button>
+                  <el-button v-auth-btn="'system:menu:delete'" size="small" type="danger" link>
+                    删除
+                  </el-button>
                 </template>
               </el-popconfirm>
             </div>

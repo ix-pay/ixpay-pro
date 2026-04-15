@@ -7,7 +7,12 @@
       class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
     >
       <span class="text-sm text-gray-600 dark:text-gray-400">系统配置</span>
-      <el-button type="primary" size="small" @click="handleAddConfig">
+      <el-button
+        type="primary"
+        size="small"
+        v-auth-btn="'system:config:add'"
+        @click="handleAddConfig"
+      >
         <el-icon><Plus /></el-icon>
         添加配置
       </el-button>
@@ -37,10 +42,22 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditConfig(scope.row)">
+              <el-button
+                v-auth-btn="'system:config:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditConfig(scope.row)"
+              >
                 编辑
               </el-button>
-              <el-button size="small" type="danger" link @click="handleDeleteConfig(scope.row.id)">
+              <el-button
+                v-auth-btn="'system:config:delete'"
+                size="small"
+                type="danger"
+                link
+                @click="handleDeleteConfig(scope.row.id)"
+              >
                 删除
               </el-button>
             </div>

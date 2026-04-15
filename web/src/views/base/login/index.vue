@@ -48,9 +48,9 @@
           @submit.prevent="handleLogin"
         >
           <!-- 用户名输入框 -->
-          <el-form-item prop="username">
+          <el-form-item prop="userName">
             <el-input
-              v-model="formData.username"
+              v-model="formData.userName"
               placeholder="请输入用户名"
               :prefix-icon="User"
               size="large"
@@ -168,7 +168,7 @@ const isRefreshing = ref(false) // 验证码刷新动画状态
 
 // 表单数据
 const formData = reactive({
-  username: 'admin',
+  userName: 'admin',
   password: '',
   captcha: '',
   captchaId: '',
@@ -178,7 +178,7 @@ const formData = reactive({
 
 // 表单验证规则
 const rules = reactive({
-  username: [
+  userName: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
     { min: 2, max: 20, message: '用户名长度应在2-20个字符之间', trigger: 'blur' },
   ],
@@ -325,7 +325,7 @@ const saveRememberedPassword = () => {
   if (formData.rememberMe) {
     // 记住密码
     localStorage.setItem('rememberMe', 'true')
-    localStorage.setItem('rememberedUsername', formData.username)
+    localStorage.setItem('rememberedUsername', formData.userName)
     localStorage.setItem('rememberedPassword', formData.password)
   } else {
     // 清除记住的密码
@@ -343,7 +343,7 @@ onMounted(() => {
   const rememberMe = localStorage.getItem('rememberMe') === 'true'
 
   if (rememberMe && savedUsername && savedPassword) {
-    formData.username = savedUsername
+    formData.userName = savedUsername
     formData.password = savedPassword
     formData.rememberMe = true
   }
@@ -362,7 +362,7 @@ watch(
 
 // 监听用户名和密码变化，当记住密码开启时更新存储
 watch(
-  () => [formData.username, formData.password],
+  () => [formData.userName, formData.password],
   () => {
     if (formData.rememberMe) {
       saveRememberedPassword()

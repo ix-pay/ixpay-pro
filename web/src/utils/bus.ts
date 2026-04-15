@@ -5,6 +5,7 @@ import mitt from 'mitt'
 export interface Events {
   'show-error': { code: number | string; message?: string; fn?: (code: string | number) => void }
   setKeepAlive: { name: string }[]
+  resetTabManager: void
   [key: string]: unknown
   [key: symbol]: unknown
 }

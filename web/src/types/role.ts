@@ -37,7 +37,7 @@ export interface Role {
 // 简单用户信息（用于角色详情中的用户列表）
 export interface SimpleUserInfo {
   id: string
-  username: string
+  userName: string
   nickname: string
   email?: string
   phone?: string

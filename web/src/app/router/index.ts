@@ -43,6 +43,17 @@ const baseLayoutRoute: AppRouteRecordRaw = {
     keepAlive: true,
   },
   children: [
+    // ⚠️ 首页路由 - 所有登录用户都可访问 (即使没有菜单权限)
+    {
+      path: 'index',
+      name: 'Index',
+      component: () => import('@/views/base/index/index.vue'),
+      meta: {
+        title: '首页',
+        hidden: false,
+        keepAlive: true,
+      },
+    },
     // 个人资料和系统设置路由作为 Layout 的子路由添加
     {
       path: 'profile',
@@ -136,7 +147,40 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // 认证路由已加载，直接放行
+  // 动态路由已加载，验证权限
+  // 检查当前路由是否在菜单数据中 (即是否有权限访问)
+  const routeName = to.name?.toString()
+
+  // 如果是固定路由 (如首页、个人资料、系统设置),直接放行
+  // ⚠️ 注意：Index 路由现在在 baseLayoutRoute 中定义，所有登录用户都可访问
+  const fixedRoutes = ['layout', 'UserProfile', 'SystemSetting', 'NotFound', 'Login', 'Index']
+  const fixedPaths = ['/', '/index', '/login', '/profile', '/settings']
+
+  // 检查是否是固定路由或固定路径
+  if (fixedRoutes.includes(routeName || '') || fixedPaths.includes(to.path)) {
+    console.log('router - 固定路由放行:', to.path)
+    next()
+    return
+  }
+
+  // 检查动态路由中是否存在该路由
+  const routeExists = routerStore.asyncRouters.some((route) => {
+    if (route.name === to.name) return true
+    // 递归检查子路由
+    if (route.children) {
+      return route.children.some((child) => child.name === to.name)
+    }
+    return false
+  })
+
+  if (!routeExists) {
+    // 没有权限访问，重定向到 404 页面
+    console.log('router - 没有权限访问，重定向到 404:', to.path)
+    next({ name: 'NotFound' })
+    return
+  }
+
+  // 认证路由已加载且有权限，直接放行
   next()
 })
 

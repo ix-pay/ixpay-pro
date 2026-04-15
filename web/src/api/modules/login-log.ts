@@ -4,7 +4,7 @@ import type { ApiResponse } from '@/types'
 export interface LoginLog {
   id: number
   userId: number
-  username: string
+  userName: string
   ip: string
   location: string
   browser: string
@@ -18,7 +18,7 @@ export interface LoginLog {
 export const getLoginLogList = (params?: {
   page?: number
   pageSize?: number
-  username?: string
+  userName?: string
   status?: number
   startTime?: string
   endTime?: string

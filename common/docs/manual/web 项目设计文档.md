@@ -445,7 +445,7 @@ interface UserInfo {
 
 // 登录信息类型
 interface LoginInfo {
-  username: string
+  userName: string
   password: string
   captcha?: string
 }

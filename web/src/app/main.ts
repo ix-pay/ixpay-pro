@@ -12,9 +12,10 @@ import '@/assets/styles/global.scss'
 
 import run from '@/core/ixpay-pro'
 import auth from '@/directive/auth'
+import authBtn from '@/directive/authBtn'
 import { store } from '@/stores'
 import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
-app.use(run).use(ElementPlus).use(store).use(router).use(auth).mount('#app')
+app.use(run).use(ElementPlus).use(store).use(router).use(auth).use(authBtn).mount('#app')

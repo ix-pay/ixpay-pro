@@ -83,23 +83,6 @@ export const deleteMenu = (id: string): Promise<ApiResponse> => {
 }
 
 // @Tags Menu
-// @Summary 获取动态路由菜单
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Success 200 {string} string "{\"success\":true,\"data\":{},\"msg\":\"获取成功\"}"
-// @Router /menu [get]
-export const asyncMenu = async (): Promise<ApiResponse> => {
-  try {
-    const response = await getMenuList()
-    return response
-  } catch (error) {
-    console.error('获取动态菜单失败:', error)
-    throw error
-  }
-}
-
-// @Tags Menu
 // @Summary 获取菜单树结构
 // @Security ApiKeyAuth
 // @accept application/json

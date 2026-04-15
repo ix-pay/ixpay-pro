@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/modules/user'
+import { useRouterStore } from '@/stores/modules/router'
 import type { ApiMenuItem } from '@/types/menu'
 
 /**
@@ -54,8 +55,9 @@ export const hasAllPermissions = (permissions: string[]): boolean => {
  * @returns 是否有权限
  */
 export const hasMenuPermission = (menu: ApiMenuItem): boolean => {
+  // 如果菜单没有 permission 字段，默认有权限
   if (!menu || !menu.permission) {
-    return true // 默认有权限
+    return true
   }
 
   return hasPermission(menu.permission)
@@ -128,4 +130,59 @@ export const getRoles = (): string[] => {
   const userInfo = userStore.userInfo
 
   return (userInfo?.authority?.roles as string[]) || []
+}
+
+/**
+ * 检查用户是否有按钮权限
+ * @param permission 按钮权限标识
+ * @returns 是否有权限
+ */
+export const hasButtonPermission = (permission: string): boolean => {
+  const routerStore = useRouterStore()
+
+  // 从路由 store 中获取按钮权限列表（从菜单数据中提取的 type: 3 的按钮权限）
+  const buttonPermissions = routerStore.buttonPermissions
+
+  // 如果没有按钮权限列表，默认没有权限
+  if (!buttonPermissions || !Array.isArray(buttonPermissions) || buttonPermissions.length === 0) {
+    return false
+  }
+
+  // 检查用户是否有对应的按钮权限
+  return buttonPermissions.includes(permission)
+}
+
+/**
+ * 检查用户是否有多个按钮权限中的任意一个
+ * @param permissions 权限标识数组
+ * @returns 是否有权限
+ */
+export const hasAnyButtonPermission = (permissions: string[]): boolean => {
+  if (!permissions || !Array.isArray(permissions)) {
+    return false
+  }
+
+  return permissions.some((permission) => hasButtonPermission(permission))
+}
+
+/**
+ * 检查用户是否有所有按钮权限
+ * @param permissions 权限标识数组
+ * @returns 是否有权限
+ */
+export const hasAllButtonPermissions = (permissions: string[]): boolean => {
+  if (!permissions || !Array.isArray(permissions)) {
+    return false
+  }
+
+  return permissions.every((permission) => hasButtonPermission(permission))
+}
+
+/**
+ * 获取用户的按钮权限列表
+ * @returns 按钮权限列表
+ */
+export const getButtonPermissions = (): string[] => {
+  const routerStore = useRouterStore()
+  return routerStore.buttonPermissions
 }

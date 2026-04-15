@@ -31,7 +31,7 @@ export interface RoleInfo {
 // 用户信息接口（简化版，用于通用场景）
 export interface UserInfo {
   id: string // 用户 ID
-  username: string // 用户名
+  userName: string // 用户名
   nickname: string // 昵称
   email?: string // 邮箱
   phone?: string // 手机号
@@ -56,7 +56,7 @@ export interface UserInfo {
 
 // 登录请求参数
 export interface LoginRequest {
-  username: string
+  userName: string
   password: string
   captcha?: string
   captchaId?: string

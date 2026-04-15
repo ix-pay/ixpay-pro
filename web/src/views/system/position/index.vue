@@ -29,7 +29,12 @@
           搜索
         </el-button>
       </div>
-      <el-button type="primary" size="small" @click="handleAddPosition">
+      <el-button
+        type="primary"
+        size="small"
+        v-auth-btn="'system:position:add'"
+        @click="handleAddPosition"
+      >
         <el-icon><Plus /></el-icon>
         添加职位
       </el-button>
@@ -59,10 +64,17 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleEditPosition(scope.row)">
+              <el-button
+                v-auth-btn="'system:position:edit'"
+                size="small"
+                type="primary"
+                link
+                @click="handleEditPosition(scope.row)"
+              >
                 编辑
               </el-button>
               <el-button
+                v-auth-btn="'system:position:delete'"
                 size="small"
                 type="danger"
                 link

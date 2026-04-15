@@ -8,7 +8,7 @@
     >
       <div class="flex items-center gap-2">
         <el-input
-          v-model="searchForm.username"
+          v-model="searchForm.userName"
           placeholder="请输入用户名"
           clearable
           size="small"
@@ -25,7 +25,9 @@
           <el-option label="失败" :value="0" />
         </el-select>
         <el-button type="primary" size="small" @click="loadLoginLogList">
-          <el-icon><Search /></el-icon>
+          <el-icon>
+            <Search />
+          </el-icon>
           搜索
         </el-button>
       </div>
@@ -40,7 +42,7 @@
         class="w-full h-full"
         :height="'100%'"
       >
-        <el-table-column prop="username" label="用户名" width="120" />
+        <el-table-column prop="userName" label="用户名" width="120" />
         <el-table-column prop="ip" label="IP 地址" width="130" />
         <el-table-column prop="location" label="登录地点" min-width="150" />
         <el-table-column prop="browser" label="浏览器" width="120" show-overflow-tooltip />
@@ -89,7 +91,7 @@ defineOptions({
 interface LoginLog {
   id: number
   userId: number
-  username: string
+  userName: string
   ip: string
   location: string
   browser: string
@@ -107,7 +109,7 @@ const pagination = reactive({
   total: 0,
 })
 const searchForm = reactive({
-  username: '',
+  userName: '',
   status: undefined,
 })
 
@@ -118,7 +120,7 @@ const loadLoginLogList = async () => {
     const response = await getLoginLogList({
       page: pagination.page,
       pageSize: pagination.pageSize,
-      ...(searchForm.username ? { username: searchForm.username } : {}),
+      ...(searchForm.userName ? { userName: searchForm.userName } : {}),
       ...(searchForm.status !== undefined ? { status: searchForm.status } : {}),
     })
     const pageData = response.data as Record<string, unknown>

@@ -4,7 +4,7 @@ import type { ApiResponse } from '@/types'
 export interface OnlineUser {
   id: string
   userId: number
-  username: string
+  userName: string
   nickname: string
   ip: string
   location: string
@@ -19,7 +19,7 @@ export interface OnlineUser {
 export const getOnlineUserList = (params?: {
   page?: number
   pageSize?: number
-  username?: string
+  userName?: string
 }): Promise<
   ApiResponse<{
     list: OnlineUser[]

@@ -5,7 +5,7 @@ import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 // OnlineUserResponse 在线用户响应 DTO
 type OnlineUserResponse struct {
 	UserID       string `json:"userId,string"`
-	Username     string `json:"username"`
+	Username     string `json:"userName"`
 	Nickname     string `json:"nickname"`
 	SessionID    string `json:"sessionId"`
 	LoginIP      string `json:"loginIp"`

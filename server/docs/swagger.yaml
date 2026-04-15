@@ -11,14 +11,16 @@ definitions:
       btnPermIds:
         description: 关联的按钮权限 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       createdAt:
         description: 创建时间
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       description:
         description: 描述
         type: string
@@ -27,11 +29,13 @@ definitions:
         type: string
       id:
         description: API ID
-        type: string
+        format: int64
+        type: integer
       menuIds:
         description: 关联的菜单 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       method:
         description: HTTP 方法
@@ -42,7 +46,8 @@ definitions:
       roleIds:
         description: 关联的角色 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       status:
         description: 状态：1-启用，0-禁用
@@ -52,17 +57,19 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm:
     properties:
       apirouteIds:
         description: 关联的 API 路由 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       apiroutes:
-        description: 关联的 API 路由列表（新增）
+        description: 关联的 API 路由对象列表
         items:
           $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
         type: array
@@ -74,30 +81,34 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       description:
         description: 权限描述
         type: string
       id:
         description: 按钮权限 ID
-        type: string
+        format: int64
+        type: integer
       menu:
         allOf:
         - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu'
         description: 所属菜单（新增）
       menuID:
         description: 所属菜单 ID
-        type: string
+        format: int64
+        type: integer
       name:
         description: 权限名称，如：创建用户，编辑用户
         type: string
       roleIds:
         description: 关联的角色 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       roles:
-        description: 关联的角色列表（新增）
+        description: 关联的角色对象列表关联的角色列表（新增）
         items:
           $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
         type: array
@@ -109,7 +120,8 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DailyStat:
     properties:
@@ -166,20 +178,23 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       description:
         description: 部门描述
         type: string
       id:
         description: 部门 ID
-        type: string
+        format: int64
+        type: integer
       leader:
         allOf:
         - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
         description: 部门负责人（新增）
       leaderID:
         description: 部门负责人 ID
-        type: string
+        format: int64
+        type: integer
       name:
         description: 部门名称
         type: string
@@ -189,7 +204,8 @@ definitions:
         description: 父部门（新增）
       parentID:
         description: 父部门 ID
-        type: string
+        format: int64
+        type: integer
       sort:
         description: 排序
         type: integer
@@ -201,7 +217,8 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_domain_base_entity.FailedIPStat:
     properties:
@@ -288,7 +305,8 @@ definitions:
       apirouteIds:
         description: 关联的 API 路由 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       apiroutes:
         description: 关联的 API 路由列表（新增）
@@ -301,7 +319,8 @@ definitions:
       btnPermIds:
         description: 菜单下的按钮权限 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       btnPerms:
         description: 菜单下的按钮权限列表（新增）
@@ -321,7 +340,8 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       defaultMenu:
         description: 是否默认菜单
         type: boolean
@@ -339,7 +359,8 @@ definitions:
         type: string
       id:
         description: 菜单 ID
-        type: string
+        format: int64
+        type: integer
       isExt:
         description: 是否外部链接
         type: boolean
@@ -359,7 +380,8 @@ definitions:
         description: 父菜单（新增）
       parentID:
         description: 父菜单 ID，0 表示顶级菜单
-        type: string
+        format: int64
+        type: integer
       path:
         description: 路由路径
         type: string
@@ -372,7 +394,8 @@ definitions:
       roleIds:
         description: 关联的角色 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       roles:
         description: 关联的角色列表（新增）
@@ -397,7 +420,8 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuMeta:
     properties:
@@ -456,32 +480,52 @@ definitions:
       apirouteIds:
         description: 权限组关联的接口路由 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
+        type: array
+      apiroutes:
+        description: 权限组关联的接口路由对象列表
+        items:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
         type: array
       btnPermIds:
         description: 权限组关联的按钮权限 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
+        type: array
+      btnPerms:
+        description: 权限组关联的按钮权限对象列表
+        items:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
         type: array
       createdAt:
         description: 创建时间
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       description:
         description: 权限组描述
         type: string
       id:
         description: 权限组 ID
-        type: string
+        format: int64
+        type: integer
       name:
         description: 权限组名称
         type: string
       roleIds:
         description: 权限组关联的角色 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
+        type: array
+      roles:
+        description: 权限组关联的角色对象列表
+        items:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup'
         type: array
       sort:
         description: 排序
@@ -494,7 +538,8 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position:
     properties:
@@ -503,13 +548,15 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       description:
         description: 岗位描述
         type: string
       id:
         description: 岗位 ID
-        type: string
+        format: int64
+        type: integer
       name:
         description: 岗位名称
         type: string
@@ -524,14 +571,16 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role:
     properties:
       apirouteIds:
         description: 角色关联的接口路由 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       apiroutes:
         description: 角色关联的接口路由对象列表
@@ -541,7 +590,8 @@ definitions:
       btnPermIds:
         description: 角色关联的按钮权限 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       btnPerms:
         description: 角色关联的按钮权限对象列表
@@ -561,20 +611,23 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       description:
         description: 角色描述
         type: string
       id:
         description: 角色 ID
-        type: string
+        format: int64
+        type: integer
       isSystem:
         description: 是否系统角色
         type: boolean
       menuIds:
         description: 角色关联的菜单 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       menus:
         description: 角色关联的菜单对象列表
@@ -590,11 +643,13 @@ definitions:
         description: 父角色
       parentID:
         description: 父角色 ID，支持角色继承
-        type: string
+        format: int64
+        type: integer
       permissionGroupIds:
         description: 角色关联的权限组 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       permissionGroups:
         description: 角色关联的权限组对象列表
@@ -615,11 +670,13 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
       userIds:
         description: 角色关联的用户 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       users:
         description: 角色关联的用户对象列表
@@ -646,7 +703,7 @@ definitions:
       userID:
         description: 用户 ID
         type: string
-      username:
+      userName:
         description: 用户名
         type: string
     type: object
@@ -666,14 +723,16 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       department:
         allOf:
         - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department'
         description: 所属部门
       departmentID:
         description: 部门 ID
-        type: string
+        format: int64
+        type: integer
       email:
         description: 电子邮箱
         type: string
@@ -684,8 +743,9 @@ definitions:
         description: 性别：0-未知，1-男，2-女
         type: integer
       id:
-        description: 用户 ID（string 类型，避免 JSON 精度丢失）
-        type: string
+        description: 用户 ID
+        format: int64
+        type: integer
       lastLoginIP:
         description: 最后登录 IP
         type: string
@@ -707,11 +767,13 @@ definitions:
         description: 所属岗位
       positionID:
         description: 岗位 ID
-        type: string
+        format: int64
+        type: integer
       roleIds:
         description: 用户关联的角色 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       roles:
         description: 角色列表
@@ -721,12 +783,14 @@ definitions:
       specialBtnPermissionIds:
         description: 用户特殊按钮权限 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       specialPermissionIds:
         description: 用户特殊权限 ID 列表
         items:
-          type: string
+          format: int64
+          type: integer
         type: array
       status:
         description: 用户状态，1-正常，0-禁用
@@ -736,8 +800,9 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
-      username:
+        format: int64
+        type: integer
+      userName:
         description: 用户名，唯一标识
         type: string
       wechatOpenID:
@@ -754,13 +819,15 @@ definitions:
         type: string
       createdBy:
         description: 创建人 ID
-        type: string
+        format: int64
+        type: integer
       fontSize:
         description: 字体大小
         type: integer
       id:
         description: 用户设置 ID
-        type: string
+        format: int64
+        type: integer
       language:
         description: 语言
         type: string
@@ -781,10 +848,12 @@ definitions:
         type: string
       updatedBy:
         description: 更新人 ID
-        type: string
+        format: int64
+        type: integer
       userID:
         description: 用户 ID
-        type: string
+        format: int64
+        type: integer
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddTaskRequest:
     properties:
@@ -814,8 +883,8 @@ definitions:
         maxLength: 255
         type: string
       departmentId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       email:
         type: string
       nickname:
@@ -829,8 +898,8 @@ definitions:
         maxLength: 20
         type: string
       positionId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       roles:
         items:
           type: string
@@ -839,13 +908,13 @@ definitions:
         maximum: 1
         minimum: 0
         type: integer
-      username:
+      userName:
         maxLength: 50
         minLength: 3
         type: string
     required:
     - password
-    - username
+    - userName
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignBtnPermToRoleRequest:
     properties:
@@ -855,8 +924,8 @@ definitions:
         minItems: 1
         type: array
       roleId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
     required:
     - btnPermIds
     - roleId
@@ -869,45 +938,45 @@ definitions:
         minItems: 1
         type: array
       roleId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
     required:
     - menuIds
     - roleId
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToBtnPermRequest:
     properties:
-      Ids:
+      btnPermId:
+        minimum: 1
+        type: integer
+      ids:
         items:
           type: string
         minItems: 1
         type: array
-      btnPermId:
-        minLength: 1
-        type: string
     required:
-    - Ids
     - btnPermId
+    - ids
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToRoleRequest:
     properties:
-      Ids:
+      ids:
         items:
           type: string
         minItems: 1
         type: array
       roleId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
     required:
-    - Ids
+    - ids
     - roleId
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignUserToRoleRequest:
     properties:
       roleId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       userIds:
         items:
           type: string
@@ -921,7 +990,7 @@ definitions:
     properties:
       ids:
         items:
-          type: string
+          type: integer
         type: array
     required:
     - ids
@@ -934,7 +1003,7 @@ definitions:
       userIds:
         description: 用户 ID 列表
         items:
-          type: string
+          type: integer
         type: array
     required:
     - userIds
@@ -1022,8 +1091,8 @@ definitions:
         maxLength: 255
         type: string
       menuId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       name:
         maxLength: 50
         minLength: 2
@@ -1071,13 +1140,13 @@ definitions:
         type: string
       leaderId:
         description: 部门负责人 ID
-        type: string
+        type: integer
       name:
         description: 部门名称
         type: string
       parentId:
         description: 父部门 ID，默认为 0（顶级部门）
-        type: string
+        type: integer
       sort:
         description: 排序，默认为 0
         type: integer
@@ -1095,7 +1164,7 @@ definitions:
         type: string
       dictId:
         description: 字典 ID
-        type: string
+        type: integer
       itemKey:
         description: 字典项键
         maxLength: 50
@@ -1205,15 +1274,15 @@ definitions:
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteBtnPermRequest:
     properties:
       id:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
     required:
     - id
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteRoleRequest:
     properties:
       id:
-        type: string
+        type: integer
     required:
     - id
     type: object
@@ -1225,11 +1294,11 @@ definitions:
         type: string
       password:
         type: string
-      username:
+      userName:
         type: string
     required:
     - password
-    - username
+    - userName
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.RecordLoginRequest:
     properties:
@@ -1259,14 +1328,14 @@ definitions:
         type: string
       userId:
         description: 用户 ID
-        type: string
-      username:
+        type: integer
+      userName:
         description: 用户名
         type: string
     required:
     - ip
     - userId
-    - username
+    - userName
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.RegisterRequest:
     properties:
@@ -1276,45 +1345,45 @@ definitions:
         maxLength: 30
         minLength: 6
         type: string
-      username:
+      userName:
         maxLength: 50
         minLength: 3
         type: string
     required:
     - email
     - password
-    - username
+    - userName
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.ResetPasswordRequest:
     properties:
       userId:
-        type: string
+        type: integer
     required:
     - userId
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeBtnPermFromRoleRequest:
     properties:
       btnPermId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       roleId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
     required:
     - btnPermId
     - roleId
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeFromBtnPermRequest:
     properties:
-      Id:
-        minLength: 1
-        type: string
       btnPermId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
+      id:
+        minimum: 1
+        type: integer
     required:
-    - Id
     - btnPermId
+    - id
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.SaveRolePermissionsRequest:
     properties:
@@ -1369,7 +1438,7 @@ definitions:
         maxLength: 100
         type: string
       id:
-        type: string
+        type: integer
       menuIds:
         items:
           type: string
@@ -1411,11 +1480,11 @@ definitions:
         maxLength: 255
         type: string
       id:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       menuId:
-        minLength: 1
-        type: string
+        minimum: 1
+        type: integer
       name:
         maxLength: 50
         minLength: 2
@@ -1450,7 +1519,7 @@ definitions:
         type: string
       id:
         description: 配置 ID
-        type: string
+        type: integer
       status:
         description: 状态：1-启用 0-禁用
         enum:
@@ -1465,7 +1534,7 @@ definitions:
     properties:
       leaderId:
         description: 部门负责人 ID
-        type: string
+        type: integer
     required:
     - leaderId
     type: object
@@ -1476,16 +1545,16 @@ definitions:
         type: string
       id:
         description: 部门 ID
-        type: string
+        type: integer
       leaderId:
         description: 部门负责人 ID
-        type: string
+        type: integer
       name:
         description: 部门名称
         type: string
       parentId:
         description: 父部门 ID
-        type: string
+        type: integer
       sort:
         description: 排序
         type: integer
@@ -1504,10 +1573,10 @@ definitions:
         type: string
       dictId:
         description: 字典 ID
-        type: string
+        type: integer
       id:
-        description: 字典项ID
-        type: string
+        description: 字典项 ID
+        type: integer
       itemKey:
         description: 字典项键
         maxLength: 50
@@ -1547,8 +1616,8 @@ definitions:
         maxLength: 100
         type: string
       id:
-        description: 字典ID
-        type: string
+        description: 字典 ID
+        type: integer
       status:
         description: 状态：1-启用 0-禁用
         enum:
@@ -1570,7 +1639,7 @@ definitions:
         type: string
       id:
         description: 公告 ID
-        type: string
+        type: integer
       isTop:
         description: 是否置顶
         type: boolean
@@ -1596,7 +1665,7 @@ definitions:
         type: string
       id:
         description: 岗位 ID
-        type: string
+        type: integer
       name:
         description: 岗位名称
         type: string
@@ -1616,7 +1685,7 @@ definitions:
         maxLength: 255
         type: string
       id:
-        type: string
+        type: integer
       name:
         maxLength: 50
         minLength: 2
@@ -1638,7 +1707,7 @@ definitions:
       email:
         type: string
       id:
-        type: string
+        type: integer
       nickname:
         maxLength: 50
         type: string
@@ -1666,21 +1735,23 @@ definitions:
         type: integer
       btnPermIds:
         items:
-          type: string
+          type: integer
         type: array
       createdAt:
         type: string
       createdBy:
+        example: "0"
         type: string
       description:
         type: string
       group:
         type: string
       id:
+        example: "0"
         type: string
       menuIds:
         items:
-          type: string
+          type: integer
         type: array
       method:
         type: string
@@ -1688,13 +1759,14 @@ definitions:
         type: string
       roleIds:
         items:
-          type: string
+          type: integer
         type: array
       status:
         type: integer
       updatedAt:
         type: string
       updatedBy:
+        example: "0"
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO:
@@ -1726,10 +1798,12 @@ definitions:
       description:
         type: string
       id:
+        example: "0"
         type: string
       isAssigned:
         type: boolean
       menuId:
+        example: "0"
         type: string
       name:
         type: string
@@ -1745,8 +1819,10 @@ definitions:
       description:
         type: string
       id:
+        example: "0"
         type: string
       menuId:
+        example: "0"
         type: string
       name:
         type: string
@@ -1799,7 +1875,7 @@ definitions:
         type: string
       id:
         description: 配置 ID
-        example: ""
+        example: "0"
         type: string
       status:
         description: 状态：1-启用 0-禁用
@@ -1840,7 +1916,7 @@ definitions:
         type: string
       id:
         description: 部门 ID
-        example: ""
+        example: "0"
         type: string
       leader:
         description: 负责人
@@ -1850,7 +1926,7 @@ definitions:
         type: string
       parentId:
         description: 父部门 ID
-        example: ""
+        example: "0"
         type: string
       phone:
         description: 联系电话
@@ -1889,11 +1965,11 @@ definitions:
         type: string
       dictId:
         description: 字典 ID
-        example: ""
+        example: "0"
         type: string
       id:
         description: 字典项 ID
-        example: ""
+        example: "0"
         type: string
       itemKey:
         description: 字典项键
@@ -1946,7 +2022,7 @@ definitions:
         type: string
       id:
         description: 字典 ID
-        example: ""
+        example: "0"
         type: string
       status:
         description: 状态：1-启用 0-禁用
@@ -1964,6 +2040,7 @@ definitions:
       device:
         type: string
       id:
+        example: "0"
         type: string
       ip:
         type: string
@@ -1974,8 +2051,9 @@ definitions:
       result:
         type: integer
       userId:
+        example: "0"
         type: string
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO:
@@ -1983,6 +2061,7 @@ definitions:
       createdAt:
         type: string
       id:
+        example: "0"
         type: string
       ip:
         type: string
@@ -1990,7 +2069,7 @@ definitions:
         type: string
       result:
         type: integer
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse:
@@ -2005,12 +2084,12 @@ definitions:
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuInfo:
     properties:
       id:
-        example: ""
+        example: "0"
         type: string
       name:
         type: string
       parentId:
-        example: ""
+        example: "0"
         type: string
       path:
         type: string
@@ -2074,7 +2153,8 @@ definitions:
         description: 菜单图标
         type: string
       id:
-        description: 菜单 ID（字符串格式，使用 Snowflake ID）
+        description: 菜单 ID
+        example: "0"
         type: string
       isExt:
         description: 是否外部链接
@@ -2090,7 +2170,8 @@ definitions:
         description: 路由名称
         type: string
       parentId:
-        description: 父菜单 ID（字符串格式，防止 string 精度丢失）
+        description: 父菜单 ID
+        example: "0"
         type: string
       path:
         description: 路由路径
@@ -2136,14 +2217,14 @@ definitions:
       description:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       isTop:
         type: boolean
       publishTime:
         type: string
       publisherId:
-        example: ""
+        example: "0"
         type: string
       sort:
         type: integer
@@ -2207,7 +2288,7 @@ definitions:
       userId:
         example: ""
         type: string
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogListResponse:
@@ -2236,7 +2317,7 @@ definitions:
       errorMessage:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       isSuccess:
         type: boolean
@@ -2261,9 +2342,9 @@ definitions:
       userAgent:
         type: string
       userId:
-        example: ""
+        example: "0"
         type: string
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogStatisticsResponse:
@@ -2315,7 +2396,7 @@ definitions:
         type: string
       id:
         description: 岗位 ID
-        example: ""
+        example: "0"
         type: string
       name:
         description: 岗位名称
@@ -2339,7 +2420,7 @@ definitions:
       description:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       isSystem:
         type: boolean
@@ -2350,7 +2431,7 @@ definitions:
       name:
         type: string
       parentId:
-        example: ""
+        example: "0"
         type: string
       routes:
         items:
@@ -2376,14 +2457,14 @@ definitions:
       description:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       isSystem:
         type: boolean
       name:
         type: string
       parentId:
-        example: ""
+        example: "0"
         type: string
       sort:
         type: integer
@@ -2414,14 +2495,14 @@ definitions:
       description:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       isSystem:
         type: boolean
       name:
         type: string
       parentId:
-        example: ""
+        example: "0"
         type: string
       sort:
         type: integer
@@ -2437,7 +2518,7 @@ definitions:
       group:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       method:
         type: string
@@ -2533,11 +2614,11 @@ definitions:
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfo:
     properties:
       id:
-        example: ""
+        example: "0"
         type: string
       nickname:
         type: string
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse:
@@ -2547,12 +2628,12 @@ definitions:
       avatar:
         type: string
       currentRoleId:
-        example: ""
+        example: "0"
         type: string
       email:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       nickname:
         type: string
@@ -2566,7 +2647,7 @@ definitions:
         type: array
       status:
         type: integer
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_wx_request.CreatePaymentRequest:
@@ -2662,7 +2743,7 @@ definitions:
         type: string
       status:
         type: integer
-      username:
+      userName:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.CPUStatus:
@@ -3664,7 +3745,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取按钮权限关联的API路由
+      description: 获取按钮权限关联的 API 路由
       parameters:
       - description: 按钮权限 ID
         format: int64
@@ -3688,16 +3769,16 @@ paths:
               type: object
       security:
       - BearerAuth: []
-      summary: 获取按钮权限关联的API路由
+      summary: 获取按钮权限关联的 API 路由
       tags:
       - 按钮权限管理
   /api/admin/btn-perms/assign-api-routes:
     post:
       consumes:
       - application/json
-      description: 为按钮权限分配API路由
+      description: 为按钮权限分配 API 路由
       parameters:
-      - description: 按钮ID和API路由ID列表
+      - description: 按钮 ID 和 API 路由 ID 列表
         in: body
         name: data
         required: true
@@ -3712,7 +3793,7 @@ paths:
             $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
       security:
       - BearerAuth: []
-      summary: 为按钮权限分配API路由
+      summary: 为按钮权限分配 API 路由
       tags:
       - 按钮权限管理
   /api/admin/btn-perms/assign-to-role:
@@ -3721,7 +3802,7 @@ paths:
       - application/json
       description: 为角色分配按钮权限
       parameters:
-      - description: 角色ID和按钮权限ID列表
+      - description: 角色 ID 和按钮权限 ID 列表
         in: body
         name: data
         required: true
@@ -3833,7 +3914,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取API路由关联的按钮权限
+      description: 获取 API 路由关联的按钮权限
       parameters:
       - description: API 路由 ID
         format: int64
@@ -3857,7 +3938,7 @@ paths:
               type: object
       security:
       - BearerAuth: []
-      summary: 获取API路由关联的按钮权限
+      summary: 获取 API 路由关联的按钮权限
       tags:
       - 按钮权限管理
   /api/admin/btn-perms/revoke-api-route:
@@ -5113,7 +5194,7 @@ paths:
         type: integer
       - description: 用户名
         in: query
-        name: username
+        name: userName
         type: string
       - description: 登录 IP
         in: query
@@ -5408,7 +5489,7 @@ paths:
         type: string
       - description: 用户名
         in: query
-        name: username
+        name: userName
         type: string
       - description: 操作模块
         in: query
@@ -6990,7 +7071,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取完整的岗位列表数据
+      description: 获取所有岗位，用于前端选择岗位选项
       produces:
       - application/json
       responses:
@@ -7002,7 +7083,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position'
+                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse'
                   type: array
                 msg:
                   type: string
@@ -7186,7 +7267,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+            allOf:
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse'
+              type: object
       security:
       - BearerAuth: []
       summary: 根据路径参数 ID 获取角色详情
@@ -7237,7 +7323,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse'
                   type: array
               type: object
       security:
@@ -7792,7 +7878,7 @@ paths:
         type: integer
       - description: 用户名
         in: query
-        name: username
+        name: userName
         type: string
       - description: 邮箱
         in: query

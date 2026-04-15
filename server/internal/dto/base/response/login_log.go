@@ -9,7 +9,7 @@ import (
 // LoginLogListDTO 列表 DTO（精简版）
 type LoginLogListDTO struct {
 	ID        int64  `json:"id,string"`
-	Username  string `json:"username"`
+	Username  string `json:"userName"`
 	IP        string `json:"ip"`
 	Place     string `json:"place"`
 	Result    int    `json:"result"`
@@ -20,7 +20,7 @@ type LoginLogListDTO struct {
 type LoginLogDetailDTO struct {
 	ID        int64     `json:"id,string"`
 	UserID    int64     `json:"userId,string"`
-	Username  string    `json:"username"`
+	Username  string    `json:"userName"`
 	IP        string    `json:"ip"`
 	Place     string    `json:"place"`
 	Device    string    `json:"device"`

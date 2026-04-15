@@ -3,7 +3,7 @@ package response
 // WXUserInfoResponse 用户信息响应
 type WXUserInfoResponse struct {
 	ID       string `json:"id"`
-	Username string `json:"username"`
+	Username string `json:"userName"`
 	Nickname string `json:"nickname"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`

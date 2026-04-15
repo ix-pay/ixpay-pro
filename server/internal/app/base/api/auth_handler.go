@@ -89,15 +89,26 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		roleInfos = append(roleInfos, roleInfo)
 	}
 
+	// 确定 currentRoleId：如果用户有角色，使用第一个角色的 ID
+	var currentRoleId int64 = 0
+	if len(roleInfos) > 0 {
+		currentRoleId = roleInfos[0].ID
+	}
+
 	userInfo := response.UserInfoResponse{
-		ID:       user.ID,
-		Username: user.Username,
-		Nickname: user.Nickname,
-		Email:    user.Email,
-		Phone:    user.Phone,
-		Avatar:   user.Avatar,
-		Status:   user.Status,
-		Roles:    roleInfos,
+		ID:            user.ID,
+		Username:      user.Username,
+		Nickname:      user.Nickname,
+		Email:         user.Email,
+		Phone:         user.Phone,
+		Avatar:        user.Avatar,
+		Status:        user.Status,
+		Roles:         roleInfos,
+		CurrentRoleId: currentRoleId, // 设置当前角色 ID
+		Role:          "",            // 兼容字段，留空
+		Authority: response.AuthorityInfo{
+			DefaultRouter: "", // 兼容字段，留空
+		},
 	}
 
 	// 构建响应数据

@@ -190,7 +190,9 @@ func (c *DepartmentController) GetDepartmentByID(ctx *gin.Context) {
 		return
 	}
 
-	baseRes.OkWithDetailed(department, "获取部门详情成功", ctx)
+	// 转换为 response DTO
+	departmentResponse := convertToDepartmentResponse(department)
+	baseRes.OkWithDetailed(departmentResponse, "获取部门详情成功", ctx)
 }
 
 // CreateDepartment 创建部门
@@ -268,7 +270,9 @@ func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
 	}
 
 	c.log.Info("创建部门成功", "id", department.ID, "name", req.Name)
-	baseRes.OkWithDetailed(department, "创建部门成功", ctx)
+	// 转换为 response DTO
+	departmentResponse := convertToDepartmentResponse(department)
+	baseRes.OkWithDetailed(departmentResponse, "创建部门成功", ctx)
 }
 
 // UpdateDepartment 更新部门
@@ -338,7 +342,9 @@ func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
 	}
 
 	c.log.Info("更新部门成功", "id", req.ID, "name", req.Name)
-	baseRes.OkWithDetailed(department, "更新部门成功", ctx)
+	// 转换为 response DTO
+	departmentResponse := convertToDepartmentResponse(department)
+	baseRes.OkWithDetailed(departmentResponse, "更新部门成功", ctx)
 }
 
 // DeleteDepartment 删除部门

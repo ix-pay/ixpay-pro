@@ -5,17 +5,18 @@ import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 // UserSimpleDTO 简单用户 DTO（列表使用）
 // 所有 ID 字段使用 int64 格式返回，通过 json:",string" 标签自动序列化为字符串
 type UserSimpleDTO struct {
-	ID       int64  `json:"id,string"`
-	Username string `json:"username"`
-	Nickname string `json:"nickname"`
-	Avatar   string `json:"avatar"`
+	ID       int64     `json:"id,string"`
+	Username string    `json:"userName"`
+	Nickname string    `json:"nickname"`
+	Avatar   string    `json:"avatar"`
+	Roles    []RoleDTO `json:"roles"`
 }
 
 // UserDetailDTO 详情用户 DTO（详情使用）
 // 所有 ID 字段使用 int64 格式返回，通过 json:",string" 标签自动序列化为字符串
 type UserDetailDTO struct {
 	ID           int64     `json:"id,string"`
-	Username     string    `json:"username"`
+	Username     string    `json:"userName"`
 	Nickname     string    `json:"nickname"`
 	Email        string    `json:"email"`
 	Phone        string    `json:"phone"`
@@ -31,7 +32,7 @@ type UserDetailDTO struct {
 // 所有 ID 字段使用 int64 格式返回，通过 json:",string" 标签自动序列化为字符串
 type UserSelectDTO struct {
 	ID       int64  `json:"id,string"`
-	Username string `json:"username"`
+	Username string `json:"userName"`
 	Nickname string `json:"nickname"`
 }
 

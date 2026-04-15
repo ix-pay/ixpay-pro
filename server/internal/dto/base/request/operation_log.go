@@ -6,7 +6,7 @@ type GetOperationLogListRequest struct {
 	PageSize      int    `json:"pageSize" form:"pageSize" binding:"required,min=1,max=100"`
 	StartTime     string `json:"startTime" form:"startTime" binding:"omitempty"`
 	EndTime       string `json:"endTime" form:"endTime" binding:"omitempty"`
-	Username      string `json:"username" form:"username" binding:"omitempty"`
+	Username      string `json:"userName" form:"userName" binding:"omitempty"`
 	Module        string `json:"module" form:"module" binding:"omitempty"`
 	OperationType int    `json:"operationType" form:"operationType" binding:"omitempty,min=0,max=9"`
 	IsSuccess     *bool  `json:"isSuccess" form:"isSuccess" binding:"omitempty"`

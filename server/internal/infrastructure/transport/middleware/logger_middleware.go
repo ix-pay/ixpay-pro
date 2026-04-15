@@ -62,7 +62,7 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 
 		// 获取用户信息（如果已认证）
 		userID, _ := c.Get("userID")
-		username, _ := c.Get("username")
+		userName, _ := c.Get("userName")
 		role, _ := c.Get("role")
 
 		// 根据状态码选择日志级别
@@ -74,7 +74,7 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 				"status", statusCode,
 				"duration", duration,
 				"userID", userID,
-				"username", username,
+				"userName", userName,
 				"role", role,
 				"requestBody", requestBody,
 				"responseBody", responseBody,
@@ -87,7 +87,7 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 				"status", statusCode,
 				"duration", duration,
 				"userID", userID,
-				"username", username,
+				"userName", userName,
 				"role", role,
 				"requestBody", requestBody,
 				"responseBody", responseBody,
@@ -100,7 +100,7 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 				"status", statusCode,
 				"duration", duration,
 				"userID", userID,
-				"username", username,
+				"userName", userName,
 				"role", role,
 				// 对于成功的请求，通常不需要记录请求体和响应体，除非特别需要
 			)

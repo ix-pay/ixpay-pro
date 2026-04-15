@@ -42,13 +42,13 @@ type GetBtnPermListRequest struct {
 // AssignToBtnPermRequest 为按钮权限分配 API 路由请求模型
 type AssignToBtnPermRequest struct {
 	BtnPermID int64    `json:"btnPermId" binding:"required,gte=1"`
-	IDs       []string `json:"Ids" binding:"required,min=1"`
+	IDs       []string `json:"ids" binding:"required,min=1"`
 }
 
 // RevokeFromBtnPermRequest 从按钮权限撤销 API 路由请求模型
 type RevokeFromBtnPermRequest struct {
 	BtnPermID int64 `json:"btnPermId" binding:"required,gte=1"`
-	ID        int64 `json:"Id" binding:"required,gte=1"`
+	ID        int64 `json:"id" binding:"required,gte=1"`
 }
 
 // AssignBtnPermToRoleRequest 为角色分配按钮权限请求模型

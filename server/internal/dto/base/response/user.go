@@ -3,17 +3,18 @@ package response
 // UserResponse 用户响应 DTO
 // 所有 ID 字段使用 int64 格式返回，通过 json:",string" 标签自动序列化为字符串
 type UserResponse struct {
-	ID           int64  `json:"id,string"`
-	Username     string `json:"username"`
-	Nickname     string `json:"nickname"`
-	Email        string `json:"email"`
-	Phone        string `json:"phone"`
-	Avatar       string `json:"avatar"`
-	Status       int    `json:"status"`
-	DepartmentID int64  `json:"departmentId,string"`
-	PositionID   int64  `json:"positionId,string"`
-	CreatedAt    string `json:"createdAt"`
-	UpdatedAt    string `json:"updatedAt"`
+	ID           int64     `json:"id,string"`
+	Username     string    `json:"userName"`
+	Nickname     string    `json:"nickname"`
+	Email        string    `json:"email"`
+	Phone        string    `json:"phone"`
+	Avatar       string    `json:"avatar"`
+	Status       int       `json:"status"`
+	DepartmentID int64     `json:"departmentId,string"`
+	PositionID   int64     `json:"positionId,string"`
+	Roles        []RoleDTO `json:"roles"`
+	CreatedAt    string    `json:"createdAt"`
+	UpdatedAt    string    `json:"updatedAt"`
 }
 
 // UserSettingResponse 用户设置响应 DTO
@@ -53,7 +54,7 @@ type AuthorityInfo struct {
 // 所有 ID 字段使用 int64 格式返回，通过 json:",string" 标签自动序列化为字符串
 type UserInfoResponse struct {
 	ID            int64         `json:"id,string"`
-	Username      string        `json:"username"`
+	Username      string        `json:"userName"`
 	Nickname      string        `json:"nickname"`
 	Email         string        `json:"email"`
 	Phone         string        `json:"phone"`

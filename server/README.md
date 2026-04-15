@@ -741,7 +741,7 @@ npm run dev
    # 测试登录接口
    curl -X POST http://localhost:8586/api/admin/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"username": "admin", "password": "password123"}'
+     -d '{"userName": "admin", "password": "password123"}'
    ```
 
 4. **检查数据库状态**:

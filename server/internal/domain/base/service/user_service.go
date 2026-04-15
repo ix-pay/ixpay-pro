@@ -102,15 +102,15 @@ func (s *UserService) Captcha() (string, string, int, bool, error) {
 // Register 用户注册
 // 创建新用户账户，包括密码加密和基本信息设置
 // 参数:
-// - username: 用户名
+// - userName: 用户名
 // - password: 密码（明文）
 // - email: 电子邮箱
 // 返回:
 // - *entity.User: 新创建的用户对象
 // - error: 错误信息
-func (s *UserService) Register(username, password, email string) (*entity.User, error) {
+func (s *UserService) Register(userName, password, email string) (*entity.User, error) {
 	// 检查用户是否已存在
-	_, err := s.repo.GetByUsername(username)
+	_, err := s.repo.GetByUsername(userName)
 	if err == nil {
 		return nil, errors.New("用户名已存在")
 	}
@@ -130,7 +130,7 @@ func (s *UserService) Register(username, password, email string) (*entity.User, 
 
 	// 创建新用户
 	user := &entity.User{
-		Username:     username,
+		Username:     userName,
 		PasswordHash: passwordHash,
 		Email:        email,
 		Status:       1,
@@ -148,14 +148,14 @@ func (s *UserService) Register(username, password, email string) (*entity.User, 
 		// 不返回错误，因为用户创建已经成功
 	}
 
-	s.log.Info("用户注册成功", "username", username)
+	s.log.Info("用户注册成功", "userName", userName)
 	return user, nil
 }
 
 // Login 用户登录
 // 验证用户凭据并生成访问令牌
 // 参数:
-// - username: 用户名
+// - userName: 用户名
 // - password: 密码（明文）
 // - captchaId: 验证码 ID
 // - captchaVal: 用户输入的验证码值
@@ -168,7 +168,7 @@ func (s *UserService) Register(username, password, email string) (*entity.User, 
 // - time.Time: 访问令牌过期时间
 // - time.Time: 刷新令牌过期时间
 // - error: 错误信息
-func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userAgent string) (*entity.User, string, string, time.Time, time.Time, error) {
+func (s *UserService) Login(userName, password, captchaId, captchaVal, ip, userAgent string) (*entity.User, string, string, time.Time, time.Time, error) {
 	// 解析 User-Agent 获取浏览器和操作系统信息
 	browser, os := parseUserAgent(userAgent)
 	// 组合设备信息
@@ -183,38 +183,38 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 		if err != nil {
 			s.log.Error("获取验证码失败", "error", err)
 			// 记录失败的登录日志（验证码错误）
-			s.loginLogService.RecordLogin(0, username, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
+			s.loginLogService.RecordLogin(0, userName, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
 			return nil, "", "", time.Time{}, time.Time{}, errors.New("验证码已过期或无效")
 		}
 
 		if !ok {
 			// 记录失败的登录日志（验证码错误）
-			s.loginLogService.RecordLogin(0, username, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
+			s.loginLogService.RecordLogin(0, userName, ip, loginPlace, device, browser, os, userAgent, false, "验证码错误")
 			return nil, "", "", time.Time{}, time.Time{}, errors.New("验证码错误")
 		}
 	}
 
 	// 根据用户名获取用户
-	user, err := s.repo.GetByUsername(username)
+	user, err := s.repo.GetByUsername(userName)
 	if err != nil {
 		s.log.Error("查找用户失败", "error", err)
 		// 记录失败的登录日志（用户不存在）
-		s.loginLogService.RecordLogin(0, username, ip, loginPlace, device, browser, os, userAgent, false, "用户不存在")
+		s.loginLogService.RecordLogin(0, userName, ip, loginPlace, device, browser, os, userAgent, false, "用户不存在")
 		return nil, "", "", time.Time{}, time.Time{}, errors.New("用户名或密码错误")
 	}
 
 	// 验证密码
 	if verifyErr := encryption.VerifyPassword(user.PasswordHash, password); verifyErr != nil {
-		s.log.Error("密码验证失败", "username", username)
+		s.log.Error("密码验证失败", "userName", userName)
 		// 记录失败的登录日志（密码错误）
-		s.loginLogService.RecordLogin(user.ID, username, ip, loginPlace, device, browser, os, userAgent, false, "密码错误")
+		s.loginLogService.RecordLogin(user.ID, userName, ip, loginPlace, device, browser, os, userAgent, false, "密码错误")
 		return nil, "", "", time.Time{}, time.Time{}, errors.New("用户名或密码错误")
 	}
 
 	// 检查用户状态
 	if user.Status != 1 {
 		// 记录失败的登录日志（用户未激活）
-		s.loginLogService.RecordLogin(user.ID, username, ip, loginPlace, device, browser, os, userAgent, false, "用户账户未激活")
+		s.loginLogService.RecordLogin(user.ID, userName, ip, loginPlace, device, browser, os, userAgent, false, "用户账户未激活")
 		return nil, "", "", time.Time{}, time.Time{}, errors.New("用户账户未激活")
 	}
 
@@ -260,11 +260,11 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	if err != nil {
 		s.log.Error("生成令牌失败", "error", err)
 		// 记录失败的登录日志（令牌生成失败）
-		s.loginLogService.RecordLogin(user.ID, username, ip, loginPlace, device, browser, os, userAgent, false, err.Error())
+		s.loginLogService.RecordLogin(user.ID, userName, ip, loginPlace, device, browser, os, userAgent, false, err.Error())
 		return nil, "", "", time.Time{}, time.Time{}, err
 	}
 
-	s.log.Info("用户登录成功", "username", username)
+	s.log.Info("用户登录成功", "userName", userName)
 
 	// 【修改 2】登录成功后，缓存默认角色（第一个角色）到 Redis
 	if firstRoleID > 0 {
@@ -300,7 +300,7 @@ func (s *UserService) Login(username, password, captchaId, captchaVal, ip, userA
 	}
 
 	// 记录成功的登录日志
-	s.loginLogService.RecordLogin(user.ID, username, ip, loginPlace, device, browser, os, userAgent, true, "")
+	s.loginLogService.RecordLogin(user.ID, userName, ip, loginPlace, device, browser, os, userAgent, true, "")
 	return user, accessToken, refreshToken, accessExpire, refreshExpire, nil
 }
 
@@ -464,8 +464,8 @@ func (s *UserService) Logout(userID string) error {
 }
 
 // GenerateToken 生成访问令牌和刷新令牌
-func (s *UserService) GenerateToken(userID string, username string, nickname string, role string, loginType string) (string, string, time.Time, time.Time, error) {
-	return s.jwtAuth.GenerateToken(userID, username, nickname, role, loginType)
+func (s *UserService) GenerateToken(userID string, userName string, nickname string, role string, loginType string) (string, string, time.Time, time.Time, error) {
+	return s.jwtAuth.GenerateToken(userID, userName, nickname, role, loginType)
 }
 
 // GetUserList 获取用户列表
@@ -480,9 +480,9 @@ func (s *UserService) GetUserList(page, pageSize int, filters map[string]interfa
 }
 
 // AddUser 增加用户（管理员功能）
-func (s *UserService) AddUser(username, password, email, nickname, phone, avatar string, departmentID, positionID int64, createdBy string, status int) (*entity.User, error) {
+func (s *UserService) AddUser(userName, password, email, nickname, phone, avatar string, departmentID, positionID int64, createdBy string, status int) (*entity.User, error) {
 	// 检查用户是否已存在
-	_, err := s.repo.GetByUsername(username)
+	_, err := s.repo.GetByUsername(userName)
 	if err == nil {
 		return nil, errors.New("用户名已存在")
 	}
@@ -498,7 +498,7 @@ func (s *UserService) AddUser(username, password, email, nickname, phone, avatar
 
 	// 创建新用户
 	user := &entity.User{
-		Username:     username,
+		Username:     userName,
 		PasswordHash: passwordHash,
 		Nickname:     nickname,
 		Email:        email,
@@ -521,7 +521,7 @@ func (s *UserService) AddUser(username, password, email, nickname, phone, avatar
 		// 不返回错误，因为用户创建已经成功
 	}
 
-	s.log.Info("管理员创建用户成功", "username", username, "createdBy", createdBy)
+	s.log.Info("管理员创建用户成功", "userName", userName, "createdBy", createdBy)
 	return user, nil
 }
 
@@ -784,7 +784,7 @@ func (s *UserService) ImportUsers(users []*entity.User, createdBy string) (int, 
 
 		// 创建用户
 		if err := s.repo.Create(user); err != nil {
-			s.log.Error("导入创建用户失败", "username", user.Username, "error", err)
+			s.log.Error("导入创建用户失败", "userName", user.Username, "error", err)
 			continue
 		}
 
@@ -950,7 +950,7 @@ func (s *UserService) UpdateUserRoles(userID int64, roleIDs []int64) error {
 		return errors.New("用户不存在")
 	}
 
-	s.log.Info("========== 开始更新用户角色 ==========", "userID", userID, "username", user.Username, "roleIDs", roleIDs)
+	s.log.Info("========== 开始更新用户角色 ==========", "userID", userID, "userName", user.Username, "roleIDs", roleIDs)
 
 	// 获取用户当前的角色
 	currentRoles, err := s.roleService.GetRolesForUser(userID)
@@ -996,7 +996,7 @@ func (s *UserService) UpdateUserRoles(userID int64, roleIDs []int64) error {
 
 	// 保护管理员角色：如果用户当前有管理员角色，但新角色列表中没有，则拒绝
 	if hasAdminRole && !willHaveAdminRole {
-		s.log.Error("❌ 拒绝操作：不能删除用户的管理员角色", "userID", userID, "username", user.Username)
+		s.log.Error("❌ 拒绝操作：不能删除用户的管理员角色", "userID", userID, "userName", user.Username)
 		return errors.New("不能删除用户的管理员角色")
 	}
 
@@ -1131,7 +1131,7 @@ func (s *UserService) SwitchRole(userID int64, roleID int64) error {
 
 	s.log.Info("========== 用户角色切换完成 ==========",
 		"userID", userID,
-		"username", user.Username,
+		"userName", user.Username,
 		"newRoleID", roleID,
 		"newRoleCode", role.Code,
 		"newRoleName", role.Name)

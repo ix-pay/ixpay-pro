@@ -35,7 +35,7 @@ func TestOnlineUserService_TokenValidation(t *testing.T) {
 func TestOnlineUserService_UsernameValidation(t *testing.T) {
 	testCases := []struct {
 		name     string
-		username string
+		userName string
 		valid    bool
 	}{
 		{"有效用户名 - 短用户名", "admin", true},
@@ -46,11 +46,11 @@ func TestOnlineUserService_UsernameValidation(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.username == "" {
+			if tc.userName == "" {
 				assert.False(t, tc.valid, "用户名不能为空")
 			}
 
-			if len(tc.username) > 50 {
+			if len(tc.userName) > 50 {
 				assert.False(t, tc.valid, "用户名不能超过 50 字符")
 			}
 		})

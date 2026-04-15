@@ -38,7 +38,7 @@ func NewLoginLogController(service *service.LoginLogService, log logger.Logger) 
 //	@Param			page		query		int									true	"页码"
 //	@Param			page_size	query		int									true	"每页数量"
 //	@Param			user_id		query		int64								false	"用户 ID"
-//	@Param			username	query		string								false	"用户名"
+//	@Param			userName	query		string								false	"用户名"
 //	@Param			login_ip	query		string								false	"登录 IP"
 //	@Param			result		query		int									false	"登录结果：0-失败，1-成功"
 //	@Param			start_date	query		string								false	"开始日期（YYYY-MM-DD）"
@@ -70,7 +70,7 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 		filters["user_id"] = *req.UserID
 	}
 	if req.Username != "" {
-		filters["username"] = req.Username
+		filters["userName"] = req.Username
 	}
 	if req.LoginIP != "" {
 		filters["login_ip"] = req.LoginIP
@@ -252,7 +252,7 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 
 	var req struct {
 		UserID    string `json:"user_id,string" binding:"required"`
-		Username  string `json:"username" binding:"required"`
+		Username  string `json:"userName" binding:"required"`
 		IP        string `json:"ip" binding:"required"`
 		Place     string `json:"place"`
 		Device    string `json:"device"`
@@ -293,7 +293,7 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 		return
 	}
 
-	c.log.Info("记录登录日志成功", "user_id", userIDInt, "username", req.Username, "operator_id", userID)
+	c.log.Info("记录登录日志成功", "user_id", userIDInt, "userName", req.Username, "operator_id", userID)
 	baseRes.OkWithMessage("记录登录日志成功", ctx)
 }
 

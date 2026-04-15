@@ -60,6 +60,35 @@ func fillMenuMeta(menu *entity.Menu) {
 	}
 }
 
+// buildMenuTree 将扁平菜单列表转换为树形结构
+func buildMenuTree(menus []*entity.Menu) []*entity.Menu {
+	// 创建 map 用于快速查找
+	menuMap := make(map[int64]*entity.Menu)
+	for _, menu := range menus {
+		menuMap[menu.ID] = menu
+		// 初始化 children 为空切片
+		if menu.Children == nil {
+			menu.Children = []*entity.Menu{}
+		}
+	}
+
+	// 构建树形结构
+	var roots []*entity.Menu
+	for _, menu := range menus {
+		if menu.ParentID == 0 {
+			// 顶级菜单
+			roots = append(roots, menu)
+		} else {
+			// 子菜单，添加到父菜单的 children
+			if parent, exists := menuMap[menu.ParentID]; exists {
+				parent.Children = append(parent.Children, menu)
+			}
+		}
+	}
+
+	return roots
+}
+
 // convertToMenuResponse 将 entity.Menu 转换为 response.MenuResponse
 func convertToMenuResponse(menu *entity.Menu) *response.MenuResponse {
 	if menu == nil {
@@ -140,10 +169,31 @@ func convertToMenuResponseList(menus []*entity.Menu) []response.MenuResponse {
 // GetUserMenus 获取用户可访问的菜单列表
 func (s *MenuService) GetUserMenus(roleID int64) ([]response.MenuResponse, error) {
 	s.log.Info("获取用户菜单列表", "roleID", roleID)
-	menus, err := s.repo.GetMenusByRole(roleID)
+	
+	// 检查是否为管理员角色 (code: "admin")
+	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
-		s.log.Error("获取用户菜单失败", "error", err, "roleID", roleID)
+		s.log.Error("获取角色信息失败", "error", err, "roleID", roleID)
 		return nil, err
+	}
+	
+	var menus []*entity.Menu
+	// 如果是管理员角色，返回所有菜单
+	if role.Code == "admin" {
+		s.log.Info("管理员角色，返回所有菜单", "roleID", roleID)
+		menus, err = s.repo.GetAll()
+		if err != nil {
+			s.log.Error("获取所有菜单失败", "error", err, "roleID", roleID)
+			return nil, err
+		}
+	} else {
+		// 普通角色，按权限分配返回菜单
+		s.log.Info("普通角色，按权限返回菜单", "roleID", roleID)
+		menus, err = s.repo.GetMenusByRole(roleID)
+		if err != nil {
+			s.log.Error("获取用户菜单失败", "error", err, "roleID", roleID)
+			return nil, err
+		}
 	}
 
 	// 填充所有菜单的元数据
@@ -151,8 +201,11 @@ func (s *MenuService) GetUserMenus(roleID int64) ([]response.MenuResponse, error
 		fillMenuMeta(menu)
 	}
 
+	// ⭐ 构建树形结构
+	treeMenus := buildMenuTree(menus)
+
 	// 转换为响应结构
-	menuResponses := convertToMenuResponseList(menus)
+	menuResponses := convertToMenuResponseList(treeMenus)
 
 	s.log.Info("获取用户菜单成功", "roleID", roleID, "count", len(menuResponses))
 	return menuResponses, nil
@@ -342,11 +395,10 @@ func (s *MenuService) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 func (s *MenuService) GetAllMenuTree() ([]*entity.Menu, error) {
 	s.log.Info("获取所有菜单的树结构")
 
-	// ⭐ 优化：使用 Preload 一次性加载所有关联数据
-	// 先获取所有顶级菜单（parent_id = 0）
-	menus, _, err := s.repo.List(1, 1000, map[string]interface{}{"parent_id = ?": 0})
+	// 获取所有菜单
+	menus, _, err := s.repo.List(1, 1000, map[string]interface{}{})
 	if err != nil {
-		s.log.Error("获取所有菜单树失败", "error", err)
+		s.log.Error("获取所有菜单失败", "error", err)
 		return nil, err
 	}
 
@@ -355,8 +407,11 @@ func (s *MenuService) GetAllMenuTree() ([]*entity.Menu, error) {
 		fillMenuMeta(menu)
 	}
 
-	s.log.Info("获取所有菜单树成功", "count", len(menus))
-	return menus, nil
+	// 构建树形结构
+	treeMenus := buildMenuTree(menus)
+
+	s.log.Info("获取所有菜单树成功", "count", len(treeMenus))
+	return treeMenus, nil
 }
 
 // GetMenuPath 获取菜单路径

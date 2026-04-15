@@ -40,7 +40,7 @@ func NewOperationLogController(service *service.OperationLogService) *OperationL
 //	@Param			pageSize		query		int						true	"每页数量"
 //	@Param			startTime		query		string					false	"开始时间 (格式:2006-01-02)"
 //	@Param			endTime			query		string					false	"结束时间 (格式:2006-01-02)"
-//	@Param			username		query		string					false	"用户名"
+//	@Param			userName		query		string					false	"用户名"
 //	@Param			module			query		string					false	"操作模块"
 //	@Param			operationType	query		int						false	"操作类型"
 //	@Param			isSuccess		query		bool					false	"操作结果"
@@ -64,7 +64,7 @@ func (c *OperationLogController) GetLogList(ctx *gin.Context) {
 		filters["end_time"] = req.EndTime
 	}
 	if req.Username != "" {
-		filters["username"] = req.Username
+		filters["userName"] = req.Username
 	}
 	if req.Module != "" {
 		filters["module"] = req.Module

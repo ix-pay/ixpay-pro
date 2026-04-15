@@ -39,7 +39,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 
 		// 将用户信息添加到上下文
 		c.Set("userID", claims.UserID)
-		c.Set("username", claims.Username)
+		c.Set("userName", claims.Username)
 		c.Set("role", claims.Role)
 		c.Set("loginType", claims.LoginType)
 		c.Set("claims", claims)

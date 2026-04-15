@@ -100,7 +100,7 @@ func TestUserService_EmailValidation(t *testing.T) {
 func TestUserService_RegisterLogic(t *testing.T) {
 	password := "password123"
 	email := "test@example.com"
-	username := "testuser"
+	userName := "testuser"
 
 	// 测试密码加密
 	hashedPassword, err := encryption.GeneratePasswordHash(password)
@@ -108,7 +108,7 @@ func TestUserService_RegisterLogic(t *testing.T) {
 	require.NotEmpty(t, hashedPassword, "生成的密码哈希为空")
 
 	// 验证用户名和邮箱格式
-	assert.NotEmpty(t, username, "用户名不能为空")
+	assert.NotEmpty(t, userName, "用户名不能为空")
 	assert.NotEmpty(t, email, "邮箱不能为空")
 }
 

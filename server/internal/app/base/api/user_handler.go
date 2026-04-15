@@ -15,6 +15,19 @@ import (
 
 // convertToUserResponse 将 entity.User 转换为 response.UserResponse
 func convertToUserResponse(user *entity.User) response.UserResponse {
+	// 转换角色数据
+	var roles []response.RoleDTO
+	if len(user.Roles) > 0 {
+		roles = make([]response.RoleDTO, len(user.Roles))
+		for i, role := range user.Roles {
+			roles[i] = response.RoleDTO{
+				ID:   role.ID,
+				Name: role.Name,
+				Code: role.Code,
+			}
+		}
+	}
+
 	return response.UserResponse{
 		ID:           user.ID,
 		Username:     user.Username,
@@ -25,6 +38,7 @@ func convertToUserResponse(user *entity.User) response.UserResponse {
 		Status:       user.Status,
 		DepartmentID: user.DepartmentID,
 		PositionID:   user.PositionID,
+		Roles:        roles,
 		CreatedAt:    user.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:    user.UpdatedAt.Format(time.RFC3339),
 	}
@@ -236,7 +250,7 @@ func (c *UserController) GetUserInfo(ctx *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			page		query		int																		true	"页码"
 //	@Param			page_size	query		int																		true	"每页数量"
-//	@Param			username	query		string																	false	"用户名"
+//	@Param			userName	query		string																	false	"用户名"
 //	@Param			email		query		string																	false	"邮箱"
 //	@Param			role		query		string																	false	"角色"
 //	@Param			status		query		int																		false	"状态"
@@ -263,7 +277,7 @@ func (c *UserController) GetUserList(ctx *gin.Context) {
 	// 构建筛选条件
 	filters := make(map[string]interface{})
 	if req.Username != "" {
-		filters["username"] = req.Username
+		filters["userName"] = req.Username
 	}
 	if req.Email != "" {
 		filters["email"] = req.Email
@@ -390,8 +404,16 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	// 获取要更新的用户信息（使用 string 类型的 ID）
-	user, err := c.service.GetUserInfo(req.ID)
+	// 将 string 类型的 ID 转换为 int64
+	userIDInt, err := strconv.ParseInt(req.ID, 10, 64)
+	if err != nil {
+		c.log.Error("无效的用户 ID 格式", "id", req.ID, "error", err)
+		baseRes.FailWithMessage("无效的用户 ID 格式", ctx)
+		return
+	}
+
+	// 获取要更新的用户信息
+	user, err := c.service.GetUserInfo(userIDInt)
 	if err != nil {
 		baseRes.FailWithMessage("获取用户信息失败", ctx)
 		return

@@ -1519,7 +1519,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "获取按钮权限关联的API路由",
+                "description": "获取按钮权限关联的 API 路由",
                 "consumes": [
                     "application/json"
                 ],
@@ -1529,7 +1529,7 @@ const docTemplate = `{
                 "tags": [
                     "按钮权限管理"
                 ],
-                "summary": "获取按钮权限关联的API路由",
+                "summary": "获取按钮权限关联的 API 路由",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1572,7 +1572,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "为按钮权限分配API路由",
+                "description": "为按钮权限分配 API 路由",
                 "consumes": [
                     "application/json"
                 ],
@@ -1582,10 +1582,10 @@ const docTemplate = `{
                 "tags": [
                     "按钮权限管理"
                 ],
-                "summary": "为按钮权限分配API路由",
+                "summary": "为按钮权限分配 API 路由",
                 "parameters": [
                     {
-                        "description": "按钮ID和API路由ID列表",
+                        "description": "按钮 ID 和 API 路由 ID 列表",
                         "name": "data",
                         "in": "body",
                         "required": true,
@@ -1624,7 +1624,7 @@ const docTemplate = `{
                 "summary": "为角色分配按钮权限",
                 "parameters": [
                     {
-                        "description": "角色ID和按钮权限ID列表",
+                        "description": "角色 ID 和按钮权限 ID 列表",
                         "name": "data",
                         "in": "body",
                         "required": true,
@@ -1805,7 +1805,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "获取API路由关联的按钮权限",
+                "description": "获取 API 路由关联的按钮权限",
                 "consumes": [
                     "application/json"
                 ],
@@ -1815,7 +1815,7 @@ const docTemplate = `{
                 "tags": [
                     "按钮权限管理"
                 ],
-                "summary": "获取API路由关联的按钮权限",
+                "summary": "获取 API 路由关联的按钮权限",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3918,7 +3918,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "用户名",
-                        "name": "username",
+                        "name": "userName",
                         "in": "query"
                     },
                     {
@@ -4403,7 +4403,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "用户名",
-                        "name": "username",
+                        "name": "userName",
                         "in": "query"
                     },
                     {
@@ -6999,7 +6999,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "获取完整的岗位列表数据",
+                "description": "获取所有岗位，用于前端选择岗位选项",
                 "consumes": [
                     "application/json"
                 ],
@@ -7024,7 +7024,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position"
+                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse"
                                             }
                                         },
                                         "msg": {
@@ -7330,7 +7330,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -7414,7 +7426,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse"
                                             }
                                         }
                                     }
@@ -8295,7 +8307,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "用户名",
-                        "name": "username",
+                        "name": "userName",
                         "in": "query"
                     },
                     {
@@ -9272,7 +9284,8 @@ const docTemplate = `{
                     "description": "关联的按钮权限 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "createdAt": {
@@ -9281,7 +9294,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "description": {
                     "description": "描述",
@@ -9293,13 +9307,15 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "API ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "menuIds": {
                     "description": "关联的菜单 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "method": {
@@ -9314,7 +9330,8 @@ const docTemplate = `{
                     "description": "关联的角色 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "status": {
@@ -9327,7 +9344,8 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -9338,11 +9356,12 @@ const docTemplate = `{
                     "description": "关联的 API 路由 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "apiroutes": {
-                    "description": "关联的 API 路由列表（新增）",
+                    "description": "关联的 API 路由对象列表",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
@@ -9358,7 +9377,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "description": {
                     "description": "权限描述",
@@ -9366,7 +9386,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "按钮权限 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "menu": {
                     "description": "所属菜单（新增）",
@@ -9378,7 +9399,8 @@ const docTemplate = `{
                 },
                 "menuID": {
                     "description": "所属菜单 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "name": {
                     "description": "权限名称，如：创建用户，编辑用户",
@@ -9388,11 +9410,12 @@ const docTemplate = `{
                     "description": "关联的角色 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "roles": {
-                    "description": "关联的角色列表（新增）",
+                    "description": "关联的角色对象列表关联的角色列表（新增）",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
@@ -9408,7 +9431,8 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -9485,7 +9509,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "description": {
                     "description": "部门描述",
@@ -9493,7 +9518,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "部门 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "leader": {
                     "description": "部门负责人（新增）",
@@ -9505,7 +9531,8 @@ const docTemplate = `{
                 },
                 "leaderID": {
                     "description": "部门负责人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "name": {
                     "description": "部门名称",
@@ -9521,7 +9548,8 @@ const docTemplate = `{
                 },
                 "parentID": {
                     "description": "父部门 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "sort": {
                     "description": "排序",
@@ -9537,7 +9565,8 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -9657,7 +9686,8 @@ const docTemplate = `{
                     "description": "关联的 API 路由 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "apiroutes": {
@@ -9675,7 +9705,8 @@ const docTemplate = `{
                     "description": "菜单下的按钮权限 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "btnPerms": {
@@ -9702,7 +9733,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "defaultMenu": {
                     "description": "是否默认菜单",
@@ -9726,7 +9758,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "菜单 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "isExt": {
                     "description": "是否外部链接",
@@ -9758,7 +9791,8 @@ const docTemplate = `{
                 },
                 "parentID": {
                     "description": "父菜单 ID，0 表示顶级菜单",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "path": {
                     "description": "路由路径",
@@ -9776,7 +9810,8 @@ const docTemplate = `{
                     "description": "关联的角色 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "roles": {
@@ -9812,7 +9847,8 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -9891,14 +9927,30 @@ const docTemplate = `{
                     "description": "权限组关联的接口路由 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "apiroutes": {
+                    "description": "权限组关联的接口路由对象列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
                     }
                 },
                 "btnPermIds": {
                     "description": "权限组关联的按钮权限 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "btnPerms": {
+                    "description": "权限组关联的按钮权限对象列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
                     }
                 },
                 "createdAt": {
@@ -9907,7 +9959,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "description": {
                     "description": "权限组描述",
@@ -9915,7 +9968,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "权限组 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "name": {
                     "description": "权限组名称",
@@ -9925,7 +9979,15 @@ const docTemplate = `{
                     "description": "权限组关联的角色 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "roles": {
+                    "description": "权限组关联的角色对象列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup"
                     }
                 },
                 "sort": {
@@ -9942,7 +10004,8 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -9955,7 +10018,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "description": {
                     "description": "岗位描述",
@@ -9963,7 +10027,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "岗位 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "name": {
                     "description": "岗位名称",
@@ -9983,7 +10048,8 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -9994,7 +10060,8 @@ const docTemplate = `{
                     "description": "角色关联的接口路由 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "apiroutes": {
@@ -10008,7 +10075,8 @@ const docTemplate = `{
                     "description": "角色关联的按钮权限 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "btnPerms": {
@@ -10035,7 +10103,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "description": {
                     "description": "角色描述",
@@ -10043,7 +10112,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "角色 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "isSystem": {
                     "description": "是否系统角色",
@@ -10053,7 +10123,8 @@ const docTemplate = `{
                     "description": "角色关联的菜单 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "menus": {
@@ -10077,13 +10148,15 @@ const docTemplate = `{
                 },
                 "parentID": {
                     "description": "父角色 ID，支持角色继承",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "permissionGroupIds": {
                     "description": "角色关联的权限组 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "permissionGroups": {
@@ -10111,13 +10184,15 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "userIds": {
                     "description": "角色关联的用户 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "users": {
@@ -10155,7 +10230,7 @@ const docTemplate = `{
                     "description": "用户 ID",
                     "type": "string"
                 },
-                "username": {
+                "userName": {
                     "description": "用户名",
                     "type": "string"
                 }
@@ -10182,7 +10257,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "department": {
                     "description": "所属部门",
@@ -10194,7 +10270,8 @@ const docTemplate = `{
                 },
                 "departmentID": {
                     "description": "部门 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "email": {
                     "description": "电子邮箱",
@@ -10209,8 +10286,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
-                    "description": "用户 ID（string 类型，避免 JSON 精度丢失）",
-                    "type": "string"
+                    "description": "用户 ID",
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "lastLoginIP": {
                     "description": "最后登录 IP",
@@ -10242,13 +10320,15 @@ const docTemplate = `{
                 },
                 "positionID": {
                     "description": "岗位 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "roleIds": {
                     "description": "用户关联的角色 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "roles": {
@@ -10262,14 +10342,16 @@ const docTemplate = `{
                     "description": "用户特殊按钮权限 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "specialPermissionIds": {
                     "description": "用户特殊权限 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "status": {
@@ -10282,9 +10364,10 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
-                "username": {
+                "userName": {
                     "description": "用户名，唯一标识",
                     "type": "string"
                 },
@@ -10307,7 +10390,8 @@ const docTemplate = `{
                 },
                 "createdBy": {
                     "description": "创建人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "fontSize": {
                     "description": "字体大小",
@@ -10315,7 +10399,8 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "用户设置 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "language": {
                     "description": "语言",
@@ -10343,11 +10428,13 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "description": "更新人 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "userID": {
                     "description": "用户 ID",
-                    "type": "string"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -10386,7 +10473,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "password",
-                "username"
+                "userName"
             ],
             "properties": {
                 "avatar": {
@@ -10394,8 +10481,8 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "departmentId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "email": {
                     "type": "string"
@@ -10414,8 +10501,8 @@ const docTemplate = `{
                     "maxLength": 20
                 },
                 "positionId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "roles": {
                     "type": "array",
@@ -10428,7 +10515,7 @@ const docTemplate = `{
                     "maximum": 1,
                     "minimum": 0
                 },
-                "username": {
+                "userName": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 3
@@ -10450,8 +10537,8 @@ const docTemplate = `{
                     }
                 },
                 "roleId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -10470,39 +10557,39 @@ const docTemplate = `{
                     }
                 },
                 "roleId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
         "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToBtnPermRequest": {
             "type": "object",
             "required": [
-                "Ids",
-                "btnPermId"
+                "btnPermId",
+                "ids"
             ],
             "properties": {
-                "Ids": {
+                "btnPermId": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "ids": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
                         "type": "string"
                     }
-                },
-                "btnPermId": {
-                    "type": "string",
-                    "minLength": 1
                 }
             }
         },
         "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToRoleRequest": {
             "type": "object",
             "required": [
-                "Ids",
+                "ids",
                 "roleId"
             ],
             "properties": {
-                "Ids": {
+                "ids": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -10510,8 +10597,8 @@ const docTemplate = `{
                     }
                 },
                 "roleId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -10523,8 +10610,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "roleId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "userIds": {
                     "type": "array",
@@ -10544,7 +10631,7 @@ const docTemplate = `{
                 "ids": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 }
             }
@@ -10563,7 +10650,7 @@ const docTemplate = `{
                     "description": "用户 ID 列表",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 }
             }
@@ -10688,8 +10775,8 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "menuId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "name": {
                     "type": "string",
@@ -10752,7 +10839,7 @@ const docTemplate = `{
                 },
                 "leaderId": {
                     "description": "部门负责人 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "description": "部门名称",
@@ -10760,7 +10847,7 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "description": "父部门 ID，默认为 0（顶级部门）",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "sort": {
                     "description": "排序，默认为 0",
@@ -10787,7 +10874,7 @@ const docTemplate = `{
                 },
                 "dictId": {
                     "description": "字典 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "itemKey": {
                     "description": "字典项键",
@@ -10935,8 +11022,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -10947,7 +11034,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -10955,7 +11042,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "password",
-                "username"
+                "userName"
             ],
             "properties": {
                 "captcha": {
@@ -10967,7 +11054,7 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -10977,7 +11064,7 @@ const docTemplate = `{
             "required": [
                 "ip",
                 "userId",
-                "username"
+                "userName"
             ],
             "properties": {
                 "browser": {
@@ -11014,9 +11101,9 @@ const docTemplate = `{
                 },
                 "userId": {
                     "description": "用户 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
-                "username": {
+                "userName": {
                     "description": "用户名",
                     "type": "string"
                 }
@@ -11027,7 +11114,7 @@ const docTemplate = `{
             "required": [
                 "email",
                 "password",
-                "username"
+                "userName"
             ],
             "properties": {
                 "email": {
@@ -11038,7 +11125,7 @@ const docTemplate = `{
                     "maxLength": 30,
                     "minLength": 6
                 },
-                "username": {
+                "userName": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 3
@@ -11052,7 +11139,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "userId": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -11064,29 +11151,29 @@ const docTemplate = `{
             ],
             "properties": {
                 "btnPermId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "roleId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
         "github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeFromBtnPermRequest": {
             "type": "object",
             "required": [
-                "Id",
-                "btnPermId"
+                "btnPermId",
+                "id"
             ],
             "properties": {
-                "Id": {
-                    "type": "string",
-                    "minLength": 1
-                },
                 "btnPermId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -11173,7 +11260,7 @@ const docTemplate = `{
                     "maxLength": 100
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "menuIds": {
                     "type": "array",
@@ -11231,12 +11318,12 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "id": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "menuId": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "name": {
                     "type": "string",
@@ -11280,7 +11367,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "配置 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "status": {
                     "description": "状态：1-启用 0-禁用",
@@ -11300,7 +11387,7 @@ const docTemplate = `{
             "properties": {
                 "leaderId": {
                     "description": "部门负责人 ID",
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -11317,11 +11404,11 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "部门 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "leaderId": {
                     "description": "部门负责人 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "description": "部门名称",
@@ -11329,7 +11416,7 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "description": "父部门 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "sort": {
                     "description": "排序",
@@ -11357,11 +11444,11 @@ const docTemplate = `{
                 },
                 "dictId": {
                     "description": "字典 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "id": {
-                    "description": "字典项ID",
-                    "type": "string"
+                    "description": "字典项 ID",
+                    "type": "integer"
                 },
                 "itemKey": {
                     "description": "字典项键",
@@ -11412,8 +11499,8 @@ const docTemplate = `{
                     "maxLength": 100
                 },
                 "id": {
-                    "description": "字典ID",
-                    "type": "string"
+                    "description": "字典 ID",
+                    "type": "integer"
                 },
                 "status": {
                     "description": "状态：1-启用 0-禁用",
@@ -11444,7 +11531,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "公告 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "isTop": {
                     "description": "是否置顶",
@@ -11477,7 +11564,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "岗位 ID",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "description": "岗位名称",
@@ -11505,7 +11592,7 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string",
@@ -11535,7 +11622,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "nickname": {
                     "type": "string",
@@ -11572,14 +11659,15 @@ const docTemplate = `{
                 "btnPermIds": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 },
                 "createdAt": {
                     "type": "string"
                 },
                 "createdBy": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "description": {
                     "type": "string"
@@ -11588,12 +11676,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "menuIds": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 },
                 "method": {
@@ -11605,7 +11694,7 @@ const docTemplate = `{
                 "roleIds": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 },
                 "status": {
@@ -11615,7 +11704,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedBy": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 }
             }
         },
@@ -11663,13 +11753,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "isAssigned": {
                     "type": "boolean"
                 },
                 "menuId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "name": {
                     "type": "string"
@@ -11692,10 +11784,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "menuId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "name": {
                     "type": "string"
@@ -11772,7 +11866,7 @@ const docTemplate = `{
                 "id": {
                     "description": "配置 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "status": {
                     "description": "状态：1-启用 0-禁用",
@@ -11830,7 +11924,7 @@ const docTemplate = `{
                 "id": {
                     "description": "部门 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "leader": {
                     "description": "负责人",
@@ -11843,7 +11937,7 @@ const docTemplate = `{
                 "parentId": {
                     "description": "父部门 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "phone": {
                     "description": "联系电话",
@@ -11898,12 +11992,12 @@ const docTemplate = `{
                 "dictId": {
                     "description": "字典 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "id": {
                     "description": "字典项 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "itemKey": {
                     "description": "字典项键",
@@ -11977,7 +12071,7 @@ const docTemplate = `{
                 "id": {
                     "description": "字典 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "status": {
                     "description": "状态：1-启用 0-禁用",
@@ -12002,7 +12096,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "ip": {
                     "type": "string"
@@ -12017,9 +12112,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "userId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -12031,7 +12127,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "ip": {
                     "type": "string"
@@ -12042,7 +12139,7 @@ const docTemplate = `{
                 "result": {
                     "type": "integer"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -12066,14 +12163,14 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "name": {
                     "type": "string"
                 },
                 "parentId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "path": {
                     "type": "string"
@@ -12160,8 +12257,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "菜单 ID（字符串格式，使用 Snowflake ID）",
-                    "type": "string"
+                    "description": "菜单 ID",
+                    "type": "string",
+                    "example": "0"
                 },
                 "isExt": {
                     "description": "是否外部链接",
@@ -12184,8 +12282,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "parentId": {
-                    "description": "父菜单 ID（字符串格式，防止 string 精度丢失）",
-                    "type": "string"
+                    "description": "父菜单 ID",
+                    "type": "string",
+                    "example": "0"
                 },
                 "path": {
                     "description": "路由路径",
@@ -12251,7 +12350,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "isTop": {
                     "type": "boolean"
@@ -12261,7 +12360,7 @@ const docTemplate = `{
                 },
                 "publisherId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "sort": {
                     "type": "integer"
@@ -12357,7 +12456,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": ""
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -12402,7 +12501,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "isSuccess": {
                     "type": "boolean"
@@ -12439,9 +12538,9 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -12519,7 +12618,7 @@ const docTemplate = `{
                 "id": {
                     "description": "岗位 ID",
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "name": {
                     "description": "岗位名称",
@@ -12553,7 +12652,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "isSystem": {
                     "type": "boolean"
@@ -12569,7 +12668,7 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "routes": {
                     "type": "array",
@@ -12608,7 +12707,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "isSystem": {
                     "type": "boolean"
@@ -12618,7 +12717,7 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "sort": {
                     "type": "integer"
@@ -12665,7 +12764,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "isSystem": {
                     "type": "boolean"
@@ -12675,7 +12774,7 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "sort": {
                     "type": "integer"
@@ -12699,7 +12798,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "method": {
                     "type": "string"
@@ -12843,12 +12942,12 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "nickname": {
                     "type": "string"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -12864,14 +12963,14 @@ const docTemplate = `{
                 },
                 "currentRoleId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "email": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "nickname": {
                     "type": "string"
@@ -12891,7 +12990,7 @@ const docTemplate = `{
                 "status": {
                     "type": "integer"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }
@@ -13035,7 +13134,7 @@ const docTemplate = `{
                 "status": {
                     "type": "integer"
                 },
-                "username": {
+                "userName": {
                     "type": "string"
                 }
             }

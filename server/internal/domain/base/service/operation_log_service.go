@@ -24,7 +24,7 @@ func NewOperationLogService(repo repo.OperationLogRepository, log logger.Logger)
 
 // CreateLog 创建操作日志
 func (s *OperationLogService) CreateLog(log *entity.OperationLog) error {
-	s.log.Info("创建操作日志", "module", log.Module, "username", log.Username)
+	s.log.Info("创建操作日志", "module", log.Module, "userName", log.Username)
 	return s.repo.Create(log)
 }
 

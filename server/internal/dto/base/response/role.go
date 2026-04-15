@@ -42,7 +42,7 @@ type RoleDetailResponse struct {
 // UserInfo 用户简略信息
 type UserInfo struct {
 	ID       int64  `json:"id,string"`
-	Username string `json:"username"`
+	Username string `json:"userName"`
 	Nickname string `json:"nickname"`
 }
 

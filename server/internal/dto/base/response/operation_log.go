@@ -7,7 +7,7 @@ import "github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 type OperationLogResponse struct {
 	ID            int64  `json:"id,string"`
 	UserID        int64  `json:"userId,string"`
-	Username      string `json:"username"`
+	Username      string `json:"userName"`
 	Nickname      string `json:"nickname"`
 	OperationType int    `json:"operationType"`
 	Module        string `json:"module"`

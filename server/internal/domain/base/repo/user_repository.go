@@ -14,7 +14,7 @@ const (
 // 定义用户数据访问的抽象接口
 type UserRepository interface {
 	GetByID(id int64, relations ...UserRelation) (*entity.User, error)
-	GetByUsername(username string) (*entity.User, error)
+	GetByUsername(userName string) (*entity.User, error)
 	GetByEmail(email string) (*entity.User, error)
 	GetByPhone(phone string) (*entity.User, error)
 	GetByWechatOpenID(openID string) (*entity.User, error)

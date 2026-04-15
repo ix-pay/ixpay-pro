@@ -27,7 +27,7 @@ func NewLoginLogService(repo repo.LoginLogRepository, log logger.Logger) *LoginL
 // RecordLogin 记录登录日志
 func (s *LoginLogService) RecordLogin(
 	userID int64,
-	username, ip, place, device, browser, os, userAgent string,
+	userName, ip, place, device, browser, os, userAgent string,
 	success bool,
 	errorMsg string,
 ) error {
@@ -38,7 +38,7 @@ func (s *LoginLogService) RecordLogin(
 
 	log := &entity.LoginLog{
 		UserID:     userID,
-		Username:   username,
+		Username:   userName,
 		LoginIP:    ip,
 		LoginTime:  time.Now(),
 		LoginPlace: place,
@@ -51,11 +51,11 @@ func (s *LoginLogService) RecordLogin(
 	}
 
 	if err := s.repo.Create(log); err != nil {
-		s.log.Error("记录登录日志失败", "error", err, "username", username, "ip", ip, "result", result)
+		s.log.Error("记录登录日志失败", "error", err, "userName", userName, "ip", ip, "result", result)
 		return err
 	}
 
-	s.log.Info("记录登录日志成功", "user_id", userID, "username", username, "ip", ip, "result", result)
+	s.log.Info("记录登录日志成功", "user_id", userID, "userName", userName, "ip", ip, "result", result)
 	return nil
 }
 
@@ -121,8 +121,8 @@ func (s *LoginLogService) CheckAbnormalLogin(ip string) (*entity.AbnormalLoginIn
 	}
 
 	usernameList := make([]string, 0, len(usernames))
-	for username := range usernames {
-		usernameList = append(usernameList, username)
+	for userName := range usernames {
+		usernameList = append(usernameList, userName)
 	}
 
 	// 判断风险等级
@@ -179,8 +179,8 @@ func (s *LoginLogService) GetAbnormalLogins(page, pageSize int) ([]*entity.Abnor
 			}
 			// 添加用户名（去重）
 			usernameExists := false
-			for _, username := range info.Usernames {
-				if username == log.Username {
+			for _, userName := range info.Usernames {
+				if userName == log.Username {
 					usernameExists = true
 					break
 				}

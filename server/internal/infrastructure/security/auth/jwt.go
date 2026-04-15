@@ -19,7 +19,7 @@ const (
 	UserIDKey      ContextKey = "userID"
 	ClaimsKey      ContextKey = "claims"
 	RoleKey        ContextKey = "role"
-	UsernameKey    ContextKey = "username"
+	UsernameKey    ContextKey = "userName"
 	LoginTypeKey   ContextKey = "loginType"
 	UserButtonsKey ContextKey = "userButtons"
 )
@@ -35,7 +35,7 @@ type JWTAuth struct {
 // Claims 自定义 JWT 声明
 type Claims struct {
 	UserID    string `json:"user_id"`
-	Username  string `json:"username"`
+	Username  string `json:"userName"`
 	Nickname  string `json:"nickname"`
 	Role      string `json:"role"`
 	LoginType string `json:"login_type"`
@@ -65,15 +65,15 @@ func SetupJWTAuth(cfg *config.Config, log logger.Logger) (*JWTAuth, error) {
 }
 
 // GenerateToken 生成访问令牌和刷新令牌
-func (j *JWTAuth) GenerateToken(userID string, username string, nickname string, role string, loginType string) (string, string, time.Time, time.Time, error) {
+func (j *JWTAuth) GenerateToken(userID string, userName string, nickname string, role string, loginType string) (string, string, time.Time, time.Time, error) {
 	// 生成访问令牌
-	accessToken, accessExpire, err := j.generateAccessToken(userID, username, nickname, role, loginType)
+	accessToken, accessExpire, err := j.generateAccessToken(userID, userName, nickname, role, loginType)
 	if err != nil {
 		return "", "", time.Time{}, time.Time{}, err
 	}
 
 	// 生成刷新令牌
-	refreshToken, refreshExpire, err := j.generateRefreshToken(userID, username, nickname, role, loginType)
+	refreshToken, refreshExpire, err := j.generateRefreshToken(userID, userName, nickname, role, loginType)
 	if err != nil {
 		return "", "", time.Time{}, time.Time{}, err
 	}
@@ -82,12 +82,12 @@ func (j *JWTAuth) GenerateToken(userID string, username string, nickname string,
 }
 
 // generateAccessToken 生成访问令牌
-func (j *JWTAuth) generateAccessToken(userID string, username string, nickname string, role string, loginType string) (string, time.Time, error) {
+func (j *JWTAuth) generateAccessToken(userID string, userName string, nickname string, role string, loginType string) (string, time.Time, error) {
 	expirationTime := time.Now().Add(j.accessTokenExpire)
 
 	claims := &Claims{
 		UserID:    userID,
-		Username:  username,
+		Username:  userName,
 		Nickname:  nickname,
 		Role:      role,
 		LoginType: loginType,
@@ -109,12 +109,12 @@ func (j *JWTAuth) generateAccessToken(userID string, username string, nickname s
 }
 
 // generateRefreshToken 生成刷新令牌
-func (j *JWTAuth) generateRefreshToken(userID string, username string, nickname string, role string, loginType string) (string, time.Time, error) {
+func (j *JWTAuth) generateRefreshToken(userID string, userName string, nickname string, role string, loginType string) (string, time.Time, error) {
 	expirationTime := time.Now().Add(j.refreshTokenExpire)
 
 	claims := &Claims{
 		UserID:    userID,
-		Username:  username,
+		Username:  userName,
 		Nickname:  nickname,
 		Role:      role,
 		LoginType: loginType,

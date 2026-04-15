@@ -73,14 +73,14 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 
 		// 获取用户信息
 		userIDStr := ""
-		username := ""
+		userName := ""
 		nickname := ""
 
 		// 从上下文中获取用户信息（从认证中间件设置的 claims 中获取）
 		if claims, exists := c.Get("claims"); exists {
 			if c, ok := claims.(*auth.Claims); ok {
 				userIDStr = c.UserID
-				username = c.Username
+				userName = c.Username
 				nickname = c.Nickname // 从 claims 中获取准确的 nickname
 			}
 		}
@@ -127,7 +127,7 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 			// 构建操作日志
 			operationLog := &entity.OperationLog{
 				UserID:        userID,
-				Username:      username,
+				Username:      userName,
 				Nickname:      nickname,
 				OperationType: operationType,
 				Module:        module,

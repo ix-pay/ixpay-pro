@@ -106,7 +106,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createUsersTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_users (
 		id BIGINT PRIMARY KEY,
-		username VARCHAR(50) UNIQUE NOT NULL,
+		userName VARCHAR(50) UNIQUE NOT NULL,
 		password_hash VARCHAR(100) NOT NULL,
 		nickname VARCHAR(50),
 		email VARCHAR(100),
@@ -370,14 +370,14 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_menu_api_routes 表创建成功")
 	}
 
-	// 创建角色-按钮权限关联表
+	// 创建角色 - 按钮权限关联表
 	createRoleButtonPermissionsTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_role_btn_perms (
 		role_id BIGINT NOT NULL,
-		button_id BIGINT NOT NULL,
-		PRIMARY KEY (role_id, button_id),
+		btn_perm_id BIGINT NOT NULL,
+		PRIMARY KEY (role_id, btn_perm_id),
 		FOREIGN KEY (role_id) REFERENCES base_roles(id) ON DELETE CASCADE,
-		FOREIGN KEY (button_id) REFERENCES base_btn_perms(id) ON DELETE CASCADE
+		FOREIGN KEY (btn_perm_id) REFERENCES base_btn_perms(id) ON DELETE CASCADE
 	);
 	`
 
@@ -454,7 +454,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	CREATE TABLE IF NOT EXISTS base_operation_logs (
 		id BIGINT PRIMARY KEY,
 		user_id BIGINT DEFAULT 0,
-		username VARCHAR(50),
+		userName VARCHAR(50),
 		nickname VARCHAR(50),
 		operation_type SMALLINT DEFAULT 0,
 		module VARCHAR(50),
@@ -508,7 +508,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	CREATE TABLE IF NOT EXISTS base_login_logs (
 		id BIGINT PRIMARY KEY,
 		user_id BIGINT NOT NULL,
-		username VARCHAR(50),
+		userName VARCHAR(50),
 		login_ip VARCHAR(50),
 		login_time TIMESTAMP NOT NULL,
 		login_place VARCHAR(100),
@@ -536,7 +536,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	// 添加登录日志表索引
 	addLoginLogIndexSQL := `
 	CREATE INDEX IF NOT EXISTS idx_base_login_logs_user_id ON base_login_logs(user_id);
-	CREATE INDEX IF NOT EXISTS idx_base_login_logs_username ON base_login_logs(username);
+	CREATE INDEX IF NOT EXISTS idx_base_login_logs_username ON base_login_logs(userName);
 	CREATE INDEX IF NOT EXISTS idx_base_login_logs_login_ip ON base_login_logs(login_ip);
 	CREATE INDEX IF NOT EXISTS idx_base_login_logs_login_time ON base_login_logs(login_time);
 	CREATE INDEX IF NOT EXISTS idx_base_login_logs_result ON base_login_logs(result);

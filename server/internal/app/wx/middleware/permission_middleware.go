@@ -35,8 +35,8 @@ func PermissionMiddleware(permissionManager *auth.PermissionManager) gin.Handler
 		if userID, exists := c.Get("userID"); exists {
 			ctx = context.WithValue(ctx, auth.UserIDKey, userID)
 		}
-		if username, exists := c.Get("username"); exists {
-			ctx = context.WithValue(ctx, auth.UsernameKey, username)
+		if userName, exists := c.Get("userName"); exists {
+			ctx = context.WithValue(ctx, auth.UsernameKey, userName)
 		}
 		if role, exists := c.Get("role"); exists {
 			ctx = context.WithValue(ctx, auth.RoleKey, role)

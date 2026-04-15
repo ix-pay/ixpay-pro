@@ -155,9 +155,9 @@ func (r *userRepository) GetByID(id int64, relations ...repo.UserRelation) (*ent
 }
 
 // GetByUsername 根据用户名查询用户
-func (r *userRepository) GetByUsername(username string) (*entity.User, error) {
+func (r *userRepository) GetByUsername(userName string) (*entity.User, error) {
 	var dbModel userModel
-	result := r.db.Where("username = ?", username).First(&dbModel)
+	result := r.db.Where("userName = ?", userName).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -246,7 +246,8 @@ func (r *userRepository) List(page, pageSize int, filters map[string]interface{}
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	// 预加载角色关联数据，以便在列表中显示角色信息
+	if err := query.Preload("Roles").Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

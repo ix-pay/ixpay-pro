@@ -392,7 +392,7 @@ func (c *RoleController) AssignAPIToRole(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	baseRes.Response{data=[]entity.Role}
+//	@Success		200	{object}	baseRes.Response{data=[]response.RoleResponse}
 //	@Router			/api/admin/role/all [get]
 func (c *RoleController) GetAllRoles(ctx *gin.Context) {
 	roles, err := c.roleService.GetAllRoles()
@@ -401,8 +401,14 @@ func (c *RoleController) GetAllRoles(ctx *gin.Context) {
 		return
 	}
 
+	// 转换为 response DTO 数组
+	roleResponses := make([]response.RoleResponse, 0, len(roles))
+	for _, role := range roles {
+		roleResponses = append(roleResponses, convertToRoleResponse(role))
+	}
+
 	c.log.Info("获取所有角色成功", "count", len(roles))
-	baseRes.OkWithDetailed(roles, "获取所有角色成功", ctx)
+	baseRes.OkWithDetailed(roleResponses, "获取所有角色成功", ctx)
 }
 
 // SaveRolePermissions 保存角色权限
@@ -498,7 +504,7 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id	path		string	true	"角色 ID"
-//	@Success	200	{object}	entity.Role
+//	@Success	200	{object}	baseRes.Response{data=response.RoleDetailResponse}
 //	@Router			/api/admin/role/:id/detail [get]
 func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 	// 将字符串 ID 转换为 int64
@@ -522,8 +528,17 @@ func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 		return
 	}
 
+	// 转换为响应结构
+	roleResponse := convertToRoleResponse(roleDetail)
+	roleDetailResponse := response.RoleDetailResponse{
+		RoleResponse: roleResponse,
+		Users:        []response.UserInfo{},
+		Menus:        []response.MenuInfo{},
+		Routes:       []response.RouteInfo{},
+	}
+
 	c.log.Info("获取角色详情成功", "roleID", roleID)
-	baseRes.OkWithDetailed(roleDetail, "获取角色成功", ctx)
+	baseRes.OkWithDetailed(roleDetailResponse, "获取角色成功", ctx)
 }
 
 // GetAvailableAPIs 获取角色可用的 API 列表

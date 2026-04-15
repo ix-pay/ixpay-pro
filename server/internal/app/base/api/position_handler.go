@@ -120,14 +120,14 @@ func (c *PositionController) GetPositionList(ctx *gin.Context) {
 // GetAllPositions 获取所有岗位
 //
 //	@Summary		获取所有岗位
-//	@Description	获取完整的岗位列表数据
+//	@Description	获取所有岗位，用于前端选择岗位选项
 //	@Tags			岗位管理
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	baseRes.Response{data=[]entity.Position,msg=string}	"岗位列表"
-//	@Failure		401	{object}	map[string]string									"未授权"
-//	@Failure		500	{object}	map[string]string									"服务器内部错误"
+//	@Success		200	{object}	baseRes.Response{data=[]response.PositionResponse,msg=string}	"岗位列表"
+//	@Failure		401	{object}	map[string]string										"未授权"
+//	@Failure		500	{object}	map[string]string										"服务器内部错误"
 //	@Router			/api/admin/position/all [get]
 func (c *PositionController) GetAllPositions(ctx *gin.Context) {
 	// 检查用户是否已登录
@@ -144,7 +144,13 @@ func (c *PositionController) GetAllPositions(ctx *gin.Context) {
 		return
 	}
 
-	baseRes.OkWithDetailed(positions, "获取所有岗位成功", ctx)
+	// 转换为 response DTO 数组
+	positionResponses := make([]response.PositionResponse, 0, len(positions))
+	for _, position := range positions {
+		positionResponses = append(positionResponses, convertToPositionResponse(position))
+	}
+
+	baseRes.OkWithDetailed(positionResponses, "获取所有岗位成功", ctx)
 }
 
 // GetPositionByID 获取岗位详情
@@ -183,7 +189,9 @@ func (c *PositionController) GetPositionByID(ctx *gin.Context) {
 		return
 	}
 
-	baseRes.OkWithDetailed(position, "获取岗位详情成功", ctx)
+	// 转换为 response DTO
+	positionResponse := convertToPositionResponse(position)
+	baseRes.OkWithDetailed(positionResponse, "获取岗位详情成功", ctx)
 }
 
 // CreatePosition 创建岗位
@@ -255,7 +263,9 @@ func (c *PositionController) CreatePosition(ctx *gin.Context) {
 	}
 
 	c.log.Info("创建岗位成功", "id", position.ID, "name", req.Name)
-	baseRes.OkWithDetailed(position, "创建岗位成功", ctx)
+	// 转换为 response DTO
+	positionResponse := convertToPositionResponse(position)
+	baseRes.OkWithDetailed(positionResponse, "创建岗位成功", ctx)
 }
 
 // UpdatePosition 更新岗位
@@ -323,7 +333,9 @@ func (c *PositionController) UpdatePosition(ctx *gin.Context) {
 	}
 
 	c.log.Info("更新岗位成功", "id", position.ID, "name", req.Name)
-	baseRes.OkWithDetailed(position, "更新岗位成功", ctx)
+	// 转换为 response DTO
+	positionResponse := convertToPositionResponse(position)
+	baseRes.OkWithDetailed(positionResponse, "更新岗位成功", ctx)
 }
 
 // DeletePosition 删除岗位

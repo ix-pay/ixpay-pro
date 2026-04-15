@@ -58,7 +58,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache, log logger.L
 
 		// 将用户信息添加到上下文
 		c.Set("userID", claims.UserID)
-		c.Set("username", claims.Username)
+		c.Set("userName", claims.Username)
 		c.Set("nickname", claims.Nickname)
 		c.Set("loginType", claims.LoginType)
 		c.Set("claims", claims)

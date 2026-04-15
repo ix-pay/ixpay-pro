@@ -2,14 +2,14 @@ package request
 
 // RegisterRequest 注册请求参数
 type RegisterRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=50"`
+	Username string `json:"userName" binding:"required,min=3,max=50"`
 	Password string `json:"password" binding:"required,min=6,max=30"`
 	Email    string `json:"email" binding:"required,email"`
 }
 
 // UpdateUserRequest 更新用户信息请求参数
 type UpdateUserRequest struct {
-	ID       int64    `json:"id" binding:"required"`
+	ID       string   `json:"id" binding:"required"`
 	Nickname string   `json:"nickname" binding:"max=50"`
 	Email    string   `json:"email" binding:"email"`
 	Phone    string   `json:"phone" binding:"max=20"`
@@ -31,7 +31,7 @@ type ResetPasswordRequest struct {
 
 // AddUserRequest 增加用户请求参数
 type AddUserRequest struct {
-	Username     string   `json:"username" binding:"required,min=3,max=50"`
+	Username     string   `json:"userName" binding:"required,min=3,max=50"`
 	Password     string   `json:"password" binding:"required,min=6,max=30"`
 	Email        string   `json:"email" binding:"omitempty,email"`
 	Nickname     string   `json:"nickname" binding:"max=50"`
@@ -47,7 +47,7 @@ type AddUserRequest struct {
 type GetUserListRequest struct {
 	Page     int    `json:"page" form:"page" binding:"required,min=1"`
 	PageSize int    `json:"pageSize" form:"pageSize" binding:"required,min=1,max=100"`
-	Username string `json:"username" form:"username" binding:"omitempty,min=3,max=50"`
+	Username string `json:"userName" form:"userName" binding:"omitempty,min=3,max=50"`
 	Email    string `json:"email" form:"email" binding:"omitempty,email"`
 	Role     string `json:"role" form:"role" binding:"omitempty,oneof=user admin"`
 	Status   *int   `json:"status" form:"status" binding:"omitempty,min=0,max=1"`

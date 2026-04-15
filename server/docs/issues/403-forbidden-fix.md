@@ -124,7 +124,7 @@ UPDATE apis SET auth_type = 0 WHERE path = '/api/admin/user/info' AND method = '
    # 登录
    curl -X POST http://localhost:8000/api/admin/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"username":"admin","password":"123456"}'
+     -d '{"userName":"admin","password":"123456"}'
    
    # 使用返回的 token 调用用户信息接口
    curl -X GET http://localhost:8000/api/admin/user/info \
@@ -147,7 +147,7 @@ UPDATE apis SET auth_type = 0 WHERE path = '/api/admin/user/info' AND method = '
   "message": "获取用户信息成功",
   "data": {
     "id": "xxx",
-    "username": "admin",
+    "userName": "admin",
     "nickname": "管理员",
     "roles": [...],
     "currentRoleId": "xxx",

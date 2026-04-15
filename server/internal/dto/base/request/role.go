@@ -48,7 +48,7 @@ type AssignMenuToRoleRequest struct {
 // AssignToRoleRequest 分配 API 路由到角色请求模型
 type AssignToRoleRequest struct {
 	RoleID int64    `json:"roleId" binding:"required,gte=1"`
-	IDs    []string `json:"Ids" binding:"required,min=1"`
+	IDs    []string `json:"ids" binding:"required,min=1"`
 }
 
 // SaveRolePermissionsRequest 保存角色权限请求模型

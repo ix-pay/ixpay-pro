@@ -7,7 +7,7 @@ type GetLoginLogListRequest struct {
 	Page      int    `form:"page" binding:"required"`     // 页码
 	PageSize  int    `form:"pageSize" binding:"required"` // 每页数量
 	UserID    *int64 `form:"userId"`                      // 用户 ID（可选筛选）
-	Username  string `form:"username"`                    // 用户名（可选筛选）
+	Username  string `form:"userName"`                    // 用户名（可选筛选）
 	LoginIP   string `form:"loginIp"`                     // 登录 IP（可选筛选）
 	Result    *int   `form:"result"`                      // 登录结果：0-失败，1-成功（可选筛选）
 	StartDate string `form:"startDate"`                   // 开始日期（可选筛选）
@@ -52,7 +52,7 @@ type BatchForceOfflineRequest struct {
 // RecordLoginRequest 记录登录日志请求（内部调用）
 type RecordLoginRequest struct {
 	UserID    int64  `json:"userId" binding:"required"`   // 用户 ID
-	Username  string `json:"username" binding:"required"` // 用户名
+	Username  string `json:"userName" binding:"required"` // 用户名
 	IP        string `json:"ip" binding:"required"`       // 登录 IP
 	Place     string `json:"place"`                       // 登录地点
 	Device    string `json:"device"`                      // 设备信息

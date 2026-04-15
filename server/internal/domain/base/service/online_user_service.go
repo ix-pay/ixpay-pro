@@ -27,13 +27,13 @@ func NewOnlineUserService(repo repo.OnlineUserRepository, log logger.Logger) *On
 // AddOnlineUser 添加用户到在线列表
 func (s *OnlineUserService) AddOnlineUser(
 	userID int64,
-	username, nickname, sessionID, ip, place, device, browser, os, userAgent string,
+	userName, nickname, sessionID, ip, place, device, browser, os, userAgent string,
 ) error {
 	now := time.Now()
 
 	user := &entity.OnlineUser{
 		UserID:       userID,
-		Username:     username,
+		Username:     userName,
 		Nickname:     nickname,
 		SessionID:    sessionID,
 		LoginIP:      ip,
@@ -47,11 +47,11 @@ func (s *OnlineUserService) AddOnlineUser(
 	}
 
 	if err := s.repo.Add(user); err != nil {
-		s.log.Error("添加在线用户失败", "error", err, "user_id", userID, "username", username)
+		s.log.Error("添加在线用户失败", "error", err, "user_id", userID, "userName", userName)
 		return err
 	}
 
-	s.log.Info("添加在线用户成功", "user_id", userID, "username", username, "session_id", sessionID)
+	s.log.Info("添加在线用户成功", "user_id", userID, "userName", userName, "session_id", sessionID)
 	return nil
 }
 
@@ -158,7 +158,7 @@ func (s *OnlineUserService) ForceOffline(userID int64, operatorID string) error 
 
 	s.log.Info("强制用户下线成功",
 		"user_id", userID,
-		"username", user.Username,
+		"userName", user.Username,
 		"operator_id", operatorID,
 	)
 	return nil
@@ -209,7 +209,7 @@ func (s *OnlineUserService) KickoutUser(userID int64, reason string, operatorID 
 
 	s.log.Info("踢出用户成功",
 		"user_id", userID,
-		"username", user.Username,
+		"userName", user.Username,
 		"reason", reason,
 		"operator_id", operatorID,
 	)

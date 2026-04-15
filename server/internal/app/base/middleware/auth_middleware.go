@@ -14,11 +14,8 @@ import (
 	httpresponse "github.com/ix-pay/ixpay-pro/internal/infrastructure/transport/http"
 )
 
-// log 全局日志记录器实例
-var log = logger.GetGlobalLogger(logger.DefaultLogger)
-
 // AuthMiddleware 认证中间件
-func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache) gin.HandlerFunc {
+func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache, log logger.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从 Authorization 头获取令牌
 		authHeader := c.GetHeader("Authorization")
@@ -67,7 +64,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache) gin.HandlerF
 		c.Set("claims", claims)
 
 		// 【关键修改】从缓存获取用户的当前角色，实现故障降级策略
-		currentRoleID, roleSource := getCurrentRoleFromCache(claims, cacheClient, c)
+		currentRoleID, roleSource := getCurrentRoleFromCache(claims, cacheClient, c, log)
 
 		// 根据角色来源设置上下文
 		if roleSource == "cache" {
@@ -90,7 +87,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache) gin.HandlerF
 
 // getCurrentRoleFromCache 从缓存获取用户的当前角色，实现故障降级策略
 // 返回：当前角色 ID, 角色来源 (cache/jwt/fallback)
-func getCurrentRoleFromCache(claims *auth.Claims, cacheClient cache.Cache, c *gin.Context) (string, string) {
+func getCurrentRoleFromCache(claims *auth.Claims, cacheClient cache.Cache, c *gin.Context, log logger.Logger) (string, string) {
 	// 安全检查：确保 claims 不为 nil
 	if claims == nil {
 		log.Error("claims 为 nil，无法获取角色信息")
@@ -127,7 +124,7 @@ func getCurrentRoleFromCache(claims *auth.Claims, cacheClient cache.Cache, c *gi
 	}
 
 	// 步骤 2: 从 Redis 读取 role:info:{roleID} 获取角色详情
-	role, err := getRoleByID(currentRoleID, cacheClient)
+	role, err := getRoleByID(currentRoleID, cacheClient, log)
 	if err != nil {
 		// 获取角色详情失败，记录错误日志
 		log.Error("获取角色详情失败", "userID", claims.UserID, "roleID", currentRoleID, "err", err.Error())
@@ -163,7 +160,7 @@ func getCurrentRoleFromCache(claims *auth.Claims, cacheClient cache.Cache, c *gi
 
 // getRoleByID 根据角色 ID 获取角色信息
 // 从 Redis 缓存读取 role:info:{roleID}
-func getRoleByID(roleID string, cacheClient cache.Cache) (*entity.Role, error) {
+func getRoleByID(roleID string, cacheClient cache.Cache, log logger.Logger) (*entity.Role, error) {
 	// 从缓存获取角色信息
 	cacheKey := fmt.Sprintf("role:info:%s", roleID)
 	roleData, err := cacheClient.Get(cacheKey)

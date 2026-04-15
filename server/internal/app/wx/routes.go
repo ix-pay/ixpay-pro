@@ -28,7 +28,7 @@ func (a *AppWX) setupRoutes() {
 
 		// 需要认证的路由
 		authenticated := wx
-		authenticated.Use(middleware.AuthMiddleware(a.auth))
+		authenticated.Use(middleware.AuthMiddleware(a.auth, a.logger))
 		authenticated.Use(middleware.PermissionMiddleware(a.permissions))
 		{
 			// 支付路由

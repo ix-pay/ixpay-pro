@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 // AuthMiddleware 认证中间件
-func AuthMiddleware(jwtAuth *auth.JWTAuth) gin.HandlerFunc {
+func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从Authorization头获取令牌
 		authHeader := c.GetHeader("Authorization")

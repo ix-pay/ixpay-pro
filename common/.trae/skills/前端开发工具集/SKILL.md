@@ -92,14 +92,14 @@ graph TD
 **触发条件**：编写前端 API 调用时
 
 **自动检查**：
-- ✅ API 路径必须使用 `//` 前缀（如 `//user`）
+- ✅ API 路径必须使用 `/` 前缀（如 `/user`）
 - ❌ 禁止使用 `/api/user` 或 `/user`
 
 **检查规则**：
 ```typescript
 // ✅ 正确：使用 // 前缀
 url: '//roles',
-url: `//roles/${roleId}/available-menus`,
+url: `/roles/${roleId}/available-menus`,
 
 // ❌ 错误：使用 /api 前缀
 url: '/api/user',  // 提醒："⚠️ 应使用 //user 而非 /api/user"
@@ -512,7 +512,7 @@ export interface CreateRoleRequest {
 在提交代码前，自动检查以下项目：
 
 - [ ] **组件规范**：是否使用 `el-dialog` 而非打开新页面
-- [ ] **API 路径**：是否使用 `//` 前缀
+- [ ] **API 路径**：是否使用 `/` 前缀
 - [ ] **响应处理**：是否使用 `res.code` 判断
 - [ ] **权限标识**：是否使用 `update` 而非 `edit`
 - [ ] **混合架构**：是否正确使用 Tailwind + Element Plus
@@ -530,7 +530,7 @@ export interface CreateRoleRequest {
 - A: 项目使用 `npm run serve`（基于 vite）
 
 **Q2: API 路径使用什么前缀？**
-- A: 使用 `//` 前缀，如 `//roles`，而非 `/api/roles`
+- A: 使用 `/` 前缀，如 `/roles`，而非 `/api/roles`
 
 **Q3: 如何选择使用 Tailwind 还是 SCSS？**
 - A: 布局/间距/排版用 Tailwind，复杂动画/深度定制用 SCSS

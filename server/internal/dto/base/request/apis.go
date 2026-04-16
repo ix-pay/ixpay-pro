@@ -2,8 +2,8 @@ package request
 
 // GetAPIPageRequest 获取 API 路由分页列表请求
 type GetAPIPageRequest struct {
-	Page     int    `json:"page" form:"page" binding:"required,min=1"`
-	PageSize int    `json:"pageSize" form:"pageSize" binding:"required,min=1,max=100"`
+	Page     int    `json:"page" form:"page" binding:"omitempty,min=1"`
+	PageSize int    `json:"pageSize" form:"pageSize" binding:"omitempty,min=1,max=100"`
 	Keyword  string `json:"keyword" form:"keyword"`
 	Group    string `json:"group" form:"group"`
 }

@@ -77,7 +77,7 @@ export const updateMenu = (data: MenuItem): Promise<ApiResponse> => {
 // @Router /menu/:id [delete]
 export const deleteMenu = (id: string): Promise<ApiResponse> => {
   return service({
-    url: `//menu/${id}`,
+    url: `/menu/${id}`,
     method: 'delete',
   })
 }
@@ -97,20 +97,6 @@ export const getMenuTree = (): Promise<ApiResponse> => {
 }
 
 // @Tags API
-// @Summary 获取所有 API 列表（用于菜单关联 API 选择）
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Success 200 {string} string "{\"success\":true,\"data\":{},\"msg\":\"获取成功\"}"
-// @Router /apis [get]
-export const getApiList = (): Promise<ApiResponse> => {
-  return service({
-    url: '/apis',
-    method: 'get',
-  })
-}
-
-// @Tags API
 // @Summary 搜索 API 列表（支持分页和关键词搜索）
 // @Security ApiKeyAuth
 // @accept application/json
@@ -125,10 +111,10 @@ export const searchApiList = (params?: {
   pageSize?: number
   keyword?: string
 }): Promise<ApiResponse> => {
-  // 搜索时默认获取所有匹配结果，避免分页导致搜索结果不完整
+  // 默认获取所有匹配结果，避免分页导致搜索结果不完整
   const defaultParams = {
     page: 1,
-    pageSize: 1000, // 搜索时使用较大的 pageSize，确保获取所有匹配项
+    pageSize: 1000, // 使用较大的 pageSize，确保获取所有匹配项
     ...params,
   }
 

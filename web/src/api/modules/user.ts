@@ -123,7 +123,7 @@ export const setUserAuthority = (data: Record<string, unknown>): Promise<ApiResp
 // @Router /user/:id [delete]
 export const deleteUser = (id: string): Promise<ApiResponse> => {
   return service({
-    url: `//user/${id}`,
+    url: `/user/${id}`,
     method: 'delete',
   })
 }

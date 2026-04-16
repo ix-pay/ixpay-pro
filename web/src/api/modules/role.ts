@@ -141,7 +141,7 @@ export const getRoleAvailableMenus = (
   roleId: string | number,
 ): Promise<ApiResponse<MenuItem[]>> => {
   return service({
-    url: `//roles/${roleId}/available-menus`,
+    url: `/roles/${roleId}/available-menus`,
     method: 'get',
   })
 }
@@ -150,7 +150,7 @@ export const getRoleAvailableMenus = (
 // 注意：roleId 使用 string | number 类型，避免 Number() 转换导致精度丢失
 export const getRoleAvailableApis = (roleId: string | number): Promise<ApiResponse<ApiRoute[]>> => {
   return service({
-    url: `//roles/${roleId}/available-apis`,
+    url: `/role/${roleId}/available-apis`,
     method: 'get',
   })
 }
@@ -161,7 +161,7 @@ export const getRolePermissionDetail = (
   roleId: string | number,
 ): Promise<ApiResponse<RolePermissionResponse>> => {
   return service({
-    url: `//roles/${roleId}/detail`,
+    url: `/role/${roleId}/detail`,
     method: 'get',
   })
 }
@@ -173,7 +173,7 @@ export const saveRolePermissions = (
   data: RolePermissionRequest,
 ): Promise<ApiResponse> => {
   return service({
-    url: `//roles/${roleId}/permissions`,
+    url: `/roles/${roleId}/permissions`,
     method: 'post',
     data,
   })
@@ -185,7 +185,7 @@ export const getMenuDeleteImpact = (
   menuId: string | number,
 ): Promise<ApiResponse<DeleteImpact>> => {
   return service({
-    url: `//menu/${menuId}/delete-impact`,
+    url: `/menu/${menuId}/delete-impact`,
     method: 'get',
   })
 }
@@ -211,7 +211,7 @@ export const getRolePermissionLogs = (
   ApiResponse<{ list: PermissionLog[]; total: number; page: number; pageSize: number }>
 > => {
   return service({
-    url: `//roles/${roleId}/permission-logs`,
+    url: `/roles/${roleId}/permission-logs`,
     method: 'get',
     params,
   })

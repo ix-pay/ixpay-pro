@@ -115,6 +115,14 @@ func (c *APIController) GetAPIs(ctx *gin.Context) {
 		return
 	}
 
+	// 设置默认值
+	if req.Page == 0 {
+		req.Page = 1
+	}
+	if req.PageSize == 0 {
+		req.PageSize = 10000
+	}
+
 	filters := make(map[string]interface{})
 	if req.Keyword != "" {
 		filters["keyword"] = req.Keyword

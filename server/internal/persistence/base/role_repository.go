@@ -304,7 +304,7 @@ func (r *roleRepository) List(page, pageSize int, filters map[string]interface{}
 // GetAllRoles 获取所有角色
 func (r *roleRepository) GetAllRoles() ([]*entity.Role, error) {
 	var dbModels []roleModel
-	result := r.db.Find(&dbModels)
+	result := r.db.Where("code != 'admin'").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}

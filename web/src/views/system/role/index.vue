@@ -27,12 +27,16 @@
           <el-option label="禁用" :value="0" />
         </el-select>
         <el-button type="primary" size="small" @click="loadRoleList">
-          <el-icon><Search /></el-icon>
+          <el-icon>
+            <Search />
+          </el-icon>
           搜索
         </el-button>
       </div>
       <el-button type="primary" size="small" v-auth-btn="'system:role:add'" @click="handleAddRole">
-        <el-icon><Plus /></el-icon>
+        <el-icon>
+          <Plus />
+        </el-icon>
         添加角色
       </el-button>
     </div>
@@ -54,7 +58,7 @@
           <template #default="scope">
             <div class="flex gap-1">
               <el-button
-                v-if="!scope.row.is_system"
+                v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:edit'"
                 size="small"
                 type="primary"
@@ -64,7 +68,7 @@
                 编辑
               </el-button>
               <el-button
-                v-if="!scope.row.is_system"
+                v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:assign'"
                 size="small"
                 type="primary"
@@ -74,7 +78,7 @@
                 权限设置
               </el-button>
               <el-button
-                v-if="!scope.row.is_system"
+                v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:delete'"
                 size="small"
                 type="danger"
@@ -83,7 +87,9 @@
               >
                 删除
               </el-button>
-              <el-tag v-if="scope.row.is_system" type="info" size="small"> 系统角色 </el-tag>
+              <el-tag v-if="scope.row.is_system || isAdminRole(scope.row)" type="info" size="small">
+                {{ scope.row.is_system ? '系统角色' : '管理员角色' }}
+              </el-tag>
             </div>
           </template>
         </el-table-column>
@@ -167,6 +173,13 @@ interface Role {
   status: number
   createdAt: string
   is_system?: boolean // 是否为系统角色
+  code?: string // 角色编码
+}
+
+// 判断是否为管理员角色
+const isAdminRole = (role: Role): boolean => {
+  // 角色编码为 admin 的是管理员角色
+  return role.code === 'admin'
 }
 
 // 权限设置对话框状态

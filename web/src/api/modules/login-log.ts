@@ -40,7 +40,7 @@ export const getLoginLogList = (params?: {
 // 根据 ID 获取登录日志
 export const getLoginLogById = (id: number): Promise<ApiResponse<LoginLog>> => {
   return service({
-    url: `//login-log/${id}`,
+    url: `/login-log/${id}`,
     method: 'get',
   })
 }
@@ -48,7 +48,7 @@ export const getLoginLogById = (id: number): Promise<ApiResponse<LoginLog>> => {
 // 删除登录日志
 export const deleteLoginLog = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//login-log/${id}`,
+    url: `/login-log/${id}`,
     method: 'delete',
   })
 }

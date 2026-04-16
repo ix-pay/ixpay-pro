@@ -120,7 +120,7 @@ export const updateDictItem = (
   },
 ): Promise<ApiResponse<DictItem>> => {
   return service({
-    url: `//dict-items/${id}`,
+    url: `/dict-items/${id}`,
     method: 'put',
     data,
   })
@@ -129,7 +129,7 @@ export const updateDictItem = (
 // 删除字典项
 export const deleteDictItem = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//dict-items/${id}`,
+    url: `/dict-items/${id}`,
     method: 'delete',
   })
 }

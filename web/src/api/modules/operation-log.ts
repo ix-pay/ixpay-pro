@@ -39,7 +39,7 @@ export const getLogList = (params: {
 // @Router /api/admin/logs/{id} [get]
 export const getLogByID = (id: string): Promise<ApiResponse> => {
   return service({
-    url: `//logs/${id}`,
+    url: `/logs/${id}`,
     method: 'get',
   })
 }
@@ -52,7 +52,7 @@ export const getLogByID = (id: string): Promise<ApiResponse> => {
 // @Router /api/admin/logs/{id} [delete]
 export const deleteLogByID = (id: string): Promise<ApiResponse> => {
   return service({
-    url: `//logs/${id}`,
+    url: `/logs/${id}`,
     method: 'delete',
   })
 }

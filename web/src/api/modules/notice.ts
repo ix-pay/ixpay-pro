@@ -61,7 +61,7 @@ export const updateNotice = (
   },
 ): Promise<ApiResponse<Notice>> => {
   return service({
-    url: `//notices/${id}`,
+    url: `/notices/${id}`,
     method: 'put',
     data,
   })
@@ -70,7 +70,7 @@ export const updateNotice = (
 // 删除公告
 export const deleteNotice = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//notices/${id}`,
+    url: `/notices/${id}`,
     method: 'delete',
   })
 }
@@ -78,7 +78,7 @@ export const deleteNotice = (id: number): Promise<ApiResponse> => {
 // 发布/取消发布公告
 export const publishNotice = (id: number, publish: boolean): Promise<ApiResponse> => {
   return service({
-    url: `//notices/${id}/publish`,
+    url: `/notices/${id}/publish`,
     method: 'post',
     data: { publish },
   })

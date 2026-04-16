@@ -50,7 +50,7 @@ export const getAllApiRoutes = (): Promise<ApiResponse<ApiRoute[]>> => {
 // 根据 ID 获取 API 路由
 export const getApiRouteById = (id: string): Promise<ApiResponse<ApiRoute>> => {
   return service({
-    url: `//apis/${id}`,
+    url: `/apis/${id}`,
     method: 'get',
   })
 }
@@ -70,7 +70,7 @@ export const updateApiRoute = (
   data: Partial<ApiRoute>,
 ): Promise<ApiResponse<ApiRoute>> => {
   return service({
-    url: `//apis/${id}`,
+    url: `/apis/${id}`,
     method: 'put',
     data,
   })
@@ -79,7 +79,7 @@ export const updateApiRoute = (
 // 删除 API 路由
 export const deleteApiRoute = (id: string): Promise<ApiResponse> => {
   return service({
-    url: `//apis/${id}`,
+    url: `/apis/${id}`,
     method: 'delete',
   })
 }

@@ -64,7 +64,7 @@ export const updateConfig = (
   },
 ): Promise<ApiResponse<Config>> => {
   return service({
-    url: `//config/${id}`,
+    url: `/config/${id}`,
     method: 'put',
     data,
   })
@@ -73,7 +73,7 @@ export const updateConfig = (
 // 删除配置
 export const deleteConfig = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `//config/${id}`,
+    url: `/config/${id}`,
     method: 'delete',
   })
 }
@@ -81,7 +81,7 @@ export const deleteConfig = (id: number): Promise<ApiResponse> => {
 // 根据 key 获取配置
 export const getConfigByKey = (key: string): Promise<ApiResponse<Config>> => {
   return service({
-    url: `//config/key?config_key=${key}`,
+    url: `/config/key?config_key=${key}`,
     method: 'get',
   })
 }

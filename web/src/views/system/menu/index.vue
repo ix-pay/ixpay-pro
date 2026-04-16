@@ -2,18 +2,10 @@
   <!-- 菜单管理页面 - 专业的树形表格设计 -->
   <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md">
     <!-- 顶部操作栏 -->
-    <div
-      class="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex flex-wrap items-center gap-3">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="搜索菜单名称、路径或权限标识"
-          clearable
-          size="default"
-          class="w-64"
-          @keyup.enter="loadMenuList"
-        >
+        <el-input v-model="searchForm.keyword" placeholder="搜索菜单名称、路径或权限标识" clearable size="default" class="w-64"
+          @keyup.enter="loadMenuList">
           <template #prefix>
             <el-icon>
               <Search />
@@ -40,21 +32,13 @@
           </el-icon>
           新增目录
         </el-button>
-        <el-button
-          type="success"
-          v-auth-btn="'system:menu:add'"
-          @click="(e) => handleAddMenu(e as MouseEvent)"
-        >
+        <el-button type="success" v-auth-btn="'system:menu:add'" @click="(e) => handleAddMenu(e as MouseEvent)">
           <el-icon>
             <Menu />
           </el-icon>
           新增菜单
         </el-button>
-        <el-button
-          type="warning"
-          v-auth-btn="'system:menu:add'"
-          @click="(e) => handleAddButton(e as MouseEvent)"
-        >
+        <el-button type="warning" v-auth-btn="'system:menu:add'" @click="(e) => handleAddButton(e as MouseEvent)">
           <el-icon>
             <Operation />
           </el-icon>
@@ -64,9 +48,7 @@
     </div>
 
     <!-- 统计信息 -->
-    <div
-      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
-    >
+    <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-6 text-sm">
         <span class="flex items-center gap-1">
           <el-icon class="text-blue-500">
@@ -97,15 +79,8 @@
 
     <!-- 表格区域 -->
     <div class="flex-1 overflow-hidden">
-      <el-table
-        v-loading="loading"
-        :data="menuList"
-        height="100%"
-        row-key="id"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        :default-expand-all="expandAll"
-        :indent="48"
-      >
+      <el-table v-loading="loading" :data="menuList" height="100%" row-key="id"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" :default-expand-all="expandAll" :indent="48">
         <!-- 菜单名称列 - 带图标 -->
         <el-table-column prop="title" label="菜单名称" width="220" fixed="left">
           <template #default="scope">
@@ -114,10 +89,8 @@
               <el-icon v-if="scope.row.icon" :size="16" style="flex-shrink: 0">
                 <component :is="scope.row.icon" />
               </el-icon>
-              <span
-                :class="{ 'font-medium': scope.row.type === 1 }"
-                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
-              >
+              <span :class="{ 'font-medium': scope.row.type === 1 }"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
                 {{ scope.row.title }}
               </span>
             </div>
@@ -127,10 +100,8 @@
         <!-- 权限标识 -->
         <el-table-column prop="permission" label="权限标识" min-width="180">
           <template #default="scope">
-            <span
-              v-if="scope.row.permission"
-              style="color: var(--text-secondary); font-size: 13px; font-family: monospace"
-            >
+            <span v-if="scope.row.permission"
+              style="color: var(--text-secondary); font-size: 13px; font-family: monospace">
               {{ scope.row.permission }}
             </span>
             <span v-else style="color: var(--text-placeholder)">-</span>
@@ -157,13 +128,8 @@
         <!-- 状态 -->
         <el-table-column prop="status" label="状态" width="70" align="center">
           <template #default="scope">
-            <el-switch
-              v-model="scope.row.status"
-              :active-value="1"
-              :inactive-value="0"
-              size="small"
-              @change="handleStatusChange(scope.row)"
-            />
+            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" size="small"
+              @change="handleStatusChange(scope.row)" />
           </template>
         </el-table-column>
 
@@ -182,57 +148,32 @@
             <div style="display: flex; align-items: center; gap: 4px">
               <!-- 目录的操作 -->
               <template v-if="scope.row.type === 1">
-                <el-button
-                  v-auth-btn="'system:menu:edit'"
-                  size="small"
-                  type="primary"
-                  link
-                  @click="handleEditMenu(scope.row)"
-                >
+                <el-button v-auth-btn="'system:menu:edit'" size="small" type="primary" link
+                  @click="handleEditMenu(scope.row)">
                   编辑
                 </el-button>
-                <el-button
-                  v-auth-btn="'system:menu:add'"
-                  size="small"
-                  type="success"
-                  link
-                  @click="(e) => handleAddMenu(e as MouseEvent, scope.row)"
-                >
+                <el-button v-auth-btn="'system:menu:add'" size="small" type="success" link
+                  @click="(e) => handleAddMenu(e as MouseEvent, scope.row)">
                   添加菜单
                 </el-button>
               </template>
 
               <!-- 菜单的操作 -->
               <template v-else-if="scope.row.type === 2">
-                <el-button
-                  v-auth-btn="'system:menu:edit'"
-                  size="small"
-                  type="primary"
-                  link
-                  @click="handleEditMenu(scope.row)"
-                >
+                <el-button v-auth-btn="'system:menu:edit'" size="small" type="primary" link
+                  @click="handleEditMenu(scope.row)">
                   编辑
                 </el-button>
-                <el-button
-                  v-auth-btn="'system:menu:add'"
-                  size="small"
-                  type="warning"
-                  link
-                  @click="(e) => handleAddButton(e as MouseEvent, scope.row)"
-                >
+                <el-button v-auth-btn="'system:menu:add'" size="small" type="warning" link
+                  @click="(e) => handleAddButton(e as MouseEvent, scope.row)">
                   添加按钮
                 </el-button>
               </template>
 
               <!-- 按钮的操作 -->
               <template v-else-if="scope.row.type === 3">
-                <el-button
-                  v-auth-btn="'system:menu:edit'"
-                  size="small"
-                  type="primary"
-                  link
-                  @click="handleEditMenu(scope.row)"
-                >
+                <el-button v-auth-btn="'system:menu:edit'" size="small" type="primary" link
+                  @click="handleEditMenu(scope.row)">
                   编辑
                 </el-button>
               </template>
@@ -252,12 +193,7 @@
     </div>
 
     <!-- 菜单表单对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      :close-on-click-modal="false"
-    >
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" :close-on-click-modal="false">
       <el-form ref="menuFormRef" :model="menuForm" :rules="formRules" label-width="100px">
         <!-- 菜单类型 -->
         <el-form-item label="菜单类型" prop="type">
@@ -303,18 +239,12 @@
 
         <!-- 组件路径 -->
         <el-form-item v-if="menuForm.type === 2" label="组件路径" prop="component">
-          <el-input
-            v-model="menuForm.component"
-            placeholder="请输入组件路径，如：views/system/user/index"
-          />
+          <el-input v-model="menuForm.component" placeholder="请输入组件路径，如：views/system/user/index" />
         </el-form-item>
 
         <!-- 权限标识 -->
         <el-form-item v-if="menuForm.type === 3" label="权限标识" prop="permission">
-          <el-input
-            v-model="menuForm.permission"
-            placeholder="请输入权限标识，如：system:user:add"
-          />
+          <el-input v-model="menuForm.permission" placeholder="请输入权限标识，如：system:user:add" />
           <div class="text-xs text-gray-500 mt-1">
             格式：模块：功能：操作（如：system:user:add）
           </div>
@@ -328,78 +258,36 @@
 
         <!-- 父菜单 -->
         <el-form-item label="父菜单" prop="parentId">
-          <el-tree-select
-            v-model="menuForm.parentId"
-            :data="menuList"
-            :props="{ label: 'title', value: 'id', children: 'children' }"
-            placeholder="请选择父菜单（顶级菜单不选）"
-            clearable
-            check-strictly
-            value-key="id"
-            :render-after-expand="false"
-            class="w-full"
-          />
+          <el-tree-select v-model="menuForm.parentId" :data="menuList"
+            :props="{ label: 'title', value: 'id', children: 'children' }" placeholder="请选择父菜单（顶级菜单不选）" clearable
+            check-strictly value-key="id" :render-after-expand="false" class="w-full" />
           <div v-if="menuForm.parentId === ''" class="text-xs text-gray-500 mt-1">
             不选择则为顶级菜单
           </div>
         </el-form-item>
 
         <!-- 关联 API -->
-        <el-form-item
-          v-if="menuForm.type === 2 || menuForm.type === 3"
-          label="关联 API"
-          prop="apiIds"
-        >
-          <el-tree-select
-            v-model="menuForm.apiIds"
-            :data="apiTreeData"
-            :props="{ label: 'label', value: 'value', children: 'children' }"
-            placeholder="请输入关键词搜索 API"
-            multiple
-            filterable
-            remote
-            :remote-method="searchApi"
-            check-strictly
-            clearable
-            class="w-full"
-            :reserve-keyword="false"
-          />
+        <el-form-item v-if="menuForm.type === 2 || menuForm.type === 3" label="关联 API" prop="apiIds">
+          <el-tree-select v-model="menuForm.apiIds" :data="apiTreeData"
+            :props="{ label: 'label', value: 'value', children: 'children' }" placeholder="请输入关键词搜索 API" multiple
+            filterable remote :remote-method="searchApi" check-strictly clearable class="w-full"
+            :reserve-keyword="false" />
           <div class="text-xs text-gray-500 mt-1">选择该菜单/按钮关联的 API 接口权限标识</div>
         </el-form-item>
 
         <!-- 排序、状态、缓存（一行显示） -->
         <div class="flex gap-4">
           <el-form-item label="排序" prop="sort" class="flex-1 min-w-[150px]">
-            <el-input-number
-              v-model="menuForm.sort"
-              :min="0"
-              :max="999"
-              class="w-full"
-              controls-position="right"
-            />
+            <el-input-number v-model="menuForm.sort" :min="0" :max="999" class="w-full" controls-position="right" />
           </el-form-item>
 
           <el-form-item label="状态" prop="status" class="flex-1 min-w-[120px]">
-            <el-switch
-              v-model="menuForm.status"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              active-value="1"
-              inactive-value="0"
-            />
+            <el-switch v-model="menuForm.status" active-color="#13ce66" inactive-color="#ff4949" active-value="1"
+              inactive-value="0" />
           </el-form-item>
 
-          <el-form-item
-            v-if="menuForm.type === 2"
-            label="缓存"
-            prop="KeepAlive"
-            class="flex-1 min-w-[120px]"
-          >
-            <el-switch
-              v-model="menuForm.KeepAlive"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-            />
+          <el-form-item v-if="menuForm.type === 2" label="缓存" prop="KeepAlive" class="flex-1 min-w-[120px]">
+            <el-switch v-model="menuForm.KeepAlive" active-color="#13ce66" inactive-color="#ff4949" />
           </el-form-item>
         </div>
       </el-form>
@@ -431,7 +319,6 @@ import {
   deleteMenu,
   addMenu,
   updateMenu,
-  getApiList,
   searchApiList,
   type MenuItem,
 } from '@/api/modules/menu'
@@ -534,12 +421,7 @@ const apiTreeData = ref<
 // 加载 API 列表数据
 const loadApiList = async (keyword?: string) => {
   try {
-    let response
-    if (keyword) {
-      response = await searchApiList({ keyword })
-    } else {
-      response = await getApiList()
-    }
+    const response = await searchApiList({ keyword })
     console.log('API 列表响应:', response)
 
     let apiList: {

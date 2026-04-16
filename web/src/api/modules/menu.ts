@@ -36,14 +36,14 @@ export const getMenuPage = (params: { page: number; pageSize: number }): Promise
 }
 
 // @Tags Menu
-// @Summary 添加菜单
+// @Summary 创建菜单
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body MenuItem true "添加菜单"
-// @Success 200 {string} string "{\"success\":true,\"data\":{},\"msg\":\"添加成功\"}"
+// @Param data body MenuItem true "创建菜单"
+// @Success 200 {string} string "{\"success\":true,\"data\":{},\"msg\":\"创建成功\"}"
 // @Router /menu [post]
-export const addMenu = (data: MenuItem): Promise<ApiResponse> => {
+export const createMenu = (data: MenuItem): Promise<ApiResponse> => {
   return service({
     url: '/menu',
     method: 'post',

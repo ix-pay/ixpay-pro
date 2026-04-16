@@ -129,15 +129,15 @@ export const deleteUser = (id: string): Promise<ApiResponse> => {
 }
 
 // @Tags SysUser
-// @Summary 增加用户
-// @Description 增加新用户（管理员权限）
+// @Summary 创建用户
+// @Description 创建新用户（管理员权限）
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body {userName:"string",password:"string",email:"string",nickname:"string",phone:"string",avatar:"string",departmentId:"number",positionId:"number",status:"number",roles:"array"} true "增加用户请求参数"
-// @Success 201 {string} string "{"success":true,"data":{},"msg":"添加成功"}"
+// @Param data body {userName:"string",password:"string",email:"string",nickname:"string",phone:"string",avatar:"string",departmentId:"number",positionId:"number",status:"number",roles:"array"} true "创建用户请求参数"
+// @Success 201 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /user [post]
-export const addUser = (data: {
+export const createUser = (data: {
   userName: string
   password: string
   email: string

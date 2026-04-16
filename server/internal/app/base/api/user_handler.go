@@ -312,21 +312,21 @@ func (c *UserController) GetUserList(ctx *gin.Context) {
 	baseRes.OkWithDetailed(pageResult, "获取用户列表成功", ctx)
 }
 
-// AddUser 增加用户
+// CreateUser 创建用户
 //
-//	@Summary		增加用户
-//	@Description	增加新用户（管理员权限）
+//	@Summary		创建用户
+//	@Description	创建新用户账户
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			add_user	body		request.AddUserRequest							true	"增加用户请求参数"
-//	@Success		201			{object}	baseRes.Response{data=entity.User,msg=string}	"添加成功"
-//	@Failure		400			{object}	map[string]string								"请求参数错误"
-//	@Failure		401			{object}	map[string]string								"未授权"
-//	@Failure		500			{object}	map[string]string								"服务器内部错误"
+//	@Param			create	body		request.AddUserRequest							true	"创建用户请求参数"
+//	@Success		201		{object}	baseRes.Response{data=response.UserResponse}	"创建成功"
+//	@Failure		400		{object}	map[string]string								"请求参数错误"
+//	@Failure		401		{object}	map[string]string								"未授权"
+//	@Failure		500		{object}	map[string]string								"服务器内部错误"
 //	@Router			/api/admin/user [post]
-func (c *UserController) AddUser(ctx *gin.Context) {
+func (c *UserController) CreateUser(ctx *gin.Context) {
 	var req request.AddUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		c.log.Error("请求参数错误", "error", err)
@@ -613,7 +613,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 	baseRes.OkWithMessage("重置密码成功", ctx)
 }
 
-// GetSelfSetting 获取用户设置
+// GetUserSettings 获取用户设置
 //
 //	@Summary		获取用户设置
 //	@Description	获取当前登录用户的系统设置
@@ -624,8 +624,8 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 //	@Success		200	{object}	baseRes.Response{data=map[string]entity.UserSetting,msg=string}	"用户设置信息"
 //	@Failure		401	{object}	map[string]string												"未授权"
 //	@Failure		500	{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin/user/getSelfSetting [get]
-func (c *UserController) GetSelfSetting(ctx *gin.Context) {
+//	@Router			/api/admin/user/get-user-settings [get]
+func (c *UserController) GetUserSettings(ctx *gin.Context) {
 	// 从上下文中获取用户 ID
 	userID, exists := ctx.Get("userID")
 	if !exists {
@@ -658,21 +658,21 @@ func (c *UserController) GetSelfSetting(ctx *gin.Context) {
 	baseRes.OkWithDetailed(map[string]response.UserSettingResponse{"settings": settingResponse}, "获取用户设置成功", ctx)
 }
 
-// SetSelfSetting 保存用户设置
+// UpdateUserSettings 更新用户设置
 //
-//	@Summary		保存用户设置
-//	@Description	保存当前登录用户的系统设置
+//	@Summary		更新用户设置
+//	@Description	更新当前登录用户的系统设置
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			user_setting	body		entity.UserSetting												true	"用户设置参数"
-//	@Success		200				{object}	baseRes.Response{data=map[string]entity.UserSetting,msg=string}	"保存成功"
+//	@Success		200				{object}	baseRes.Response{data=map[string]entity.UserSetting,msg=string}	"更新成功"
 //	@Failure		400				{object}	map[string]string												"请求参数错误"
 //	@Failure		401				{object}	map[string]string												"未授权"
 //	@Failure		500				{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin/user/setSelfSetting [put]
-func (c *UserController) SetSelfSetting(ctx *gin.Context) {
+//	@Router			/api/admin/user/update-user-settings [put]
+func (c *UserController) UpdateUserSettings(ctx *gin.Context) {
 	var req entity.UserSetting
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		c.log.Error("请求参数错误", "error", err)

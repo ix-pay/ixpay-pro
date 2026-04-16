@@ -317,7 +317,7 @@ import {
 import {
   getMenuTree,
   deleteMenu,
-  addMenu,
+  createMenu,
   updateMenu,
   searchApiList,
   type MenuItem,
@@ -714,7 +714,7 @@ const handleSubmit = async () => {
       ElMessage.success('更新成功')
     } else {
       // 添加菜单
-      await addMenu(submitData)
+      await createMenu(submitData)
       ElMessage.success('添加成功')
     }
     dialogVisible.value = false

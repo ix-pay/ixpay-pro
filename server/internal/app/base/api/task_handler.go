@@ -60,22 +60,22 @@ func (t *MockTask) GetName() string {
 // TaskResponse 任务响应
 // 已移动到 internal/dto/base/response/task.go
 
-// AddTask 添加任务
+// CreateTask 创建任务
 //
-//	@Summary		添加任务
-//	@Description	添加一个定时任务或一次性任务（管理员权限）
+//	@Summary		创建任务
+//	@Description	创建一个新的任务（管理员权限）
 //	@Tags			任务管理
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			task	body		request.AddTaskRequest				true	"添加任务请求参数"
-//	@Success		201		{object}	map[string]response.TaskResponse	"任务添加成功"
+//	@Param			task	body		request.AddTaskRequest				true	"创建任务请求参数"
+//	@Success		201		{object}	map[string]response.TaskResponse	"任务创建成功"
 //	@Failure		400		{object}	map[string]string					"请求参数错误"
 //	@Failure		401		{object}	map[string]string					"未授权"
 //	@Failure		403		{object}	map[string]string					"无权限"
 //	@Failure		500		{object}	map[string]string					"服务器内部错误"
 //	@Router			/api/admin/task [post]
-func (c *TaskController) AddTask(ctx *gin.Context) {
+func (c *TaskController) CreateTask(ctx *gin.Context) {
 	var req request.AddTaskRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -141,7 +141,7 @@ func (c *TaskController) AddTask(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"data": taskResponse})
 }
 
-// RemoveTask 移除任务
+// DeleteTask 移除任务
 //
 //	@Summary		移除任务
 //	@Description	根据ID移除一个任务（管理员权限）
@@ -155,7 +155,7 @@ func (c *TaskController) AddTask(ctx *gin.Context) {
 //	@Failure		403	{object}	map[string]string	"无权限"
 //	@Failure		500	{object}	map[string]string	"服务器内部错误"
 //	@Router			/api/admin/task/:id [delete]
-func (c *TaskController) RemoveTask(ctx *gin.Context) {
+func (c *TaskController) DeleteTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
 	// 检查用户角色是否有权限移除任务

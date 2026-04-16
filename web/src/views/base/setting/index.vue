@@ -106,7 +106,7 @@ import { ElMessage } from 'element-plus'
 import { useAppStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
-import { getSelfSetting, setSelfSetting } from '@/api/modules/user'
+import { getUserSettings, updateUserSettings } from '@/api/modules/user'
 
 defineOptions({
   name: 'SettingPage',
@@ -192,7 +192,7 @@ const loadSettings = async () => {
 
     // 从服务器获取用户设置
     try {
-      const res = await getSelfSetting()
+      const res = await getUserSettings()
       if ((res.data as Record<string, unknown>)?.settings) {
         const userSettings = (res.data as Record<string, unknown>).settings as SettingForm
         settingForm.language = userSettings.language || 'zh-CN'
@@ -239,7 +239,7 @@ const handleSaveSettings = async () => {
 
     // 调用 API 保存到服务器
     try {
-      await setSelfSetting(userSettings)
+      await updateUserSettings(userSettings)
     } catch (error) {
       console.error('保存设置到服务器失败:', error)
     }

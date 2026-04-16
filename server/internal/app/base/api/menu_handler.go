@@ -136,8 +136,8 @@ func (c *MenuController) GetMenuList(ctx *gin.Context) {
 	baseRes.OkWithDetailed(menus, "获取菜单列表成功", ctx)
 }
 
-// AddMenu 创建菜单
-func (c *MenuController) AddMenu(ctx *gin.Context) {
+// CreateMenu 创建菜单
+func (c *MenuController) CreateMenu(ctx *gin.Context) {
 	var req request.AddMenuRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		c.log.Error("请求参数错误", "error", err)

@@ -326,7 +326,7 @@ func (c *ConfigController) DeleteConfig(ctx *gin.Context) {
 //	@Success		200			{object}	baseRes.Response{data=response.ConfigListResponse,msg=string}	"配置列表"
 //	@Failure		401			{object}	map[string]string												"未授权"
 //	@Failure		500			{object}	map[string]string												"服务器内部错误"
-//	@Router			/api/admin/config/list [get]
+//	@Router			/api/admin/config [get]
 func (c *ConfigController) GetConfigList(ctx *gin.Context) {
 	// 获取分页参数
 	pageStr := ctx.DefaultQuery("page", "1")

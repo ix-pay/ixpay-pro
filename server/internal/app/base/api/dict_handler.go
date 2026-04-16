@@ -367,7 +367,7 @@ func (c *DictController) DeleteDict(ctx *gin.Context) {
 //	@Success		200			{object}	baseRes.Response{data=response.DictListResponse,msg=string}	"字典列表"
 //	@Failure		401			{object}	map[string]string											"未授权"
 //	@Failure		500			{object}	map[string]string											"服务器内部错误"
-//	@Router			/api/admin/dict/list [get]
+//	@Router			/api/admin/dict [get]
 func (c *DictController) GetDictList(ctx *gin.Context) {
 	// 获取分页参数
 	pageStr := ctx.DefaultQuery("page", "1")

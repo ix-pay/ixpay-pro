@@ -39,12 +39,12 @@ func (a *AppBase) setupRoutes() {
 				user.GET("/info", a.userController.GetUserInfo)
 				user.PUT("/info", a.userController.UpdateUserInfo)
 				user.GET("", a.userController.GetUserList)
-				user.POST("", a.userController.AddUser)
+				user.POST("", a.userController.CreateUser)
 				user.DELETE("/:id", a.userController.DeleteUser)
 				user.PUT("/password", a.userController.ChangePassword)
 				user.PUT("/reset-password", a.userController.ResetPassword)
-				user.GET("/getSelfSetting", a.userController.GetSelfSetting)
-				user.PUT("/setSelfSetting", a.userController.SetSelfSetting)
+				user.GET("/get-user-settings", a.userController.GetUserSettings)
+				user.PUT("/update-user-settings", a.userController.UpdateUserSettings)
 				user.POST("/switch-role", a.userController.SwitchRole)
 			}
 
@@ -52,7 +52,7 @@ func (a *AppBase) setupRoutes() {
 			role := authenticated.Group("/role")
 			{
 				role.POST("", a.roleController.CreateRole)
-				role.GET("/detail", a.roleController.GetRoleByID)
+				role.GET("/:id", a.roleController.GetRoleByID)
 				role.GET("/:id/detail", a.roleController.GetRoleDetail)
 				role.GET("/:id/available-apis", a.roleController.GetAvailableAPIs)
 				role.PUT("", a.roleController.UpdateRole)
@@ -67,8 +67,8 @@ func (a *AppBase) setupRoutes() {
 			// 任务路由（需要 admin 角色）
 			task := authenticated.Group("/task")
 			{
-				task.POST("", a.taskController.AddTask)
-				task.DELETE("/:id", a.taskController.RemoveTask)
+				task.POST("", a.taskController.CreateTask)
+				task.DELETE("/:id", a.taskController.DeleteTask)
 				task.POST("/:id/start", a.taskController.StartTask)
 				task.POST("/:id/stop", a.taskController.StopTask)
 				task.POST("/:id/retry", a.taskController.RetryTask)
@@ -99,7 +99,7 @@ func (a *AppBase) setupRoutes() {
 			menu := authenticated.Group("/menu")
 			{
 				menu.GET("", a.menuController.GetMenuList)
-				menu.POST("", a.menuController.AddMenu)
+				menu.POST("", a.menuController.CreateMenu)
 				menu.PUT("", a.menuController.UpdateMenu)
 				menu.DELETE("/:id", a.menuController.DeleteMenu)
 				menu.GET("/page", a.menuController.GetMenuPage)
@@ -110,7 +110,7 @@ func (a *AppBase) setupRoutes() {
 			btnPerm := authenticated.Group("/btn-perms")
 			{
 				btnPerm.POST("", a.btnPermController.CreateBtnPerm)
-				btnPerm.GET("/detail", a.btnPermController.GetBtnPermByID)
+				btnPerm.GET("/:id", a.btnPermController.GetBtnPermByID)
 				btnPerm.PUT("", a.btnPermController.UpdateBtnPerm)
 				btnPerm.DELETE("", a.btnPermController.DeleteBtnPerm)
 				btnPerm.GET("", a.btnPermController.GetBtnPermList)

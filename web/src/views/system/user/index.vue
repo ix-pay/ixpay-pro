@@ -212,7 +212,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { Plus, Search, Refresh, User, SuccessFilled, CircleClose } from '@element-plus/icons-vue'
-import { getUserList, deleteUser, addUser, updateUserInfo, resetPassword } from '@/api/modules/user'
+import { getUserList, deleteUser, createUser, updateUserInfo, resetPassword } from '@/api/modules/user'
 import { getRolesList, type Role as RoleType } from '@/api/modules/role'
 
 defineOptions({
@@ -409,7 +409,7 @@ const handleSubmit = async () => {
       })
       ElMessage.success('更新成功')
     } else {
-      await addUser(userForm)
+      await createUser(userForm)
       ElMessage.success('添加成功')
     }
     dialogVisible.value = false

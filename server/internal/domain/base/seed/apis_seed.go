@@ -215,7 +215,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin/user/getSelfSetting",
+			Path:         "/api/admin/user/get-user-settings",
 			Method:       "GET",
 			Group:        "用户管理",
 			AuthRequired: true,
@@ -224,12 +224,12 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin/user/setSelfSetting",
+			Path:         "/api/admin/user/update-user-settings",
 			Method:       "PUT",
 			Group:        "用户管理",
 			AuthRequired: true,
 			AuthType:     0,
-			Description:  "设置用户个人设置",
+			Description:  "更新用户个人设置",
 			Status:       1,
 		},
 
@@ -307,7 +307,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin/roles/detail",
+			Path:         "/api/admin/roles/:id",
 			Method:       "GET",
 			Group:        "角色管理",
 			AuthRequired: true,
@@ -760,7 +760,7 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Status:       1,
 		},
 		{
-			Path:         "/api/admin/btn-perms/detail",
+			Path:         "/api/admin/btn-perms/:id",
 			Method:       "GET",
 			Group:        "按钮权限管理",
 			AuthRequired: true,

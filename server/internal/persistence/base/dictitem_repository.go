@@ -4,17 +4,18 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // dictItemModel 字典项数据库模型
 type dictItemModel struct {
 	database.SnowflakeBaseModel
-	DictID      int64  `gorm:"index"`
+	DictID      *int64 `gorm:"not null;default:0;index"`
 	ItemKey     string `gorm:"size:50;not null"`
 	ItemValue   string `gorm:"size:255"`
-	Sort        int    `gorm:"default:0"`
+	Sort        *int   `gorm:"not null;default:0"`
 	Description string `gorm:"size:255"`
-	Status      int    `gorm:"default:1"`
+	Status      *int   `gorm:"not null;default:1"`
 }
 
 // TableName 指定表名
@@ -27,18 +28,37 @@ func (m *dictItemModel) toDomain() *entity.DictItem {
 	if m == nil {
 		return nil
 	}
-	return &entity.DictItem{
-		ID:        m.ID,
-		DictID:    m.DictID,
-		ItemKey:   m.ItemKey,
-		ItemValue: m.ItemValue,
-		Sort:      m.Sort,
-		Status:    m.Status,
-		CreatedBy: m.CreatedBy,
-		CreatedAt: m.CreatedAt,
-		UpdatedBy: m.UpdatedBy,
-		UpdatedAt: m.UpdatedAt,
+	dictItem := &entity.DictItem{
+		ID:          m.ID,
+		ItemKey:     m.ItemKey,
+		ItemValue:   m.ItemValue,
+		Description: m.Description,
+		CreatedBy:   m.CreatedBy,
+		CreatedAt:   m.CreatedAt,
+		UpdatedBy:   m.UpdatedBy,
+		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.DictID != nil {
+		dictItem.DictID = *m.DictID
+	} else {
+		dictItem.DictID = 0
+	}
+
+	if m.Sort != nil {
+		dictItem.Sort = *m.Sort
+	} else {
+		dictItem.Sort = 0
+	}
+
+	if m.Status != nil {
+		dictItem.Status = *m.Status
+	} else {
+		dictItem.Status = 1
+	}
+
+	return dictItem
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -49,11 +69,11 @@ func fromDomainDictItem(dictItem *entity.DictItem) (*dictItemModel, error) {
 			CreatedBy: dictItem.CreatedBy,
 			UpdatedBy: dictItem.UpdatedBy,
 		},
-		DictID:    dictItem.DictID,
+		DictID:    common.Int64Ptr(dictItem.DictID),
 		ItemKey:   dictItem.ItemKey,
 		ItemValue: dictItem.ItemValue,
-		Sort:      dictItem.Sort,
-		Status:    dictItem.Status,
+		Sort:      common.IntPtr(dictItem.Sort),
+		Status:    common.IntPtr(dictItem.Status),
 	}, nil
 }
 

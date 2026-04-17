@@ -169,14 +169,14 @@ func convertToMenuResponseList(menus []*entity.Menu) []response.MenuResponse {
 // GetUserMenus 获取用户可访问的菜单列表
 func (s *MenuService) GetUserMenus(roleID int64) ([]response.MenuResponse, error) {
 	s.log.Info("获取用户菜单列表", "roleID", roleID)
-	
+
 	// 检查是否为管理员角色 (code: "admin")
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
 		s.log.Error("获取角色信息失败", "error", err, "roleID", roleID)
 		return nil, err
 	}
-	
+
 	var menus []*entity.Menu
 	// 如果是管理员角色，返回所有菜单
 	if role.Code == "admin" {

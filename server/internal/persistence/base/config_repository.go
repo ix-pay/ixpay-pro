@@ -4,6 +4,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // configModel 配置数据库模型
@@ -11,9 +12,9 @@ type configModel struct {
 	database.SnowflakeBaseModel
 	ConfigKey   string `gorm:"size:100;not null"`
 	ConfigValue string `gorm:"type:text"`
-	ConfigType  int    `gorm:"default:1"`
+	ConfigType  *int   `gorm:"not null;default:1"`
 	Description string `gorm:"size:255"`
-	Status      int    `gorm:"default:1"`
+	Status      *int   `gorm:"not null;default:1"`
 }
 
 // TableName 指定表名
@@ -26,18 +27,31 @@ func (m *configModel) toDomain() *entity.Config {
 	if m == nil {
 		return nil
 	}
-	return &entity.Config{
+	config := &entity.Config{
 		ID:          m.ID,
 		ConfigKey:   m.ConfigKey,
 		ConfigValue: m.ConfigValue,
-		ConfigType:  m.ConfigType,
 		Description: m.Description,
-		Status:      m.Status,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.ConfigType != nil {
+		config.ConfigType = *m.ConfigType
+	} else {
+		config.ConfigType = 1
+	}
+
+	if m.Status != nil {
+		config.Status = *m.Status
+	} else {
+		config.Status = 1
+	}
+
+	return config
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -50,9 +64,9 @@ func fromDomainConfig(config *entity.Config) (*configModel, error) {
 		},
 		ConfigKey:   config.ConfigKey,
 		ConfigValue: config.ConfigValue,
-		ConfigType:  config.ConfigType,
+		ConfigType:  common.IntPtr(config.ConfigType),
 		Description: config.Description,
-		Status:      config.Status,
+		Status:      common.IntPtr(config.Status),
 	}, nil
 }
 

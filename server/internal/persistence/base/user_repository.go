@@ -4,6 +4,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // userModel 数据库模型（带 GORM 标签）
@@ -15,12 +16,12 @@ type userModel struct {
 	Email         string `gorm:"size:100"`
 	Phone         string `gorm:"size:20"`
 	Avatar        string `gorm:"size:255"`
-	Status        int    `gorm:"default:1"`
-	Gender        int    `gorm:"default:0"`
+	Status        *int   `gorm:"not null;default:1"`
+	Gender        *int   `gorm:"not null;default:0"`
 	Birthday      string `gorm:"size:20"`
 	Address       string `gorm:"size:255"`
-	PositionID    int64  `gorm:"index"`
-	DepartmentID  int64  `gorm:"index"`
+	PositionID    *int64 `gorm:"not null;default:0;index"`
+	DepartmentID  *int64 `gorm:"not null;default:0;index"`
 	EntryDate     string `gorm:"size:20"`
 	LastLoginIP   string `gorm:"size:50"`
 	LastLoginTime string `gorm:"size:50"`
@@ -41,6 +42,10 @@ func (userModel) TableName() string {
 
 // toDomain 将数据库模型转换为领域实体
 func (m *userModel) toDomain() *entity.User {
+	if m == nil {
+		return nil
+	}
+
 	user := &entity.User{
 		ID:            m.ID,
 		Username:      m.Username,
@@ -49,12 +54,8 @@ func (m *userModel) toDomain() *entity.User {
 		Email:         m.Email,
 		Phone:         m.Phone,
 		Avatar:        m.Avatar,
-		Status:        m.Status,
-		Gender:        m.Gender,
 		Birthday:      m.Birthday,
 		Address:       m.Address,
-		PositionID:    m.PositionID,
-		DepartmentID:  m.DepartmentID,
 		EntryDate:     m.EntryDate,
 		LastLoginIP:   m.LastLoginIP,
 		LastLoginTime: m.LastLoginTime,
@@ -63,6 +64,31 @@ func (m *userModel) toDomain() *entity.User {
 		CreatedAt:     m.CreatedAt,
 		UpdatedBy:     m.UpdatedBy,
 		UpdatedAt:     m.UpdatedAt,
+	}
+
+	// 安全解引用，提供默认值
+	if m.Status != nil {
+		user.Status = *m.Status
+	} else {
+		user.Status = 1
+	}
+
+	if m.Gender != nil {
+		user.Gender = *m.Gender
+	} else {
+		user.Gender = 0
+	}
+
+	if m.PositionID != nil {
+		user.PositionID = *m.PositionID
+	} else {
+		user.PositionID = 0
+	}
+
+	if m.DepartmentID != nil {
+		user.DepartmentID = *m.DepartmentID
+	} else {
+		user.DepartmentID = 0
 	}
 
 	// 处理关联数据 - 部门
@@ -105,12 +131,12 @@ func fromDomain(user *entity.User) (*userModel, error) {
 		Email:         user.Email,
 		Phone:         user.Phone,
 		Avatar:        user.Avatar,
-		Status:        user.Status,
-		Gender:        user.Gender,
+		Status:        common.IntPtr(user.Status),
+		Gender:        common.IntPtr(user.Gender),
 		Birthday:      user.Birthday,
 		Address:       user.Address,
-		PositionID:    user.PositionID,
-		DepartmentID:  user.DepartmentID,
+		PositionID:    common.Int64Ptr(user.PositionID),
+		DepartmentID:  common.Int64Ptr(user.DepartmentID),
 		EntryDate:     user.EntryDate,
 		LastLoginIP:   user.LastLoginIP,
 		LastLoginTime: user.LastLoginTime,

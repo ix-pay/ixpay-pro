@@ -6,22 +6,23 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // taskExecutionLogModel 任务执行日志数据库模型
 type taskExecutionLogModel struct {
 	database.SnowflakeBaseModel
-	TaskID      int64  `gorm:"index;not null"`
+	TaskID      *int64 `gorm:"not null;default:0;index"`
 	TaskName    string `gorm:"size:100;not null"`
 	Group       string `gorm:"size:50;index"`
 	ExecuteAt   string `gorm:"size:50;index"`
-	Duration    int64  `gorm:"default:0"`
+	Duration    *int64 `gorm:"not null;default:0"`
 	Result      string `gorm:"size:20;index"`
 	ErrorInfo   string `gorm:"type:text"`
-	RetryCount  int    `gorm:"default:0"`
+	RetryCount  *int   `gorm:"not null;default:0"`
 	CronExpr    string `gorm:"size:100"`
 	TriggerType string `gorm:"size:20"`
-	OperatorID  int64  `gorm:"index"`
+	OperatorID  *int64 `gorm:"not null;default:0;index"`
 }
 
 // TableName 指定表名
@@ -36,17 +37,17 @@ func (m *taskExecutionLogModel) toDomain() *entity.TaskExecutionLog {
 	}
 	return &entity.TaskExecutionLog{
 		ID:          m.ID,
-		TaskID:      m.TaskID,
+		TaskID:      *m.TaskID,
 		TaskName:    m.TaskName,
 		Group:       m.Group,
 		ExecuteAt:   m.ExecuteAt,
-		Duration:    m.Duration,
+		Duration:    *m.Duration,
 		Result:      m.Result,
 		ErrorInfo:   m.ErrorInfo,
-		RetryCount:  m.RetryCount,
+		RetryCount:  *m.RetryCount,
 		CronExpr:    m.CronExpr,
 		TriggerType: m.TriggerType,
-		OperatorID:  m.OperatorID,
+		OperatorID:  *m.OperatorID,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
@@ -62,17 +63,17 @@ func fromDomainTaskExecutionLog(log *entity.TaskExecutionLog) (*taskExecutionLog
 			CreatedBy: log.CreatedBy,
 			UpdatedBy: log.UpdatedBy,
 		},
-		TaskID:      log.TaskID,
+		TaskID:      common.Int64Ptr(log.TaskID),
 		TaskName:    log.TaskName,
 		Group:       log.Group,
 		ExecuteAt:   log.ExecuteAt,
-		Duration:    log.Duration,
+		Duration:    common.Int64Ptr(log.Duration),
 		Result:      log.Result,
 		ErrorInfo:   log.ErrorInfo,
-		RetryCount:  log.RetryCount,
+		RetryCount:  common.IntPtr(log.RetryCount),
 		CronExpr:    log.CronExpr,
 		TriggerType: log.TriggerType,
-		OperatorID:  log.OperatorID,
+		OperatorID:  common.Int64Ptr(log.OperatorID),
 	}, nil
 }
 

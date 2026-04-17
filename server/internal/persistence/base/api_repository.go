@@ -4,6 +4,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // apiModel API 路由数据库模型
@@ -12,10 +13,10 @@ type apiModel struct {
 	Path         string `gorm:"size:255;not null"`
 	Method       string `gorm:"size:20;not null"`
 	Group        string `gorm:"size:50"`
-	AuthRequired bool   `gorm:"default:false"`
-	AuthType     int    `gorm:"default:1"`
+	AuthRequired *bool  `gorm:"not null;default:false"`
+	AuthType     *int   `gorm:"not null;default:0"`
 	Description  string `gorm:"size:255"`
-	Status       int    `gorm:"default:1"`
+	Status       *int   `gorm:"not null;default:1"`
 }
 
 // TableName 指定表名
@@ -28,20 +29,39 @@ func (m *apiModel) toDomain() *entity.API {
 	if m == nil {
 		return nil
 	}
-	return &entity.API{
-		ID:           m.ID,
-		Path:         m.Path,
-		Method:       m.Method,
-		Group:        m.Group,
-		AuthRequired: m.AuthRequired,
-		AuthType:     m.AuthType,
-		Description:  m.Description,
-		Status:       m.Status,
-		CreatedBy:    m.CreatedBy,
-		CreatedAt:    m.CreatedAt,
-		UpdatedBy:    m.UpdatedBy,
-		UpdatedAt:    m.UpdatedAt,
+
+	api := &entity.API{
+		ID:          m.ID,
+		Path:        m.Path,
+		Method:      m.Method,
+		Group:       m.Group,
+		Description: m.Description,
+		CreatedBy:   m.CreatedBy,
+		CreatedAt:   m.CreatedAt,
+		UpdatedBy:   m.UpdatedBy,
+		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.AuthRequired != nil {
+		api.AuthRequired = *m.AuthRequired
+	} else {
+		api.AuthRequired = false
+	}
+
+	if m.AuthType != nil {
+		api.AuthType = *m.AuthType
+	} else {
+		api.AuthType = 0 // 默认值为 0（不需要授权）
+	}
+
+	if m.Status != nil {
+		api.Status = *m.Status
+	} else {
+		api.Status = 1 // 默认值为 1（启用）
+	}
+
+	return api
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -55,10 +75,10 @@ func fromDomainAPI(api *entity.API) (*apiModel, error) {
 		Path:         api.Path,
 		Method:       api.Method,
 		Group:        api.Group,
-		AuthRequired: api.AuthRequired,
-		AuthType:     api.AuthType,
+		AuthRequired: common.BoolPtr(api.AuthRequired),
+		AuthType:     common.IntPtr(api.AuthType),
 		Description:  api.Description,
-		Status:       api.Status,
+		Status:       common.IntPtr(api.Status),
 	}, nil
 }
 
@@ -126,6 +146,7 @@ func (r *apiRepository) Create(route *entity.API) error {
 		return err
 	}
 
+	// 使用 Create 直接插入，指针类型会自动包含零值
 	if err := r.db.Create(dbModel).Error; err != nil {
 		return err
 	}
@@ -142,6 +163,7 @@ func (r *apiRepository) Update(route *entity.API) error {
 		return err
 	}
 
+	// 使用 Save 更新，指针类型会自动包含零值
 	return r.db.Save(dbModel).Error
 }
 

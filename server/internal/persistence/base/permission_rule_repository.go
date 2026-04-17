@@ -6,6 +6,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // permissionRuleModel 权限规则数据库模型
@@ -17,9 +18,9 @@ type permissionRuleModel struct {
 	APIPath     string `gorm:"size:255;not null"`
 	Method      string `gorm:"size:20;not null"`
 	Conditions  string `gorm:"type:text"`
-	Status      int    `gorm:"default:1"`
-	Sort        int    `gorm:"default:0"`
-	IsSystem    bool   `gorm:"default:false"`
+	Status      *int   `gorm:"not null;default:1"`
+	Sort        *int   `gorm:"not null;default:0"`
+	IsSystem    *bool  `gorm:"not null;default:false"`
 }
 
 // TableName 指定表名
@@ -38,7 +39,7 @@ func (m *permissionRuleModel) toDomain() *entity.PermissionRule {
 		json.Unmarshal([]byte(m.Conditions), &attributes)
 	}
 
-	return &entity.PermissionRule{
+	rule := &entity.PermissionRule{
 		ID:          m.ID,
 		Name:        m.Name,
 		Description: m.Description,
@@ -47,14 +48,32 @@ func (m *permissionRuleModel) toDomain() *entity.PermissionRule {
 		Method:      m.Method,
 		Conditions:  m.Conditions,
 		Attributes:  attributes,
-		Status:      m.Status,
-		Sort:        m.Sort,
-		IsSystem:    m.IsSystem,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.Status != nil {
+		rule.Status = *m.Status
+	} else {
+		rule.Status = 1
+	}
+
+	if m.Sort != nil {
+		rule.Sort = *m.Sort
+	} else {
+		rule.Sort = 0
+	}
+
+	if m.IsSystem != nil {
+		rule.IsSystem = *m.IsSystem
+	} else {
+		rule.IsSystem = false
+	}
+
+	return rule
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -80,9 +99,9 @@ func fromDomainPermissionRule(rule *entity.PermissionRule) (*permissionRuleModel
 		APIPath:     rule.APIPath,
 		Method:      rule.Method,
 		Conditions:  conditionsJSON,
-		Status:      rule.Status,
-		Sort:        rule.Sort,
-		IsSystem:    rule.IsSystem,
+		Status:      common.IntPtr(rule.Status),
+		Sort:        common.IntPtr(rule.Sort),
+		IsSystem:    common.BoolPtr(rule.IsSystem),
 	}, nil
 }
 

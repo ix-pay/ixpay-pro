@@ -6,6 +6,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // noticeModel 公告数据库模型
@@ -13,13 +14,13 @@ type noticeModel struct {
 	database.SnowflakeBaseModel
 	Title       string     `gorm:"size:200;not null"`
 	Content     string     `gorm:"type:text;not null"`
-	Type        int        `gorm:"default:1"`
-	Status      int        `gorm:"default:0"`
-	PublisherID int64      `gorm:"index"`
+	Type        *int       `gorm:"not null;default:1"`
+	Status      *int       `gorm:"not null;default:0"`
+	PublisherID *int64     `gorm:"not null;default:0;index"`
 	PublishTime *time.Time `gorm:"index"`
-	ViewCount   int64      `gorm:"default:0"`
-	IsTop       bool       `gorm:"default:false"`
-	Sort        int        `gorm:"default:0"`
+	ViewCount   *int64     `gorm:"not null;default:0"`
+	IsTop       *bool      `gorm:"not null;default:false"`
+	Sort        *int       `gorm:"not null;default:0"`
 	Description string     `gorm:"size:500"`
 }
 
@@ -37,13 +38,13 @@ func (m *noticeModel) toDomain() *entity.Notice {
 		ID:          m.ID,
 		Title:       m.Title,
 		Content:     m.Content,
-		Type:        entity.NoticeType(m.Type),
-		Status:      entity.NoticeStatus(m.Status),
-		PublisherID: m.PublisherID,
+		Type:        entity.NoticeType(*m.Type),
+		Status:      entity.NoticeStatus(*m.Status),
+		PublisherID: *m.PublisherID,
 		PublishTime: m.PublishTime,
-		ViewCount:   m.ViewCount,
-		IsTop:       m.IsTop,
-		Sort:        m.Sort,
+		ViewCount:   *m.ViewCount,
+		IsTop:       *m.IsTop,
+		Sort:        *m.Sort,
 		Description: m.Description,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
@@ -62,13 +63,13 @@ func fromDomainNotice(notice *entity.Notice) (*noticeModel, error) {
 		},
 		Title:       notice.Title,
 		Content:     notice.Content,
-		Type:        int(notice.Type),
-		Status:      int(notice.Status),
-		PublisherID: notice.PublisherID,
+		Type:        common.IntPtr(int(notice.Type)),
+		Status:      common.IntPtr(int(notice.Status)),
+		PublisherID: common.Int64Ptr(notice.PublisherID),
 		PublishTime: notice.PublishTime,
-		ViewCount:   notice.ViewCount,
-		IsTop:       notice.IsTop,
-		Sort:        notice.Sort,
+		ViewCount:   common.Int64Ptr(notice.ViewCount),
+		IsTop:       common.BoolPtr(notice.IsTop),
+		Sort:        common.IntPtr(notice.Sort),
 		Description: notice.Description,
 	}, nil
 }
@@ -76,8 +77,8 @@ func fromDomainNotice(notice *entity.Notice) (*noticeModel, error) {
 // noticeReadRecordModel 公告阅读记录数据库模型
 type noticeReadRecordModel struct {
 	database.SnowflakeBaseModel
-	NoticeID int64     `gorm:"index;not null"`
-	UserID   int64     `gorm:"index;not null"`
+	NoticeID *int64    `gorm:"not null;default:0;index"`
+	UserID   *int64    `gorm:"not null;default:0;index"`
 	ReadTime time.Time `gorm:"autoCreateTime"`
 }
 
@@ -93,8 +94,8 @@ func (m *noticeReadRecordModel) toDomain() *entity.NoticeReadRecord {
 	}
 	return &entity.NoticeReadRecord{
 		ID:       m.ID,
-		NoticeID: m.NoticeID,
-		UserID:   m.UserID,
+		NoticeID: *m.NoticeID,
+		UserID:   *m.UserID,
 		ReadTime: m.ReadTime,
 	}
 }
@@ -105,8 +106,8 @@ func fromDomainNoticeReadRecord(record *entity.NoticeReadRecord) (*noticeReadRec
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
 			ID: record.ID,
 		},
-		NoticeID: record.NoticeID,
-		UserID:   record.UserID,
+		NoticeID: common.Int64Ptr(record.NoticeID),
+		UserID:   common.Int64Ptr(record.UserID),
 		ReadTime: record.ReadTime,
 	}, nil
 }
@@ -200,7 +201,7 @@ func (r *noticeRepository) GetPublishedList(page, pageSize int, filters map[stri
 	var total int64
 	var dbModels []noticeModel
 
-	query := r.db.Model(&noticeModel{}).Where("status = ?", 1)
+	query := r.db.Model(&noticeModel{}).Where("status = ?", common.IntPtr(1))
 
 	// 应用过滤条件
 	for key, value := range filters {
@@ -239,17 +240,17 @@ func (r *noticeRepository) GetStatistics() (*entity.NoticeStatistics, error) {
 	}
 
 	// 已发布
-	if err := r.db.Model(&noticeModel{}).Where("status = ?", 1).Count(&published).Error; err != nil {
+	if err := r.db.Model(&noticeModel{}).Where("status = ?", common.IntPtr(1)).Count(&published).Error; err != nil {
 		return nil, err
 	}
 
 	// 草稿
-	if err := r.db.Model(&noticeModel{}).Where("status = ?", 0).Count(&draft).Error; err != nil {
+	if err := r.db.Model(&noticeModel{}).Where("status = ?", common.IntPtr(0)).Count(&draft).Error; err != nil {
 		return nil, err
 	}
 
 	// 已归档
-	if err := r.db.Model(&noticeModel{}).Where("status = ?", 2).Count(&archived).Error; err != nil {
+	if err := r.db.Model(&noticeModel{}).Where("status = ?", common.IntPtr(2)).Count(&archived).Error; err != nil {
 		return nil, err
 	}
 
@@ -304,7 +305,7 @@ func (r *noticeReadRecordRepository) CreateOrUpdate(noticeID, userID int64) erro
 // GetByNoticeIDAndUserID 根据公告 ID 和用户 ID 查询阅读记录
 func (r *noticeReadRecordRepository) GetByNoticeIDAndUserID(noticeID, userID int64) (*entity.NoticeReadRecord, error) {
 	var dbModel noticeReadRecordModel
-	result := r.db.Where("notice_id = ? AND user_id = ?", noticeID, userID).First(&dbModel)
+	result := r.db.Where("notice_id = ? AND user_id = ?", common.Int64Ptr(noticeID), common.Int64Ptr(userID)).First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -315,7 +316,7 @@ func (r *noticeReadRecordRepository) GetByNoticeIDAndUserID(noticeID, userID int
 // GetReadUserCount 获取公告的阅读用户数
 func (r *noticeReadRecordRepository) GetReadUserCount(noticeID int64) (int64, error) {
 	var count int64
-	result := r.db.Model(&noticeReadRecordModel{}).Where("notice_id = ?", noticeID).Count(&count)
+	result := r.db.Model(&noticeReadRecordModel{}).Where("notice_id = ?", common.Int64Ptr(noticeID)).Count(&count)
 	if result.Error != nil {
 		return 0, result.Error
 	}

@@ -4,14 +4,15 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // positionModel 岗位数据库模型
 type positionModel struct {
 	database.SnowflakeBaseModel
 	Name        string `gorm:"size:50;not null"`
-	Sort        int    `gorm:"default:0"`
-	Status      int    `gorm:"default:1"`
+	Sort        *int   `gorm:"not null;default:0"`
+	Status      *int   `gorm:"not null;default:1"`
 	Description string `gorm:"size:255"`
 }
 
@@ -25,17 +26,30 @@ func (m *positionModel) toDomain() *entity.Position {
 	if m == nil {
 		return nil
 	}
-	return &entity.Position{
+	position := &entity.Position{
 		ID:          m.ID,
 		Name:        m.Name,
-		Sort:        m.Sort,
-		Status:      m.Status,
 		Description: m.Description,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.Sort != nil {
+		position.Sort = *m.Sort
+	} else {
+		position.Sort = 0
+	}
+
+	if m.Status != nil {
+		position.Status = *m.Status
+	} else {
+		position.Status = 1
+	}
+
+	return position
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -47,8 +61,8 @@ func fromDomainPosition(pos *entity.Position) (*positionModel, error) {
 			UpdatedBy: pos.UpdatedBy,
 		},
 		Name:        pos.Name,
-		Sort:        pos.Sort,
-		Status:      pos.Status,
+		Sort:        common.IntPtr(pos.Sort),
+		Status:      common.IntPtr(pos.Status),
 		Description: pos.Description,
 	}, nil
 }

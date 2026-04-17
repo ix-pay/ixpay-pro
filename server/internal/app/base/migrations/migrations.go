@@ -102,7 +102,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_organizations表创建成功")
 	}
 
-	// 创建users表
+	// 创建 users 表
 	createUsersTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_users (
 		id BIGINT PRIMARY KEY,
@@ -113,24 +113,24 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		phone VARCHAR(20),
 		avatar VARCHAR(255),
 		wechat_open_id VARCHAR(100),
-		status INTEGER DEFAULT 1,
-		gender INTEGER DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		gender INTEGER NOT NULL DEFAULT 0,
 		birthday VARCHAR(20),
 		address VARCHAR(255),
-		position_id BIGINT DEFAULT 0,
-		department_id BIGINT DEFAULT 0,
+		position_id BIGINT NOT NULL DEFAULT 0,
+		department_id BIGINT NOT NULL DEFAULT 0,
 		entry_date VARCHAR(20),
 		last_login_ip VARCHAR(50),
 		last_login_time VARCHAR(50),
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
 	);
 	
-	-- 创建wechat_open_id的部分唯一索引，只对非空值应用唯一约束
+	-- 创建 wechat_open_id 的部分唯一索引，只对非空值应用唯一约束
 	CREATE UNIQUE INDEX IF NOT EXISTS idx_base_users_wechat_open_id ON base_users(wechat_open_id) WHERE wechat_open_id IS NOT NULL;
 	`
 
@@ -140,21 +140,21 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_users表创建成功")
 	}
 
-	// 创建roles表
+	// 创建 roles 表
 	createRolesTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_roles (
 		id BIGINT PRIMARY KEY,
 		name VARCHAR(50) UNIQUE NOT NULL,
 		code VARCHAR(50) UNIQUE NOT NULL,
 		description VARCHAR(255),
-		type INTEGER DEFAULT 1,
-		parent_id BIGINT DEFAULT 0,
-		status INTEGER DEFAULT 1,
-		is_system BOOLEAN DEFAULT false,
-		sort INTEGER DEFAULT 0,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		type INTEGER NOT NULL DEFAULT 1,
+		parent_id BIGINT NOT NULL DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		is_system BOOLEAN NOT NULL DEFAULT false,
+		sort INTEGER NOT NULL DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -188,29 +188,29 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createMenusTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_menus (
 		id BIGINT PRIMARY KEY,
-		parent_id BIGINT DEFAULT 0,
+		parent_id BIGINT NOT NULL DEFAULT 0,
 		path VARCHAR(255) NOT NULL,
 		name VARCHAR(100) NOT NULL UNIQUE,
 		component VARCHAR(255),
 		title VARCHAR(50) NOT NULL,
 		icon VARCHAR(50),
-		hidden BOOLEAN DEFAULT false,
-		sort INTEGER DEFAULT 0,
-		status INTEGER DEFAULT 1,
-		is_ext BOOLEAN DEFAULT false,
+		hidden BOOLEAN NOT NULL DEFAULT false,
+		sort INTEGER NOT NULL DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		is_ext BOOLEAN NOT NULL DEFAULT false,
 		redirect VARCHAR(100),
 		permission VARCHAR(100),
-		keep_alive BOOLEAN DEFAULT false,
-		default_menu BOOLEAN DEFAULT false,
-		breadcrumb BOOLEAN DEFAULT true,
+		keep_alive BOOLEAN NOT NULL DEFAULT false,
+		default_menu BOOLEAN NOT NULL DEFAULT false,
+		breadcrumb BOOLEAN NOT NULL DEFAULT true,
 		active_menu VARCHAR(255),
-		affix BOOLEAN DEFAULT false,
-		type INTEGER DEFAULT 2,
+		affix BOOLEAN NOT NULL DEFAULT false,
+		type INTEGER NOT NULL DEFAULT 2,
 		frame_src VARCHAR(255),
-		frame_loading BOOLEAN DEFAULT true,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		frame_loading BOOLEAN NOT NULL DEFAULT true,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -230,13 +230,13 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		path VARCHAR(255) NOT NULL,
 		method VARCHAR(20) NOT NULL,
 		"group" VARCHAR(50),
-		auth_required BOOLEAN DEFAULT false,
-		auth_type INTEGER DEFAULT 1,
+		auth_required BOOLEAN NOT NULL DEFAULT false,
+		auth_type INTEGER NOT NULL DEFAULT 0,
 		description VARCHAR(255),
-		status INTEGER DEFAULT 1,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP,
@@ -254,14 +254,14 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createBtnPermsTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_btn_perms (
 		id BIGINT PRIMARY KEY,
-		menu_id BIGINT,
+		menu_id BIGINT NOT NULL DEFAULT 0,
 		code VARCHAR(100) NOT NULL UNIQUE,
 		name VARCHAR(50) NOT NULL,
 		description VARCHAR(255),
-		status INTEGER DEFAULT 1,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP,
@@ -297,10 +297,10 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	CREATE TABLE IF NOT EXISTS base_role_api_routes (
 		role_id BIGINT NOT NULL,
 		route_id BIGINT NOT NULL,
-		source INTEGER DEFAULT 1,
+		source INTEGER NOT NULL DEFAULT 1,
 		note VARCHAR(255),
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		PRIMARY KEY (role_id, route_id),
@@ -394,10 +394,10 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		dict_code VARCHAR(100) UNIQUE NOT NULL,
 		dict_name VARCHAR(100) NOT NULL,
 		description VARCHAR(255),
-		status INTEGER DEFAULT 1,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -414,15 +414,15 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createDictItemsTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_dict_items (
 		id BIGINT PRIMARY KEY,
-		dict_id BIGINT NOT NULL,
+		dict_id BIGINT NOT NULL DEFAULT 0,
 		item_key VARCHAR(50) NOT NULL,
 		item_value VARCHAR(255),
-		sort INTEGER DEFAULT 0,
-		status INTEGER DEFAULT 1,
+		sort INTEGER NOT NULL DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
 		description VARCHAR(255),
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP,
@@ -453,10 +453,10 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createOperationLogsTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_operation_logs (
 		id BIGINT PRIMARY KEY,
-		user_id BIGINT DEFAULT 0,
+		user_id BIGINT NOT NULL DEFAULT 0,
 		userName VARCHAR(50),
 		nickname VARCHAR(50),
-		operation_type SMALLINT DEFAULT 0,
+		operation_type SMALLINT NOT NULL DEFAULT 0,
 		module VARCHAR(50),
 		description VARCHAR(255),
 		method VARCHAR(20),
@@ -464,15 +464,15 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		params TEXT,
 		client_ip VARCHAR(50),
 		user_agent TEXT,
-		status_code INT DEFAULT 0,
+		status_code INT NOT NULL DEFAULT 200,
 		result TEXT,
-		duration BIGINT DEFAULT 0,
+		duration BIGINT NOT NULL DEFAULT 0,
 		error_message TEXT,
-		is_success BOOLEAN DEFAULT true,
+		is_success BOOLEAN NOT NULL DEFAULT true,
 		execute_time TIMESTAMP NOT NULL DEFAULT NOW(),
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -507,7 +507,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	createLoginLogsTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_login_logs (
 		id BIGINT PRIMARY KEY,
-		user_id BIGINT NOT NULL,
+		user_id BIGINT NOT NULL DEFAULT 0,
 		userName VARCHAR(50),
 		login_ip VARCHAR(50),
 		login_time TIMESTAMP NOT NULL,
@@ -515,12 +515,12 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		device VARCHAR(100),
 		browser VARCHAR(50),
 		os VARCHAR(50),
-		result SMALLINT DEFAULT 1,
+		result SMALLINT NOT NULL DEFAULT 1,
 		error_msg TEXT,
 		user_agent TEXT,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -554,12 +554,12 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		id BIGINT PRIMARY KEY,
 		config_key VARCHAR(100) UNIQUE NOT NULL,
 		config_value TEXT,
-		config_type VARCHAR(20),
+		config_type INTEGER NOT NULL DEFAULT 1,
 		description VARCHAR(255),
-		status INTEGER DEFAULT 1,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -580,16 +580,16 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		task_name VARCHAR(200) NOT NULL,
 		"group" VARCHAR(100),
 		execute_at TIMESTAMP NOT NULL,
-		duration BIGINT NOT NULL,
+		duration BIGINT NOT NULL DEFAULT 0,
 		result VARCHAR(20) NOT NULL,
 		error_info TEXT,
-		retry_count INTEGER DEFAULT 0,
+		retry_count INTEGER NOT NULL DEFAULT 0,
 		cron_expr VARCHAR(100),
 		trigger_type VARCHAR(50) NOT NULL,
-		operator_id BIGINT DEFAULT 0,
-		created_by BIGINT DEFAULT 0,
-		updated_by BIGINT DEFAULT 0,
-		deleted_by BIGINT DEFAULT 0,
+		operator_id BIGINT NOT NULL DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 		deleted_at TIMESTAMP
@@ -618,6 +618,194 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 
 	// 创建权限审计日志表
 	CreatePermissionLogsTable(db, log)
+
+	// 创建部门表
+	createDepartmentsTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_departments (
+		id BIGINT PRIMARY KEY,
+		name VARCHAR(100) NOT NULL,
+		parent_id BIGINT NOT NULL DEFAULT 0,
+		leader_id BIGINT NOT NULL DEFAULT 0,
+		sort INTEGER NOT NULL DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		description VARCHAR(255),
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	
+	CREATE INDEX IF NOT EXISTS idx_base_departments_parent_id ON base_departments(parent_id);
+	CREATE INDEX IF NOT EXISTS idx_base_departments_leader_id ON base_departments(leader_id);
+	`
+
+	if err := db.Exec(createDepartmentsTableSQL).Error; err != nil {
+		log.Error("创建 base_departments 表失败", "error", err)
+	} else {
+		log.Info("base_departments 表创建成功")
+	}
+
+	// 创建职位表
+	createPositionsTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_positions (
+		id BIGINT PRIMARY KEY,
+		name VARCHAR(50) NOT NULL,
+		sort INTEGER NOT NULL DEFAULT 0,
+		status INTEGER NOT NULL DEFAULT 1,
+		description VARCHAR(255),
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	`
+
+	if err := db.Exec(createPositionsTableSQL).Error; err != nil {
+		log.Error("创建 base_positions 表失败", "error", err)
+	} else {
+		log.Info("base_positions 表创建成功")
+	}
+
+	// 创建用户设置表
+	createUserSettingsTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_user_settings (
+		id BIGINT PRIMARY KEY,
+		user_id BIGINT UNIQUE NOT NULL,
+		theme_color VARCHAR(20),
+		sidebar_color VARCHAR(20),
+		navbar_color VARCHAR(20),
+		font_size INTEGER NOT NULL DEFAULT 14,
+		language VARCHAR(20) DEFAULT 'zh-CN',
+		auto_login BOOLEAN NOT NULL DEFAULT false,
+		remember_password BOOLEAN NOT NULL DEFAULT false,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	
+	CREATE UNIQUE INDEX IF NOT EXISTS idx_base_user_settings_user_id ON base_user_settings(user_id);
+	`
+
+	if err := db.Exec(createUserSettingsTableSQL).Error; err != nil {
+		log.Error("创建 base_user_settings 表失败", "error", err)
+	} else {
+		log.Info("base_user_settings 表创建成功")
+	}
+
+	// 创建权限规则表
+	createPermissionRulesTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_permission_rules (
+		id BIGINT PRIMARY KEY,
+		name VARCHAR(100) UNIQUE NOT NULL,
+		description VARCHAR(500),
+		effect VARCHAR(10) NOT NULL,
+		api_path VARCHAR(255) NOT NULL,
+		method VARCHAR(20) NOT NULL,
+		conditions TEXT,
+		status INTEGER NOT NULL DEFAULT 1,
+		sort INTEGER NOT NULL DEFAULT 0,
+		is_system BOOLEAN NOT NULL DEFAULT false,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	`
+
+	if err := db.Exec(createPermissionRulesTableSQL).Error; err != nil {
+		log.Error("创建 base_permission_rules 表失败", "error", err)
+	} else {
+		log.Info("base_permission_rules 表创建成功")
+	}
+
+	// 创建权限组表
+	createPermissionGroupsTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_permission_groups (
+		id BIGINT PRIMARY KEY,
+		name VARCHAR(100) UNIQUE NOT NULL,
+		description VARCHAR(500),
+		status INTEGER NOT NULL DEFAULT 1,
+		sort INTEGER NOT NULL DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	`
+
+	if err := db.Exec(createPermissionGroupsTableSQL).Error; err != nil {
+		log.Error("创建 base_permission_groups 表失败", "error", err)
+	} else {
+		log.Info("base_permission_groups 表创建成功")
+	}
+
+	// 创建公告表
+	createNoticesTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_notices (
+		id BIGINT PRIMARY KEY,
+		title VARCHAR(200) NOT NULL,
+		content TEXT NOT NULL,
+		type INTEGER NOT NULL DEFAULT 1,
+		status INTEGER NOT NULL DEFAULT 0,
+		publisher_id BIGINT NOT NULL DEFAULT 0,
+		publish_time TIMESTAMP,
+		view_count BIGINT NOT NULL DEFAULT 0,
+		is_top BOOLEAN NOT NULL DEFAULT false,
+		sort INTEGER NOT NULL DEFAULT 0,
+		description VARCHAR(500),
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	
+	CREATE INDEX IF NOT EXISTS idx_base_notices_publisher_id ON base_notices(publisher_id);
+	CREATE INDEX IF NOT EXISTS idx_base_notices_publish_time ON base_notices(publish_time);
+	`
+
+	if err := db.Exec(createNoticesTableSQL).Error; err != nil {
+		log.Error("创建 base_notices 表失败", "error", err)
+	} else {
+		log.Info("base_notices 表创建成功")
+	}
+
+	// 创建公告阅读记录表
+	createNoticeReadRecordsTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_notice_read_records (
+		id BIGINT PRIMARY KEY,
+		notice_id BIGINT NOT NULL DEFAULT 0,
+		user_id BIGINT NOT NULL DEFAULT 0,
+		read_time TIMESTAMP NOT NULL DEFAULT NOW(),
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	
+	CREATE INDEX IF NOT EXISTS idx_base_notice_read_records_notice_id ON base_notice_read_records(notice_id);
+	CREATE INDEX IF NOT EXISTS idx_base_notice_read_records_user_id ON base_notice_read_records(user_id);
+	`
+
+	if err := db.Exec(createNoticeReadRecordsTableSQL).Error; err != nil {
+		log.Error("创建 base_notice_read_records 表失败", "error", err)
+	} else {
+		log.Info("base_notice_read_records 表创建成功")
+	}
 
 	log.Info("base 应用数据库迁移完成")
 }

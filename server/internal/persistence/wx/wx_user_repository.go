@@ -6,6 +6,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // wxUserModel 微信用户数据库模型
@@ -15,16 +16,16 @@ type wxUserModel struct {
 	UnionID       string     `gorm:"size:100;uniqueIndex"`
 	Nickname      string     `gorm:"size:100"`
 	Avatar        string     `gorm:"size:255"`
-	Gender        int        `gorm:"default:0"`
+	Gender        *int       `gorm:"not null;default:0"`
 	Country       string     `gorm:"size:50"`
 	Province      string     `gorm:"size:50"`
 	City          string     `gorm:"size:50"`
 	Language      string     `gorm:"size:20"`
-	Subscribe     bool       `gorm:"default:false"`
+	Subscribe     *bool      `gorm:"not null;default:false"`
 	SubscribeTime *time.Time `gorm:"index"`
 	Remark        string     `gorm:"size:255"`
-	GroupID       int64      `gorm:"default:0"`
-	UserID        int64      `gorm:"index"`
+	GroupID       *int64     `gorm:"not null;default:0"`
+	UserID        *int64     `gorm:"not null;default:0;index"`
 }
 
 // TableName 指定表名
@@ -43,16 +44,16 @@ func (m *wxUserModel) toDomain() *entity.WXUser {
 		UnionID:       m.UnionID,
 		Nickname:      m.Nickname,
 		Avatar:        m.Avatar,
-		Gender:        m.Gender,
+		Gender:        *m.Gender,
 		Country:       m.Country,
 		Province:      m.Province,
 		City:          m.City,
 		Language:      m.Language,
-		Subscribe:     m.Subscribe,
+		Subscribe:     *m.Subscribe,
 		SubscribeTime: m.SubscribeTime,
 		Remark:        m.Remark,
-		GroupID:       m.GroupID,
-		UserID:        m.UserID,
+		GroupID:       *m.GroupID,
+		UserID:        *m.UserID,
 		CreatedAt:     m.CreatedAt,
 		UpdatedAt:     m.UpdatedAt,
 	}
@@ -70,16 +71,16 @@ func fromDomainWXUser(user *entity.WXUser) (*wxUserModel, error) {
 		UnionID:       user.UnionID,
 		Nickname:      user.Nickname,
 		Avatar:        user.Avatar,
-		Gender:        user.Gender,
+		Gender:        common.IntPtr(user.Gender),
 		Country:       user.Country,
 		Province:      user.Province,
 		City:          user.City,
 		Language:      user.Language,
-		Subscribe:     user.Subscribe,
+		Subscribe:     common.BoolPtr(user.Subscribe),
 		SubscribeTime: user.SubscribeTime,
 		Remark:        user.Remark,
-		GroupID:       user.GroupID,
-		UserID:        user.UserID,
+		GroupID:       common.Int64Ptr(user.GroupID),
+		UserID:        common.Int64Ptr(user.UserID),
 	}, nil
 }
 

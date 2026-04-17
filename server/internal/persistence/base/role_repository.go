@@ -4,6 +4,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // roleModel 角色数据库模型
@@ -12,11 +13,11 @@ type roleModel struct {
 	Name        string `gorm:"size:50;not null;unique"`
 	Code        string `gorm:"size:50;not null;unique"`
 	Description string `gorm:"size:255"`
-	Type        int    `gorm:"default:1"`
-	ParentID    int64  `gorm:"default:0"`
-	Status      int    `gorm:"default:1"`
-	IsSystem    bool   `gorm:"default:false"`
-	Sort        int    `gorm:"default:0"`
+	Type        *int   `gorm:"not null;default:1"`
+	ParentID    *int64 `gorm:"not null;default:0"`
+	Status      *int   `gorm:"not null;default:1"`
+	IsSystem    *bool  `gorm:"not null;default:false"`
+	Sort        *int   `gorm:"not null;default:0"`
 
 	// GORM 关联关系 - 多对多（通过中间表）
 	Users []*userModel `gorm:"many2many:base_role_users;joinForeignKey:role_id;joinReferences:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
@@ -64,7 +65,7 @@ func (roleMenuModel) TableName() string {
 type roleAPIRouteModel struct {
 	RoleID  int64  `gorm:"not null;index"`
 	RouteID int64  `gorm:"not null;index"`
-	Source  int    `gorm:"default:1"`
+	Source  *int   `gorm:"not null;default:1"`
 	Note    string `gorm:"size:255"`
 }
 
@@ -93,15 +94,41 @@ func (m *roleModel) toDomain() *entity.Role {
 		ID:        m.ID,
 		Name:      m.Name,
 		Code:      m.Code,
-		Type:      m.Type,
-		ParentID:  m.ParentID,
-		Status:    m.Status,
-		IsSystem:  m.IsSystem,
-		Sort:      m.Sort,
 		CreatedBy: m.CreatedBy,
 		CreatedAt: m.CreatedAt,
 		UpdatedBy: m.UpdatedBy,
 		UpdatedAt: m.UpdatedAt,
+	}
+
+	// 安全解引用，提供默认值
+	if m.Type != nil {
+		role.Type = *m.Type
+	} else {
+		role.Type = 1
+	}
+
+	if m.ParentID != nil {
+		role.ParentID = *m.ParentID
+	} else {
+		role.ParentID = 0
+	}
+
+	if m.Status != nil {
+		role.Status = *m.Status
+	} else {
+		role.Status = 1
+	}
+
+	if m.IsSystem != nil {
+		role.IsSystem = *m.IsSystem
+	} else {
+		role.IsSystem = false
+	}
+
+	if m.Sort != nil {
+		role.Sort = *m.Sort
+	} else {
+		role.Sort = 0
 	}
 
 	// ⭐ 处理关联数据 - 用户（同时填充 UserIds 和 Users）
@@ -180,11 +207,11 @@ func fromDomainRole(role *entity.Role) (*roleModel, error) {
 		Name:        role.Name,
 		Code:        role.Code,
 		Description: role.Description,
-		Type:        role.Type,
-		ParentID:    role.ParentID,
-		Status:      role.Status,
-		IsSystem:    role.IsSystem,
-		Sort:        role.Sort,
+		Type:        common.IntPtr(role.Type),
+		ParentID:    common.Int64Ptr(role.ParentID),
+		Status:      common.IntPtr(role.Status),
+		IsSystem:    common.BoolPtr(role.IsSystem),
+		Sort:        common.IntPtr(role.Sort),
 	}, nil
 }
 
@@ -469,7 +496,7 @@ func (r *roleRepository) AddToRole(roleID, routeID int64) error {
 	model := &roleAPIRouteModel{
 		RoleID:  roleID,
 		RouteID: routeID,
-		Source:  1, // 1-直接授权
+		Source:  common.IntPtr(1), // 1-直接授权
 	}
 
 	return r.db.Create(model).Error

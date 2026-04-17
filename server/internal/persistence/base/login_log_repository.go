@@ -6,12 +6,13 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // loginLogModel 登录日志数据库模型
 type loginLogModel struct {
 	database.SnowflakeBaseModel
-	UserID     int64     `gorm:"index"`
+	UserID     *int64    `gorm:"not null;default:0;index"`
 	Username   string    `gorm:"size:50;not null"`
 	LoginIP    string    `gorm:"size:50"`
 	LoginTime  time.Time `gorm:"index"`
@@ -19,7 +20,7 @@ type loginLogModel struct {
 	Device     string    `gorm:"size:50"`
 	Browser    string    `gorm:"size:50"`
 	OS         string    `gorm:"size:50"`
-	Result     int       `gorm:"default:1"`
+	Result     *int      `gorm:"not null;default:1"`
 	ErrorMsg   string    `gorm:"size:500"`
 	UserAgent  string    `gorm:"size:500"`
 }
@@ -34,9 +35,8 @@ func (m *loginLogModel) toDomain() *entity.LoginLog {
 	if m == nil {
 		return nil
 	}
-	return &entity.LoginLog{
+	log := &entity.LoginLog{
 		ID:         m.ID,
-		UserID:     m.UserID,
 		Username:   m.Username,
 		LoginIP:    m.LoginIP,
 		LoginTime:  m.LoginTime,
@@ -44,7 +44,6 @@ func (m *loginLogModel) toDomain() *entity.LoginLog {
 		Device:     m.Device,
 		Browser:    m.Browser,
 		OS:         m.OS,
-		Result:     entity.LoginResult(m.Result),
 		ErrorMsg:   m.ErrorMsg,
 		UserAgent:  m.UserAgent,
 		CreatedBy:  m.CreatedBy,
@@ -52,6 +51,21 @@ func (m *loginLogModel) toDomain() *entity.LoginLog {
 		UpdatedBy:  m.UpdatedBy,
 		UpdatedAt:  m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.UserID != nil {
+		log.UserID = *m.UserID
+	} else {
+		log.UserID = 0
+	}
+
+	if m.Result != nil {
+		log.Result = entity.LoginResult(*m.Result)
+	} else {
+		log.Result = entity.LoginResult(1)
+	}
+
+	return log
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -62,7 +76,7 @@ func fromDomainLoginLog(log *entity.LoginLog) (*loginLogModel, error) {
 			CreatedBy: log.CreatedBy,
 			UpdatedBy: log.UpdatedBy,
 		},
-		UserID:     log.UserID,
+		UserID:     common.Int64Ptr(log.UserID),
 		Username:   log.Username,
 		LoginIP:    log.LoginIP,
 		LoginTime:  log.LoginTime,
@@ -70,7 +84,7 @@ func fromDomainLoginLog(log *entity.LoginLog) (*loginLogModel, error) {
 		Device:     log.Device,
 		Browser:    log.Browser,
 		OS:         log.OS,
-		Result:     int(log.Result),
+		Result:     common.IntPtr(int(log.Result)),
 		ErrorMsg:   log.ErrorMsg,
 		UserAgent:  log.UserAgent,
 	}, nil

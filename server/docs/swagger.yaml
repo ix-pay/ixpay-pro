@@ -1,6 +1,24 @@
 basePath: /
 definitions:
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API:
+  baseRes.PageResult:
+    properties:
+      list: {}
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  baseRes.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  entity.API:
     properties:
       authRequired:
         description: 是否需要认证
@@ -60,7 +78,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm:
+  entity.BtnPerm:
     properties:
       apirouteIds:
         description: 关联的 API 路由 ID 列表
@@ -71,7 +89,7 @@ definitions:
       apiroutes:
         description: 关联的 API 路由对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
+          $ref: '#/definitions/entity.API'
         type: array
       code:
         description: 权限编码，如：user:create, user:edit
@@ -92,7 +110,7 @@ definitions:
         type: integer
       menu:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu'
+        - $ref: '#/definitions/entity.Menu'
         description: 所属菜单（新增）
       menuID:
         description: 所属菜单 ID
@@ -110,7 +128,7 @@ definitions:
       roles:
         description: 关联的角色对象列表关联的角色列表（新增）
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+          $ref: '#/definitions/entity.Role'
         type: array
       status:
         description: 状态：1-启用，0-禁用
@@ -123,7 +141,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DailyStat:
+  entity.DailyStat:
     properties:
       date:
         description: 日期
@@ -141,7 +159,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DeleteImpact:
+  entity.DeleteImpact:
     properties:
       affectedApisCount:
         description: 影响的 API 数量
@@ -166,12 +184,12 @@ definitions:
         description: 警告信息
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department:
+  entity.Department:
     properties:
       children:
         description: 子部门
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department'
+          $ref: '#/definitions/entity.Department'
         type: array
       createdAt:
         description: 创建时间
@@ -189,7 +207,7 @@ definitions:
         type: integer
       leader:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
+        - $ref: '#/definitions/entity.User'
         description: 部门负责人（新增）
       leaderID:
         description: 部门负责人 ID
@@ -200,7 +218,7 @@ definitions:
         type: string
       parent:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department'
+        - $ref: '#/definitions/entity.Department'
         description: 父部门（新增）
       parentID:
         description: 父部门 ID
@@ -220,7 +238,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.FailedIPStat:
+  entity.FailedIPStat:
     properties:
       failedCount:
         description: 失败次数
@@ -230,7 +248,7 @@ definitions:
         description: IP 地址
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.HourlyStat:
+  entity.HourlyStat:
     properties:
       count:
         description: 统计数量
@@ -240,12 +258,12 @@ definitions:
         description: 小时 (0-23)
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.LoginStatistics:
+  entity.LoginStatistics:
     properties:
       dailyStats:
         description: 每日统计
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DailyStat'
+          $ref: '#/definitions/entity.DailyStat'
         type: array
       endTime:
         description: 统计结束时间
@@ -257,12 +275,12 @@ definitions:
       failedIPs:
         description: 失败最多的 IP
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.FailedIPStat'
+          $ref: '#/definitions/entity.FailedIPStat'
         type: array
       hourlyStats:
         description: 每小时统计
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.HourlyStat'
+          $ref: '#/definitions/entity.HourlyStat'
         type: array
       startTime:
         description: 统计开始时间
@@ -274,12 +292,12 @@ definitions:
       topIPs:
         description: 登录最频繁 IP
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopIPStat'
+          $ref: '#/definitions/entity.TopIPStat'
         type: array
       topUsers:
         description: 登录最频繁用户
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopUserStat'
+          $ref: '#/definitions/entity.TopUserStat'
         type: array
       totalCount:
         description: 登录总次数
@@ -294,7 +312,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu:
+  entity.Menu:
     properties:
       activeMenu:
         description: 当前激活的菜单
@@ -311,7 +329,7 @@ definitions:
       apiroutes:
         description: 关联的 API 路由列表（新增）
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
+          $ref: '#/definitions/entity.API'
         type: array
       breadcrumb:
         description: 是否在面包屑显示
@@ -325,12 +343,12 @@ definitions:
       btnPerms:
         description: 菜单下的按钮权限列表（新增）
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
+          $ref: '#/definitions/entity.BtnPerm'
         type: array
       children:
         description: 子菜单
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu'
+          $ref: '#/definitions/entity.Menu'
         type: array
       component:
         description: 组件路径
@@ -369,14 +387,14 @@ definitions:
         type: boolean
       meta:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuMeta'
+        - $ref: '#/definitions/entity.MenuMeta'
         description: 菜单元数据
       name:
         description: 路由名称，前端组件名
         type: string
       parent:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu'
+        - $ref: '#/definitions/entity.Menu'
         description: 父菜单（新增）
       parentID:
         description: 父菜单 ID，0 表示顶级菜单
@@ -400,7 +418,7 @@ definitions:
       roles:
         description: 关联的角色列表（新增）
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+          $ref: '#/definitions/entity.Role'
         type: array
       sort:
         description: 排序号
@@ -413,7 +431,7 @@ definitions:
         type: string
       type:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuType'
+        - $ref: '#/definitions/entity.MenuType'
         description: 菜单类型：1 目录，2 菜单，3 按钮，4iframe
       updatedAt:
         description: 更新时间
@@ -423,7 +441,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuMeta:
+  entity.MenuMeta:
     properties:
       activeMenu:
         description: 当前激活的菜单
@@ -453,7 +471,7 @@ definitions:
         description: 菜单标题
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuType:
+  entity.MenuType:
     enum:
     - 1
     - 2
@@ -475,7 +493,7 @@ definitions:
     - MenuTypeMenu
     - MenuTypeButton
     - MenuTypeIframe
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup:
+  entity.PermissionGroup:
     properties:
       apirouteIds:
         description: 权限组关联的接口路由 ID 列表
@@ -486,7 +504,7 @@ definitions:
       apiroutes:
         description: 权限组关联的接口路由对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
+          $ref: '#/definitions/entity.API'
         type: array
       btnPermIds:
         description: 权限组关联的按钮权限 ID 列表
@@ -497,7 +515,7 @@ definitions:
       btnPerms:
         description: 权限组关联的按钮权限对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
+          $ref: '#/definitions/entity.BtnPerm'
         type: array
       createdAt:
         description: 创建时间
@@ -525,7 +543,7 @@ definitions:
       roles:
         description: 权限组关联的角色对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup'
+          $ref: '#/definitions/entity.PermissionGroup'
         type: array
       sort:
         description: 排序
@@ -541,7 +559,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position:
+  entity.Position:
     properties:
       createdAt:
         description: 创建时间
@@ -574,7 +592,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role:
+  entity.Role:
     properties:
       apirouteIds:
         description: 角色关联的接口路由 ID 列表
@@ -585,7 +603,7 @@ definitions:
       apiroutes:
         description: 角色关联的接口路由对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
+          $ref: '#/definitions/entity.API'
         type: array
       btnPermIds:
         description: 角色关联的按钮权限 ID 列表
@@ -596,12 +614,12 @@ definitions:
       btnPerms:
         description: 角色关联的按钮权限对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
+          $ref: '#/definitions/entity.BtnPerm'
         type: array
       children:
         description: 子角色
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+          $ref: '#/definitions/entity.Role'
         type: array
       code:
         description: 角色编码
@@ -632,14 +650,14 @@ definitions:
       menus:
         description: 角色关联的菜单对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu'
+          $ref: '#/definitions/entity.Menu'
         type: array
       name:
         description: 角色名称
         type: string
       parent:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+        - $ref: '#/definitions/entity.Role'
         description: 父角色
       parentID:
         description: 父角色 ID，支持角色继承
@@ -654,7 +672,7 @@ definitions:
       permissionGroups:
         description: 角色关联的权限组对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup'
+          $ref: '#/definitions/entity.PermissionGroup'
         type: array
       sort:
         description: 排序
@@ -681,10 +699,10 @@ definitions:
       users:
         description: 角色关联的用户对象列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
+          $ref: '#/definitions/entity.User'
         type: array
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopIPStat:
+  entity.TopIPStat:
     properties:
       ip:
         description: IP 地址
@@ -694,7 +712,7 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopUserStat:
+  entity.TopUserStat:
     properties:
       loginCount:
         description: 登录次数
@@ -703,11 +721,11 @@ definitions:
       userID:
         description: 用户 ID
         type: string
-      userName:
+      username:
         description: 用户名
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User:
+  entity.User:
     properties:
       address:
         description: 地址
@@ -727,7 +745,7 @@ definitions:
         type: integer
       department:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department'
+        - $ref: '#/definitions/entity.Department'
         description: 所属部门
       departmentID:
         description: 部门 ID
@@ -763,7 +781,7 @@ definitions:
         type: string
       position:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position'
+        - $ref: '#/definitions/entity.Position'
         description: 所属岗位
       positionID:
         description: 岗位 ID
@@ -778,7 +796,7 @@ definitions:
       roles:
         description: 角色列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role'
+          $ref: '#/definitions/entity.Role'
         type: array
       specialBtnPermissionIds:
         description: 用户特殊按钮权限 ID 列表
@@ -802,14 +820,14 @@ definitions:
         description: 更新人 ID
         format: int64
         type: integer
-      userName:
+      username:
         description: 用户名，唯一标识
         type: string
       wechatOpenID:
         description: 微信 OpenID，唯一
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting:
+  entity.UserSetting:
     properties:
       autoLogin:
         description: 自动登录
@@ -855,7 +873,115 @@ definitions:
         format: int64
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddTaskRequest:
+  monitor.CPUStatus:
+    properties:
+      cores:
+        description: CPU 核心数
+        type: integer
+      per_cpu_usage:
+        description: 每个 CPU 核心的使用率
+        items:
+          type: number
+        type: array
+      usage_percent:
+        description: CPU 使用率百分比
+        type: number
+    type: object
+  monitor.DiskStatus:
+    properties:
+      free_gb:
+        description: 空闲磁盘空间 (GB)
+        type: integer
+      io_read_bytes:
+        description: IO 读取字节数
+        type: integer
+      io_write_bytes:
+        description: IO 写入字节数
+        type: integer
+      read_bytes:
+        description: 读取字节数
+        type: integer
+      read_count:
+        description: 读取次数
+        type: integer
+      total_gb:
+        description: 总磁盘空间 (GB)
+        type: integer
+      usage_percent:
+        description: 磁盘使用率百分比
+        type: number
+      used_gb:
+        description: 已使用磁盘空间 (GB)
+        type: integer
+      write_bytes:
+        description: 写入字节数
+        type: integer
+      write_count:
+        description: 写入次数
+        type: integer
+    type: object
+  monitor.LoadStatus:
+    properties:
+      load1:
+        description: 1 分钟平均负载
+        type: number
+      load5:
+        description: 5 分钟平均负载
+        type: number
+      load15:
+        description: 15 分钟平均负载
+        type: number
+    type: object
+  monitor.MemoryStatus:
+    properties:
+      available_mb:
+        description: 可用内存 (MB)
+        type: integer
+      buffers_mb:
+        description: 缓冲区内存 (MB)
+        type: integer
+      cached_mb:
+        description: 缓存内存 (MB)
+        type: integer
+      free_mb:
+        description: 空闲内存 (MB)
+        type: integer
+      total_mb:
+        description: 总内存 (MB)
+        type: integer
+      usage_percent:
+        description: 内存使用率百分比
+        type: number
+      used_mb:
+        description: 已使用内存 (MB)
+        type: integer
+      used_percent:
+        description: 已使用百分比（与 usage_percent 相同）
+        type: number
+    type: object
+  monitor.SystemStatus:
+    properties:
+      cpu:
+        allOf:
+        - $ref: '#/definitions/monitor.CPUStatus'
+        description: CPU 使用状态
+      disk:
+        allOf:
+        - $ref: '#/definitions/monitor.DiskStatus'
+        description: 磁盘使用状态
+      load:
+        allOf:
+        - $ref: '#/definitions/monitor.LoadStatus'
+        description: 系统负载状态
+      memory:
+        allOf:
+        - $ref: '#/definitions/monitor.MemoryStatus'
+        description: 内存使用状态
+      timestamp:
+        description: 采集时间
+        type: string
+    type: object
+  request.AddTaskRequest:
     properties:
       description:
         type: string
@@ -877,7 +1003,7 @@ definitions:
     - task_id
     - type
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddUserRequest:
+  request.AddUserRequest:
     properties:
       avatar:
         maxLength: 255
@@ -916,7 +1042,7 @@ definitions:
     - password
     - userName
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignBtnPermToRoleRequest:
+  request.AssignBtnPermToRoleRequest:
     properties:
       btnPermIds:
         items:
@@ -930,7 +1056,7 @@ definitions:
     - btnPermIds
     - roleId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignMenuToRoleRequest:
+  request.AssignMenuToRoleRequest:
     properties:
       menuIds:
         items:
@@ -944,7 +1070,7 @@ definitions:
     - menuIds
     - roleId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToBtnPermRequest:
+  request.AssignToBtnPermRequest:
     properties:
       btnPermId:
         minimum: 1
@@ -958,7 +1084,7 @@ definitions:
     - btnPermId
     - ids
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToRoleRequest:
+  request.AssignToRoleRequest:
     properties:
       ids:
         items:
@@ -972,7 +1098,7 @@ definitions:
     - ids
     - roleId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignUserToRoleRequest:
+  request.AssignUserToRoleRequest:
     properties:
       roleId:
         minimum: 1
@@ -986,7 +1112,7 @@ definitions:
     - roleId
     - userIds
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchDeleteOperationLogRequest:
+  request.BatchDeleteOperationLogRequest:
     properties:
       ids:
         items:
@@ -995,7 +1121,7 @@ definitions:
     required:
     - ids
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchForceOfflineRequest:
+  request.BatchForceOfflineRequest:
     properties:
       reason:
         description: 下线原因
@@ -1008,7 +1134,7 @@ definitions:
     required:
     - userIds
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.ChangePasswordRequest:
+  request.ChangePasswordRequest:
     properties:
       newPassword:
         maxLength: 30
@@ -1022,7 +1148,7 @@ definitions:
     - newPassword
     - oldPassword
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.ClearOperationLogByTimeRangeRequest:
+  request.ClearOperationLogByTimeRangeRequest:
     properties:
       endTime:
         type: string
@@ -1032,7 +1158,7 @@ definitions:
     - endTime
     - startTime
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateAPIRequest:
+  request.CreateAPIRequest:
     properties:
       authRequired:
         type: boolean
@@ -1081,7 +1207,7 @@ definitions:
     - method
     - path
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateBtnPermRequest:
+  request.CreateBtnPermRequest:
     properties:
       code:
         maxLength: 100
@@ -1107,7 +1233,7 @@ definitions:
     - menuId
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateConfigRequest:
+  request.CreateConfigRequest:
     properties:
       configKey:
         description: 配置键
@@ -1133,7 +1259,7 @@ definitions:
     required:
     - configKey
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDepartmentRequest:
+  request.CreateDepartmentRequest:
     properties:
       description:
         description: 部门描述
@@ -1156,7 +1282,7 @@ definitions:
     required:
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictItemRequest:
+  request.CreateDictItemRequest:
     properties:
       description:
         description: 描述
@@ -1188,7 +1314,7 @@ definitions:
     - itemKey
     - itemValue
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictRequest:
+  request.CreateDictRequest:
     properties:
       description:
         description: 描述
@@ -1212,7 +1338,7 @@ definitions:
     - dictCode
     - dictName
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateNoticeRequest:
+  request.CreateNoticeRequest:
     properties:
       content:
         description: 公告内容
@@ -1237,7 +1363,30 @@ definitions:
     - title
     - type
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreatePositionRequest:
+  request.CreatePaymentRequest:
+    properties:
+      amount:
+        type: number
+      currency:
+        enum:
+        - CNY
+        - USD
+        type: string
+      description:
+        type: string
+      order_id:
+        type: string
+      payment_method:
+        enum:
+        - wechat_alipay
+        type: string
+    required:
+    - amount
+    - currency
+    - order_id
+    - payment_method
+    type: object
+  request.CreatePositionRequest:
     properties:
       description:
         description: 岗位描述
@@ -1254,7 +1403,7 @@ definitions:
     required:
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateRoleRequest:
+  request.CreateRoleRequest:
     properties:
       description:
         maxLength: 255
@@ -1271,7 +1420,7 @@ definitions:
     required:
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteBtnPermRequest:
+  request.DeleteBtnPermRequest:
     properties:
       id:
         minimum: 1
@@ -1279,14 +1428,14 @@ definitions:
     required:
     - id
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteRoleRequest:
+  request.DeleteRoleRequest:
     properties:
       id:
         type: integer
     required:
     - id
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.LoginRequest:
+  request.LoginRequest:
     properties:
       captcha:
         type: string
@@ -1300,7 +1449,7 @@ definitions:
     - password
     - userName
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.RecordLoginRequest:
+  request.RecordLoginRequest:
     properties:
       browser:
         description: 浏览器信息
@@ -1337,7 +1486,7 @@ definitions:
     - userId
     - userName
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.RegisterRequest:
+  request.RegisterRequest:
     properties:
       email:
         type: string
@@ -1354,14 +1503,14 @@ definitions:
     - password
     - userName
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.ResetPasswordRequest:
+  request.ResetPasswordRequest:
     properties:
       userId:
         type: integer
     required:
     - userId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeBtnPermFromRoleRequest:
+  request.RevokeBtnPermFromRoleRequest:
     properties:
       btnPermId:
         minimum: 1
@@ -1373,7 +1522,7 @@ definitions:
     - btnPermId
     - roleId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeFromBtnPermRequest:
+  request.RevokeFromBtnPermRequest:
     properties:
       btnPermId:
         minimum: 1
@@ -1385,7 +1534,7 @@ definitions:
     - btnPermId
     - id
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.SaveRolePermissionsRequest:
+  request.SaveRolePermissionsRequest:
     properties:
       apiRouteIds:
         items:
@@ -1404,21 +1553,21 @@ definitions:
     - btnPermIds
     - menuIds
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.SetTaskGroupRequest:
+  request.SetTaskGroupRequest:
     properties:
       group:
         type: string
     required:
     - group
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.SwitchRoleRequest:
+  request.SwitchRoleRequest:
     properties:
       roleId:
         type: string
     required:
     - roleId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateAPIRequest:
+  request.UpdateAPIRequest:
     properties:
       authRequired:
         type: boolean
@@ -1470,7 +1619,7 @@ definitions:
     - method
     - path
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateBtnPermRequest:
+  request.UpdateBtnPermRequest:
     properties:
       code:
         maxLength: 100
@@ -1500,7 +1649,7 @@ definitions:
     - menuId
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateConfigRequest:
+  request.UpdateConfigRequest:
     properties:
       configKey:
         description: 配置键
@@ -1530,7 +1679,7 @@ definitions:
     - configKey
     - id
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentLeaderRequest:
+  request.UpdateDepartmentLeaderRequest:
     properties:
       leaderId:
         description: 部门负责人 ID
@@ -1538,7 +1687,7 @@ definitions:
     required:
     - leaderId
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentRequest:
+  request.UpdateDepartmentRequest:
     properties:
       description:
         description: 部门描述
@@ -1565,7 +1714,7 @@ definitions:
     - id
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictItemRequest:
+  request.UpdateDictItemRequest:
     properties:
       description:
         description: 描述
@@ -1601,7 +1750,7 @@ definitions:
     - itemKey
     - itemValue
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictRequest:
+  request.UpdateDictRequest:
     properties:
       description:
         description: 描述
@@ -1629,7 +1778,7 @@ definitions:
     - dictName
     - id
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateNoticeRequest:
+  request.UpdateNoticeRequest:
     properties:
       content:
         description: 公告内容
@@ -1658,7 +1807,7 @@ definitions:
     - title
     - type
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdatePositionRequest:
+  request.UpdatePositionRequest:
     properties:
       description:
         description: 岗位描述
@@ -1679,7 +1828,7 @@ definitions:
     - id
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateRoleRequest:
+  request.UpdateRoleRequest:
     properties:
       description:
         maxLength: 255
@@ -1699,7 +1848,7 @@ definitions:
     - id
     - name
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateUserRequest:
+  request.UpdateUserRequest:
     properties:
       avatar:
         maxLength: 255
@@ -1707,7 +1856,7 @@ definitions:
       email:
         type: string
       id:
-        type: integer
+        type: string
       nickname:
         maxLength: 50
         type: string
@@ -1727,7 +1876,21 @@ definitions:
     required:
     - id
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse:
+  request.WechatLoginRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  request.WechatRefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  response.APIResponse:
     properties:
       authRequired:
         type: boolean
@@ -1769,7 +1932,7 @@ definitions:
         example: "0"
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO:
+  response.AbnormalLoginInfoDTO:
     properties:
       failedCount:
         type: integer
@@ -1786,12 +1949,12 @@ definitions:
           type: string
         type: array
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.AuthorityInfo:
+  response.AuthorityInfo:
     properties:
       defaultRouter:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermForRole:
+  response.BtnPermForRole:
     properties:
       code:
         type: string
@@ -1810,7 +1973,7 @@ definitions:
       status:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermResponse:
+  response.BtnPermResponse:
     properties:
       code:
         type: string
@@ -1831,7 +1994,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.CaptchaResponse:
+  response.CaptchaResponse:
     properties:
       captchaId:
         type: string
@@ -1842,12 +2005,12 @@ definitions:
       picPath:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigListResponse:
+  response.ConfigListResponse:
     properties:
       list:
         description: 配置列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse'
+          $ref: '#/definitions/response.ConfigResponse'
         type: array
       page:
         type: integer
@@ -1856,7 +2019,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse:
+  response.ConfigResponse:
     properties:
       configKey:
         description: 配置键
@@ -1884,12 +2047,12 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentListResponse:
+  response.DepartmentListResponse:
     properties:
       list:
         description: 部门列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse'
+          $ref: '#/definitions/response.DepartmentResponse'
         type: array
       page:
         type: integer
@@ -1898,12 +2061,12 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse:
+  response.DepartmentResponse:
     properties:
       children:
         description: 可选字段：子部门列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse'
+          $ref: '#/definitions/response.DepartmentResponse'
         type: array
       code:
         description: 部门编码
@@ -1941,12 +2104,12 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemListResponse:
+  response.DictItemListResponse:
     properties:
       list:
         description: 字典项列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse'
+          $ref: '#/definitions/response.DictItemResponse'
         type: array
       page:
         type: integer
@@ -1955,7 +2118,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse:
+  response.DictItemResponse:
     properties:
       createdAt:
         description: 创建时间
@@ -1987,12 +2150,12 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictListResponse:
+  response.DictListResponse:
     properties:
       list:
         description: 字典列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse'
+          $ref: '#/definitions/response.DictResponse'
         type: array
       page:
         type: integer
@@ -2001,7 +2164,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse:
+  response.DictResponse:
     properties:
       createdAt:
         description: 创建时间
@@ -2015,7 +2178,7 @@ definitions:
       dictItems:
         description: 字典项列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse'
+          $ref: '#/definitions/response.DictItemResponse'
         type: array
       dictName:
         description: 字典名称
@@ -2031,7 +2194,7 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO:
+  response.LoginLogDetailDTO:
     properties:
       browser:
         type: string
@@ -2056,7 +2219,7 @@ definitions:
       userName:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO:
+  response.LoginLogListDTO:
     properties:
       createdAt:
         type: string
@@ -2072,16 +2235,16 @@ definitions:
       userName:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse:
+  response.LoginResponse:
     properties:
       accessToken:
         type: string
       refreshToken:
         type: string
       user:
-        $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse'
+        $ref: '#/definitions/response.UserInfoResponse'
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuInfo:
+  response.MenuInfo:
     properties:
       id:
         example: "0"
@@ -2094,7 +2257,7 @@ definitions:
       path:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuMetaResp:
+  response.MenuMetaResp:
     properties:
       activeMenu:
         description: 当前激活的菜单（驼峰命名）
@@ -2121,7 +2284,7 @@ definitions:
         description: 菜单标题
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse:
+  response.MenuResponse:
     properties:
       activeMenu:
         description: 当前激活的菜单
@@ -2135,7 +2298,7 @@ definitions:
       children:
         description: 子菜单
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse'
+          $ref: '#/definitions/response.MenuResponse'
         type: array
       component:
         description: 组件路径
@@ -2164,7 +2327,7 @@ definitions:
         type: boolean
       meta:
         allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuMetaResp'
+        - $ref: '#/definitions/response.MenuMetaResp'
         description: 菜单元数据
       name:
         description: 路由名称
@@ -2195,11 +2358,11 @@ definitions:
         description: 菜单类型：1 目录，2 菜单，3 按钮，4iframe
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeListResponse:
+  response.NoticeListResponse:
     properties:
       list:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse'
+          $ref: '#/definitions/response.NoticeResponse'
         type: array
       page:
         type: integer
@@ -2208,7 +2371,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse:
+  response.NoticeResponse:
     properties:
       content:
         type: string
@@ -2239,7 +2402,7 @@ definitions:
       viewCount:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeStatisticsResponse:
+  response.NoticeStatisticsResponse:
     properties:
       archivedCount:
         type: integer
@@ -2250,11 +2413,11 @@ definitions:
       totalCount:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserListResponse:
+  response.OnlineUserListResponse:
     properties:
       list:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserResponse'
+          $ref: '#/definitions/response.OnlineUserResponse'
         type: array
       page:
         type: integer
@@ -2263,7 +2426,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserResponse:
+  response.OnlineUserResponse:
     properties:
       browser:
         type: string
@@ -2291,11 +2454,11 @@ definitions:
       userName:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogListResponse:
+  response.OperationLogListResponse:
     properties:
       list:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogResponse'
+          $ref: '#/definitions/response.OperationLogResponse'
         type: array
       page:
         type: integer
@@ -2304,7 +2467,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogResponse:
+  response.OperationLogResponse:
     properties:
       clientIp:
         type: string
@@ -2347,7 +2510,7 @@ definitions:
       userName:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogStatisticsResponse:
+  response.OperationLogStatisticsResponse:
     properties:
       avgDuration:
         type: integer
@@ -2369,12 +2532,41 @@ definitions:
       totalCount:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionListResponse:
+  response.PaymentResponse:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      order_id:
+        type: string
+      payment_method:
+        type: string
+      status:
+        type: string
+      transaction_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      wechat_pay_params:
+        additionalProperties: true
+        description: 微信支付相关参数
+        type: object
+    type: object
+  response.PositionListResponse:
     properties:
       list:
         description: 岗位列表
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse'
+          $ref: '#/definitions/response.PositionResponse'
         type: array
       page:
         type: integer
@@ -2383,7 +2575,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse:
+  response.PositionResponse:
     properties:
       code:
         description: 岗位编码
@@ -2411,7 +2603,17 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse:
+  response.RoleDTO:
+    properties:
+      code:
+        type: string
+      id:
+        example: "0"
+        type: string
+      name:
+        type: string
+    type: object
+  response.RoleDetailResponse:
     properties:
       code:
         type: string
@@ -2426,7 +2628,7 @@ definitions:
         type: boolean
       menus:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuInfo'
+          $ref: '#/definitions/response.MenuInfo'
         type: array
       name:
         type: string
@@ -2435,7 +2637,7 @@ definitions:
         type: string
       routes:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RouteInfo'
+          $ref: '#/definitions/response.RouteInfo'
         type: array
       sort:
         type: integer
@@ -2447,10 +2649,10 @@ definitions:
         type: string
       users:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfo'
+          $ref: '#/definitions/response.UserInfo'
         type: array
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleInfo:
+  response.RoleInfo:
     properties:
       code:
         type: string
@@ -2473,11 +2675,11 @@ definitions:
       type:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleListResponse:
+  response.RoleListResponse:
     properties:
       list:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse'
+          $ref: '#/definitions/response.RoleResponse'
         type: array
       page:
         type: integer
@@ -2486,7 +2688,7 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse:
+  response.RoleResponse:
     properties:
       code:
         type: string
@@ -2513,7 +2715,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.RouteInfo:
+  response.RouteInfo:
     properties:
       group:
         type: string
@@ -2525,7 +2727,7 @@ definitions:
       path:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogResponse:
+  response.TaskExecutionLogResponse:
     properties:
       cronExpr:
         type: string
@@ -2555,16 +2757,16 @@ definitions:
       triggerType:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogsResponse:
+  response.TaskExecutionLogsResponse:
     properties:
       logs:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogResponse'
+          $ref: '#/definitions/response.TaskExecutionLogResponse'
         type: array
       total:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse:
+  response.TaskResponse:
     properties:
       created_at:
         type: string
@@ -2587,7 +2789,7 @@ definitions:
       type:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskStatisticsResponse:
+  response.TaskStatisticsResponse:
     properties:
       avgDuration:
         type: number
@@ -2611,7 +2813,7 @@ definitions:
       totalExecutes:
         type: integer
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfo:
+  response.UserInfo:
     properties:
       id:
         example: "0"
@@ -2621,10 +2823,10 @@ definitions:
       userName:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse:
+  response.UserInfoResponse:
     properties:
       authority:
-        $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.AuthorityInfo'
+        $ref: '#/definitions/response.AuthorityInfo'
       avatar:
         type: string
       currentRoleId:
@@ -2643,80 +2845,46 @@ definitions:
         type: string
       roles:
         items:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleInfo'
+          $ref: '#/definitions/response.RoleInfo'
         type: array
       status:
         type: integer
       userName:
         type: string
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_wx_request.CreatePaymentRequest:
+  response.UserResponse:
     properties:
-      amount:
-        type: number
-      currency:
-        enum:
-        - CNY
-        - USD
+      avatar:
         type: string
-      description:
+      createdAt:
         type: string
-      order_id:
+      departmentId:
+        example: "0"
         type: string
-      payment_method:
-        enum:
-        - wechat_alipay
-        type: string
-    required:
-    - amount
-    - currency
-    - order_id
-    - payment_method
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatLoginRequest:
-    properties:
-      code:
-        type: string
-    required:
-    - code
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatRefreshTokenRequest:
-    properties:
-      refresh_token:
-        type: string
-    required:
-    - refresh_token
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse:
-    properties:
-      amount:
-        type: number
-      created_at:
-        type: string
-      currency:
-        type: string
-      description:
+      email:
         type: string
       id:
+        example: "0"
         type: string
-      order_id:
+      nickname:
         type: string
-      payment_method:
+      phone:
         type: string
+      positionId:
+        example: "0"
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/response.RoleDTO'
+        type: array
       status:
+        type: integer
+      updatedAt:
         type: string
-      transaction_id:
+      userName:
         type: string
-      updated_at:
-        type: string
-      user_id:
-        type: string
-      wechat_pay_params:
-        additionalProperties: true
-        description: 微信支付相关参数
-        type: object
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXLoginResponse:
+  response.WXLoginResponse:
     properties:
       accessExpire:
         type: integer
@@ -2725,9 +2893,9 @@ definitions:
       refreshToken:
         type: string
       user:
-        $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXUserInfoResponse'
+        $ref: '#/definitions/response.WXUserInfoResponse'
     type: object
-  github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXUserInfoResponse:
+  response.WXUserInfoResponse:
     properties:
       avatar:
         type: string
@@ -2744,132 +2912,6 @@ definitions:
       status:
         type: integer
       userName:
-        type: string
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.CPUStatus:
-    properties:
-      cores:
-        description: CPU 核心数
-        type: integer
-      per_cpu_usage:
-        description: 每个 CPU 核心的使用率
-        items:
-          type: number
-        type: array
-      usage_percent:
-        description: CPU 使用率百分比
-        type: number
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.DiskStatus:
-    properties:
-      free_gb:
-        description: 空闲磁盘空间 (GB)
-        type: integer
-      io_read_bytes:
-        description: IO 读取字节数
-        type: integer
-      io_write_bytes:
-        description: IO 写入字节数
-        type: integer
-      read_bytes:
-        description: 读取字节数
-        type: integer
-      read_count:
-        description: 读取次数
-        type: integer
-      total_gb:
-        description: 总磁盘空间 (GB)
-        type: integer
-      usage_percent:
-        description: 磁盘使用率百分比
-        type: number
-      used_gb:
-        description: 已使用磁盘空间 (GB)
-        type: integer
-      write_bytes:
-        description: 写入字节数
-        type: integer
-      write_count:
-        description: 写入次数
-        type: integer
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.LoadStatus:
-    properties:
-      load1:
-        description: 1 分钟平均负载
-        type: number
-      load5:
-        description: 5 分钟平均负载
-        type: number
-      load15:
-        description: 15 分钟平均负载
-        type: number
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.MemoryStatus:
-    properties:
-      available_mb:
-        description: 可用内存 (MB)
-        type: integer
-      buffers_mb:
-        description: 缓冲区内存 (MB)
-        type: integer
-      cached_mb:
-        description: 缓存内存 (MB)
-        type: integer
-      free_mb:
-        description: 空闲内存 (MB)
-        type: integer
-      total_mb:
-        description: 总内存 (MB)
-        type: integer
-      usage_percent:
-        description: 内存使用率百分比
-        type: number
-      used_mb:
-        description: 已使用内存 (MB)
-        type: integer
-      used_percent:
-        description: 已使用百分比（与 usage_percent 相同）
-        type: number
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.SystemStatus:
-    properties:
-      cpu:
-        allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.CPUStatus'
-        description: CPU 使用状态
-      disk:
-        allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.DiskStatus'
-        description: 磁盘使用状态
-      load:
-        allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.LoadStatus'
-        description: 系统负载状态
-      memory:
-        allOf:
-        - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.MemoryStatus'
-        description: 内存使用状态
-      timestamp:
-        description: 采集时间
-        type: string
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult:
-    properties:
-      list: {}
-      page:
-        type: integer
-      pageSize:
-        type: integer
-      total:
-        type: integer
-    type: object
-  github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response:
-    properties:
-      code:
-        type: integer
-      data: {}
-      msg:
         type: string
     type: object
 host: 127.0.0.1:8586
@@ -2942,7 +2984,7 @@ paths:
           description: 支付详情
           schema:
             additionalProperties:
-              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse'
+              $ref: '#/definitions/response.PaymentResponse'
             type: object
         "400":
           description: 无效的支付 ID
@@ -2991,7 +3033,7 @@ paths:
           description: 取消后的支付详情
           schema:
             additionalProperties:
-              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse'
+              $ref: '#/definitions/response.PaymentResponse'
             type: object
         "400":
           description: 无效的支付 ID
@@ -3051,16 +3093,16 @@ paths:
           description: 路由列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  $ref: '#/definitions/baseRes.PageResult'
               type: object
         "401":
           description: 未授权
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3069,7 +3111,7 @@ paths:
           description: 无权限
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3078,7 +3120,7 @@ paths:
           description: 服务器内部错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3098,7 +3140,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateAPIRequest'
+          $ref: '#/definitions/request.CreateAPIRequest'
       produces:
       - application/json
       responses:
@@ -3106,16 +3148,16 @@ paths:
           description: 创建成功的路由信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse'
+                  $ref: '#/definitions/response.APIResponse'
               type: object
         "400":
           description: 参数错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3124,7 +3166,7 @@ paths:
           description: 未授权
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3133,7 +3175,7 @@ paths:
           description: 无权限
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3142,7 +3184,7 @@ paths:
           description: 服务器内部错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3170,7 +3212,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3179,7 +3221,7 @@ paths:
           description: 参数错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3188,7 +3230,7 @@ paths:
           description: 未授权
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3197,7 +3239,7 @@ paths:
           description: 无权限
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3206,7 +3248,7 @@ paths:
           description: 路由不存在
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3215,7 +3257,7 @@ paths:
           description: 服务器内部错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3242,16 +3284,16 @@ paths:
           description: 路由信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse'
+                  $ref: '#/definitions/response.APIResponse'
               type: object
         "401":
           description: 未授权
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3260,7 +3302,7 @@ paths:
           description: 无权限
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3269,7 +3311,7 @@ paths:
           description: 路由不存在
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3278,7 +3320,7 @@ paths:
           description: 服务器内部错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3303,7 +3345,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateAPIRequest'
+          $ref: '#/definitions/request.UpdateAPIRequest'
       produces:
       - application/json
       responses:
@@ -3311,16 +3353,16 @@ paths:
           description: 更新成功的路由信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse'
+                  $ref: '#/definitions/response.APIResponse'
               type: object
         "400":
           description: 参数错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3329,7 +3371,7 @@ paths:
           description: 未授权
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3338,7 +3380,7 @@ paths:
           description: 无权限
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3347,7 +3389,7 @@ paths:
           description: 路由不存在
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3356,7 +3398,7 @@ paths:
           description: 服务器内部错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3395,10 +3437,10 @@ paths:
           description: 路由列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  $ref: '#/definitions/baseRes.PageResult'
                 msg:
                   type: string
               type: object
@@ -3406,7 +3448,7 @@ paths:
           description: 未授权
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3415,7 +3457,7 @@ paths:
           description: 无权限
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3424,7 +3466,7 @@ paths:
           description: 服务器内部错误
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3446,10 +3488,10 @@ paths:
           description: 验证码信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.CaptchaResponse'
+                  $ref: '#/definitions/response.CaptchaResponse'
                 msg:
                   type: string
               type: object
@@ -3473,7 +3515,7 @@ paths:
         name: login
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.LoginRequest'
+          $ref: '#/definitions/request.LoginRequest'
       produces:
       - application/json
       responses:
@@ -3481,10 +3523,10 @@ paths:
           description: 登录成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse'
+                  $ref: '#/definitions/response.LoginResponse'
                 msg:
                   type: string
               type: object
@@ -3515,7 +3557,7 @@ paths:
           description: 登出成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -3549,10 +3591,10 @@ paths:
           description: 刷新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse'
+                  $ref: '#/definitions/response.LoginResponse'
                 msg:
                   type: string
               type: object
@@ -3584,7 +3626,7 @@ paths:
         name: register
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RegisterRequest'
+          $ref: '#/definitions/request.RegisterRequest'
       produces:
       - application/json
       responses:
@@ -3592,10 +3634,10 @@ paths:
           description: 注册成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
+                  $ref: '#/definitions/entity.User'
                 msg:
                   type: string
               type: object
@@ -3619,14 +3661,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteBtnPermRequest'
+          $ref: '#/definitions/request.DeleteBtnPermRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 删除按钮权限
@@ -3671,15 +3713,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  - $ref: '#/definitions/baseRes.PageResult'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
+                          $ref: '#/definitions/entity.BtnPerm'
                         type: array
                       page:
                         type: integer
@@ -3705,14 +3747,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateBtnPermRequest'
+          $ref: '#/definitions/request.CreateBtnPermRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 创建按钮权限
@@ -3728,14 +3770,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateBtnPermRequest'
+          $ref: '#/definitions/request.UpdateBtnPermRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 更新按钮权限
@@ -3760,11 +3802,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API'
+                    $ref: '#/definitions/entity.API'
                   type: array
               type: object
       security:
@@ -3783,14 +3825,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToBtnPermRequest'
+          $ref: '#/definitions/request.AssignToBtnPermRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 为按钮权限分配 API 路由
@@ -3807,14 +3849,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignBtnPermToRoleRequest'
+          $ref: '#/definitions/request.AssignBtnPermToRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 为角色分配按钮权限
@@ -3839,11 +3881,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
+                    $ref: '#/definitions/entity.BtnPerm'
                   type: array
               type: object
       security:
@@ -3870,11 +3912,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermForRole'
+                    $ref: '#/definitions/response.BtnPermForRole'
                   type: array
               type: object
       security:
@@ -3900,10 +3942,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermResponse'
+                  $ref: '#/definitions/response.BtnPermResponse'
               type: object
       security:
       - BearerAuth: []
@@ -3929,11 +3971,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm'
+                    $ref: '#/definitions/entity.BtnPerm'
                   type: array
               type: object
       security:
@@ -3952,14 +3994,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeFromBtnPermRequest'
+          $ref: '#/definitions/request.RevokeFromBtnPermRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 从按钮权限撤销API路由
@@ -3976,20 +4018,72 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeBtnPermFromRoleRequest'
+          $ref: '#/definitions/request.RevokeBtnPermFromRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 从角色撤销按钮权限
       tags:
       - 按钮权限管理
   /api/admin/config:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统配置列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageSize
+        type: integer
+      - description: 配置键
+        in: query
+        name: config_key
+        type: string
+      - description: 状态：1-启用 0-禁用
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 配置列表
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ConfigListResponse'
+                msg:
+                  type: string
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取配置列表
+      tags:
+      - 系统配置管理
     post:
       consumes:
       - application/json
@@ -4000,7 +4094,7 @@ paths:
         name: config
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateConfigRequest'
+          $ref: '#/definitions/request.CreateConfigRequest'
       produces:
       - application/json
       responses:
@@ -4008,10 +4102,10 @@ paths:
           description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse'
+                  $ref: '#/definitions/response.ConfigResponse'
                 msg:
                   type: string
               type: object
@@ -4048,7 +4142,7 @@ paths:
         name: config
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateConfigRequest'
+          $ref: '#/definitions/request.UpdateConfigRequest'
       produces:
       - application/json
       responses:
@@ -4056,7 +4150,7 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4102,7 +4196,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4147,10 +4241,10 @@ paths:
           description: 配置详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse'
+                  $ref: '#/definitions/response.ConfigResponse'
                 msg:
                   type: string
               type: object
@@ -4189,11 +4283,11 @@ paths:
           description: 配置列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse'
+                    $ref: '#/definitions/response.ConfigResponse'
                   type: array
                 msg:
                   type: string
@@ -4225,10 +4319,10 @@ paths:
           description: 配置详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse'
+                  $ref: '#/definitions/response.ConfigResponse'
                 msg:
                   type: string
               type: object
@@ -4253,59 +4347,6 @@ paths:
       security:
       - BearerAuth: []
       summary: 根据配置键获取配置
-      tags:
-      - 系统配置管理
-  /api/admin/config/list:
-    get:
-      consumes:
-      - application/json
-      description: 获取系统配置列表
-      parameters:
-      - description: 页码
-        in: query
-        name: page
-        type: integer
-      - description: 每页条数
-        in: query
-        name: pageSize
-        type: integer
-      - description: 配置键
-        in: query
-        name: config_key
-        type: string
-      - description: 状态：1-启用 0-禁用
-        in: query
-        name: status
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 配置列表
-          schema:
-            allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigListResponse'
-                msg:
-                  type: string
-              type: object
-        "401":
-          description: 未授权
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: 服务器内部错误
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: 获取配置列表
       tags:
       - 系统配置管理
   /api/admin/dept:
@@ -4339,10 +4380,10 @@ paths:
           description: 部门列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentListResponse'
+                  $ref: '#/definitions/response.DepartmentListResponse'
                 msg:
                   type: string
               type: object
@@ -4373,7 +4414,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDepartmentRequest'
+          $ref: '#/definitions/request.CreateDepartmentRequest'
       produces:
       - application/json
       responses:
@@ -4381,10 +4422,10 @@ paths:
           description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse'
+                  $ref: '#/definitions/response.DepartmentResponse'
                 msg:
                   type: string
               type: object
@@ -4421,7 +4462,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentRequest'
+          $ref: '#/definitions/request.UpdateDepartmentRequest'
       produces:
       - application/json
       responses:
@@ -4429,10 +4470,10 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse'
+                  $ref: '#/definitions/response.DepartmentResponse'
                 msg:
                   type: string
               type: object
@@ -4477,7 +4518,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4522,10 +4563,10 @@ paths:
           description: 部门详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse'
+                  $ref: '#/definitions/response.DepartmentResponse'
                 msg:
                   type: string
               type: object
@@ -4568,7 +4609,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentLeaderRequest'
+          $ref: '#/definitions/request.UpdateDepartmentLeaderRequest'
       produces:
       - application/json
       responses:
@@ -4576,7 +4617,7 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4616,11 +4657,11 @@ paths:
           description: 部门树
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department'
+                    $ref: '#/definitions/entity.Department'
                   type: array
                 msg:
                   type: string
@@ -4643,6 +4684,62 @@ paths:
       tags:
       - 部门管理
   /api/admin/dict:
+    get:
+      consumes:
+      - application/json
+      description: 获取字典列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageSize
+        type: integer
+      - description: 字典编码
+        in: query
+        name: dict_code
+        type: string
+      - description: 字典名称
+        in: query
+        name: dict_name
+        type: string
+      - description: 状态：1-启用 0-禁用
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 字典列表
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.DictListResponse'
+                msg:
+                  type: string
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取字典列表
+      tags:
+      - 字典管理
     post:
       consumes:
       - application/json
@@ -4653,7 +4750,7 @@ paths:
         name: dict
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictRequest'
+          $ref: '#/definitions/request.CreateDictRequest'
       produces:
       - application/json
       responses:
@@ -4661,10 +4758,10 @@ paths:
           description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse'
+                  $ref: '#/definitions/response.DictResponse'
                 msg:
                   type: string
               type: object
@@ -4701,7 +4798,7 @@ paths:
         name: dict
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictRequest'
+          $ref: '#/definitions/request.UpdateDictRequest'
       produces:
       - application/json
       responses:
@@ -4709,7 +4806,7 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4755,7 +4852,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4800,10 +4897,10 @@ paths:
           description: 字典详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse'
+                  $ref: '#/definitions/response.DictResponse'
                 msg:
                   type: string
               type: object
@@ -4848,10 +4945,10 @@ paths:
           description: 字典详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse'
+                  $ref: '#/definitions/response.DictResponse'
                 msg:
                   type: string
               type: object
@@ -4889,7 +4986,7 @@ paths:
         name: dict_item
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictItemRequest'
+          $ref: '#/definitions/request.CreateDictItemRequest'
       produces:
       - application/json
       responses:
@@ -4897,10 +4994,10 @@ paths:
           description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse'
+                  $ref: '#/definitions/response.DictItemResponse'
                 msg:
                   type: string
               type: object
@@ -4937,7 +5034,7 @@ paths:
         name: dict_item
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictItemRequest'
+          $ref: '#/definitions/request.UpdateDictItemRequest'
       produces:
       - application/json
       responses:
@@ -4945,7 +5042,7 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -4991,7 +5088,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -5036,10 +5133,10 @@ paths:
           description: 字典项详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse'
+                  $ref: '#/definitions/response.DictItemResponse'
                 msg:
                   type: string
               type: object
@@ -5084,10 +5181,10 @@ paths:
           description: 字典项列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemListResponse'
+                  $ref: '#/definitions/response.DictItemListResponse'
                 msg:
                   type: string
               type: object
@@ -5112,63 +5209,6 @@ paths:
       security:
       - BearerAuth: []
       summary: 根据字典ID获取字典项列表
-      tags:
-      - 字典管理
-  /api/admin/dict/list:
-    get:
-      consumes:
-      - application/json
-      description: 获取字典列表
-      parameters:
-      - description: 页码
-        in: query
-        name: page
-        type: integer
-      - description: 每页条数
-        in: query
-        name: pageSize
-        type: integer
-      - description: 字典编码
-        in: query
-        name: dict_code
-        type: string
-      - description: 字典名称
-        in: query
-        name: dict_name
-        type: string
-      - description: 状态：1-启用 0-禁用
-        in: query
-        name: status
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 字典列表
-          schema:
-            allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictListResponse'
-                msg:
-                  type: string
-              type: object
-        "401":
-          description: 未授权
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: 服务器内部错误
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: 获取字典列表
       tags:
       - 字典管理
   /api/admin/login-log:
@@ -5219,15 +5259,15 @@ paths:
           description: 登录日志列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  - $ref: '#/definitions/baseRes.PageResult'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO'
+                          $ref: '#/definitions/response.LoginLogListDTO'
                         type: array
                     type: object
                 msg:
@@ -5266,7 +5306,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RecordLoginRequest'
+          $ref: '#/definitions/request.RecordLoginRequest'
       produces:
       - application/json
       responses:
@@ -5274,7 +5314,7 @@ paths:
           description: 记录成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -5320,10 +5360,10 @@ paths:
           description: 登录日志详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO'
+                  $ref: '#/definitions/response.LoginLogDetailDTO'
                 msg:
                   type: string
               type: object
@@ -5373,15 +5413,15 @@ paths:
           description: 异常登录列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  - $ref: '#/definitions/baseRes.PageResult'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO'
+                          $ref: '#/definitions/response.AbnormalLoginInfoDTO'
                         type: array
                     type: object
                 msg:
@@ -5433,10 +5473,10 @@ paths:
           description: 统计信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.LoginStatistics'
+                  $ref: '#/definitions/entity.LoginStatistics'
                 msg:
                   type: string
               type: object
@@ -5510,10 +5550,10 @@ paths:
           description: 操作日志列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogListResponse'
+                  $ref: '#/definitions/response.OperationLogListResponse'
               type: object
         "400":
           description: 请求参数错误
@@ -5586,10 +5626,10 @@ paths:
           description: 操作日志详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogResponse'
+                  $ref: '#/definitions/response.OperationLogResponse'
               type: object
         "400":
           description: 请求参数错误
@@ -5625,7 +5665,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchDeleteOperationLogRequest'
+          $ref: '#/definitions/request.BatchDeleteOperationLogRequest'
       produces:
       - application/json
       responses:
@@ -5663,7 +5703,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.ClearOperationLogByTimeRangeRequest'
+          $ref: '#/definitions/request.ClearOperationLogByTimeRangeRequest'
       produces:
       - application/json
       responses:
@@ -5711,10 +5751,10 @@ paths:
           description: 操作日志统计信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogStatisticsResponse'
+                  $ref: '#/definitions/response.OperationLogStatisticsResponse'
               type: object
         "400":
           description: 请求参数错误
@@ -5745,11 +5785,11 @@ paths:
           description: 菜单列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu'
+                    $ref: '#/definitions/entity.Menu'
                   type: array
                 msg:
                   type: string
@@ -5789,7 +5829,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -5835,10 +5875,10 @@ paths:
           description: 影响评估结果
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DeleteImpact'
+                  $ref: '#/definitions/entity.DeleteImpact'
                 msg:
                   type: string
               type: object
@@ -5902,15 +5942,15 @@ paths:
           description: 菜单分页列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  - $ref: '#/definitions/baseRes.PageResult'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse'
+                          $ref: '#/definitions/response.MenuResponse'
                         type: array
                     type: object
                 msg:
@@ -5951,11 +5991,11 @@ paths:
           description: 菜单树结构
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse'
+                    $ref: '#/definitions/response.MenuResponse'
                   type: array
                 msg:
                   type: string
@@ -5989,7 +6029,7 @@ paths:
           description: 成功返回缓存监控信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   type: object
@@ -5997,7 +6037,7 @@ paths:
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       summary: 获取缓存监控信息
       tags:
       - 系统监控
@@ -6013,7 +6053,7 @@ paths:
           description: 成功返回数据库监控信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   type: object
@@ -6021,7 +6061,7 @@ paths:
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       summary: 获取数据库监控信息
       tags:
       - 系统监控
@@ -6046,7 +6086,7 @@ paths:
           description: 成功返回 Redis 键列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   type: object
@@ -6054,7 +6094,7 @@ paths:
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       summary: 查询 Redis 键
       tags:
       - 系统监控
@@ -6070,7 +6110,7 @@ paths:
           description: 成功返回慢查询日志
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   type: object
@@ -6078,7 +6118,7 @@ paths:
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       summary: 查询慢查询日志
       tags:
       - 系统监控
@@ -6094,15 +6134,15 @@ paths:
           description: 成功返回系统监控信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.SystemStatus'
+                  $ref: '#/definitions/monitor.SystemStatus'
               type: object
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       summary: 获取系统监控信息
       tags:
       - 系统监控
@@ -6141,10 +6181,10 @@ paths:
           description: 公告列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeListResponse'
+                  $ref: '#/definitions/response.NoticeListResponse'
                 msg:
                   type: string
               type: object
@@ -6175,7 +6215,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateNoticeRequest'
+          $ref: '#/definitions/request.CreateNoticeRequest'
       produces:
       - application/json
       responses:
@@ -6183,10 +6223,10 @@ paths:
           description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse'
+                  $ref: '#/definitions/response.NoticeResponse'
                 msg:
                   type: string
               type: object
@@ -6223,7 +6263,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateNoticeRequest'
+          $ref: '#/definitions/request.UpdateNoticeRequest'
       produces:
       - application/json
       responses:
@@ -6231,10 +6271,10 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse'
+                  $ref: '#/definitions/response.NoticeResponse'
                 msg:
                   type: string
               type: object
@@ -6279,7 +6319,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -6324,10 +6364,10 @@ paths:
           description: 公告详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse'
+                  $ref: '#/definitions/response.NoticeResponse'
                 msg:
                   type: string
               type: object
@@ -6372,7 +6412,7 @@ paths:
           description: 是否已读
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   type: boolean
@@ -6420,7 +6460,7 @@ paths:
           description: 发布成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -6466,7 +6506,7 @@ paths:
           description: 标记成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -6506,10 +6546,10 @@ paths:
           description: 统计信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeStatisticsResponse'
+                  $ref: '#/definitions/response.NoticeStatisticsResponse'
                 msg:
                   type: string
               type: object
@@ -6553,10 +6593,10 @@ paths:
           description: 在线用户列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserListResponse'
+                  $ref: '#/definitions/response.OnlineUserListResponse'
                 msg:
                   type: string
               type: object
@@ -6607,7 +6647,7 @@ paths:
           description: 强制下线成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -6658,10 +6698,10 @@ paths:
           description: 在线用户详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserResponse'
+                  $ref: '#/definitions/response.OnlineUserResponse'
                 msg:
                   type: string
               type: object
@@ -6705,7 +6745,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchForceOfflineRequest'
+          $ref: '#/definitions/request.BatchForceOfflineRequest'
       produces:
       - application/json
       responses:
@@ -6713,7 +6753,7 @@ paths:
           description: 批量强制下线成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -6753,7 +6793,7 @@ paths:
           description: 在线用户数量
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   format: int64
@@ -6797,7 +6837,7 @@ paths:
           description: 是否在线
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   type: boolean
@@ -6854,10 +6894,10 @@ paths:
           description: 岗位列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionListResponse'
+                  $ref: '#/definitions/response.PositionListResponse'
                 msg:
                   type: string
               type: object
@@ -6888,7 +6928,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreatePositionRequest'
+          $ref: '#/definitions/request.CreatePositionRequest'
       produces:
       - application/json
       responses:
@@ -6896,10 +6936,10 @@ paths:
           description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse'
+                  $ref: '#/definitions/response.PositionResponse'
                 msg:
                   type: string
               type: object
@@ -6936,7 +6976,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdatePositionRequest'
+          $ref: '#/definitions/request.UpdatePositionRequest'
       produces:
       - application/json
       responses:
@@ -6944,10 +6984,10 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse'
+                  $ref: '#/definitions/response.PositionResponse'
                 msg:
                   type: string
               type: object
@@ -6992,7 +7032,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -7037,10 +7077,10 @@ paths:
           description: 岗位详情
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse'
+                  $ref: '#/definitions/response.PositionResponse'
                 msg:
                   type: string
               type: object
@@ -7079,11 +7119,11 @@ paths:
           description: 岗位列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse'
+                    $ref: '#/definitions/response.PositionResponse'
                   type: array
                 msg:
                   type: string
@@ -7116,14 +7156,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteRoleRequest'
+          $ref: '#/definitions/request.DeleteRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 删除角色
@@ -7159,10 +7199,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleListResponse'
+                  $ref: '#/definitions/response.RoleListResponse'
               type: object
       security:
       - BearerAuth: []
@@ -7179,7 +7219,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateRoleRequest'
+          $ref: '#/definitions/request.CreateRoleRequest'
       produces:
       - application/json
       responses:
@@ -7187,10 +7227,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse'
+                  $ref: '#/definitions/response.RoleResponse'
               type: object
       security:
       - BearerAuth: []
@@ -7207,14 +7247,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateRoleRequest'
+          $ref: '#/definitions/request.UpdateRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 更新角色
@@ -7238,11 +7278,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse'
+                    $ref: '#/definitions/response.APIResponse'
                   type: array
               type: object
       security:
@@ -7268,10 +7308,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse'
+                  $ref: '#/definitions/response.RoleDetailResponse'
               type: object
       security:
       - BearerAuth: []
@@ -7294,14 +7334,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.SaveRolePermissionsRequest'
+          $ref: '#/definitions/request.SaveRolePermissionsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 保存角色权限
@@ -7319,11 +7359,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse'
+                    $ref: '#/definitions/response.RoleResponse'
                   type: array
               type: object
       security:
@@ -7342,14 +7382,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToRoleRequest'
+          $ref: '#/definitions/request.AssignToRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 分配API路由到角色
@@ -7366,14 +7406,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignMenuToRoleRequest'
+          $ref: '#/definitions/request.AssignMenuToRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 分配菜单到角色
@@ -7390,14 +7430,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignUserToRoleRequest'
+          $ref: '#/definitions/request.AssignUserToRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            $ref: '#/definitions/baseRes.Response'
       security:
       - BearerAuth: []
       summary: 分配用户到角色
@@ -7421,10 +7461,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse'
+                  $ref: '#/definitions/response.RoleDetailResponse'
               type: object
       security:
       - BearerAuth: []
@@ -7444,7 +7484,7 @@ paths:
           schema:
             additionalProperties:
               items:
-                $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse'
+                $ref: '#/definitions/response.TaskResponse'
               type: array
             type: object
         "401":
@@ -7467,22 +7507,22 @@ paths:
     post:
       consumes:
       - application/json
-      description: 添加一个定时任务或一次性任务（管理员权限）
+      description: 创建一个新的任务（管理员权限）
       parameters:
-      - description: 添加任务请求参数
+      - description: 创建任务请求参数
         in: body
         name: task
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddTaskRequest'
+          $ref: '#/definitions/request.AddTaskRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: 任务添加成功
+          description: 任务创建成功
           schema:
             additionalProperties:
-              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse'
+              $ref: '#/definitions/response.TaskResponse'
             type: object
         "400":
           description: 请求参数错误
@@ -7510,7 +7550,7 @@ paths:
             type: object
       security:
       - BearerAuth: []
-      summary: 添加任务
+      summary: 创建任务
       tags:
       - 任务管理
   /api/admin/task/:id:
@@ -7573,7 +7613,7 @@ paths:
           description: 任务详情
           schema:
             additionalProperties:
-              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse'
+              $ref: '#/definitions/response.TaskResponse'
             type: object
         "401":
           description: 未授权
@@ -7624,7 +7664,7 @@ paths:
           description: 执行日志列表
           schema:
             additionalProperties:
-              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogsResponse'
+              $ref: '#/definitions/response.TaskExecutionLogsResponse'
             type: object
         "401":
           description: 未授权
@@ -7659,7 +7699,7 @@ paths:
         name: task
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.SetTaskGroupRequest'
+          $ref: '#/definitions/request.SetTaskGroupRequest'
       produces:
       - application/json
       responses:
@@ -7840,7 +7880,7 @@ paths:
           schema:
             additionalProperties:
               items:
-                $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskStatisticsResponse'
+                $ref: '#/definitions/response.TaskStatisticsResponse'
               type: array
             type: object
         "401":
@@ -7899,15 +7939,15 @@ paths:
           description: 用户列表
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult'
+                  - $ref: '#/definitions/baseRes.PageResult'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
+                          $ref: '#/definitions/entity.User'
                         type: array
                     type: object
                 msg:
@@ -7933,27 +7973,25 @@ paths:
     post:
       consumes:
       - application/json
-      description: 增加新用户（管理员权限）
+      description: 创建新用户账户
       parameters:
-      - description: 增加用户请求参数
+      - description: 创建用户请求参数
         in: body
-        name: add_user
+        name: create
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddUserRequest'
+          $ref: '#/definitions/request.AddUserRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: 添加成功
+          description: 创建成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
-                msg:
-                  type: string
+                  $ref: '#/definitions/response.UserResponse'
               type: object
         "400":
           description: 请求参数错误
@@ -7975,7 +8013,7 @@ paths:
             type: object
       security:
       - BearerAuth: []
-      summary: 增加用户
+      summary: 创建用户
       tags:
       - 用户管理
   /api/admin/user/{id}:
@@ -7996,7 +8034,7 @@ paths:
           description: 删除成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -8024,7 +8062,7 @@ paths:
       summary: 删除用户
       tags:
       - 用户管理
-  /api/admin/user/getSelfSetting:
+  /api/admin/user/get-user-settings:
     get:
       consumes:
       - application/json
@@ -8036,11 +8074,11 @@ paths:
           description: 用户设置信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
                   additionalProperties:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting'
+                    $ref: '#/definitions/entity.UserSetting'
                   type: object
                 msg:
                   type: string
@@ -8074,10 +8112,10 @@ paths:
           description: 用户信息
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse'
+                  $ref: '#/definitions/response.UserInfoResponse'
                 msg:
                   type: string
               type: object
@@ -8108,7 +8146,7 @@ paths:
         name: update_user
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateUserRequest'
+          $ref: '#/definitions/request.UpdateUserRequest'
       produces:
       - application/json
       responses:
@@ -8116,10 +8154,10 @@ paths:
           description: 更新成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User'
+                  $ref: '#/definitions/entity.User'
                 msg:
                   type: string
               type: object
@@ -8157,7 +8195,7 @@ paths:
         name: change_password
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.ChangePasswordRequest'
+          $ref: '#/definitions/request.ChangePasswordRequest'
       produces:
       - application/json
       responses:
@@ -8165,7 +8203,7 @@ paths:
           description: 修改成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -8204,7 +8242,7 @@ paths:
         name: reset_password
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.ResetPasswordRequest'
+          $ref: '#/definitions/request.ResetPasswordRequest'
       produces:
       - application/json
       responses:
@@ -8212,7 +8250,7 @@ paths:
           description: 重置成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -8240,57 +8278,6 @@ paths:
       summary: 重置密码
       tags:
       - 用户管理
-  /api/admin/user/setSelfSetting:
-    put:
-      consumes:
-      - application/json
-      description: 保存当前登录用户的系统设置
-      parameters:
-      - description: 用户设置参数
-        in: body
-        name: user_setting
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 保存成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
-            - properties:
-                data:
-                  additionalProperties:
-                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting'
-                  type: object
-                msg:
-                  type: string
-              type: object
-        "400":
-          description: 请求参数错误
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "401":
-          description: 未授权
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: 服务器内部错误
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: 保存用户设置
-      tags:
-      - 用户管理
   /api/admin/user/switch-role:
     post:
       consumes:
@@ -8302,7 +8289,7 @@ paths:
         name: switch_role
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.SwitchRoleRequest'
+          $ref: '#/definitions/request.SwitchRoleRequest'
       produces:
       - application/json
       responses:
@@ -8310,7 +8297,7 @@ paths:
           description: 切换成功
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 msg:
                   type: string
@@ -8338,6 +8325,57 @@ paths:
       summary: 切换用户角色
       tags:
       - 用户管理
+  /api/admin/user/update-user-settings:
+    put:
+      consumes:
+      - application/json
+      description: 更新当前登录用户的系统设置
+      parameters:
+      - description: 用户设置参数
+        in: body
+        name: user_setting
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserSetting'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/entity.UserSetting'
+                  type: object
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 更新用户设置
+      tags:
+      - 用户管理
   /api/payment:
     post:
       consumes:
@@ -8349,7 +8387,7 @@ paths:
         name: payment
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_request.CreatePaymentRequest'
+          $ref: '#/definitions/request.CreatePaymentRequest'
       produces:
       - application/json
       responses:
@@ -8357,7 +8395,7 @@ paths:
           description: 支付创建成功
           schema:
             additionalProperties:
-              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse'
+              $ref: '#/definitions/response.PaymentResponse'
             type: object
         "400":
           description: 请求参数错误
@@ -8393,7 +8431,7 @@ paths:
         name: code
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatLoginRequest'
+          $ref: '#/definitions/request.WechatLoginRequest'
       produces:
       - application/json
       responses:
@@ -8401,10 +8439,10 @@ paths:
           description: 登录成功，包含用户信息和令牌
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXLoginResponse'
+                  $ref: '#/definitions/response.WXLoginResponse'
                 msg:
                   type: string
               type: object
@@ -8434,7 +8472,7 @@ paths:
         name: refresh
         required: true
         schema:
-          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatRefreshTokenRequest'
+          $ref: '#/definitions/request.WechatRefreshTokenRequest'
       produces:
       - application/json
       responses:
@@ -8442,10 +8480,10 @@ paths:
           description: 刷新成功，包含新的令牌
           schema:
             allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - $ref: '#/definitions/baseRes.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXLoginResponse'
+                  $ref: '#/definitions/response.WXLoginResponse'
                 msg:
                   type: string
               type: object

@@ -43,7 +43,7 @@ func NewLoginLogController(service *service.LoginLogService, log logger.Logger) 
 //	@Param			result		query		int									false	"登录结果：0-失败，1-成功"
 //	@Param			start_date	query		string								false	"开始日期（YYYY-MM-DD）"
 //	@Param			end_date	query		string								false	"结束日期（YYYY-MM-DD）"
-//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO},msg=string}	"登录日志列表"
+//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]response.LoginLogListDTO},msg=string}	"登录日志列表"
 //	@Failure		400			{object}	map[string]string					"请求参数错误"
 //	@Failure		401			{object}	map[string]string					"未授权"
 //	@Failure		500			{object}	map[string]string					"服务器内部错误"
@@ -116,12 +116,12 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			start_date	query		string									true	"开始日期（YYYY-MM-DD）"
-//	@Param			end_date	query		string									true	"结束日期（YYYY-MM-DD）"
-//	@Success		200			{object}	baseRes.Response{data=github_com_ix-pay_ixpay-pro_internal_domain_base_entity.LoginStatistics,msg=string}	"统计信息"
-//	@Failure		400			{object}	map[string]string						"请求参数错误"
-//	@Failure		401			{object}	map[string]string						"未授权"
-//	@Failure		500			{object}	map[string]string						"服务器内部错误"
+//	@Param			start_date	query		string								true	"开始日期（YYYY-MM-DD）"
+//	@Param			end_date	query		string								true	"结束日期（YYYY-MM-DD）"
+//	@Success		200			{object}	baseRes.Response{data=entity.LoginStatistics,msg=string}	"统计信息"
+//	@Failure		400			{object}	map[string]string					"请求参数错误"
+//	@Failure		401			{object}	map[string]string					"未授权"
+//	@Failure		500			{object}	map[string]string					"服务器内部错误"
 //	@Router			/api/admin/login-log/statistics [get]
 func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 	// 检查用户是否已登录
@@ -176,9 +176,9 @@ func (c *LoginLogController) GetStatistics(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			page		query		int									true	"页码"
-//	@Param			page_size	query		int									true	"每页数量"
-//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO},msg=string}	"异常登录列表"
+//	@Param			page		query		int										true	"页码"
+//	@Param			page_size	query		int										true	"每页数量"
+//	@Success		200			{object}	baseRes.Response{data=baseRes.PageResult{list=[]response.AbnormalLoginInfoDTO},msg=string}	"异常登录列表"
 //	@Failure		400			{object}	map[string]string					"请求参数错误"
 //	@Failure		401			{object}	map[string]string					"未授权"
 //	@Failure		500			{object}	map[string]string					"服务器内部错误"
@@ -306,7 +306,7 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id	path		string									true	"登录日志 ID"
-//	@Success		200	{object}	baseRes.Response{data=github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO,msg=string}	"登录日志详情"
+//	@Success		200	{object}	baseRes.Response{data=response.LoginLogDetailDTO,msg=string}	"登录日志详情"
 //	@Failure		400	{object}	map[string]string						"请求参数错误"
 //	@Failure		401	{object}	map[string]string						"未授权"
 //	@Failure		500	{object}	map[string]string						"服务器内部错误"

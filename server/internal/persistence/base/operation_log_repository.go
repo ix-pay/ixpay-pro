@@ -6,15 +6,16 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // operationLogModel 操作日志数据库模型
 type operationLogModel struct {
 	database.SnowflakeBaseModel
-	UserID        int64     `gorm:"index"`
+	UserID        *int64    `gorm:"not null;default:0;index"`
 	Username      string    `gorm:"size:50"`
 	Nickname      string    `gorm:"size:50"`
-	OperationType int       `gorm:"default:1"`
+	OperationType *int      `gorm:"not null;default:0"`
 	Module        string    `gorm:"size:50"`
 	Description   string    `gorm:"size:500"`
 	Method        string    `gorm:"size:10"`
@@ -22,11 +23,11 @@ type operationLogModel struct {
 	Params        string    `gorm:"type:text"`
 	ClientIP      string    `gorm:"size:50"`
 	UserAgent     string    `gorm:"size:500"`
-	StatusCode    int       `gorm:"default:200"`
+	StatusCode    *int      `gorm:"not null;default:200"`
 	Result        string    `gorm:"type:text"`
-	Duration      int64     `gorm:"default:0"`
+	Duration      *int64    `gorm:"not null;default:0"`
 	ErrorMessage  string    `gorm:"size:1000"`
-	IsSuccess     bool      `gorm:"default:true"`
+	IsSuccess     *bool     `gorm:"not null;default:true"`
 	ExecuteTime   time.Time `gorm:"index"`
 }
 
@@ -40,29 +41,57 @@ func (m *operationLogModel) toDomain() *entity.OperationLog {
 	if m == nil {
 		return nil
 	}
-	return &entity.OperationLog{
-		ID:            m.ID,
-		UserID:        m.UserID,
-		Username:      m.Username,
-		Nickname:      m.Nickname,
-		OperationType: entity.OperationType(m.OperationType),
-		Module:        m.Module,
-		Description:   m.Description,
-		Method:        m.Method,
-		Path:          m.Path,
-		Params:        m.Params,
-		ClientIP:      m.ClientIP,
-		UserAgent:     m.UserAgent,
-		StatusCode:    m.StatusCode,
-		Result:        m.Result,
-		Duration:      m.Duration,
-		ErrorMessage:  m.ErrorMessage,
-		IsSuccess:     m.IsSuccess,
-		CreatedBy:     m.CreatedBy,
-		CreatedAt:     m.CreatedAt,
-		UpdatedBy:     m.UpdatedBy,
-		UpdatedAt:     m.UpdatedAt,
+	log := &entity.OperationLog{
+		ID:           m.ID,
+		Username:     m.Username,
+		Nickname:     m.Nickname,
+		Module:       m.Module,
+		Description:  m.Description,
+		Method:       m.Method,
+		Path:         m.Path,
+		Params:       m.Params,
+		ClientIP:     m.ClientIP,
+		UserAgent:    m.UserAgent,
+		Result:       m.Result,
+		ErrorMessage: m.ErrorMessage,
+		CreatedBy:    m.CreatedBy,
+		CreatedAt:    m.CreatedAt,
+		UpdatedBy:    m.UpdatedBy,
+		UpdatedAt:    m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.UserID != nil {
+		log.UserID = *m.UserID
+	} else {
+		log.UserID = 0
+	}
+
+	if m.OperationType != nil {
+		log.OperationType = entity.OperationType(*m.OperationType)
+	} else {
+		log.OperationType = entity.OperationType(0)
+	}
+
+	if m.StatusCode != nil {
+		log.StatusCode = *m.StatusCode
+	} else {
+		log.StatusCode = 200
+	}
+
+	if m.Duration != nil {
+		log.Duration = *m.Duration
+	} else {
+		log.Duration = 0
+	}
+
+	if m.IsSuccess != nil {
+		log.IsSuccess = *m.IsSuccess
+	} else {
+		log.IsSuccess = true
+	}
+
+	return log
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -73,10 +102,10 @@ func fromDomainOperationLog(log *entity.OperationLog) (*operationLogModel, error
 			CreatedBy: log.CreatedBy,
 			UpdatedBy: log.UpdatedBy,
 		},
-		UserID:        log.UserID,
+		UserID:        common.Int64Ptr(log.UserID),
 		Username:      log.Username,
 		Nickname:      log.Nickname,
-		OperationType: int(log.OperationType),
+		OperationType: common.IntPtr(int(log.OperationType)),
 		Module:        log.Module,
 		Description:   log.Description,
 		Method:        log.Method,
@@ -84,11 +113,11 @@ func fromDomainOperationLog(log *entity.OperationLog) (*operationLogModel, error
 		Params:        log.Params,
 		ClientIP:      log.ClientIP,
 		UserAgent:     log.UserAgent,
-		StatusCode:    log.StatusCode,
+		StatusCode:    common.IntPtr(log.StatusCode),
 		Result:        log.Result,
-		Duration:      log.Duration,
+		Duration:      common.Int64Ptr(log.Duration),
 		ErrorMessage:  log.ErrorMessage,
-		IsSuccess:     log.IsSuccess,
+		IsSuccess:     common.BoolPtr(log.IsSuccess),
 		ExecuteTime:   time.Now(),
 	}, nil
 }

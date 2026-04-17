@@ -4,24 +4,25 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // menuModel 菜单数据库模型
 type menuModel struct {
 	database.SnowflakeBaseModel
-	ParentID   int64  `gorm:"default:0"`
+	ParentID   *int64 `gorm:"not null;default:0"`
 	Path       string `gorm:"size:255;not null"`
 	Name       string `gorm:"size:100;not null;unique"`
 	Component  string `gorm:"size:255"`
 	Title      string `gorm:"size:50;not null"`
 	Icon       string `gorm:"size:50"`
-	Hidden     bool   `gorm:"default:false"`
-	Sort       int    `gorm:"default:0"`
-	Status     int    `gorm:"default:1"`
-	IsExt      bool   `gorm:"default:false"`
+	Hidden     *bool  `gorm:"not null;default:false"`
+	Sort       *int   `gorm:"not null;default:0"`
+	Status     *int   `gorm:"not null;default:1"`
+	IsExt      *bool  `gorm:"not null;default:false"`
 	Redirect   string `gorm:"size:255"`
 	Permission string `gorm:"size:100"`
-	Type       int    `gorm:"default:2"`
+	Type       *int   `gorm:"not null;default:2"`
 	FrameSrc   string `gorm:"size:255"`
 
 	// GORM 关联关系 - 一对多（子菜单）
@@ -49,24 +50,55 @@ func (m *menuModel) toDomain() *entity.Menu {
 	}
 	menu := &entity.Menu{
 		ID:         m.ID,
-		ParentID:   m.ParentID,
 		Path:       m.Path,
 		Name:       m.Name,
 		Component:  m.Component,
 		Title:      m.Title,
 		Icon:       m.Icon,
-		Hidden:     m.Hidden,
-		Sort:       m.Sort,
-		Status:     m.Status,
-		IsExt:      m.IsExt,
 		Redirect:   m.Redirect,
 		Permission: m.Permission,
-		Type:       entity.MenuType(m.Type),
 		FrameSrc:   m.FrameSrc,
 		CreatedBy:  m.CreatedBy,
 		CreatedAt:  m.CreatedAt,
 		UpdatedBy:  m.UpdatedBy,
 		UpdatedAt:  m.UpdatedAt,
+	}
+
+	// 安全解引用，提供默认值
+	if m.ParentID != nil {
+		menu.ParentID = *m.ParentID
+	} else {
+		menu.ParentID = 0
+	}
+
+	if m.Hidden != nil {
+		menu.Hidden = *m.Hidden
+	} else {
+		menu.Hidden = false
+	}
+
+	if m.Sort != nil {
+		menu.Sort = *m.Sort
+	} else {
+		menu.Sort = 0
+	}
+
+	if m.Status != nil {
+		menu.Status = *m.Status
+	} else {
+		menu.Status = 1
+	}
+
+	if m.IsExt != nil {
+		menu.IsExt = *m.IsExt
+	} else {
+		menu.IsExt = false
+	}
+
+	if m.Type != nil {
+		menu.Type = entity.MenuType(*m.Type)
+	} else {
+		menu.Type = entity.MenuType(2)
 	}
 
 	// ⭐ 处理关联数据 - 子菜单
@@ -118,19 +150,19 @@ func fromDomainMenu(menu *entity.Menu) (*menuModel, error) {
 			CreatedBy: menu.CreatedBy,
 			UpdatedBy: menu.UpdatedBy,
 		},
-		ParentID:   menu.ParentID,
+		ParentID:   common.Int64Ptr(menu.ParentID),
 		Path:       menu.Path,
 		Name:       menu.Name,
 		Component:  menu.Component,
 		Title:      menu.Title,
 		Icon:       menu.Icon,
-		Hidden:     menu.Hidden,
-		Sort:       menu.Sort,
-		Status:     menu.Status,
-		IsExt:      menu.IsExt,
+		Hidden:     common.BoolPtr(menu.Hidden),
+		Sort:       common.IntPtr(menu.Sort),
+		Status:     common.IntPtr(menu.Status),
+		IsExt:      common.BoolPtr(menu.IsExt),
 		Redirect:   menu.Redirect,
 		Permission: menu.Permission,
-		Type:       int(menu.Type),
+		Type:       common.IntPtr(int(menu.Type)),
 		FrameSrc:   menu.FrameSrc,
 	}, nil
 }

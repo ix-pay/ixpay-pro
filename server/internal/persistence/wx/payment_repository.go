@@ -6,14 +6,15 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // paymentModel 支付数据库模型
 type paymentModel struct {
 	database.SnowflakeBaseModel
 	OrderID       string              `gorm:"size:50;not null;index"`
-	UserID        int64               `gorm:"not null;index"`
-	Amount        int64               `gorm:"not null"`
+	UserID        *int64              `gorm:"not null;default:0;index"`
+	Amount        *int64              `gorm:"not null;default:0"`
 	Currency      string              `gorm:"size:10;default:'CNY'"`
 	Method        string              `gorm:"size:20;not null"`
 	Status        string              `gorm:"size:20;default:'pending'"`
@@ -40,8 +41,8 @@ func (m *paymentModel) toDomain() *entity.Payment {
 	return &entity.Payment{
 		ID:            m.ID,
 		OrderID:       m.OrderID,
-		UserID:        m.UserID,
-		Amount:        m.Amount,
+		UserID:        *m.UserID,
+		Amount:        *m.Amount,
 		Currency:      m.Currency,
 		Method:        m.Method,
 		Status:        entity.PaymentStatus(m.Status),
@@ -60,24 +61,29 @@ func (m *paymentModel) toDomain() *entity.Payment {
 func fromDomainPayment(payment *entity.Payment) (*paymentModel, error) {
 	var wechatPayInfo *wechatPayInfoModel
 	if payment.WechatPayInfo != nil {
-		wechatPayInfo = &wechatPayInfoModel{}
-		wechatPayInfo.ID = payment.WechatPayInfo.ID
-		wechatPayInfo.PaymentID = payment.WechatPayInfo.PaymentID
-		wechatPayInfo.AppID = payment.WechatPayInfo.AppID
-		wechatPayInfo.MCHID = payment.WechatPayInfo.MCHID
-		wechatPayInfo.NonceStr = payment.WechatPayInfo.NonceStr
-		wechatPayInfo.PrepayID = payment.WechatPayInfo.PrepayID
-		wechatPayInfo.CodeURL = payment.WechatPayInfo.CodeURL
-		wechatPayInfo.Sign = payment.WechatPayInfo.Sign
-		wechatPayInfo.Timestamp = payment.WechatPayInfo.Timestamp
-		wechatPayInfo.Package = payment.WechatPayInfo.Package
-		wechatPayInfo.PaySign = payment.WechatPayInfo.PaySign
-		wechatPayInfo.ReturnCode = payment.WechatPayInfo.ReturnCode
-		wechatPayInfo.ReturnMsg = payment.WechatPayInfo.ReturnMsg
-		wechatPayInfo.ResultCode = payment.WechatPayInfo.ResultCode
-		wechatPayInfo.ErrCode = payment.WechatPayInfo.ErrCode
-		wechatPayInfo.ErrCodeDes = payment.WechatPayInfo.ErrCodeDes
-		wechatPayInfo.NotifyData = payment.WechatPayInfo.NotifyData
+		wechatPayInfo = &wechatPayInfoModel{
+			SnowflakeBaseModel: database.SnowflakeBaseModel{
+				ID:        payment.WechatPayInfo.ID,
+				CreatedBy: payment.WechatPayInfo.CreatedBy,
+				UpdatedBy: payment.WechatPayInfo.UpdatedBy,
+			},
+			PaymentID:  common.Int64Ptr(payment.WechatPayInfo.PaymentID),
+			AppID:      payment.WechatPayInfo.AppID,
+			MCHID:      payment.WechatPayInfo.MCHID,
+			NonceStr:   payment.WechatPayInfo.NonceStr,
+			PrepayID:   payment.WechatPayInfo.PrepayID,
+			CodeURL:    payment.WechatPayInfo.CodeURL,
+			Sign:       payment.WechatPayInfo.Sign,
+			Timestamp:  payment.WechatPayInfo.Timestamp,
+			Package:    payment.WechatPayInfo.Package,
+			PaySign:    payment.WechatPayInfo.PaySign,
+			ReturnCode: payment.WechatPayInfo.ReturnCode,
+			ReturnMsg:  payment.WechatPayInfo.ReturnMsg,
+			ResultCode: payment.WechatPayInfo.ResultCode,
+			ErrCode:    payment.WechatPayInfo.ErrCode,
+			ErrCodeDes: payment.WechatPayInfo.ErrCodeDes,
+			NotifyData: payment.WechatPayInfo.NotifyData,
+		}
 	}
 
 	return &paymentModel{
@@ -87,8 +93,8 @@ func fromDomainPayment(payment *entity.Payment) (*paymentModel, error) {
 			UpdatedBy: 0,
 		},
 		OrderID:       payment.OrderID,
-		UserID:        payment.UserID,
-		Amount:        payment.Amount,
+		UserID:        common.Int64Ptr(payment.UserID),
+		Amount:        common.Int64Ptr(payment.Amount),
 		Currency:      payment.Currency,
 		Method:        payment.Method,
 		Status:        string(payment.Status),

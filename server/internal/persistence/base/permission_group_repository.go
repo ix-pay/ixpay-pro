@@ -4,6 +4,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // permissionGroupModel 权限组数据库模型
@@ -11,8 +12,8 @@ type permissionGroupModel struct {
 	database.SnowflakeBaseModel
 	Name        string `gorm:"size:100;not null;unique"`
 	Description string `gorm:"size:500"`
-	Status      int    `gorm:"default:1"`
-	Sort        int    `gorm:"default:0"`
+	Status      *int   `gorm:"not null;default:1"`
+	Sort        *int   `gorm:"not null;default:0"`
 }
 
 // TableName 指定表名
@@ -25,17 +26,30 @@ func (m *permissionGroupModel) toDomain() *entity.PermissionGroup {
 	if m == nil {
 		return nil
 	}
-	return &entity.PermissionGroup{
+	group := &entity.PermissionGroup{
 		ID:          m.ID,
 		Name:        m.Name,
 		Description: m.Description,
-		Status:      m.Status,
-		Sort:        m.Sort,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
 	}
+
+	// 安全解引用，提供默认值
+	if m.Status != nil {
+		group.Status = *m.Status
+	} else {
+		group.Status = 1
+	}
+
+	if m.Sort != nil {
+		group.Sort = *m.Sort
+	} else {
+		group.Sort = 0
+	}
+
+	return group
 }
 
 // fromDomain 将领域实体转换为数据库模型
@@ -48,8 +62,8 @@ func fromDomainPermissionGroup(group *entity.PermissionGroup) (*permissionGroupM
 		},
 		Name:        group.Name,
 		Description: group.Description,
-		Status:      group.Status,
-		Sort:        group.Sort,
+		Status:      common.IntPtr(group.Status),
+		Sort:        common.IntPtr(group.Sort),
 	}, nil
 }
 

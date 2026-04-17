@@ -4,16 +4,17 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // btnPermModel 按钮权限数据库模型
 type btnPermModel struct {
 	database.SnowflakeBaseModel
-	MenuID      int64  `gorm:"index"`
+	MenuID      *int64 `gorm:"not null;default:0;index"`
 	Code        string `gorm:"size:100;not null;unique"`
 	Name        string `gorm:"size:50;not null"`
 	Description string `gorm:"size:255"`
-	Status      int    `gorm:"default:1"`
+	Status      *int   `gorm:"not null;default:1"`
 
 	// GORM 关联关系 - 多对一（所属菜单）
 	Menu *menuModel `gorm:"foreignKey:menu_id;references:id"`
@@ -33,15 +34,27 @@ func (m *btnPermModel) toDomain() *entity.BtnPerm {
 		return nil
 	}
 	btnPerm := &entity.BtnPerm{
-		ID:        m.ID,
-		MenuID:    m.MenuID,
-		Code:      m.Code,
-		Name:      m.Name,
-		Status:    m.Status,
-		CreatedBy: m.CreatedBy,
-		CreatedAt: m.CreatedAt,
-		UpdatedBy: m.UpdatedBy,
-		UpdatedAt: m.UpdatedAt,
+		ID:          m.ID,
+		Code:        m.Code,
+		Name:        m.Name,
+		Description: m.Description,
+		CreatedBy:   m.CreatedBy,
+		CreatedAt:   m.CreatedAt,
+		UpdatedBy:   m.UpdatedBy,
+		UpdatedAt:   m.UpdatedAt,
+	}
+
+	// 安全解引用，提供默认值
+	if m.MenuID != nil {
+		btnPerm.MenuID = *m.MenuID
+	} else {
+		btnPerm.MenuID = 0
+	}
+
+	if m.Status != nil {
+		btnPerm.Status = *m.Status
+	} else {
+		btnPerm.Status = 1
 	}
 
 	// ⭐ 处理关联数据 - 菜单
@@ -72,10 +85,10 @@ func fromDomainBtnPerm(btnPerm *entity.BtnPerm) (*btnPermModel, error) {
 			CreatedBy: btnPerm.CreatedBy,
 			UpdatedBy: btnPerm.UpdatedBy,
 		},
-		MenuID: btnPerm.MenuID,
+		MenuID: common.Int64Ptr(btnPerm.MenuID),
 		Code:   btnPerm.Code,
 		Name:   btnPerm.Name,
-		Status: btnPerm.Status,
+		Status: common.IntPtr(btnPerm.Status),
 	}, nil
 }
 

@@ -4,16 +4,17 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // departmentModel 部门数据库模型
 type departmentModel struct {
 	database.SnowflakeBaseModel
 	Name        string `gorm:"size:100;not null"`
-	ParentID    int64  `gorm:"default:0;index"`
-	LeaderID    int64  `gorm:"index"`
-	Sort        int    `gorm:"default:0"`
-	Status      int    `gorm:"default:1"`
+	ParentID    *int64 `gorm:"not null;default:0;index"`
+	LeaderID    *int64 `gorm:"not null;default:0;index"`
+	Sort        *int   `gorm:"not null;default:0"`
+	Status      *int   `gorm:"not null;default:1"`
 	Description string `gorm:"size:255"`
 	// GORM 关联关系
 	Children []departmentModel `gorm:"foreignKey:parent_id;references:id"`
@@ -34,15 +35,36 @@ func (m *departmentModel) toDomain() *entity.Department {
 	dept := &entity.Department{
 		ID:          m.ID,
 		Name:        m.Name,
-		ParentID:    m.ParentID,
-		LeaderID:    m.LeaderID,
-		Sort:        m.Sort,
-		Status:      m.Status,
 		Description: m.Description,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
+	}
+
+	// 安全解引用，提供默认值
+	if m.ParentID != nil {
+		dept.ParentID = *m.ParentID
+	} else {
+		dept.ParentID = 0
+	}
+
+	if m.LeaderID != nil {
+		dept.LeaderID = *m.LeaderID
+	} else {
+		dept.LeaderID = 0
+	}
+
+	if m.Sort != nil {
+		dept.Sort = *m.Sort
+	} else {
+		dept.Sort = 0
+	}
+
+	if m.Status != nil {
+		dept.Status = *m.Status
+	} else {
+		dept.Status = 1
 	}
 
 	// ⭐ 处理关联数据 - 子部门
@@ -76,10 +98,10 @@ func fromDomainDepartment(dept *entity.Department) (*departmentModel, error) {
 			UpdatedBy: dept.UpdatedBy,
 		},
 		Name:        dept.Name,
-		ParentID:    dept.ParentID,
-		LeaderID:    dept.LeaderID,
-		Sort:        dept.Sort,
-		Status:      dept.Status,
+		ParentID:    common.Int64Ptr(dept.ParentID),
+		LeaderID:    common.Int64Ptr(dept.LeaderID),
+		Sort:        common.IntPtr(dept.Sort),
+		Status:      common.IntPtr(dept.Status),
 		Description: dept.Description,
 	}, nil
 }

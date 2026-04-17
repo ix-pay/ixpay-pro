@@ -7,17 +7,18 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // wxAuthSessionModel 微信授权会话数据库模型
 type wxAuthSessionModel struct {
 	database.SnowflakeBaseModel
-	WXUserID     int64     `gorm:"not null;index"`
+	WXUserID     *int64    `gorm:"not null;default:0;index"`
 	AccessToken  string    `gorm:"size:255;not null"`
 	RefreshToken string    `gorm:"size:255;not null"`
-	ExpiresIn    int64     `gorm:"not null"`
+	ExpiresIn    *int64    `gorm:"not null;default:0"`
 	Scope        string    `gorm:"size:255"`
-	IsActive     bool      `gorm:"default:true"`
+	IsActive     *bool     `gorm:"not null;default:true"`
 	ExpiresAt    time.Time `gorm:"index"`
 }
 
@@ -33,12 +34,12 @@ func (m *wxAuthSessionModel) toDomain() *entity.WXAuthSession {
 	}
 	return &entity.WXAuthSession{
 		ID:           m.ID,
-		WXUserID:     m.WXUserID,
+		WXUserID:     *m.WXUserID,
 		AccessToken:  m.AccessToken,
 		RefreshToken: m.RefreshToken,
-		ExpiresIn:    m.ExpiresIn,
+		ExpiresIn:    *m.ExpiresIn,
 		Scope:        m.Scope,
-		IsActive:     m.IsActive,
+		IsActive:     *m.IsActive,
 		ExpiresAt:    m.ExpiresAt,
 		CreatedAt:    m.CreatedAt,
 		UpdatedAt:    m.UpdatedAt,
@@ -53,12 +54,12 @@ func fromDomainWXAuthSession(session *entity.WXAuthSession) (*wxAuthSessionModel
 			CreatedBy: 0,
 			UpdatedBy: 0,
 		},
-		WXUserID:     session.WXUserID,
+		WXUserID:     common.Int64Ptr(session.WXUserID),
 		AccessToken:  session.AccessToken,
 		RefreshToken: session.RefreshToken,
-		ExpiresIn:    session.ExpiresIn,
+		ExpiresIn:    common.Int64Ptr(session.ExpiresIn),
 		Scope:        session.Scope,
-		IsActive:     session.IsActive,
+		IsActive:     common.BoolPtr(session.IsActive),
 		ExpiresAt:    session.ExpiresAt,
 	}, nil
 }
@@ -90,7 +91,7 @@ func (r *wxAuthSessionRepository) GetByID(id int64) (*entity.WXAuthSession, erro
 // GetActiveSessionByWXUserID 获取指定微信用户的有效会话
 func (r *wxAuthSessionRepository) GetActiveSessionByWXUserID(wxUserID int64) (*entity.WXAuthSession, error) {
 	var dbModel wxAuthSessionModel
-	result := r.db.Where("wx_user_id = ? AND is_active = ? AND expires_at > ?", wxUserID, true, time.Now()).
+	result := r.db.Where("wx_user_id = ? AND is_active = ? AND expires_at > ?", common.Int64Ptr(wxUserID), common.BoolPtr(true), time.Now()).
 		Order("expires_at DESC").
 		First(&dbModel)
 	if result.Error != nil {
@@ -130,12 +131,12 @@ func (r *wxAuthSessionRepository) Update(session *entity.WXAuthSession) error {
 func (r *wxAuthSessionRepository) InvalidateSession(id int64) error {
 	return r.db.Model(&wxAuthSessionModel{}).
 		Where("id = ?", id).
-		Update("is_active", false).Error
+		Update("is_active", common.BoolPtr(false)).Error
 }
 
 // InvalidateAllSessionsByWXUserID 使指定微信用户的所有会话失效
 func (r *wxAuthSessionRepository) InvalidateAllSessionsByWXUserID(wxUserID int64) error {
 	return r.db.Model(&wxAuthSessionModel{}).
-		Where("wx_user_id = ?", wxUserID).
-		Update("is_active", false).Error
+		Where("wx_user_id = ?", common.Int64Ptr(wxUserID)).
+		Update("is_active", common.BoolPtr(false)).Error
 }

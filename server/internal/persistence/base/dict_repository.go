@@ -4,6 +4,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // dictModel 字典数据库模型
@@ -12,7 +13,7 @@ type dictModel struct {
 	DictName    string `gorm:"size:100;not null"`
 	DictCode    string `gorm:"size:50;not null"`
 	Description string `gorm:"size:255"`
-	Status      int    `gorm:"default:1"`
+	Status      *int   `gorm:"not null;default:1"`
 
 	// GORM 关联关系 - 一对多（字典项）
 	DictItems []dictItemModel `gorm:"foreignKey:dict_id;references:id"`
@@ -33,11 +34,17 @@ func (m *dictModel) toDomain() *entity.Dict {
 		DictName:    m.DictName,
 		DictCode:    m.DictCode,
 		Description: m.Description,
-		Status:      m.Status,
 		CreatedBy:   m.CreatedBy,
 		CreatedAt:   m.CreatedAt,
 		UpdatedBy:   m.UpdatedBy,
 		UpdatedAt:   m.UpdatedAt,
+	}
+
+	// 安全解引用，提供默认值
+	if m.Status != nil {
+		dict.Status = *m.Status
+	} else {
+		dict.Status = 1
 	}
 
 	// ⭐ 处理关联数据 - 字典项
@@ -63,7 +70,7 @@ func fromDomainDict(dict *entity.Dict) (*dictModel, error) {
 		DictName:    dict.DictName,
 		DictCode:    dict.DictCode,
 		Description: dict.Description,
-		Status:      dict.Status,
+		Status:      common.IntPtr(dict.Status),
 	}, nil
 }
 

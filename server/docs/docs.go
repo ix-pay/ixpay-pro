@@ -117,7 +117,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse"
+                                "$ref": "#/definitions/response.PaymentResponse"
                             }
                         }
                     },
@@ -193,7 +193,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse"
+                                "$ref": "#/definitions/response.PaymentResponse"
                             }
                         }
                     },
@@ -286,13 +286,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                            "$ref": "#/definitions/baseRes.PageResult"
                                         }
                                     }
                                 }
@@ -304,7 +304,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -322,7 +322,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -340,7 +340,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -379,7 +379,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateAPIRequest"
+                            "$ref": "#/definitions/request.CreateAPIRequest"
                         }
                     }
                 ],
@@ -389,13 +389,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse"
+                                            "$ref": "#/definitions/response.APIResponse"
                                         }
                                     }
                                 }
@@ -407,7 +407,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -425,7 +425,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -443,7 +443,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -461,7 +461,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -510,13 +510,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse"
+                                            "$ref": "#/definitions/response.APIResponse"
                                         }
                                     }
                                 }
@@ -528,7 +528,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -546,7 +546,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -564,7 +564,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -582,7 +582,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -628,7 +628,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateAPIRequest"
+                            "$ref": "#/definitions/request.UpdateAPIRequest"
                         }
                     }
                 ],
@@ -638,13 +638,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse"
+                                            "$ref": "#/definitions/response.APIResponse"
                                         }
                                     }
                                 }
@@ -656,7 +656,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -674,7 +674,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -692,7 +692,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -710,7 +710,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -728,7 +728,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -775,7 +775,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -793,7 +793,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -811,7 +811,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -829,7 +829,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -847,7 +847,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -865,7 +865,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -931,13 +931,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                            "$ref": "#/definitions/baseRes.PageResult"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -952,7 +952,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -970,7 +970,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -988,7 +988,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1023,13 +1023,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.CaptchaResponse"
+                                            "$ref": "#/definitions/response.CaptchaResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1071,7 +1071,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.LoginRequest"
+                            "$ref": "#/definitions/request.LoginRequest"
                         }
                     }
                 ],
@@ -1081,13 +1081,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse"
+                                            "$ref": "#/definitions/response.LoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1142,7 +1142,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1200,13 +1200,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse"
+                                            "$ref": "#/definitions/response.LoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1257,7 +1257,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RegisterRequest"
+                            "$ref": "#/definitions/request.RegisterRequest"
                         }
                     }
                 ],
@@ -1267,13 +1267,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User"
+                                            "$ref": "#/definitions/entity.User"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1360,7 +1360,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1368,7 +1368,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                                    "$ref": "#/definitions/baseRes.PageResult"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1376,7 +1376,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
+                                                                "$ref": "#/definitions/entity.BtnPerm"
                                                             }
                                                         },
                                                         "page": {
@@ -1424,7 +1424,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateBtnPermRequest"
+                            "$ref": "#/definitions/request.UpdateBtnPermRequest"
                         }
                     }
                 ],
@@ -1432,7 +1432,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -1461,7 +1461,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateBtnPermRequest"
+                            "$ref": "#/definitions/request.CreateBtnPermRequest"
                         }
                     }
                 ],
@@ -1469,7 +1469,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -1498,7 +1498,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteBtnPermRequest"
+                            "$ref": "#/definitions/request.DeleteBtnPermRequest"
                         }
                     }
                 ],
@@ -1506,7 +1506,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -1546,7 +1546,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1554,7 +1554,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
+                                                "$ref": "#/definitions/entity.API"
                                             }
                                         }
                                     }
@@ -1590,7 +1590,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToBtnPermRequest"
+                            "$ref": "#/definitions/request.AssignToBtnPermRequest"
                         }
                     }
                 ],
@@ -1598,7 +1598,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -1629,7 +1629,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignBtnPermToRoleRequest"
+                            "$ref": "#/definitions/request.AssignBtnPermToRoleRequest"
                         }
                     }
                 ],
@@ -1637,7 +1637,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -1677,7 +1677,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1685,7 +1685,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
+                                                "$ref": "#/definitions/entity.BtnPerm"
                                             }
                                         }
                                     }
@@ -1730,7 +1730,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1738,7 +1738,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermForRole"
+                                                "$ref": "#/definitions/response.BtnPermForRole"
                                             }
                                         }
                                     }
@@ -1782,13 +1782,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermResponse"
+                                            "$ref": "#/definitions/response.BtnPermResponse"
                                         }
                                     }
                                 }
@@ -1832,7 +1832,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1840,7 +1840,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
+                                                "$ref": "#/definitions/entity.BtnPerm"
                                             }
                                         }
                                     }
@@ -1876,7 +1876,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeFromBtnPermRequest"
+                            "$ref": "#/definitions/request.RevokeFromBtnPermRequest"
                         }
                     }
                 ],
@@ -1884,7 +1884,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -1915,7 +1915,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeBtnPermFromRoleRequest"
+                            "$ref": "#/definitions/request.RevokeBtnPermFromRoleRequest"
                         }
                     }
                 ],
@@ -1923,13 +1923,98 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
             }
         },
         "/api/admin/config": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取系统配置列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统配置管理"
+                ],
+                "summary": "获取配置列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "配置键",
+                        "name": "config_key",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态：1-启用 0-禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "配置列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.ConfigListResponse"
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -1954,7 +2039,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateConfigRequest"
+                            "$ref": "#/definitions/request.UpdateConfigRequest"
                         }
                     }
                 ],
@@ -1964,7 +2049,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2030,7 +2115,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateConfigRequest"
+                            "$ref": "#/definitions/request.CreateConfigRequest"
                         }
                     }
                 ],
@@ -2040,13 +2125,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse"
+                                            "$ref": "#/definitions/response.ConfigResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2119,13 +2204,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse"
+                                            "$ref": "#/definitions/response.ConfigResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2196,7 +2281,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2258,7 +2343,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2266,7 +2351,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse"
+                                                "$ref": "#/definitions/response.ConfigResponse"
                                             }
                                         },
                                         "msg": {
@@ -2322,13 +2407,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse"
+                                            "$ref": "#/definitions/response.ConfigResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2345,93 +2430,6 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/config/list": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取系统配置列表",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "系统配置管理"
-                ],
-                "summary": "获取配置列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页条数",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "配置键",
-                        "name": "config_key",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "状态：1-启用 0-禁用",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "配置列表",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigListResponse"
-                                        },
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     },
                     "401": {
@@ -2507,13 +2505,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentListResponse"
+                                            "$ref": "#/definitions/response.DepartmentListResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2567,7 +2565,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentRequest"
+                            "$ref": "#/definitions/request.UpdateDepartmentRequest"
                         }
                     }
                 ],
@@ -2577,13 +2575,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse"
+                                            "$ref": "#/definitions/response.DepartmentResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2646,7 +2644,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDepartmentRequest"
+                            "$ref": "#/definitions/request.CreateDepartmentRequest"
                         }
                     }
                 ],
@@ -2656,13 +2654,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse"
+                                            "$ref": "#/definitions/response.DepartmentResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2735,13 +2733,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse"
+                                            "$ref": "#/definitions/response.DepartmentResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -2812,7 +2810,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2887,7 +2885,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentLeaderRequest"
+                            "$ref": "#/definitions/request.UpdateDepartmentLeaderRequest"
                         }
                     }
                 ],
@@ -2897,7 +2895,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2964,7 +2962,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2972,7 +2970,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department"
+                                                "$ref": "#/definitions/entity.Department"
                                             }
                                         },
                                         "msg": {
@@ -3005,6 +3003,97 @@ const docTemplate = `{
             }
         },
         "/api/admin/dict": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取字典列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "字典管理"
+                ],
+                "summary": "获取字典列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "字典编码",
+                        "name": "dict_code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "字典名称",
+                        "name": "dict_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态：1-启用 0-禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "字典列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.DictListResponse"
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -3029,7 +3118,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictRequest"
+                            "$ref": "#/definitions/request.UpdateDictRequest"
                         }
                     }
                 ],
@@ -3039,7 +3128,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3105,7 +3194,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictRequest"
+                            "$ref": "#/definitions/request.CreateDictRequest"
                         }
                     }
                 ],
@@ -3115,13 +3204,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse"
+                                            "$ref": "#/definitions/response.DictResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -3194,13 +3283,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse"
+                                            "$ref": "#/definitions/response.DictResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -3271,7 +3360,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3347,13 +3436,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse"
+                                            "$ref": "#/definitions/response.DictResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -3418,7 +3507,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictItemRequest"
+                            "$ref": "#/definitions/request.UpdateDictItemRequest"
                         }
                     }
                 ],
@@ -3428,7 +3517,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3494,7 +3583,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictItemRequest"
+                            "$ref": "#/definitions/request.CreateDictItemRequest"
                         }
                     }
                 ],
@@ -3504,13 +3593,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse"
+                                            "$ref": "#/definitions/response.DictItemResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -3583,13 +3672,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse"
+                                            "$ref": "#/definitions/response.DictItemResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -3660,7 +3749,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3736,13 +3825,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemListResponse"
+                                            "$ref": "#/definitions/response.DictItemListResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -3759,99 +3848,6 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/dict/list": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取字典列表",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "字典管理"
-                ],
-                "summary": "获取字典列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页条数",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "字典编码",
-                        "name": "dict_code",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "字典名称",
-                        "name": "dict_name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "状态：1-启用 0-禁用",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "字典列表",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictListResponse"
-                                        },
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     },
                     "401": {
@@ -3952,7 +3948,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3960,7 +3956,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                                    "$ref": "#/definitions/baseRes.PageResult"
                                                 },
                                                 {
                                                     "type": "object",
@@ -3968,7 +3964,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO"
+                                                                "$ref": "#/definitions/response.LoginLogListDTO"
                                                             }
                                                         }
                                                     }
@@ -4036,7 +4032,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.RecordLoginRequest"
+                            "$ref": "#/definitions/request.RecordLoginRequest"
                         }
                     }
                 ],
@@ -4046,7 +4042,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4122,13 +4118,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO"
+                                            "$ref": "#/definitions/response.LoginLogDetailDTO"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -4208,7 +4204,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4216,7 +4212,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                                    "$ref": "#/definitions/baseRes.PageResult"
                                                 },
                                                 {
                                                     "type": "object",
@@ -4224,7 +4220,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO"
+                                                                "$ref": "#/definitions/response.AbnormalLoginInfoDTO"
                                                             }
                                                         }
                                                     }
@@ -4309,13 +4305,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.LoginStatistics"
+                                            "$ref": "#/definitions/entity.LoginStatistics"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -4431,13 +4427,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogListResponse"
+                                            "$ref": "#/definitions/response.OperationLogListResponse"
                                         }
                                     }
                                 }
@@ -4498,13 +4494,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogResponse"
+                                            "$ref": "#/definitions/response.OperationLogResponse"
                                         }
                                     }
                                 }
@@ -4622,7 +4618,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchDeleteOperationLogRequest"
+                            "$ref": "#/definitions/request.BatchDeleteOperationLogRequest"
                         }
                     }
                 ],
@@ -4682,7 +4678,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.ClearOperationLogByTimeRangeRequest"
+                            "$ref": "#/definitions/request.ClearOperationLogByTimeRangeRequest"
                         }
                     }
                 ],
@@ -4755,13 +4751,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogStatisticsResponse"
+                                            "$ref": "#/definitions/response.OperationLogStatisticsResponse"
                                         }
                                     }
                                 }
@@ -4813,7 +4809,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4821,7 +4817,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu"
+                                                "$ref": "#/definitions/entity.Menu"
                                             }
                                         },
                                         "msg": {
@@ -4886,7 +4882,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4962,13 +4958,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DeleteImpact"
+                                            "$ref": "#/definitions/entity.DeleteImpact"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -5069,7 +5065,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5077,7 +5073,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                                    "$ref": "#/definitions/baseRes.PageResult"
                                                 },
                                                 {
                                                     "type": "object",
@@ -5085,7 +5081,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse"
+                                                                "$ref": "#/definitions/response.MenuResponse"
                                                             }
                                                         }
                                                     }
@@ -5154,7 +5150,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5162,7 +5158,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse"
+                                                "$ref": "#/definitions/response.MenuResponse"
                                             }
                                         },
                                         "msg": {
@@ -5213,7 +5209,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5229,7 +5225,7 @@ const docTemplate = `{
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -5254,7 +5250,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5270,7 +5266,7 @@ const docTemplate = `{
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -5309,7 +5305,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5325,7 +5321,7 @@ const docTemplate = `{
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -5350,7 +5346,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5366,7 +5362,7 @@ const docTemplate = `{
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -5391,13 +5387,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.SystemStatus"
+                                            "$ref": "#/definitions/monitor.SystemStatus"
                                         }
                                     }
                                 }
@@ -5407,7 +5403,7 @@ const docTemplate = `{
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -5471,13 +5467,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeListResponse"
+                                            "$ref": "#/definitions/response.NoticeListResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -5531,7 +5527,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateNoticeRequest"
+                            "$ref": "#/definitions/request.UpdateNoticeRequest"
                         }
                     }
                 ],
@@ -5541,13 +5537,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse"
+                                            "$ref": "#/definitions/response.NoticeResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -5610,7 +5606,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateNoticeRequest"
+                            "$ref": "#/definitions/request.CreateNoticeRequest"
                         }
                     }
                 ],
@@ -5620,13 +5616,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse"
+                                            "$ref": "#/definitions/response.NoticeResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -5699,13 +5695,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse"
+                                            "$ref": "#/definitions/response.NoticeResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -5776,7 +5772,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5852,7 +5848,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5931,7 +5927,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6007,7 +6003,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6074,13 +6070,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeStatisticsResponse"
+                                            "$ref": "#/definitions/response.NoticeStatisticsResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6151,13 +6147,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserListResponse"
+                                            "$ref": "#/definitions/response.OnlineUserListResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6230,13 +6226,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserResponse"
+                                            "$ref": "#/definitions/response.OnlineUserResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6326,7 +6322,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6403,7 +6399,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchForceOfflineRequest"
+                            "$ref": "#/definitions/request.BatchForceOfflineRequest"
                         }
                     }
                 ],
@@ -6413,7 +6409,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6480,7 +6476,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6552,7 +6548,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6644,13 +6640,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionListResponse"
+                                            "$ref": "#/definitions/response.PositionListResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6704,7 +6700,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdatePositionRequest"
+                            "$ref": "#/definitions/request.UpdatePositionRequest"
                         }
                     }
                 ],
@@ -6714,13 +6710,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse"
+                                            "$ref": "#/definitions/response.PositionResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6783,7 +6779,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreatePositionRequest"
+                            "$ref": "#/definitions/request.CreatePositionRequest"
                         }
                     }
                 ],
@@ -6793,13 +6789,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse"
+                                            "$ref": "#/definitions/response.PositionResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6872,13 +6868,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse"
+                                            "$ref": "#/definitions/response.PositionResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -6949,7 +6945,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7016,7 +7012,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7024,7 +7020,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse"
+                                                "$ref": "#/definitions/response.PositionResponse"
                                             }
                                         },
                                         "msg": {
@@ -7108,13 +7104,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleListResponse"
+                                            "$ref": "#/definitions/response.RoleListResponse"
                                         }
                                     }
                                 }
@@ -7147,7 +7143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateRoleRequest"
+                            "$ref": "#/definitions/request.UpdateRoleRequest"
                         }
                     }
                 ],
@@ -7155,7 +7151,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -7184,7 +7180,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateRoleRequest"
+                            "$ref": "#/definitions/request.CreateRoleRequest"
                         }
                     }
                 ],
@@ -7194,13 +7190,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse"
+                                            "$ref": "#/definitions/response.RoleResponse"
                                         }
                                     }
                                 }
@@ -7233,7 +7229,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteRoleRequest"
+                            "$ref": "#/definitions/request.DeleteRoleRequest"
                         }
                     }
                 ],
@@ -7241,7 +7237,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -7280,7 +7276,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7288,7 +7284,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse"
+                                                "$ref": "#/definitions/response.APIResponse"
                                             }
                                         }
                                     }
@@ -7332,13 +7328,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse"
+                                            "$ref": "#/definitions/response.RoleDetailResponse"
                                         }
                                     }
                                 }
@@ -7380,7 +7376,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.SaveRolePermissionsRequest"
+                            "$ref": "#/definitions/request.SaveRolePermissionsRequest"
                         }
                     }
                 ],
@@ -7388,7 +7384,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -7418,7 +7414,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -7426,7 +7422,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse"
+                                                "$ref": "#/definitions/response.RoleResponse"
                                             }
                                         }
                                     }
@@ -7462,7 +7458,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToRoleRequest"
+                            "$ref": "#/definitions/request.AssignToRoleRequest"
                         }
                     }
                 ],
@@ -7470,7 +7466,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -7501,7 +7497,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignMenuToRoleRequest"
+                            "$ref": "#/definitions/request.AssignMenuToRoleRequest"
                         }
                     }
                 ],
@@ -7509,7 +7505,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -7540,7 +7536,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignUserToRoleRequest"
+                            "$ref": "#/definitions/request.AssignUserToRoleRequest"
                         }
                     }
                 ],
@@ -7548,7 +7544,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                            "$ref": "#/definitions/baseRes.Response"
                         }
                     }
                 }
@@ -7587,13 +7583,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse"
+                                            "$ref": "#/definitions/response.RoleDetailResponse"
                                         }
                                     }
                                 }
@@ -7629,7 +7625,7 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse"
+                                    "$ref": "#/definitions/response.TaskResponse"
                                 }
                             }
                         }
@@ -7660,7 +7656,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "添加一个定时任务或一次性任务（管理员权限）",
+                "description": "创建一个新的任务（管理员权限）",
                 "consumes": [
                     "application/json"
                 ],
@@ -7670,25 +7666,25 @@ const docTemplate = `{
                 "tags": [
                     "任务管理"
                 ],
-                "summary": "添加任务",
+                "summary": "创建任务",
                 "parameters": [
                     {
-                        "description": "添加任务请求参数",
+                        "description": "创建任务请求参数",
                         "name": "task",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddTaskRequest"
+                            "$ref": "#/definitions/request.AddTaskRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "任务添加成功",
+                        "description": "任务创建成功",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse"
+                                "$ref": "#/definitions/response.TaskResponse"
                             }
                         }
                     },
@@ -7764,7 +7760,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse"
+                                "$ref": "#/definitions/response.TaskResponse"
                             }
                         }
                     },
@@ -7908,7 +7904,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogsResponse"
+                                "$ref": "#/definitions/response.TaskExecutionLogsResponse"
                             }
                         }
                     },
@@ -7965,7 +7961,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.SetTaskGroupRequest"
+                            "$ref": "#/definitions/request.SetTaskGroupRequest"
                         }
                     }
                 ],
@@ -8245,7 +8241,7 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskStatisticsResponse"
+                                    "$ref": "#/definitions/response.TaskStatisticsResponse"
                                 }
                             }
                         }
@@ -8335,7 +8331,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8343,7 +8339,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult"
+                                                    "$ref": "#/definitions/baseRes.PageResult"
                                                 },
                                                 {
                                                     "type": "object",
@@ -8351,7 +8347,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User"
+                                                                "$ref": "#/definitions/entity.User"
                                                             }
                                                         }
                                                     }
@@ -8392,7 +8388,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "增加新用户（管理员权限）",
+                "description": "创建新用户账户",
                 "consumes": [
                     "application/json"
                 ],
@@ -8402,34 +8398,31 @@ const docTemplate = `{
                 "tags": [
                     "用户管理"
                 ],
-                "summary": "增加用户",
+                "summary": "创建用户",
                 "parameters": [
                     {
-                        "description": "增加用户请求参数",
-                        "name": "add_user",
+                        "description": "创建用户请求参数",
+                        "name": "create",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddUserRequest"
+                            "$ref": "#/definitions/request.AddUserRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "添加成功",
+                        "description": "创建成功",
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User"
-                                        },
-                                        "msg": {
-                                            "type": "string"
+                                            "$ref": "#/definitions/response.UserResponse"
                                         }
                                     }
                                 }
@@ -8466,7 +8459,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/user/getSelfSetting": {
+        "/api/admin/user/get-user-settings": {
             "get": {
                 "security": [
                     {
@@ -8490,7 +8483,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8498,7 +8491,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "object",
                                             "additionalProperties": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting"
+                                                "$ref": "#/definitions/entity.UserSetting"
                                             }
                                         },
                                         "msg": {
@@ -8554,13 +8547,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse"
+                                            "$ref": "#/definitions/response.UserInfoResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -8614,7 +8607,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateUserRequest"
+                            "$ref": "#/definitions/request.UpdateUserRequest"
                         }
                     }
                 ],
@@ -8624,13 +8617,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User"
+                                            "$ref": "#/definitions/entity.User"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -8695,7 +8688,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.ChangePasswordRequest"
+                            "$ref": "#/definitions/request.ChangePasswordRequest"
                         }
                     }
                 ],
@@ -8705,7 +8698,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8773,7 +8766,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.ResetPasswordRequest"
+                            "$ref": "#/definitions/request.ResetPasswordRequest"
                         }
                     }
                 ],
@@ -8783,95 +8776,11 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/user/setSelfSetting": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "保存当前登录用户的系统设置",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "用户管理"
-                ],
-                "summary": "保存用户设置",
-                "parameters": [
-                    {
-                        "description": "用户设置参数",
-                        "name": "user_setting",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "保存成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting"
-                                            }
-                                        },
                                         "msg": {
                                             "type": "string"
                                         }
@@ -8935,7 +8844,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.SwitchRoleRequest"
+                            "$ref": "#/definitions/request.SwitchRoleRequest"
                         }
                     }
                 ],
@@ -8945,11 +8854,95 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/update-user-settings": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "更新当前登录用户的系统设置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "更新用户设置",
+                "parameters": [
+                    {
+                        "description": "用户设置参数",
+                        "name": "user_setting",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.UserSetting"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "$ref": "#/definitions/entity.UserSetting"
+                                            }
+                                        },
                                         "msg": {
                                             "type": "string"
                                         }
@@ -9021,7 +9014,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9089,7 +9082,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_request.CreatePaymentRequest"
+                            "$ref": "#/definitions/request.CreatePaymentRequest"
                         }
                     }
                 ],
@@ -9099,7 +9092,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse"
+                                "$ref": "#/definitions/response.PaymentResponse"
                             }
                         }
                     },
@@ -9153,7 +9146,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatLoginRequest"
+                            "$ref": "#/definitions/request.WechatLoginRequest"
                         }
                     }
                 ],
@@ -9163,13 +9156,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXLoginResponse"
+                                            "$ref": "#/definitions/response.WXLoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -9220,7 +9213,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatRefreshTokenRequest"
+                            "$ref": "#/definitions/request.WechatRefreshTokenRequest"
                         }
                     }
                 ],
@@ -9230,13 +9223,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                    "$ref": "#/definitions/baseRes.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXLoginResponse"
+                                            "$ref": "#/definitions/response.WXLoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -9269,7 +9262,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API": {
+        "baseRes.PageResult": {
+            "type": "object",
+            "properties": {
+                "list": {},
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "baseRes.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.API": {
             "type": "object",
             "properties": {
                 "authRequired": {
@@ -9349,7 +9369,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm": {
+        "entity.BtnPerm": {
             "type": "object",
             "properties": {
                 "apirouteIds": {
@@ -9364,7 +9384,7 @@ const docTemplate = `{
                     "description": "关联的 API 路由对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
+                        "$ref": "#/definitions/entity.API"
                     }
                 },
                 "code": {
@@ -9393,7 +9413,7 @@ const docTemplate = `{
                     "description": "所属菜单（新增）",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu"
+                            "$ref": "#/definitions/entity.Menu"
                         }
                     ]
                 },
@@ -9418,7 +9438,7 @@ const docTemplate = `{
                     "description": "关联的角色对象列表关联的角色列表（新增）",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                        "$ref": "#/definitions/entity.Role"
                     }
                 },
                 "status": {
@@ -9436,7 +9456,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DailyStat": {
+        "entity.DailyStat": {
             "type": "object",
             "properties": {
                 "date": {
@@ -9460,7 +9480,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DeleteImpact": {
+        "entity.DeleteImpact": {
             "type": "object",
             "properties": {
                 "affectedApisCount": {
@@ -9493,14 +9513,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department": {
+        "entity.Department": {
             "type": "object",
             "properties": {
                 "children": {
                     "description": "子部门",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department"
+                        "$ref": "#/definitions/entity.Department"
                     }
                 },
                 "createdAt": {
@@ -9525,7 +9545,7 @@ const docTemplate = `{
                     "description": "部门负责人（新增）",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User"
+                            "$ref": "#/definitions/entity.User"
                         }
                     ]
                 },
@@ -9542,7 +9562,7 @@ const docTemplate = `{
                     "description": "父部门（新增）",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department"
+                            "$ref": "#/definitions/entity.Department"
                         }
                     ]
                 },
@@ -9570,7 +9590,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.FailedIPStat": {
+        "entity.FailedIPStat": {
             "type": "object",
             "properties": {
                 "failedCount": {
@@ -9584,7 +9604,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.HourlyStat": {
+        "entity.HourlyStat": {
             "type": "object",
             "properties": {
                 "count": {
@@ -9598,14 +9618,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.LoginStatistics": {
+        "entity.LoginStatistics": {
             "type": "object",
             "properties": {
                 "dailyStats": {
                     "description": "每日统计",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.DailyStat"
+                        "$ref": "#/definitions/entity.DailyStat"
                     }
                 },
                 "endTime": {
@@ -9621,14 +9641,14 @@ const docTemplate = `{
                     "description": "失败最多的 IP",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.FailedIPStat"
+                        "$ref": "#/definitions/entity.FailedIPStat"
                     }
                 },
                 "hourlyStats": {
                     "description": "每小时统计",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.HourlyStat"
+                        "$ref": "#/definitions/entity.HourlyStat"
                     }
                 },
                 "startTime": {
@@ -9644,14 +9664,14 @@ const docTemplate = `{
                     "description": "登录最频繁 IP",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopIPStat"
+                        "$ref": "#/definitions/entity.TopIPStat"
                     }
                 },
                 "topUsers": {
                     "description": "登录最频繁用户",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopUserStat"
+                        "$ref": "#/definitions/entity.TopUserStat"
                     }
                 },
                 "totalCount": {
@@ -9671,7 +9691,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu": {
+        "entity.Menu": {
             "type": "object",
             "properties": {
                 "activeMenu": {
@@ -9694,7 +9714,7 @@ const docTemplate = `{
                     "description": "关联的 API 路由列表（新增）",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
+                        "$ref": "#/definitions/entity.API"
                     }
                 },
                 "breadcrumb": {
@@ -9713,14 +9733,14 @@ const docTemplate = `{
                     "description": "菜单下的按钮权限列表（新增）",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
+                        "$ref": "#/definitions/entity.BtnPerm"
                     }
                 },
                 "children": {
                     "description": "子菜单",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu"
+                        "$ref": "#/definitions/entity.Menu"
                     }
                 },
                 "component": {
@@ -9773,7 +9793,7 @@ const docTemplate = `{
                     "description": "菜单元数据",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuMeta"
+                            "$ref": "#/definitions/entity.MenuMeta"
                         }
                     ]
                 },
@@ -9785,7 +9805,7 @@ const docTemplate = `{
                     "description": "父菜单（新增）",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu"
+                            "$ref": "#/definitions/entity.Menu"
                         }
                     ]
                 },
@@ -9818,7 +9838,7 @@ const docTemplate = `{
                     "description": "关联的角色列表（新增）",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                        "$ref": "#/definitions/entity.Role"
                     }
                 },
                 "sort": {
@@ -9837,7 +9857,7 @@ const docTemplate = `{
                     "description": "菜单类型：1 目录，2 菜单，3 按钮，4iframe",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuType"
+                            "$ref": "#/definitions/entity.MenuType"
                         }
                     ]
                 },
@@ -9852,7 +9872,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuMeta": {
+        "entity.MenuMeta": {
             "type": "object",
             "properties": {
                 "activeMenu": {
@@ -9893,7 +9913,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.MenuType": {
+        "entity.MenuType": {
             "type": "integer",
             "enum": [
                 1,
@@ -9920,7 +9940,7 @@ const docTemplate = `{
                 "MenuTypeIframe"
             ]
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup": {
+        "entity.PermissionGroup": {
             "type": "object",
             "properties": {
                 "apirouteIds": {
@@ -9935,7 +9955,7 @@ const docTemplate = `{
                     "description": "权限组关联的接口路由对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
+                        "$ref": "#/definitions/entity.API"
                     }
                 },
                 "btnPermIds": {
@@ -9950,7 +9970,7 @@ const docTemplate = `{
                     "description": "权限组关联的按钮权限对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
+                        "$ref": "#/definitions/entity.BtnPerm"
                     }
                 },
                 "createdAt": {
@@ -9987,7 +10007,7 @@ const docTemplate = `{
                     "description": "权限组关联的角色对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup"
+                        "$ref": "#/definitions/entity.PermissionGroup"
                     }
                 },
                 "sort": {
@@ -10009,7 +10029,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position": {
+        "entity.Position": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -10053,7 +10073,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role": {
+        "entity.Role": {
             "type": "object",
             "properties": {
                 "apirouteIds": {
@@ -10068,7 +10088,7 @@ const docTemplate = `{
                     "description": "角色关联的接口路由对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.API"
+                        "$ref": "#/definitions/entity.API"
                     }
                 },
                 "btnPermIds": {
@@ -10083,14 +10103,14 @@ const docTemplate = `{
                     "description": "角色关联的按钮权限对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.BtnPerm"
+                        "$ref": "#/definitions/entity.BtnPerm"
                     }
                 },
                 "children": {
                     "description": "子角色",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                        "$ref": "#/definitions/entity.Role"
                     }
                 },
                 "code": {
@@ -10131,7 +10151,7 @@ const docTemplate = `{
                     "description": "角色关联的菜单对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Menu"
+                        "$ref": "#/definitions/entity.Menu"
                     }
                 },
                 "name": {
@@ -10142,7 +10162,7 @@ const docTemplate = `{
                     "description": "父角色",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                            "$ref": "#/definitions/entity.Role"
                         }
                     ]
                 },
@@ -10163,7 +10183,7 @@ const docTemplate = `{
                     "description": "角色关联的权限组对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.PermissionGroup"
+                        "$ref": "#/definitions/entity.PermissionGroup"
                     }
                 },
                 "sort": {
@@ -10199,12 +10219,12 @@ const docTemplate = `{
                     "description": "角色关联的用户对象列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User"
+                        "$ref": "#/definitions/entity.User"
                     }
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopIPStat": {
+        "entity.TopIPStat": {
             "type": "object",
             "properties": {
                 "ip": {
@@ -10218,7 +10238,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.TopUserStat": {
+        "entity.TopUserStat": {
             "type": "object",
             "properties": {
                 "loginCount": {
@@ -10230,13 +10250,13 @@ const docTemplate = `{
                     "description": "用户 ID",
                     "type": "string"
                 },
-                "userName": {
+                "username": {
                     "description": "用户名",
                     "type": "string"
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.User": {
+        "entity.User": {
             "type": "object",
             "properties": {
                 "address": {
@@ -10264,7 +10284,7 @@ const docTemplate = `{
                     "description": "所属部门",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Department"
+                            "$ref": "#/definitions/entity.Department"
                         }
                     ]
                 },
@@ -10314,7 +10334,7 @@ const docTemplate = `{
                     "description": "所属岗位",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Position"
+                            "$ref": "#/definitions/entity.Position"
                         }
                     ]
                 },
@@ -10335,7 +10355,7 @@ const docTemplate = `{
                     "description": "角色列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_domain_base_entity.Role"
+                        "$ref": "#/definitions/entity.Role"
                     }
                 },
                 "specialBtnPermissionIds": {
@@ -10367,7 +10387,7 @@ const docTemplate = `{
                     "type": "integer",
                     "format": "int64"
                 },
-                "userName": {
+                "username": {
                     "description": "用户名，唯一标识",
                     "type": "string"
                 },
@@ -10377,7 +10397,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_domain_base_entity.UserSetting": {
+        "entity.UserSetting": {
             "type": "object",
             "properties": {
                 "autoLogin": {
@@ -10438,7 +10458,167 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddTaskRequest": {
+        "monitor.CPUStatus": {
+            "type": "object",
+            "properties": {
+                "cores": {
+                    "description": "CPU 核心数",
+                    "type": "integer"
+                },
+                "per_cpu_usage": {
+                    "description": "每个 CPU 核心的使用率",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "usage_percent": {
+                    "description": "CPU 使用率百分比",
+                    "type": "number"
+                }
+            }
+        },
+        "monitor.DiskStatus": {
+            "type": "object",
+            "properties": {
+                "free_gb": {
+                    "description": "空闲磁盘空间 (GB)",
+                    "type": "integer"
+                },
+                "io_read_bytes": {
+                    "description": "IO 读取字节数",
+                    "type": "integer"
+                },
+                "io_write_bytes": {
+                    "description": "IO 写入字节数",
+                    "type": "integer"
+                },
+                "read_bytes": {
+                    "description": "读取字节数",
+                    "type": "integer"
+                },
+                "read_count": {
+                    "description": "读取次数",
+                    "type": "integer"
+                },
+                "total_gb": {
+                    "description": "总磁盘空间 (GB)",
+                    "type": "integer"
+                },
+                "usage_percent": {
+                    "description": "磁盘使用率百分比",
+                    "type": "number"
+                },
+                "used_gb": {
+                    "description": "已使用磁盘空间 (GB)",
+                    "type": "integer"
+                },
+                "write_bytes": {
+                    "description": "写入字节数",
+                    "type": "integer"
+                },
+                "write_count": {
+                    "description": "写入次数",
+                    "type": "integer"
+                }
+            }
+        },
+        "monitor.LoadStatus": {
+            "type": "object",
+            "properties": {
+                "load1": {
+                    "description": "1 分钟平均负载",
+                    "type": "number"
+                },
+                "load15": {
+                    "description": "15 分钟平均负载",
+                    "type": "number"
+                },
+                "load5": {
+                    "description": "5 分钟平均负载",
+                    "type": "number"
+                }
+            }
+        },
+        "monitor.MemoryStatus": {
+            "type": "object",
+            "properties": {
+                "available_mb": {
+                    "description": "可用内存 (MB)",
+                    "type": "integer"
+                },
+                "buffers_mb": {
+                    "description": "缓冲区内存 (MB)",
+                    "type": "integer"
+                },
+                "cached_mb": {
+                    "description": "缓存内存 (MB)",
+                    "type": "integer"
+                },
+                "free_mb": {
+                    "description": "空闲内存 (MB)",
+                    "type": "integer"
+                },
+                "total_mb": {
+                    "description": "总内存 (MB)",
+                    "type": "integer"
+                },
+                "usage_percent": {
+                    "description": "内存使用率百分比",
+                    "type": "number"
+                },
+                "used_mb": {
+                    "description": "已使用内存 (MB)",
+                    "type": "integer"
+                },
+                "used_percent": {
+                    "description": "已使用百分比（与 usage_percent 相同）",
+                    "type": "number"
+                }
+            }
+        },
+        "monitor.SystemStatus": {
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "description": "CPU 使用状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/monitor.CPUStatus"
+                        }
+                    ]
+                },
+                "disk": {
+                    "description": "磁盘使用状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/monitor.DiskStatus"
+                        }
+                    ]
+                },
+                "load": {
+                    "description": "系统负载状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/monitor.LoadStatus"
+                        }
+                    ]
+                },
+                "memory": {
+                    "description": "内存使用状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/monitor.MemoryStatus"
+                        }
+                    ]
+                },
+                "timestamp": {
+                    "description": "采集时间",
+                    "type": "string"
+                }
+            }
+        },
+        "request.AddTaskRequest": {
             "type": "object",
             "required": [
                 "expression",
@@ -10469,7 +10649,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddUserRequest": {
+        "request.AddUserRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -10522,7 +10702,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignBtnPermToRoleRequest": {
+        "request.AssignBtnPermToRoleRequest": {
             "type": "object",
             "required": [
                 "btnPermIds",
@@ -10542,7 +10722,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignMenuToRoleRequest": {
+        "request.AssignMenuToRoleRequest": {
             "type": "object",
             "required": [
                 "menuIds",
@@ -10562,7 +10742,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToBtnPermRequest": {
+        "request.AssignToBtnPermRequest": {
             "type": "object",
             "required": [
                 "btnPermId",
@@ -10582,7 +10762,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignToRoleRequest": {
+        "request.AssignToRoleRequest": {
             "type": "object",
             "required": [
                 "ids",
@@ -10602,7 +10782,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.AssignUserToRoleRequest": {
+        "request.AssignUserToRoleRequest": {
             "type": "object",
             "required": [
                 "roleId",
@@ -10622,7 +10802,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchDeleteOperationLogRequest": {
+        "request.BatchDeleteOperationLogRequest": {
             "type": "object",
             "required": [
                 "ids"
@@ -10636,7 +10816,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchForceOfflineRequest": {
+        "request.BatchForceOfflineRequest": {
             "type": "object",
             "required": [
                 "userIds"
@@ -10655,7 +10835,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.ChangePasswordRequest": {
+        "request.ChangePasswordRequest": {
             "type": "object",
             "required": [
                 "newPassword",
@@ -10674,7 +10854,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.ClearOperationLogByTimeRangeRequest": {
+        "request.ClearOperationLogByTimeRangeRequest": {
             "type": "object",
             "required": [
                 "endTime",
@@ -10689,7 +10869,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateAPIRequest": {
+        "request.CreateAPIRequest": {
             "type": "object",
             "required": [
                 "method",
@@ -10757,7 +10937,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateBtnPermRequest": {
+        "request.CreateBtnPermRequest": {
             "type": "object",
             "required": [
                 "code",
@@ -10792,7 +10972,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateConfigRequest": {
+        "request.CreateConfigRequest": {
             "type": "object",
             "required": [
                 "configKey"
@@ -10827,7 +11007,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDepartmentRequest": {
+        "request.CreateDepartmentRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -10859,7 +11039,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictItemRequest": {
+        "request.CreateDictItemRequest": {
             "type": "object",
             "required": [
                 "dictId",
@@ -10901,7 +11081,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateDictRequest": {
+        "request.CreateDictRequest": {
             "type": "object",
             "required": [
                 "dictCode",
@@ -10933,7 +11113,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateNoticeRequest": {
+        "request.CreateNoticeRequest": {
             "type": "object",
             "required": [
                 "content",
@@ -10967,7 +11147,40 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreatePositionRequest": {
+        "request.CreatePaymentRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency",
+                "order_id",
+                "payment_method"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string",
+                    "enum": [
+                        "CNY",
+                        "USD"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "enum": [
+                        "wechat_alipay"
+                    ]
+                }
+            }
+        },
+        "request.CreatePositionRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -10991,7 +11204,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateRoleRequest": {
+        "request.CreateRoleRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -11015,7 +11228,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteBtnPermRequest": {
+        "request.DeleteBtnPermRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -11027,7 +11240,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteRoleRequest": {
+        "request.DeleteRoleRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -11038,7 +11251,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.LoginRequest": {
+        "request.LoginRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -11059,7 +11272,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.RecordLoginRequest": {
+        "request.RecordLoginRequest": {
             "type": "object",
             "required": [
                 "ip",
@@ -11109,7 +11322,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.RegisterRequest": {
+        "request.RegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -11132,7 +11345,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.ResetPasswordRequest": {
+        "request.ResetPasswordRequest": {
             "type": "object",
             "required": [
                 "userId"
@@ -11143,7 +11356,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeBtnPermFromRoleRequest": {
+        "request.RevokeBtnPermFromRoleRequest": {
             "type": "object",
             "required": [
                 "btnPermId",
@@ -11160,7 +11373,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.RevokeFromBtnPermRequest": {
+        "request.RevokeFromBtnPermRequest": {
             "type": "object",
             "required": [
                 "btnPermId",
@@ -11177,7 +11390,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.SaveRolePermissionsRequest": {
+        "request.SaveRolePermissionsRequest": {
             "type": "object",
             "required": [
                 "apiRouteIds",
@@ -11205,7 +11418,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.SetTaskGroupRequest": {
+        "request.SetTaskGroupRequest": {
             "type": "object",
             "required": [
                 "group"
@@ -11216,7 +11429,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.SwitchRoleRequest": {
+        "request.SwitchRoleRequest": {
             "type": "object",
             "required": [
                 "roleId"
@@ -11227,7 +11440,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateAPIRequest": {
+        "request.UpdateAPIRequest": {
             "type": "object",
             "required": [
                 "id",
@@ -11299,7 +11512,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateBtnPermRequest": {
+        "request.UpdateBtnPermRequest": {
             "type": "object",
             "required": [
                 "code",
@@ -11339,7 +11552,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateConfigRequest": {
+        "request.UpdateConfigRequest": {
             "type": "object",
             "required": [
                 "configKey",
@@ -11379,7 +11592,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentLeaderRequest": {
+        "request.UpdateDepartmentLeaderRequest": {
             "type": "object",
             "required": [
                 "leaderId"
@@ -11391,7 +11604,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDepartmentRequest": {
+        "request.UpdateDepartmentRequest": {
             "type": "object",
             "required": [
                 "id",
@@ -11428,7 +11641,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictItemRequest": {
+        "request.UpdateDictItemRequest": {
             "type": "object",
             "required": [
                 "dictId",
@@ -11475,7 +11688,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateDictRequest": {
+        "request.UpdateDictRequest": {
             "type": "object",
             "required": [
                 "dictCode",
@@ -11512,7 +11725,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateNoticeRequest": {
+        "request.UpdateNoticeRequest": {
             "type": "object",
             "required": [
                 "content",
@@ -11551,7 +11764,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdatePositionRequest": {
+        "request.UpdatePositionRequest": {
             "type": "object",
             "required": [
                 "id",
@@ -11580,7 +11793,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateRoleRequest": {
+        "request.UpdateRoleRequest": {
             "type": "object",
             "required": [
                 "id",
@@ -11608,7 +11821,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.UpdateUserRequest": {
+        "request.UpdateUserRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -11622,7 +11835,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nickname": {
                     "type": "string",
@@ -11647,7 +11860,29 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.APIResponse": {
+        "request.WechatLoginRequest": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.WechatRefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.APIResponse": {
             "type": "object",
             "properties": {
                 "authRequired": {
@@ -11709,7 +11944,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.AbnormalLoginInfoDTO": {
+        "response.AbnormalLoginInfoDTO": {
             "type": "object",
             "properties": {
                 "failedCount": {
@@ -11735,7 +11970,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.AuthorityInfo": {
+        "response.AuthorityInfo": {
             "type": "object",
             "properties": {
                 "defaultRouter": {
@@ -11743,7 +11978,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermForRole": {
+        "response.BtnPermForRole": {
             "type": "object",
             "properties": {
                 "code": {
@@ -11771,7 +12006,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.BtnPermResponse": {
+        "response.BtnPermResponse": {
             "type": "object",
             "properties": {
                 "code": {
@@ -11802,7 +12037,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.CaptchaResponse": {
+        "response.CaptchaResponse": {
             "type": "object",
             "properties": {
                 "captchaId": {
@@ -11819,14 +12054,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigListResponse": {
+        "response.ConfigListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "description": "配置列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse"
+                        "$ref": "#/definitions/response.ConfigResponse"
                     }
                 },
                 "page": {
@@ -11840,7 +12075,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.ConfigResponse": {
+        "response.ConfigResponse": {
             "type": "object",
             "properties": {
                 "configKey": {
@@ -11878,14 +12113,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentListResponse": {
+        "response.DepartmentListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "description": "部门列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse"
+                        "$ref": "#/definitions/response.DepartmentResponse"
                     }
                 },
                 "page": {
@@ -11899,14 +12134,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse": {
+        "response.DepartmentResponse": {
             "type": "object",
             "properties": {
                 "children": {
                     "description": "可选字段：子部门列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentResponse"
+                        "$ref": "#/definitions/response.DepartmentResponse"
                     }
                 },
                 "code": {
@@ -11957,14 +12192,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemListResponse": {
+        "response.DictItemListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "description": "字典项列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse"
+                        "$ref": "#/definitions/response.DictItemResponse"
                     }
                 },
                 "page": {
@@ -11978,7 +12213,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse": {
+        "response.DictItemResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -12021,14 +12256,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictListResponse": {
+        "response.DictListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "description": "字典列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse"
+                        "$ref": "#/definitions/response.DictResponse"
                     }
                 },
                 "page": {
@@ -12042,7 +12277,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictResponse": {
+        "response.DictResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -12061,7 +12296,7 @@ const docTemplate = `{
                     "description": "字典项列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DictItemResponse"
+                        "$ref": "#/definitions/response.DictItemResponse"
                     }
                 },
                 "dictName": {
@@ -12083,7 +12318,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO": {
+        "response.LoginLogDetailDTO": {
             "type": "object",
             "properties": {
                 "browser": {
@@ -12120,7 +12355,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogListDTO": {
+        "response.LoginLogListDTO": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -12144,7 +12379,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginResponse": {
+        "response.LoginResponse": {
             "type": "object",
             "properties": {
                 "accessToken": {
@@ -12154,11 +12389,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse"
+                    "$ref": "#/definitions/response.UserInfoResponse"
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuInfo": {
+        "response.MenuInfo": {
             "type": "object",
             "properties": {
                 "id": {
@@ -12177,7 +12412,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuMetaResp": {
+        "response.MenuMetaResp": {
             "type": "object",
             "properties": {
                 "activeMenu": {
@@ -12214,7 +12449,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse": {
+        "response.MenuResponse": {
             "type": "object",
             "properties": {
                 "activeMenu": {
@@ -12233,7 +12468,7 @@ const docTemplate = `{
                     "description": "子菜单",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse"
+                        "$ref": "#/definitions/response.MenuResponse"
                     }
                 },
                 "component": {
@@ -12273,7 +12508,7 @@ const docTemplate = `{
                     "description": "菜单元数据",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuMetaResp"
+                            "$ref": "#/definitions/response.MenuMetaResp"
                         }
                     ]
                 },
@@ -12316,13 +12551,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeListResponse": {
+        "response.NoticeListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse"
+                        "$ref": "#/definitions/response.NoticeResponse"
                     }
                 },
                 "page": {
@@ -12336,7 +12571,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeResponse": {
+        "response.NoticeResponse": {
             "type": "object",
             "properties": {
                 "content": {
@@ -12382,7 +12617,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.NoticeStatisticsResponse": {
+        "response.NoticeStatisticsResponse": {
             "type": "object",
             "properties": {
                 "archivedCount": {
@@ -12399,13 +12634,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserListResponse": {
+        "response.OnlineUserListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserResponse"
+                        "$ref": "#/definitions/response.OnlineUserResponse"
                     }
                 },
                 "page": {
@@ -12419,7 +12654,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.OnlineUserResponse": {
+        "response.OnlineUserResponse": {
             "type": "object",
             "properties": {
                 "browser": {
@@ -12461,13 +12696,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogListResponse": {
+        "response.OperationLogListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogResponse"
+                        "$ref": "#/definitions/response.OperationLogResponse"
                     }
                 },
                 "page": {
@@ -12481,7 +12716,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogResponse": {
+        "response.OperationLogResponse": {
             "type": "object",
             "properties": {
                 "clientIp": {
@@ -12545,7 +12780,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.OperationLogStatisticsResponse": {
+        "response.OperationLogStatisticsResponse": {
             "type": "object",
             "properties": {
                 "avgDuration": {
@@ -12579,14 +12814,57 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionListResponse": {
+        "response.PaymentResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "wechat_pay_params": {
+                    "description": "微信支付相关参数",
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "response.PositionListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "description": "岗位列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse"
+                        "$ref": "#/definitions/response.PositionResponse"
                     }
                 },
                 "page": {
@@ -12600,7 +12878,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.PositionResponse": {
+        "response.PositionResponse": {
             "type": "object",
             "properties": {
                 "code": {
@@ -12638,7 +12916,22 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse": {
+        "response.RoleDTO": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.RoleDetailResponse": {
             "type": "object",
             "properties": {
                 "code": {
@@ -12660,7 +12953,7 @@ const docTemplate = `{
                 "menus": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuInfo"
+                        "$ref": "#/definitions/response.MenuInfo"
                     }
                 },
                 "name": {
@@ -12673,7 +12966,7 @@ const docTemplate = `{
                 "routes": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RouteInfo"
+                        "$ref": "#/definitions/response.RouteInfo"
                     }
                 },
                 "sort": {
@@ -12691,12 +12984,12 @@ const docTemplate = `{
                 "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfo"
+                        "$ref": "#/definitions/response.UserInfo"
                     }
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleInfo": {
+        "response.RoleInfo": {
             "type": "object",
             "properties": {
                 "code": {
@@ -12730,13 +13023,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleListResponse": {
+        "response.RoleListResponse": {
             "type": "object",
             "properties": {
                 "list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse"
+                        "$ref": "#/definitions/response.RoleResponse"
                     }
                 },
                 "page": {
@@ -12750,7 +13043,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleResponse": {
+        "response.RoleResponse": {
             "type": "object",
             "properties": {
                 "code": {
@@ -12790,7 +13083,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.RouteInfo": {
+        "response.RouteInfo": {
             "type": "object",
             "properties": {
                 "group": {
@@ -12808,7 +13101,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogResponse": {
+        "response.TaskExecutionLogResponse": {
             "type": "object",
             "properties": {
                 "cronExpr": {
@@ -12852,13 +13145,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogsResponse": {
+        "response.TaskExecutionLogsResponse": {
             "type": "object",
             "properties": {
                 "logs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogResponse"
+                        "$ref": "#/definitions/response.TaskExecutionLogResponse"
                     }
                 },
                 "total": {
@@ -12866,7 +13159,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse": {
+        "response.TaskResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -12901,7 +13194,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskStatisticsResponse": {
+        "response.TaskStatisticsResponse": {
             "type": "object",
             "properties": {
                 "avgDuration": {
@@ -12937,7 +13230,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfo": {
+        "response.UserInfo": {
             "type": "object",
             "properties": {
                 "id": {
@@ -12952,11 +13245,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.UserInfoResponse": {
+        "response.UserInfoResponse": {
             "type": "object",
             "properties": {
                 "authority": {
-                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.AuthorityInfo"
+                    "$ref": "#/definitions/response.AuthorityInfo"
                 },
                 "avatar": {
                     "type": "string"
@@ -12984,7 +13277,7 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleInfo"
+                        "$ref": "#/definitions/response.RoleInfo"
                     }
                 },
                 "status": {
@@ -12995,105 +13288,54 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_wx_request.CreatePaymentRequest": {
+        "response.UserResponse": {
             "type": "object",
-            "required": [
-                "amount",
-                "currency",
-                "order_id",
-                "payment_method"
-            ],
             "properties": {
-                "amount": {
-                    "type": "number"
+                "avatar": {
+                    "type": "string"
                 },
-                "currency": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "departmentId": {
                     "type": "string",
-                    "enum": [
-                        "CNY",
-                        "USD"
-                    ]
+                    "example": "0"
                 },
-                "description": {
-                    "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "payment_method": {
-                    "type": "string",
-                    "enum": [
-                        "wechat_alipay"
-                    ]
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatLoginRequest": {
-            "type": "object",
-            "required": [
-                "code"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_dto_wx_request.WechatRefreshTokenRequest": {
-            "type": "object",
-            "required": [
-                "refresh_token"
-            ],
-            "properties": {
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_dto_wx_response.PaymentResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "description": {
+                "email": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "nickname": {
                     "type": "string"
                 },
-                "order_id": {
+                "phone": {
                     "type": "string"
                 },
-                "payment_method": {
-                    "type": "string"
+                "positionId": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.RoleDTO"
+                    }
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
                     "type": "string"
                 },
-                "transaction_id": {
+                "userName": {
                     "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                },
-                "wechat_pay_params": {
-                    "description": "微信支付相关参数",
-                    "type": "object",
-                    "additionalProperties": true
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXLoginResponse": {
+        "response.WXLoginResponse": {
             "type": "object",
             "properties": {
                 "accessExpire": {
@@ -13106,11 +13348,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXUserInfoResponse"
+                    "$ref": "#/definitions/response.WXUserInfoResponse"
                 }
             }
         },
-        "github_com_ix-pay_ixpay-pro_internal_dto_wx_response.WXUserInfoResponse": {
+        "response.WXUserInfoResponse": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -13135,193 +13377,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "userName": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.CPUStatus": {
-            "type": "object",
-            "properties": {
-                "cores": {
-                    "description": "CPU 核心数",
-                    "type": "integer"
-                },
-                "per_cpu_usage": {
-                    "description": "每个 CPU 核心的使用率",
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "usage_percent": {
-                    "description": "CPU 使用率百分比",
-                    "type": "number"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.DiskStatus": {
-            "type": "object",
-            "properties": {
-                "free_gb": {
-                    "description": "空闲磁盘空间 (GB)",
-                    "type": "integer"
-                },
-                "io_read_bytes": {
-                    "description": "IO 读取字节数",
-                    "type": "integer"
-                },
-                "io_write_bytes": {
-                    "description": "IO 写入字节数",
-                    "type": "integer"
-                },
-                "read_bytes": {
-                    "description": "读取字节数",
-                    "type": "integer"
-                },
-                "read_count": {
-                    "description": "读取次数",
-                    "type": "integer"
-                },
-                "total_gb": {
-                    "description": "总磁盘空间 (GB)",
-                    "type": "integer"
-                },
-                "usage_percent": {
-                    "description": "磁盘使用率百分比",
-                    "type": "number"
-                },
-                "used_gb": {
-                    "description": "已使用磁盘空间 (GB)",
-                    "type": "integer"
-                },
-                "write_bytes": {
-                    "description": "写入字节数",
-                    "type": "integer"
-                },
-                "write_count": {
-                    "description": "写入次数",
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.LoadStatus": {
-            "type": "object",
-            "properties": {
-                "load1": {
-                    "description": "1 分钟平均负载",
-                    "type": "number"
-                },
-                "load15": {
-                    "description": "15 分钟平均负载",
-                    "type": "number"
-                },
-                "load5": {
-                    "description": "5 分钟平均负载",
-                    "type": "number"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.MemoryStatus": {
-            "type": "object",
-            "properties": {
-                "available_mb": {
-                    "description": "可用内存 (MB)",
-                    "type": "integer"
-                },
-                "buffers_mb": {
-                    "description": "缓冲区内存 (MB)",
-                    "type": "integer"
-                },
-                "cached_mb": {
-                    "description": "缓存内存 (MB)",
-                    "type": "integer"
-                },
-                "free_mb": {
-                    "description": "空闲内存 (MB)",
-                    "type": "integer"
-                },
-                "total_mb": {
-                    "description": "总内存 (MB)",
-                    "type": "integer"
-                },
-                "usage_percent": {
-                    "description": "内存使用率百分比",
-                    "type": "number"
-                },
-                "used_mb": {
-                    "description": "已使用内存 (MB)",
-                    "type": "integer"
-                },
-                "used_percent": {
-                    "description": "已使用百分比（与 usage_percent 相同）",
-                    "type": "number"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.SystemStatus": {
-            "type": "object",
-            "properties": {
-                "cpu": {
-                    "description": "CPU 使用状态",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.CPUStatus"
-                        }
-                    ]
-                },
-                "disk": {
-                    "description": "磁盘使用状态",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.DiskStatus"
-                        }
-                    ]
-                },
-                "load": {
-                    "description": "系统负载状态",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.LoadStatus"
-                        }
-                    ]
-                },
-                "memory": {
-                    "description": "内存使用状态",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_infrastructure_observability_monitor.MemoryStatus"
-                        }
-                    ]
-                },
-                "timestamp": {
-                    "description": "采集时间",
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.PageResult": {
-            "type": "object",
-            "properties": {
-                "list": {},
-                "page": {
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "msg": {
                     "type": "string"
                 }
             }

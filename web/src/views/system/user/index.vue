@@ -212,7 +212,13 @@
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { Plus, Search, Refresh, User, SuccessFilled, CircleClose } from '@element-plus/icons-vue'
-import { getUserList, deleteUser, createUser, updateUserInfo, resetPassword } from '@/api/modules/user'
+import {
+  getUserList,
+  deleteUser,
+  createUser,
+  updateUserInfo,
+  resetPassword,
+} from '@/api/modules/user'
 import { getRolesList, type Role as RoleType } from '@/api/modules/role'
 
 defineOptions({

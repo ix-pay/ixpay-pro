@@ -4,12 +4,13 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
+	"github.com/ix-pay/ixpay-pro/internal/persistence/common"
 )
 
 // wechatPayInfoModel 微信支付信息数据库模型
 type wechatPayInfoModel struct {
 	database.SnowflakeBaseModel
-	PaymentID  int64  `gorm:"not null;uniqueIndex"`
+	PaymentID  *int64 `gorm:"not null;default:0;uniqueIndex"`
 	AppID      string `gorm:"size:50"`
 	MCHID      string `gorm:"size:50"`
 	NonceStr   string `gorm:"size:50"`
@@ -39,7 +40,7 @@ func (m *wechatPayInfoModel) toDomain() *entity.WechatPayInfo {
 	}
 	return &entity.WechatPayInfo{
 		ID:         m.ID,
-		PaymentID:  m.PaymentID,
+		PaymentID:  *m.PaymentID,
 		AppID:      m.AppID,
 		MCHID:      m.MCHID,
 		NonceStr:   m.NonceStr,
@@ -70,7 +71,7 @@ func fromDomainWechatPayInfo(info *entity.WechatPayInfo) (*wechatPayInfoModel, e
 			CreatedBy: info.CreatedBy,
 			UpdatedBy: info.UpdatedBy,
 		},
-		PaymentID:  info.PaymentID,
+		PaymentID:  common.Int64Ptr(info.PaymentID),
 		AppID:      info.AppID,
 		MCHID:      info.MCHID,
 		NonceStr:   info.NonceStr,

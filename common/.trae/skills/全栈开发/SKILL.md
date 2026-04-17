@@ -1028,7 +1028,6 @@ type UserRepository interface {
 package persistence
 
 import (
-    "fmt"
     "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
     "github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
     "github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -1041,46 +1040,182 @@ type userModel struct {
     Username      string `gorm:"size:50;not null;unique"`
     PasswordHash  string `gorm:"size:100;not null"`
     Email         string `gorm:"size:100"`
-    Status        int    `gorm:"default:1"`
-    PositionID    int64  `gorm:"index"`
-    DepartmentID  int64  `gorm:"index"`
+    Status        *int   `gorm:"not null;default:1"`   // ⭐ 指针类型，区分零值和未设置
+    PositionID    *int64 `gorm:"not null;default:0;index"`  // ⭐ 指针类型
+    DepartmentID  *int64 `gorm:"not null;default:0;index"`  // ⭐ 指针类型
     WechatOpenID  string `gorm:"size:100;uniqueIndex;default:null"`
 }
+```
+
+**⭐⭐⭐ 数据库模型指针类型方案 ⭐⭐⭐**
+
+**核心原则**：需要区分零值的字段使用指针类型
+
+**为什么使用指针类型**：
+1. **区分零值和未设置**：`*int` 中，`nil` 表示未设置，`0` 表示明确设置为 0
+2. **GORM 更新语义明确**：指针为 `nil` 时 GORM 忽略，非 `nil` 时更新（包括零值）
+3. **字段默认值使用 Go 零值**：`int`=0, `bool`=false, `string`="", `*int`=nil
+
+**字段类型选择规则**：
+
+| 字段类型 | 使用场景 | 示例 |
+|--------|---------|------|
+| **非指针 + not null** | 必填字段 | `Username string gorm:"size:50;not null"` |
+| **指针类型** | 需要区分零值 | `Status *int gorm:"not null;default:1"` |
+| **非指针** | 可选但允许空字符串 | `Nickname string gorm:"size:50"` |
+| **指针关联** | 一对一/多对一 | `Department *departmentModel` |
+| **切片关联** | 一对多/多对多 | `Roles []*roleModel` |
+
+**完整示例**：
+
+```Go
+// Menu 模型
+type menuModel struct {
+    database.SnowflakeBaseModel
+    ParentID   *int64 `gorm:"not null;default:0"`
+    Path       string `gorm:"size:255;not null"`
+    Name       string `gorm:"size:100;not null;unique"`
+    Hidden     *bool  `gorm:"not null;default:false"`
+    Sort       *int   `gorm:"not null;default:0"`
+    Status     *int   `gorm:"not null;default:1"`
+    IsExt      *bool  `gorm:"not null;default:false"`
+    Type       *int   `gorm:"not null;default:2"`
+    
+    // GORM 关联
+    Children   []menuModel  `gorm:"foreignKey:parent_id;references:id"`
+    Parent     *menuModel   `gorm:"foreignKey:parent_id;references:id"`
+}
+
+// Role 模型
+type roleModel struct {
+    database.SnowflakeBaseModel
+    Name        string `gorm:"size:50;not null;unique"`
+    Code        string `gorm:"size:50;not null;unique"`
+    Type        *int   `gorm:"not null;default:1"`
+    ParentID    *int64 `gorm:"not null;default:0"`
+    Status      *int   `gorm:"not null;default:1"`
+    IsSystem    *bool  `gorm:"not null;default:false"`
+    Sort        *int   `gorm:"not null;default:0"`
+    
+    // GORM 关联
+    Children   []*roleModel `gorm:"foreignKey:parent_id;references:id"`
+    Parent     *roleModel   `gorm:"foreignKey:parent_id;references:id"`
+}
+```
+
+**toDomain() 转换（安全解引用）**：
+
+```Go
+func (m *userModel) toDomain() *entity.User {
+    user := &entity.User{
+        ID:            m.ID,
+        Username:      m.Username,
+        PasswordHash:  m.PasswordHash,
+        Email:         m.Email,
+    }
+    
+    // ⭐ 安全解引用，提供默认值
+    if m.Status != nil {
+        user.Status = *m.Status
+    } else {
+        user.Status = 1
+    }
+    
+    if m.PositionID != nil {
+        user.PositionID = *m.PositionID
+    } else {
+        user.PositionID = 0
+    }
+    
+    if m.DepartmentID != nil {
+        user.DepartmentID = *m.DepartmentID
+    } else {
+        user.DepartmentID = 0
+    }
+    
+    return user
+}
+```
+
+**fromDomain() 转换（使用辅助函数）**：
+
+```Go
+func fromDomain(user *entity.User) (*userModel, error) {
+    return &userModel{
+        SnowflakeBaseModel: database.SnowflakeBaseModel{
+            ID:        user.ID,
+            CreatedBy: user.CreatedBy,
+            UpdatedBy: user.UpdatedBy,
+        },
+        Username:     user.Username,
+        PasswordHash: user.PasswordHash,
+        Email:        user.Email,
+        Status:       common.IntPtr(user.Status),       // ⭐ 转换为 *int
+        PositionID:   common.Int64Ptr(user.PositionID), // ⭐ 转换为 *int64
+        DepartmentID: common.Int64Ptr(user.DepartmentID),
+    }, nil
+}
+```
+
+**辅助函数**（internal/persistence/common/converter.go）：
+
+```Go
+package common
+
+func IntPtr(v int) *int       { return &v }
+func BoolPtr(v bool) *bool    { return &v }
+func Int64Ptr(v int64) *int64 { return &v }
+```
+
+**⭐⭐⭐ GORM 模型字段约束规范（指针类型方案） ⭐⭐⭐**
+
+**指针类型的 GORM 行为**：
+1. **指针为 `nil`**：GORM 忽略该字段（不更新）
+2. **指针非 `nil`**：GORM 更新为指定值（包括零值）
+
+**示例对比**：
+
+```Go
+// ❌ 错误：使用非指针类型，零值会被忽略
+type apiModel struct {
+    AuthType  int  `gorm:"default:1"`
+    Status    int  `gorm:"default:1"`
+    IsSystem  bool `gorm:"default:false"`
+}
+
+// ✅ 正确：使用指针类型，零值也能正确保存
+type apiModel struct {
+    AuthType  *int  `gorm:"not null;default:1"`
+    Status    *int  `gorm:"not null;default:1"`
+    IsSystem  *bool `gorm:"not null;default:false"`
+}
+```
+
+**核心原则**：
+
+1. **需要区分零值的 `int` 字段**：使用指针类型 `*int`
+   - ✅ `Status *int gorm:"not null;default:1"`
+   - ✅ `Type *int gorm:"not null;default:2"`
+
+2. **需要区分零值的 `bool` 字段**：使用指针类型 `*bool`
+   - ✅ `Hidden *bool gorm:"not null;default:false"`
+   - ✅ `IsSystem *bool gorm:"not null;default:false"`
+
+3. **需要区分零值的 `int64` 字段**：使用指针类型 `*int64`
+   - ✅ `ParentID *int64 gorm:"not null;default:0"`
+   - ✅ `DepartmentID *int64 gorm:"not null;default:0"`
+
+4. **必填字段**：使用非指针类型 + `not null`
+   - ✅ `Username string gorm:"size:50;not null"`
+   - ✅ `Path string gorm:"size:255;not null"`
+
+5. **迁移文件同步**：`migrations.go` 同步添加 `NOT NULL` 约束
+   
+**⭐ 注意**：完整的 toDomain() 和 fromDomain() 转换逻辑已在 [核心架构 - Repository 层转换职责](#三 -1-repository-层是数据转换的核心) 中定义，此处不再重复。
 
 // TableName 指定表名
 func (userModel) TableName() string {
     return "base_users"
-}
-
-// 转换为 Domain Entity（ID: int64 → string）
-// ⭐ 详细转换逻辑已在 [核心架构 - Repository 层转换职责](#三 -1-repository-层是数据转换的核心) 中定义
-func (m *userModel) toDomain() *entity.User {
-    return &entity.User{
-        ID:           common.ToString(m.ID),
-        Username:     m.Username,
-        Email:        m.Email,
-        PositionID:   common.ToString(m.PositionID),
-        DepartmentID: common.ToString(m.DepartmentID),
-        CreatedBy:    common.ToString(m.CreatedBy),
-    }
-}
-
-// 从 Domain Entity 转换（ID: string → int64）
-// ⭐ 详细转换逻辑已在 [核心架构 - Repository 层转换职责](#三 -1-repository-层是数据转换的核心) 中定义
-func fromDomain(user *entity.User) (*userModel, error) {
-    id, createdBy, updatedBy := common.SetBaseFields(user.ID, user.CreatedBy, user.UpdatedBy)
-    
-    return &userModel{
-        SnowflakeBaseModel: database.SnowflakeBaseModel{
-            ID:        id,
-            CreatedBy: createdBy,
-            UpdatedBy: updatedBy,
-        },
-        Username:     user.Username,
-        Email:        user.Email,
-        PositionID:   common.TryParseInt64(user.PositionID),
-        DepartmentID: common.TryParseInt64(user.DepartmentID),
-    }, nil
 }
 
 // ⭐ GORM 标准做法说明

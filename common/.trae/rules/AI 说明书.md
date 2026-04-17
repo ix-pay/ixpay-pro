@@ -22,7 +22,7 @@ AI 必须按以下流程调用技能：
 开发完成 → [代码质量检查器](../skills/代码质量检查器/SKILL.md) → [Git 提交与推送工具](../skills/Git 提交与推送工具/SKILL.md)
 
 ### 5. 规则/技能修改
-修改规则/技能 → [规则与技能指南](../skills/规则与技能指南/SKILL.md) → 检查字符数/frontmatter → 提交
+修改规则/技能 → [规则与技能指南](../skills/规则与技能指南/SKILL.md) → 检查字符数/frontmatter
 
 ## 核心原则
 

@@ -57,6 +57,95 @@ type UpdateUserRequest struct {
 3. **自动转换**：Go json 标签自动处理 int64 ↔ string 序列化
 4. **性能更好**：无类型转换开销
 
+#### 2.1 ID 数组字段处理规范 ⭐⭐⭐
+
+**Go 的 `json:",string"` 标签不支持数组类型，需要使用 `[]string`**
+
+**Request DTO (ID 数组)**:
+```go
+// ✅ 正确：使用 []string 接收前端传来的字符串数组
+type AssignUserToRoleRequest struct {
+    RoleID  int64    `json:"roleId" binding:"required"`
+    UserIDs []string `json:"userIds" binding:"required,min=1"`  // ✅ 使用 []string
+}
+
+// ✅ 正确：批量删除操作
+type BatchDeleteRequest struct {
+    IDs []int64 `json:"ids" binding:"required"`  // ✅ 单个 ID 用 json:",string"，数组用 []int64
+}
+```
+
+**Response DTO (ID 数组)**:
+```go
+// ✅ 正确：使用 []int64（不需要 json:",string" 标签）
+type APIResponse struct {
+    RoleIds    []int64 `json:"roleIds"`    // ✅ 使用 []int64
+    MenuIds    []int64 `json:"menuIds"`    // ✅ 使用 []int64
+    BtnPermIds []int64 `json:"btnPermIds"` // ✅ 使用 []int64
+}
+```
+
+**Domain Entity (ID 数组)**:
+```go
+// ✅ 正确：领域层使用 []int64
+type User struct {
+    RoleIds []int64     // ✅ 使用 []int64
+    Roles   []*Role     // ✅ 关联对象列表
+}
+```
+
+**API Handler 层转换（[]string → []int64）**:
+```go
+func (c *RoleController) AssignUserToRole(ctx *gin.Context) {
+    var req AssignUserToRoleRequest
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        return
+    }
+
+    // ✅ 将 []string 转换为 []int64
+    userIDInts := make([]int64, len(req.UserIDs))
+    for i, idStr := range req.UserIDs {
+        id, err := strconv.ParseInt(idStr, 10, 64)
+        if err != nil {
+            baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+            return
+        }
+        userIDInts[i] = id
+    }
+
+    // 调用 Service（使用 []int64）
+    err := c.service.AssignUserToRole(req.RoleID, userIDInts)
+    // ...
+}
+```
+
+**Domain Service 层**:
+```go
+// ✅ 直接接收 []int64，不需要转换
+func (s *RoleService) AssignUserToRole(roleID int64, userIDs []int64) error {
+    for _, userID := range userIDs {
+        // 业务逻辑
+    }
+    return nil
+}
+```
+
+**ID 数组类型使用规则**:
+
+| 层级 | ID 数组类型 | 说明 |
+|------|-----------|------|
+| **Request DTO** | `[]string` | 前端传来 JSON 字符串数组，Go 的 `json:",string"` 不支持数组 |
+| **Response DTO** | `[]int64` | 直接返回 int64 数组，Go 会自动序列化 |
+| **Domain Entity** | `[]int64` | 与数据库一致，无需转换 |
+| **API Handler** | 手动转换 `[]string` → `[]int64` | 在边界层完成类型转换 |
+
+**为什么这样设计？**
+
+1. **Go 限制**：`json:",string"` 标签只支持标量类型，不支持数组
+2. **前端传来**：JSON 格式为 `{"userIds": ["123", "456"]}`（字符串数组）
+3. **边界转换**：在 API Handler 层完成类型转换，保证内部使用统一的 `int64`
+4. **类型安全**：Domain Entity 使用 `[]int64`，编译期类型检查
+
 ### 3. CRUD 接口命名规范 ⭐⭐⭐
 
 **统一 CRUD 基本操作的 HTTP 方法和命名规则**
@@ -218,6 +307,26 @@ getRoleList()
 HTTP 请求 → API Handler → Domain Service → Repository → Database
           (DTO 层)      (领域实体)    (数据模型)   (数据库)
           (int64)       (int64)       (int64)      (int64)
+```
+
+**ID 数组字段流转**：
+
+```
+HTTP 请求：{"userIds": ["123", "456"]}
+   ↓
+Request DTO: UserIDs []string  ← Go json:",string" 不支持数组
+   ↓
+API Handler: 手动转换 []string → []int64
+   for i, idStr := range req.UserIDs {
+       id, _ := strconv.ParseInt(idStr, 10, 64)
+       userIDInts[i] = id
+   }
+   ↓
+Domain Service 参数：[]int64
+   ↓
+Domain Entity: RoleIds []int64  ← 直接赋值
+   ↓
+Repository: 保存到数据库（[]int64）
 ```
 
 **详细步骤**:
@@ -1378,21 +1487,6 @@ db.Preload("Department").
 ```TypeScript
 // ✅ 正确：camelCase
 export interface UserInfo {
-  id: number              // number 类型（后端使用 json:",string" 标签，前端接收字符串，TypeScript 可定义为 number）
-  userName: string
-  nickname: string
-  email: string
-  phone: string
-  avatar: string
-  status: number
-  roleIds: number[]       // number 数组
-  currentRoleId: number   // camelCase
-  createdAt: string
-  updatedAt: string
-}
-
-// ✅ 或者使用 string 类型（保持与 JSON 响应一致）
-export interface UserInfoString {
   id: string              // string 类型
   userName: string
   nickname: string

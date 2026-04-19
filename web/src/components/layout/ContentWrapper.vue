@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex-1 bg-[var(--bg-color)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] box-border flex flex-col h-[calc(100vh-64px)] overflow-hidden relative"
+    class="flex-1 bg-[var(--bg-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] box-border flex flex-col h-[calc(100vh-64px)] overflow-hidden relative"
     :class="{
       'ml-[64px]': isSidebarCollapsed,
       'ml-[240px]': !isSidebarCollapsed,
@@ -50,7 +50,7 @@ defineProps({
 /* 暗黑模式滚动条调整 */
 html.dark {
   .scrollbar-thumb-\[var\(--border-dark\)\] {
-    scrollbar-color: var(--border-color) var(--bg-dark);
+    scrollbar-color: var(--border-primary) var(--bg-tertiary);
   }
 }
 </style>

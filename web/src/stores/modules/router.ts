@@ -1,9 +1,9 @@
-import { asyncRouterHandle } from '@/utils/asyncRouter'
+import { asyncRouterHandle } from '@/utils/async-router'
 import { emitter } from '@/utils/bus'
 import { getMenuList } from '@/api/modules/menu'
 import { defineStore } from 'pinia'
 import { ref, watchEffect } from 'vue'
-import pathInfo from '@/pathInfo.json'
+import pathInfo from '@/path-info.json'
 import { useRoute } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { hasMenuPermission } from '@/utils/permission'
@@ -98,7 +98,7 @@ const formatRouter = (
 
     // 保持 component 为字符串格式，由 asyncRouterHandle 统一处理
     if (item.component && typeof item.component === 'string') {
-      console.log('formatRouter - Original component path:', item.component)
+      console.log('格式化路由 - 原始组件路径:', item.component)
       // 确保 component 路径以 views/或 plugin/开头，asyncRouterHandle 会处理
       if (!item.component.startsWith('views/') && !item.component.startsWith('plugin/')) {
         // 如果是基础组件（如 base/index.vue），添加 base 前缀
@@ -108,7 +108,7 @@ const formatRouter = (
           // 其他情况，添加 view 前缀
           item.component = `views/${item.component}`
         }
-        console.log('formatRouter - Updated component path:', item.component)
+        console.log('格式化路由 - 更新后的组件路径:', item.component)
       }
     }
 
@@ -271,39 +271,39 @@ export const useRouterStore = defineStore('router', () => {
   }
 
   watchEffect(() => {
-    console.log('Router WatchEffect - Start')
-    console.log('Router WatchEffect - Current route:', route)
+    console.log('路由监听 - 开始')
+    console.log('路由监听 - 当前路由:', route)
 
     // 登录页面不处理菜单逻辑，直接返回
     if (route.path === '/login') {
-      console.log('Router WatchEffect - Login page, skipping menu processing')
-      console.log('Router WatchEffect - End')
+      console.log('路由监听 - 登录页面，跳过菜单处理')
+      console.log('路由监听 - 结束')
       return
     }
 
-    // 只在asyncRouters有有效内容时才处理菜单
+    // 只在 asyncRouters 有有效内容时才处理菜单
     if (!asyncRouters.value || asyncRouters.value.length === 0) {
-      console.log('Router WatchEffect - No valid routes, skipping menu processing')
-      console.log('Router WatchEffect - End')
+      console.log('路由监听 - 没有有效路由，跳过菜单处理')
+      console.log('路由监听 - 结束')
       return
     }
 
-    // 过滤掉无效路由和非顶层菜单路由（顶层菜单应该没有parent）
+    // 过滤掉无效路由和非顶层菜单路由（顶层菜单应该没有 parent）
     const validTopRoutes = asyncRouters.value.filter(
-      (route) => route && typeof route === 'object' && route.name && !route.parent, // 顶层菜单没有parent
+      (route) => route && typeof route === 'object' && route.name && !route.parent, // 顶层菜单没有 parent
     )
 
     if (validTopRoutes.length === 0) {
-      console.log('Router WatchEffect - No valid top routes, skipping menu processing')
-      console.log('Router WatchEffect - End')
+      console.log('路由监听 - 没有有效顶层路由，跳过菜单处理')
+      console.log('路由监听 - 结束')
       return
     }
 
-    console.log('Router WatchEffect - Processing valid top routes:', validTopRoutes.length)
+    console.log('路由监听 - 处理有效顶层路由:', validTopRoutes.length)
 
     // 初始化菜单内容
     topMenu.value = []
-    Object.keys(menuMap).forEach((key) => delete menuMap[key]) // 重置menuMap
+    Object.keys(menuMap).forEach((key) => delete menuMap[key]) // 重置 menuMap
 
     // 处理顶层菜单
     validTopRoutes.forEach((item) => {
@@ -314,7 +314,7 @@ export const useRouterStore = defineStore('router', () => {
       }
     })
 
-    console.log('Router WatchEffect - Processed topMenu:', topMenu.value.length, 'items')
+    console.log('路由监听 - 处理顶层菜单:', topMenu.value.length, '项')
 
     // 处理当前激活的菜单
     let topActive: string | null = sessionStorage.getItem('topActive')
@@ -323,31 +323,31 @@ export const useRouterStore = defineStore('router', () => {
     }
 
     setLeftMenu(topActive || '')
-    console.log('Router WatchEffect - End')
+    console.log('路由监听 - 结束')
   })
 
   // 从后台获取动态路由：仅处理登录后的页面路由信息
   // 基础路由已在 router/index.ts 中定义为 baseRoutes
   const SetAsyncRouter = async (): Promise<ExtendedRouteRecordRaw[]> => {
-    console.log('SetAsyncRouter - Start (Only login after routes)')
+    console.log('设置异步路由 - 开始（仅登录后的路由）')
 
     // 使用局部变量存储非布局路由，避免模块级变量积累
     const notLayoutRouterArr: ExtendedRouteRecordRaw[] = []
 
-    // 增加asyncRouterFlag，触发watchEffect更新
-    // 每次成功加载路由后都递增flag，确保watchEffect能检测到变化
+    // 增加 asyncRouterFlag，触发 watchEffect 更新
+    // 每次成功加载路由后都递增 flag，确保 watchEffect 能检测到变化
     asyncRouterFlag.value++
-    console.log('SetAsyncRouter - Updated asyncRouterFlag:', asyncRouterFlag.value)
+    console.log('设置异步路由 - 已更新 asyncRouterFlag:', asyncRouterFlag.value)
 
     try {
       // 调用 getMenuList 函数获取菜单数据（仅包含登录后的页面路由）
-      console.log('SetAsyncRouter - Getting menu data from API...')
+      console.log('设置异步路由 - 正在从 API 获取菜单数据...')
       const asyncRouterRes = await getMenuList()
-      console.log('SetAsyncRouter - Menu API response:', asyncRouterRes)
+      console.log('设置异步路由 - 菜单 API 响应:', asyncRouterRes)
 
       // 检查菜单数据是否有效
       if (!asyncRouterRes || !asyncRouterRes.data) {
-        console.error('SetAsyncRouter - Invalid menu data from API:', asyncRouterRes)
+        console.error('设置异步路由 - API 返回的菜单数据无效:', asyncRouterRes)
         // 如果数据无效，返回空数组
         asyncRouters.value = []
         return []
@@ -358,14 +358,14 @@ export const useRouterStore = defineStore('router', () => {
       if (Array.isArray(asyncRouterRes?.data)) {
         dynamicRoutes = asyncRouterRes.data
       } else {
-        console.error('SetAsyncRouter - Unexpected data format from menu API:', asyncRouterRes.data)
+        console.error('设置异步路由 - 菜单 API 返回的数据格式不符合预期:', asyncRouterRes.data)
         // 如果数据格式不符合预期，使用空数组
         dynamicRoutes = []
       }
 
       // 过滤掉 null 元素和无效对象
       dynamicRoutes = dynamicRoutes.filter((route) => route && typeof route === 'object')
-      console.log('SetAsyncRouter - Filtered dynamic routes:', dynamicRoutes)
+      console.log('设置异步路由 - 过滤后的动态路由:', dynamicRoutes)
 
       // 过滤掉已在前端 router/index.ts 中定义的路由，避免重复
       // 这些路由包括：profile（个人资料）、settings（系统设置）
@@ -373,41 +373,38 @@ export const useRouterStore = defineStore('router', () => {
       const predefinedRouteNames = ['UserProfile', 'SystemSetting']
       dynamicRoutes = dynamicRoutes.filter((route) => {
         if (route.name && predefinedRouteNames.includes(route.name.toString())) {
-          console.log('SetAsyncRouter - Filtering out predefined route:', route.name)
+          console.log('设置异步路由 - 过滤掉已定义的路由:', route.name)
           return false
         }
         return true
       })
-      console.log('SetAsyncRouter - After filtering predefined routes:', dynamicRoutes.length)
+      console.log('设置异步路由 - 过滤已定义路由后的数量:', dynamicRoutes.length)
 
       // 先提取按钮权限（在过滤路由之前提取，因为过滤会移除 type: 3 的按钮数据）
       buttonPermissions.value = extractButtonPermissions(dynamicRoutes as ApiMenuItem[])
-      console.log('SetAsyncRouter - Extracted button permissions:', buttonPermissions.value)
+      console.log('设置异步路由 - 提取的按钮权限:', buttonPermissions.value)
 
       // 根据用户权限过滤路由
       dynamicRoutes = filterRoutesByPermission(dynamicRoutes)
-      console.log('SetAsyncRouter - Permission filtered routes:', dynamicRoutes)
+      console.log('设置异步路由 - 权限过滤后的路由:', dynamicRoutes)
 
-      console.log('SetAsyncRouter - Menu API data count:', dynamicRoutes.length)
+      console.log('设置异步路由 - 菜单 API 数据数量:', dynamicRoutes.length)
 
       // 格式化路由
-      console.log('SetAsyncRouter - Formatting dynamic routes')
-      console.log('SetAsyncRouter - Before format - routes count:', dynamicRoutes.length)
-      console.log(
-        'SetAsyncRouter - First route before format:',
-        JSON.stringify(dynamicRoutes[0], null, 2),
-      )
+      console.log('设置异步路由 - 正在格式化动态路由')
+      console.log('设置异步路由 - 格式化前路由数量:', dynamicRoutes.length)
+      console.log('设置异步路由 - 格式化前的第一个路由:', JSON.stringify(dynamicRoutes[0], null, 2))
 
       try {
         formatRouter(dynamicRoutes, routeMap, null, notLayoutRouterArr)
-        console.log('SetAsyncRouter - After format - routes count:', dynamicRoutes.length)
+        console.log('设置异步路由 - 格式化后路由数量:', dynamicRoutes.length)
         console.log(
-          'SetAsyncRouter - First route after format:',
+          '设置异步路由 - 格式化后的第一个路由:',
           JSON.stringify(dynamicRoutes[0], null, 2),
         )
       } catch (error) {
-        console.error('SetAsyncRouter - Error formatting routes:', error)
-        console.error('SetAsyncRouter - Error details:', JSON.stringify(error, null, 2))
+        console.error('设置异步路由 - 格式化路由时出错:', error)
+        console.error('设置异步路由 - 错误详情:', JSON.stringify(error, null, 2))
         throw error
       }
 
@@ -417,7 +414,7 @@ export const useRouterStore = defineStore('router', () => {
         // 如果路径是绝对路径，将其转换为相对路径
         if (normalizedRoute.path && normalizedRoute.path.startsWith('/')) {
           console.log(
-            'SetAsyncRouter - Converting absolute path to relative:',
+            '设置异步路由 - 将绝对路径转换为相对路径:',
             normalizedRoute.path,
             '->',
             normalizedRoute.path.slice(1),
@@ -426,11 +423,8 @@ export const useRouterStore = defineStore('router', () => {
         }
         return normalizedRoute
       })
-      console.log('SetAsyncRouter - Normalized routes count:', normalizedRoutes.length)
-      console.log(
-        'SetAsyncRouter - First normalized route:',
-        JSON.stringify(normalizedRoutes[0], null, 2),
-      )
+      console.log('设置异步路由 - 标准化后的路由数量:', normalizedRoutes.length)
+      console.log('设置异步路由 - 第一个标准化路由:', JSON.stringify(normalizedRoutes[0], null, 2))
 
       // 更新父属性引用
       normalizedRoutes.forEach((route) => {
@@ -448,17 +442,17 @@ export const useRouterStore = defineStore('router', () => {
           (route) => route && typeof route === 'object',
         )
         if (validNotLayoutRoutes.length > 0) {
-          console.log('SetAsyncRouter - Adding non-layout routes:', validNotLayoutRoutes.length)
+          console.log('设置异步路由 - 添加非布局路由:', validNotLayoutRoutes.length)
           finalRoutes.push(...validNotLayoutRoutes)
         }
       }
 
       console.log(
-        'SetAsyncRouter - finalRoutes count before asyncRouterHandle:',
+        '设置异步路由 - asyncRouterHandle 前的 finalRoutes 数量:',
         finalRoutes.length,
       )
       console.log(
-        'SetAsyncRouter - First route before asyncRouterHandle:',
+        '设置异步路由 - asyncRouterHandle 前的第一个路由:',
         JSON.stringify(finalRoutes[0], null, 2),
       )
 
@@ -466,12 +460,12 @@ export const useRouterStore = defineStore('router', () => {
       asyncRouterHandle(finalRoutes)
 
       console.log(
-        'SetAsyncRouter - After asyncRouterHandle - First route:',
+        '设置异步路由 - asyncRouterHandle 后的第一个路由:',
         JSON.stringify(finalRoutes[0], null, 2),
       )
-      console.log('SetAsyncRouter - Checking routes before final filter...')
+      console.log('设置异步路由 - 最终过滤前检查路由...')
       finalRoutes.forEach((route, index) => {
-        console.log(`SetAsyncRouter - Route ${index}:`, {
+        console.log(`设置异步路由 - 路由 ${index}:`, {
           name: route.name,
           path: route.path,
           hasComponent: !!route.component,
@@ -484,14 +478,14 @@ export const useRouterStore = defineStore('router', () => {
       const validFinalRoutes = finalRoutes.filter((route) => {
         // 确保路由有名称
         if (!route.name) {
-          console.log('SetAsyncRouter - Filtering out route without name:', route.path)
+          console.log('设置异步路由 - 过滤掉没有名称的路由:', route.path)
           return false
         }
 
         // 确保有组件或有子路由（父路由可以没有组件但必须有子路由）
         if (!route.component && (!route.children || route.children.length === 0)) {
           console.log(
-            'SetAsyncRouter - Filtering out route without component or children:',
+            '设置异步路由 - 过滤掉没有组件或子路由的路由:',
             route.path,
           )
           return false
@@ -522,14 +516,14 @@ export const useRouterStore = defineStore('router', () => {
 
       // 存储处理后的有效路由
       asyncRouters.value = validFinalRoutes
-      console.log('SetAsyncRouter - Final valid routes stored:', asyncRouters.value)
-      console.log('SetAsyncRouter - Valid routes count:', asyncRouters.value.length)
+      console.log('设置异步路由 - 最终有效路由已存储:', asyncRouters.value)
+      console.log('设置异步路由 - 有效路由数量:', asyncRouters.value.length)
 
       // 返回处理后的动态路由
       return validFinalRoutes
     } catch (error) {
-      console.error('SetAsyncRouter - Error:', error)
-      return [] // 返回空数组而不是false，保持类型一致性
+      console.error('设置异步路由 - 错误:', error)
+      return [] // 返回空数组而不是 false，保持类型一致性
     }
   }
 

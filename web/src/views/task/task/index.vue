@@ -73,33 +73,25 @@
         <el-table-column prop="createdAt" label="创建时间" width="160" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <div class="flex gap-1">
+            <div class="flex gap-2">
               <el-button
                 v-auth-btn="'task:task:edit'"
-                size="small"
                 type="primary"
-                link
                 @click="handleEditTask(scope.row)"
               >
                 编辑
               </el-button>
               <el-button
                 v-auth-btn="'task:task:execute'"
-                size="small"
                 type="success"
-                link
                 @click="(e) => handleRunTask(e as MouseEvent, scope.row.id)"
               >
                 执行
               </el-button>
-              <el-button size="small" type="primary" link @click="handleViewLog(scope.row)">
-                日志
-              </el-button>
+              <el-button type="primary" @click="handleViewLog(scope.row)"> 日志 </el-button>
               <el-button
                 v-auth-btn="'task:task:delete'"
-                size="small"
                 type="danger"
-                link
                 @click="handleDeleteTask(scope.row.id)"
               >
                 删除

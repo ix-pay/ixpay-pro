@@ -76,6 +76,14 @@ export const getRoleDetail = (id: string): Promise<ApiResponse<RoleType>> => {
   })
 }
 
+// 根据 ID 获取角色
+export const getRoleById = (id: string): Promise<ApiResponse<RoleType>> => {
+  return service({
+    url: `/role/${id}`,
+    method: 'get',
+  })
+}
+
 // 更新角色
 export const updateRole = (data: UpdateRoleRequest): Promise<ApiResponse> => {
   return service({

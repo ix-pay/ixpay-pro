@@ -34,23 +34,23 @@ const DEFAULT_CONFIG: ConfigType = {
   transition_type: 'slide',
 }
 
-// 从localStorage加载存储的配置
+// 从 localStorage 加载存储的配置
 const loadConfigFromStorage = (): Partial<ConfigType> => {
   try {
     const savedConfig = localStorage.getItem('ixpay-app-config')
     return savedConfig ? JSON.parse(savedConfig) : {}
   } catch (error) {
-    console.error('Failed to load config from storage:', error)
+    console.error('从存储加载配置失败:', error)
     return {}
   }
 }
 
-// 保存配置到localStorage
+// 保存配置到 localStorage
 const saveConfigToStorage = (config: ConfigType): void => {
   try {
     localStorage.setItem('ixpay-app-config', JSON.stringify(config))
   } catch (error) {
-    console.error('Failed to save config to storage:', error)
+    console.error('保存配置到存储失败:', error)
   }
 }
 

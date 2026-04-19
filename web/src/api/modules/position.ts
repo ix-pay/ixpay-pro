@@ -73,3 +73,19 @@ export const deletePosition = (id: number): Promise<ApiResponse> => {
     method: 'delete',
   })
 }
+
+// 获取所有岗位
+export const getAllPositions = (): Promise<ApiResponse<Position[]>> => {
+  return service({
+    url: '/position/all',
+    method: 'get',
+  })
+}
+
+// 获取岗位详情
+export const getPositionById = (id: number): Promise<ApiResponse<Position>> => {
+  return service({
+    url: `/position/${id}`,
+    method: 'get',
+  })
+}

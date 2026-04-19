@@ -1,46 +1,56 @@
 <template>
-  <!-- 使用 Tailwind CSS + 业务组件重构 Dashboard -->
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- 欢迎区域 - 使用渐变背景和现代化设计 -->
-    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex items-center justify-between mb-6">
+  <!-- Dashboard 首页 - 现代化数据可视化设计 -->
+  <div class="min-h-screen bg-bg-secondary">
+    <!-- 顶部欢迎区域 - 渐变背景设计 -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-primary-color to-purple-600">
+      <!-- 装饰性光晕 -->
+      <div
+        class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"
+      ></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <!-- 欢迎标题区 -->
+        <div class="mb-6 flex items-center justify-between">
           <div>
-            <h1 class="text-3xl font-bold mb-2">欢迎回来，{{ userName }}！</h1>
-            <p class="text-blue-100 text-sm">{{ curDate }}</p>
+            <h1 class="mb-2 text-3xl font-bold text-white">欢迎回来，{{ userName }}！</h1>
+            <p class="text-primary-light text-sm">{{ curDate }}</p>
           </div>
           <el-button
-            type="info"
-            size="small"
-            @click="refreshData"
-            class="bg-white/20 hover:bg-white/30 border-none text-white"
-            circle
             :icon="RefreshRight"
+            circle
+            size="small"
+            class="border-none bg-white/20 text-white hover:bg-white/30"
+            @click="refreshData"
           />
         </div>
 
-        <!-- 总统计数据 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-white/20">
+        <!-- 总统计数据展示 -->
+        <div class="grid grid-cols-1 gap-4 border-t border-white/20 pt-4 md:grid-cols-3">
           <div class="text-center">
-            <div class="text-2xl font-bold">{{ totalUsers.toLocaleString() }}</div>
-            <div class="text-blue-100 text-sm">总用户数</div>
+            <div class="mb-1 text-2xl font-bold text-white">{{ totalUsers.toLocaleString() }}</div>
+            <div class="text-primary-light text-xs">总用户数</div>
           </div>
-          <div class="text-center border-l border-white/20">
-            <div class="text-2xl font-bold">{{ totalOrders.toLocaleString() }}</div>
-            <div class="text-blue-100 text-sm">总订单数</div>
+          <div class="border-l border-white/20 text-center">
+            <div class="mb-1 text-2xl font-bold text-white">{{ totalOrders.toLocaleString() }}</div>
+            <div class="text-primary-light text-xs">总订单数</div>
           </div>
-          <div class="text-center border-l border-white/20">
-            <div class="text-2xl font-bold">{{ formatCurrency(totalRevenue) }}</div>
-            <div class="text-blue-100 text-sm">总交易额</div>
+          <div class="border-l border-white/20 text-center">
+            <div class="mb-1 text-2xl font-bold text-white">
+              {{ formatCurrency(totalRevenue) }}
+            </div>
+            <div class="text-primary-light text-xs">总交易额</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 主内容区 -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <!-- 统计卡片区域 - 使用 IxStatCard 组件 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <!-- 统计卡片区域 - 响应式网格布局 -->
+      <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <IxStatCard
           title="今日订单"
           :value="todayOrders"
@@ -49,6 +59,7 @@
           change-label="较昨日"
           icon="GoodsFilled"
           color="blue"
+          :show-title-icon="true"
         />
         <IxStatCard
           title="今日交易额"
@@ -58,6 +69,7 @@
           change-label="较昨日"
           icon="Money"
           color="green"
+          :show-title-icon="true"
         />
         <IxStatCard
           title="新增用户"
@@ -67,6 +79,7 @@
           change-label="较昨日"
           icon="User"
           color="purple"
+          :show-title-icon="true"
         />
         <IxStatCard
           title="退款订单"
@@ -76,11 +89,13 @@
           change-label="较昨日"
           icon="Warning"
           color="red"
+          :show-title-icon="true"
         />
       </div>
 
-      <!-- 图表区域 - 使用 IxCard 组件 -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- 图表区域 - 双列布局 -->
+      <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- 销售趋势图表 -->
         <IxCard title="销售趋势" hover-effect>
           <template #header-actions>
             <el-select v-model="chartType" size="small" class="w-24" @change="updateSalesTrendData">
@@ -89,23 +104,29 @@
               <el-option label="月" value="month" />
             </el-select>
           </template>
-          <IxEcharts :options="salesTrendOptions as unknown as EChartsOption" height="320px" />
+          <IxEcharts
+            :options="salesTrendOptions as EChartsOption"
+            height="320px"
+            :hover-effect="true"
+          />
         </IxCard>
 
+        <!-- 订单类型分布 -->
         <IxCard title="订单类型分布" hover-effect>
           <IxEcharts
-            :options="orderDistributionOptions as unknown as EChartsOption"
+            :options="orderDistributionOptions as EChartsOption"
             height="320px"
+            :hover-effect="true"
           />
         </IxCard>
       </div>
 
-      <!-- 最近订单和系统信息 -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 最近订单 -->
+      <!-- 最近订单与系统状态区 -->
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- 最近订单表格 -->
         <IxCard title="最近订单" hover-effect>
           <template #header-actions>
-            <el-button type="primary" size="small" @click="navigateTo('all-orders')" :icon="Right">
+            <el-button type="primary" size="small" :icon="Right" @click="navigateTo('all-orders')">
               查看全部
             </el-button>
           </template>
@@ -119,12 +140,14 @@
             <el-table-column prop="orderNo" label="订单号" min-width="180" />
             <el-table-column prop="amount" label="金额" min-width="120">
               <template #default="scope">
-                {{ formatCurrency(scope.row.amount) }}
+                <span class="font-medium text-text-primary">
+                  {{ formatCurrency(scope.row.amount) }}
+                </span>
               </template>
             </el-table-column>
             <el-table-column prop="status" label="状态" min-width="100">
               <template #default="scope">
-                <el-tag :type="getStatusTagType(scope.row.status)" size="small">
+                <el-tag :type="getStatusTagType(scope.row.status)" size="small" effect="light">
                   {{ scope.row.status }}
                 </el-tag>
               </template>
@@ -135,8 +158,8 @@
                 <el-button
                   type="primary"
                   size="small"
-                  @click="viewOrderDetails(scope.row.orderNo)"
                   :icon="View"
+                  @click="viewOrderDetails(scope.row.orderNo)"
                 >
                   详情
                 </el-button>
@@ -146,94 +169,103 @@
         </IxCard>
 
         <!-- 右侧：系统状态和快速操作 -->
-        <div class="space-y-6">
-          <!-- 系统状态 -->
+        <div class="flex flex-col gap-6">
+          <!-- 系统状态监控 -->
           <IxCard title="系统状态" hover-effect>
             <div class="grid grid-cols-2 gap-4">
-              <div class="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div class="text-green-500">
+              <div
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
+                <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
                   </el-icon>
                 </div>
                 <div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">服务器</div>
-                  <div class="font-medium text-green-600 dark:text-green-400">运行正常</div>
-                </div>
-              </div>
-              <div class="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div class="text-green-500">
-                  <el-icon :size="24">
-                    <CircleCheckFilled />
-                  </el-icon>
-                </div>
-                <div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">数据库</div>
-                  <div class="font-medium text-green-600 dark:text-green-400">连接正常</div>
-                </div>
-              </div>
-              <div class="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div class="text-green-500">
-                  <el-icon :size="24">
-                    <CircleCheckFilled />
-                  </el-icon>
-                </div>
-                <div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">API 接口</div>
-                  <div class="font-medium text-green-600 dark:text-green-400">响应正常</div>
+                  <div class="text-xs text-text-tertiary">服务器</div>
+                  <div class="font-medium text-success-color">运行正常</div>
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg"
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
               >
-                <div class="text-yellow-500">
+                <div class="text-success-color">
+                  <el-icon :size="24">
+                    <CircleCheckFilled />
+                  </el-icon>
+                </div>
+                <div>
+                  <div class="text-xs text-text-tertiary">数据库</div>
+                  <div class="font-medium text-success-color">连接正常</div>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
+                <div class="text-success-color">
+                  <el-icon :size="24">
+                    <CircleCheckFilled />
+                  </el-icon>
+                </div>
+                <div>
+                  <div class="text-xs text-text-tertiary">API 接口</div>
+                  <div class="font-medium text-success-color">响应正常</div>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-3 rounded-xl bg-warning-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
+                <div class="text-warning-color">
                   <el-icon :size="24">
                     <Warning />
                   </el-icon>
                 </div>
                 <div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">缓存</div>
-                  <div class="font-medium text-yellow-600 dark:text-yellow-400">部分未命中</div>
+                  <div class="text-xs text-text-tertiary">缓存</div>
+                  <div class="font-medium text-warning-color">部分未命中</div>
                 </div>
               </div>
             </div>
           </IxCard>
 
-          <!-- 快速操作 -->
+          <!-- 快速操作入口 -->
           <IxCard title="快速操作" hover-effect>
             <div class="grid grid-cols-2 gap-3">
               <el-button
                 type="primary"
-                class="h-20 flex flex-col items-center justify-center gap-2"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
               >
                 <el-icon :size="20">
                   <Plus />
                 </el-icon>
-                <span>创建订单</span>
+                <span class="text-xs">创建订单</span>
               </el-button>
               <el-button
                 type="success"
-                class="h-20 flex flex-col items-center justify-center gap-2"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
               >
                 <el-icon :size="20">
                   <Download />
                 </el-icon>
-                <span>导出报表</span>
+                <span class="text-xs">导出报表</span>
               </el-button>
-              <el-button type="info" class="h-20 flex flex-col items-center justify-center gap-2">
+              <el-button
+                type="info"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
+              >
                 <el-icon :size="20">
                   <Setting />
                 </el-icon>
-                <span>系统设置</span>
+                <span class="text-xs">系统设置</span>
               </el-button>
               <el-button
                 type="warning"
-                class="h-20 flex flex-col items-center justify-center gap-2"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
               >
                 <el-icon :size="20">
                   <Message />
                 </el-icon>
-                <span>查看通知</span>
+                <span class="text-xs">查看通知</span>
               </el-button>
             </div>
           </IxCard>
@@ -247,6 +279,7 @@
 defineOptions({
   name: 'DashboardIndex',
 })
+
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/modules/user'
@@ -278,7 +311,7 @@ const todayAmount = ref(38524.5)
 const newUsers = ref(24)
 const refundOrders = ref(5)
 
-// 新增总统计数据
+// 总统计数据
 const totalUsers = ref(12580)
 const totalOrders = ref(89652)
 const totalRevenue = ref(2856478.9)
@@ -286,7 +319,7 @@ const totalRevenue = ref(2856478.9)
 // 图表类型
 const chartType = ref('day')
 
-// 销售趋势图表配置（初始配置，数据在 onMounted 中加载）
+// 销售趋势图表配置
 const salesTrendOptions = ref<EChartsOption>({
   tooltip: {
     trigger: 'axis',
@@ -473,11 +506,11 @@ const getStatusTagType = (
   status: '已完成' | '处理中' | '已取消' | '待支付' | '已退款',
 ): 'success' | 'primary' | 'danger' | 'warning' | 'info' => {
   const statusMap: Record<string, 'success' | 'primary' | 'danger' | 'warning' | 'info'> = {
-    已完成: 'success',
-    处理中: 'primary',
-    已取消: 'danger',
-    待支付: 'warning',
-    已退款: 'danger',
+    '已完成': 'success',
+    '处理中': 'primary',
+    '已取消': 'danger',
+    '待支付': 'warning',
+    '已退款': 'danger',
   }
   return statusMap[status] || 'info'
 }
@@ -498,7 +531,8 @@ const headerCellStyle = (): CSSProperties => {
   return {
     textAlign: 'center',
     fontWeight: 'bold',
-    backgroundColor: 'var(--el-bg-color-page)',
+    backgroundColor: 'var(--bg-tertiary)',
+    color: 'var(--text-primary)',
   }
 }
 
@@ -633,20 +667,41 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-/* 现代化表格样式 */
-.modern-table :deep(.el-table) {
-  --el-table-header-bg-color: var(--bg-light);
-  --el-table-header-text-color: var(--text-primary);
-  --el-table-row-hover-bg-color: var(--bg-hover);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+<style lang="scss" scoped>
+// 现代化表格样式
+.modern-table {
+  :deep(.el-table) {
+    --el-table-header-bg-color: var(--bg-tertiary);
+    --el-table-header-text-color: var(--text-primary);
+    --el-table-row-hover-bg-color: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: transparent;
+
+    th.el-table__cell {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    td.el-table__cell {
+      border-bottom-color: var(--border-primary);
+    }
+
+    .el-table__body tr:hover > td {
+      background-color: var(--bg-secondary) !important;
+    }
+  }
 }
 
-/* 响应式调整 */
+// 响应式调整
 @media (max-width: 768px) {
   main {
     padding: 12px;
+  }
+
+  .grid {
+    gap: 0.75rem;
   }
 }
 </style>

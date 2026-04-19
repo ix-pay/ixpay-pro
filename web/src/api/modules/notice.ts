@@ -83,3 +83,37 @@ export const publishNotice = (id: number, publish: boolean): Promise<ApiResponse
     data: { publish },
   })
 }
+
+// 获取公告详情
+export const getNoticeById = (id: number): Promise<ApiResponse<Notice>> => {
+  return service({
+    url: `/notices/${id}`,
+    method: 'get',
+  })
+}
+
+// 标记公告已读
+export const markNoticeAsRead = (id: number): Promise<ApiResponse> => {
+  return service({
+    url: `/notices/${id}/read`,
+    method: 'post',
+  })
+}
+
+// 检查公告是否已读
+export const isNoticeRead = (id: number): Promise<ApiResponse<{ isRead: boolean }>> => {
+  return service({
+    url: `/notices/${id}/is-read`,
+    method: 'get',
+  })
+}
+
+// 获取公告统计
+export const getNoticeStatistics = (): Promise<
+  ApiResponse<{ total: number; read: number; unread: number }>
+> => {
+  return service({
+    url: '/notices/statistics',
+    method: 'get',
+  })
+}

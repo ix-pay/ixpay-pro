@@ -29,21 +29,17 @@
         <el-table-column prop="createdAt" label="创建时间" width="160" />
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
-            <div class="flex gap-1">
+            <div class="flex gap-2">
               <el-button
                 v-auth-btn="'system:dict:edit'"
-                size="small"
                 type="primary"
-                link
                 @click="handleEditDict(scope.row)"
               >
                 编辑
               </el-button>
               <el-button
                 v-auth-btn="'system:dict:delete'"
-                size="small"
                 type="danger"
-                link
                 @click="handleDeleteDict(scope.row.id)"
               >
                 删除

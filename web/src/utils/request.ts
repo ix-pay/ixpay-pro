@@ -48,13 +48,13 @@ class LoadingManager {
         this.loadingInstance = ElLoading.service(option)
         this.isLoadingVisible = true
 
-        // 设置强制关闭定时器，防止loading永远不关闭（30秒超时）
-        this.forceCloseTimer = window.setTimeout(() => {
-          if (this.isLoadingVisible && this.loadingInstance) {
-            console.warn('Loading强制关闭：超时30秒')
-            this.close()
-          }
-        }, 30000)
+        // 设置强制关闭定时器，防止 loading 永远不关闭（30 秒超时）
+      this.forceCloseTimer = window.setTimeout(() => {
+        if (this.isLoadingVisible && this.loadingInstance) {
+          console.warn('Loading 强制关闭：超时 30 秒')
+          this.close()
+        }
+      }, 30000)
       }
     }, 400)
   }
@@ -265,7 +265,7 @@ class TokenManager {
         loadingManager.close()
       }
       this.redirectToLogin()
-      throw new Error(isExpired ? 'Token has expired' : 'No refresh token available')
+      throw new Error(isExpired ? 'Token 已过期' : '没有可用的 refresh token')
     }
 
     try {
@@ -285,7 +285,7 @@ class TokenManager {
           loadingManager.close()
         }
         this.redirectToLogin()
-        throw new Error('Failed to refresh token')
+        throw new Error('刷新 token 失败')
       }
     } catch (error) {
       // 刷新 token 过程中出现错误，需要重新登录

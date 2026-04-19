@@ -36,12 +36,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const setUserInfo = (val: Partial<UserInfo>) => {
-    console.log('userStore - setUserInfo 原始数据:', val)
-    console.log('userStore - 原始 currentRoleId:', (val as Record<string, unknown>).currentRoleId)
-    console.log(
-      'userStore - 原始 current_role_id:',
-      (val as Record<string, unknown>).current_role_id,
-    )
+    // 处理用户信息更新逻辑
 
     // 先处理 roles 数据
     const roles = processRoles(
@@ -64,7 +59,7 @@ export const useUserStore = defineStore('user', () => {
           currentRoleIdValue,
         )
       } else {
-        console.warn('setUserInfo - 用户没有任何角色')
+        console.warn('setUserInfo - 警告：用户没有任何角色')
       }
     }
 
@@ -116,7 +111,7 @@ export const useUserStore = defineStore('user', () => {
       ),
     }
 
-    console.log('userStore - normalizedUserInfo.currentRoleId:', normalizedUserInfo.currentRoleId)
+    console.log('userStore - 标准化用户信息 currentRoleId:', normalizedUserInfo.currentRoleId)
 
     // 合并用户信息
     // 注意：先展开 val，再展开 normalizedUserInfo，确保处理后的字段不会被覆盖
@@ -169,11 +164,11 @@ export const useUserStore = defineStore('user', () => {
   /* 获取用户信息*/
   const GetUserInfo = async (): Promise<void> => {
     const res = await getUserInfo()
-    console.log('GetUserInfo - API 响应:', res)
-    console.log('GetUserInfo - res.data:', res.data)
-    console.log('GetUserInfo - res.data.userInfo:', res.data?.userInfo)
+    console.log('获取用户信息 - API 响应:', res)
+    console.log('获取用户信息 - res.data:', res.data)
+    console.log('获取用户信息 - res.data.userInfo:', res.data?.userInfo)
     console.log(
-      'GetUserInfo - res.data.currentRoleId:',
+      '获取用户信息 - res.data.currentRoleId:',
       (res.data as Record<string, unknown>)?.currentRoleId,
     )
 
@@ -211,14 +206,18 @@ export const useUserStore = defineStore('user', () => {
         throw new Error(res.msg || '登录失败')
       }
 
-      // 处理重定向
+      // 获取 routerStore，加载菜单数据并注册动态路由
+      const routerStore = useRouterStore()
+      await routerStore.SetAsyncRouter()
+
+      // 处理重定向（在路由加载完成后）
       const redirect = router.currentRoute.value.query.redirect
       if (redirect && typeof redirect === 'string') {
         await router.replace(redirect)
         return true
       }
 
-      // 先尝试直接跳转到首页路径，确保使用正确的布局
+      // 跳转到首页（此时路由已加载完成）
       await router.replace('/index')
 
       const isWindows = /windows/i.test(navigator.userAgent)
@@ -227,7 +226,7 @@ export const useUserStore = defineStore('user', () => {
       // 全部操作均结束，关闭loading并返回
       return true
     } catch (error) {
-      console.error('LoginIn error:', error)
+      console.error('登录错误:', error)
       return false
     } finally {
       loadingInstance.value?.close()
@@ -238,7 +237,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       await logout()
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error('登出错误:', error)
       ElMessage.error('登出失败，请重试')
       return
     }
@@ -279,7 +278,7 @@ export const useUserStore = defineStore('user', () => {
         throw new Error(res.msg || '切换失败')
       }
     } catch (error) {
-      console.error('SwitchRole error:', error)
+      console.error('切换角色错误:', error)
       ElMessage.error('切换角色失败')
       return false
     }

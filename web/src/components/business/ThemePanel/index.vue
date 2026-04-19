@@ -221,12 +221,12 @@ const handleReset = () => {
 }
 
 .theme-toggle-btn {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-primary);
   border-right: none;
 }
 
 .theme-config-panel {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-primary);
   border-right: none;
   max-height: 80vh;
   overflow-y: auto;
@@ -236,11 +236,11 @@ const handleReset = () => {
   }
 
   &::-webkit-scrollbar-track {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-tertiary);
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
+    background-color: var(--border-primary);
     border-radius: 3px;
 
     &:hover {
@@ -264,11 +264,11 @@ const handleReset = () => {
 // 暗黑模式适配
 html.dark {
   .theme-toggle-btn {
-    border-color: var(--border-color);
+    border-color: var(--border-primary);
   }
 
   .theme-config-panel {
-    border-color: var(--border-color);
+    border-color: var(--border-primary);
   }
 }
 </style>

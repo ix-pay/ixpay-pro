@@ -1,14 +1,9 @@
 <template>
-  <el-page-header
-    class="box-border relative z-[10] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-    @back="handleBack"
-  >
+  <el-page-header class="box-border relative z-[10] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+    @back="handleBack">
     <template #content>
-      <el-breadcrumb
-        separator=">"
-        v-if="breadcrumbList.length > 0"
-        class="h-full flex items-center px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]"
-      >
+      <el-breadcrumb separator=">" v-if="breadcrumbList.length > 0"
+        class="h-full flex items-center px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]">
         <el-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="index" :to="item.path">
           {{ item.name }}
         </el-breadcrumb-item>
@@ -18,8 +13,7 @@
       <!-- 角色切换 -->
       <el-dropdown v-if="userRoles.length > 1" :hide-on-click="true" trigger="click">
         <div
-          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)] text-[13px] text-[var(--text-regular)]"
-        >
+          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)] text-[13px] text-[var(--text-secondary)]">
           <el-icon class="text-[14px]">
             <User />
           </el-icon>
@@ -30,21 +24,13 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="role in userRoles"
-              :key="role.id"
-              :class="{
-                'is-active': String(role.id) === String(currentRoleId),
-                'is-disabled': String(role.id) === String(currentRoleId),
-              }"
-              @click="handleSwitchRole(role.id)"
-            >
+            <el-dropdown-item v-for="role in userRoles" :key="role.id" :class="{
+              'is-active': String(role.id) === String(currentRoleId),
+              'is-disabled': String(role.id) === String(currentRoleId),
+            }" @click="handleSwitchRole(role.id)">
               <div class="flex items-center gap-2">
                 <span class="flex-1">{{ role.name }}</span>
-                <el-icon
-                  v-if="String(role.id) === String(currentRoleId)"
-                  class="text-[var(--success-color)]"
-                >
+                <el-icon v-if="String(role.id) === String(currentRoleId)" class="text-[var(--success-color)]">
                   <Check />
                 </el-icon>
               </div>
@@ -55,10 +41,8 @@
 
       <!-- 消息通知 -->
       <el-dropdown :hide-on-click="false" trigger="click">
-        <el-button
-          type="text"
-          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-hover)] hover:text-[var(--primary-color)]"
-        >
+        <el-button type="text"
+          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-secondary)] hover:text-[var(--primary-color)]">
           <el-icon>
             <Bell />
           </el-icon>
@@ -82,7 +66,7 @@
                     <div>{{ notification.title }}</div>
                     <el-tag size="small" type="success">新</el-tag>
                   </div>
-                  <div class="text-[13px] text-[var(--text-regular)] my-1">
+                  <div class="text-[13px] text-[var(--text-secondary)] my-1">
                     {{ notification.desc }}
                   </div>
                   <div class="text-[12px] text-[var(--text-placeholder)]">
@@ -97,27 +81,18 @@
 
       <!-- 主题切换 -->
       <div
-        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]"
-      >
-        <el-switch
-          v-model="appStore.isDark"
-          @change="handleThemeChange"
-          class="align-middle transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-          :active-action-icon="Moon"
-          :inactive-action-icon="Sunny"
-        />
+        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]">
+        <el-switch v-model="appStore.isDark" @change="handleThemeChange"
+          class="align-middle transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]" :active-action-icon="Moon"
+          :inactive-action-icon="Sunny" />
       </div>
 
       <!-- 全屏切换 -->
       <div
-        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] cursor-pointer hover:bg-[var(--bg-hover)]"
-        @click="toggleFullscreen"
-        :title="isFullscreen ? '退出全屏' : '全屏查看'"
-      >
-        <el-button
-          type="text"
-          class="text-lg text-[var(--text-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--primary-color)]"
-        >
+        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] cursor-pointer hover:bg-[var(--bg-secondary)]"
+        @click="toggleFullscreen" :title="isFullscreen ? '退出全屏' : '全屏查看'">
+        <el-button type="text"
+          class="text-lg text-[var(--text-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--primary-color)]">
           <el-icon :class="{ 'rotate-180': isFullscreen }">
             <FullScreen />
           </el-icon>
@@ -126,8 +101,7 @@
       <!-- 用户信息 -->
       <el-dropdown :hide-on-click="false" trigger="click">
         <div
-          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-hover)]"
-        >
+          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]">
           <el-avatar :size="32" :src="userAvatar" />
           <div class="flex flex-col justify-center h-full overflow-hidden">
             <div class="text-[13px] leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -410,7 +384,7 @@ watch(
 /* 使用 Tailwind CSS 重构后，仅保留必要的 Element Plus 组件深度样式和响应式 */
 
 :deep(.el-page-header) {
-  @apply bg-[var(--bg-light)] shadow-[var(--shadow-md)] px-[var(--space-lg)] border-b border-[var(--border-color)] h-full leading-[84px] box-border text-[var(--text-primary)] overflow-hidden rounded-none;
+  @apply bg-[var(--bg-primary)] shadow-[var(--shadow-md)] px-[var(--space-lg)] border-b border-[var(--border-primary)] h-full leading-[84px] box-border text-[var(--text-primary)] overflow-hidden rounded-none;
   transition:
     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -470,7 +444,7 @@ watch(
     gap: var(--space-sm);
   }
 
-  :deep(.el-dropdown:nth-last-child(1)) > div {
+  :deep(.el-dropdown:nth-last-child(1))>div {
     @apply px-[var(--space-xs)] py-[var(--space-sm)];
   }
 
@@ -480,6 +454,436 @@ watch(
 
   :deep(.el-dropdown:nth-last-child(1)) .el-dropdown-menu {
     min-width: 160px;
+  }
+}
+
+/* ==================== 角色切换 ==================== */
+.role-switch {
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+
+  .action-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: var(--transition);
+  }
+
+  .arrow-icon {
+    font-size: 14px;
+    opacity: 0.6;
+    transition: var(--transition);
+  }
+
+  &:hover {
+    .arrow-icon {
+      opacity: 1;
+      transform: translateY(2px);
+    }
+  }
+}
+
+/* ==================== 消息通知 ==================== */
+.notification-btn {
+  width: var(--action-btn-size);
+  height: var(--action-btn-size);
+  padding: 0;
+  background: transparent;
+  border: none;
+  position: relative;
+
+  .notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
+}
+
+.notification-menu {
+  min-width: 320px;
+  max-width: 400px;
+  padding: 0;
+
+  .notification-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+
+    .notification-header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notification-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .mark-read-btn {
+      font-size: 13px;
+      color: var(--primary-color);
+
+      &:hover {
+        color: var(--primary-hover);
+      }
+    }
+  }
+
+  .empty-notification {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    color: var(--text-secondary);
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+
+    .empty-text {
+      font-size: 14px;
+    }
+  }
+
+  .notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    transition: var(--transition);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .notification-item-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .notification-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notification-item-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .notification-tag {
+      font-size: 12px;
+    }
+
+    .notification-item-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .notification-item-time {
+      font-size: 12px;
+      color: var(--text-placeholder);
+    }
+  }
+}
+
+/* ==================== 主题切换 ==================== */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .theme-switch {
+    --el-switch-on-color: #141414;
+    --el-switch-off-color: #f5f5f5;
+
+    :deep(.el-switch__core) {
+      width: 50px;
+      height: 24px;
+      border-radius: 12px;
+    }
+
+    :deep(.el-switch__action) {
+      width: 18px;
+      height: 18px;
+    }
+
+    :deep(.el-switch__label) {
+      font-size: 12px;
+      color: var(--text-secondary);
+
+      &.is-active {
+        color: var(--primary-color);
+      }
+    }
+  }
+}
+
+/* ==================== 全屏切换 ==================== */
+.fullscreen-toggle {
+  .fullscreen-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+
+    &.is-fullscreen {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+/* ==================== 分隔线 ==================== */
+.divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 8px;
+  background-color: var(--border-color);
+}
+
+/* ==================== 用户信息 ==================== */
+.user-dropdown {
+  margin-left: 4px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:hover {
+    background-color: var(--hover-bg);
+
+    .user-arrow {
+      opacity: 1;
+      transform: translateY(2px);
+    }
+  }
+
+  .user-avatar {
+    border: 2px solid var(--border-color);
+    transition: var(--transition);
+
+    &:hover {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .user-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-arrow {
+      font-size: 14px;
+      opacity: 0.6;
+      transition: var(--transition);
+    }
+  }
+}
+
+.user-menu {
+  min-width: 160px;
+  padding: 8px 0;
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    transition: var(--transition);
+
+    &:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .menu-icon {
+      font-size: 18px;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+
+    &:hover .menu-icon {
+      color: var(--primary-color);
+    }
+
+    &.logout-item {
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+
+      .menu-icon {
+        color: var(--error-color, #f56c6c);
+      }
+
+      &:hover {
+        background-color: var(--error-bg, #fef0f0);
+
+        .menu-icon,
+        span {
+          color: var(--error-color, #f56c6c);
+        }
+      }
+    }
+  }
+}
+
+/* ==================== 下拉框通用样式 ==================== */
+.action-dropdown {
+  .dropdown-menu {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+  }
+
+  .dropdown-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .dropdown-item-text {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .check-icon {
+    color: var(--success-color, #67c23a);
+    font-size: 16px;
+  }
+
+  .is-active {
+    background-color: var(--active-bg);
+    color: #fff;
+
+    .dropdown-item-text,
+    .check-icon {
+      color: #fff;
+    }
+
+    &:hover {
+      background-color: var(--primary-hover);
+    }
+  }
+
+  .is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+/* ==================== 暗黑模式适配 ==================== */
+:deep(.dark) {
+  .header-wrapper {
+    --hover-bg: rgba(255, 255, 255, 0.05);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .notification-menu {
+    background-color: var(--bg-secondary);
+  }
+
+  .user-menu {
+    background-color: var(--bg-secondary);
+  }
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 768px) {
+  .header-wrapper {
+    --header-padding: 12px 16px;
+  }
+
+  .header-left {
+    .breadcrumb {
+      display: none;
+    }
+  }
+
+  .header-right {
+    gap: 2px;
+  }
+
+  .role-switch {
+    .action-text {
+      display: none;
+    }
+  }
+
+  .user-info {
+    .user-details {
+      display: none;
+    }
+  }
+
+  .notification-menu {
+    min-width: 280px;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-wrapper {
+    --header-padding: 8px 12px;
+    --action-btn-size: 36px;
+  }
+
+  .header-right {
+    gap: 0;
+  }
+
+  .action-btn {
+    padding: 6px;
+  }
+
+  .divider {
+    margin: 0 4px;
+  }
+
+  .theme-toggle {
+    .theme-switch {
+      :deep(.el-switch__core) {
+        width: 44px;
+        height: 22px;
+      }
+
+      :deep(.el-switch__label) {
+        display: none;
+      }
+    }
   }
 }
 </style>

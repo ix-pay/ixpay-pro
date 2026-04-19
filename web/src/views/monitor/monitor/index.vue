@@ -280,7 +280,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, Monitor, Coin, Folder, Grid } from '@element-plus/icons-vue'
-import { getSystemMonitor, getCacheMonitor, getDatabaseMonitor } from '@/api/monitor'
+import { getSystemMonitor, getCacheMonitor, getDatabaseMonitor } from '@/api'
 
 defineOptions({
   name: 'MonitorDashboard',

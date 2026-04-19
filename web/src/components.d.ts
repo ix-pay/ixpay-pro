@@ -11,9 +11,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Application: typeof import('./components/business/application/index.vue')['default']
+    Application: typeof import('./components/business/Application/index.vue')['default']
     BaseLayout: typeof import('./components/layout/BaseLayout.vue')['default']
-    BottomInfo: typeof import('./components/business/bottomInfo/bottomInfo.vue')['default']
+    BottomInfo: typeof import('./components/business/BottomInfo/index.vue')['default']
     Card: typeof import('./components/business/Card/index.vue')['default']
     ContentWrapper: typeof import('./components/layout/ContentWrapper.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
@@ -72,13 +72,13 @@ declare module 'vue' {
     ElTree: typeof import('element-plus/es')['ElTree']
     ElTreeSelect: typeof import('element-plus/es')['ElTreeSelect']
     ElWatermark: typeof import('element-plus/es')['ElWatermark']
-    Error: typeof import('./components/business/error/index.vue')['default']
-    ErrorPreview: typeof import('./components/business/errorPreview/index.vue')['default']
+    Error: typeof import('./components/business/Error/index.vue')['default']
+    ErrorPreview: typeof import('./components/business/ErrorPreview/index.vue')['default']
     Header: typeof import('./components/layout/Header.vue')['default']
     IconSelector: typeof import('./components/IconSelector/index.vue')['default']
     IxEcharts: typeof import('./components/business/Chart/IxEcharts.vue')['default']
     PageTemplate: typeof import('./components/business/PageTemplate/index.vue')['default']
-    Reload: typeof import('./components/business/error/reload.vue')['default']
+    Reload: typeof import('./components/business/Error/reload.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./components/layout/Sidebar.vue')['default']

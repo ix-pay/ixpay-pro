@@ -129,3 +129,46 @@ export const getTaskLogs = (
     params,
   })
 }
+
+// 启动任务
+export const startTask = (id: number): Promise<ApiResponse> => {
+  return service({
+    url: `/task/${id}/start`,
+    method: 'post',
+  })
+}
+
+// 停止任务
+export const stopTask = (id: number): Promise<ApiResponse> => {
+  return service({
+    url: `/task/${id}/stop`,
+    method: 'post',
+  })
+}
+
+// 重试任务
+export const retryTask = (id: number): Promise<ApiResponse> => {
+  return service({
+    url: `/task/${id}/retry`,
+    method: 'post',
+  })
+}
+
+// 获取任务统计
+export const getTaskStatistics = (): Promise<
+  ApiResponse<{ total: number; running: number; stopped: number }>
+> => {
+  return service({
+    url: '/task/statistics',
+    method: 'get',
+  })
+}
+
+// 设置任务分组
+export const setTaskGroup = (id: number, group: string): Promise<ApiResponse> => {
+  return service({
+    url: `/task/${id}/group`,
+    method: 'post',
+    data: { group },
+  })
+}

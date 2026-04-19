@@ -85,3 +85,19 @@ export const getConfigByKey = (key: string): Promise<ApiResponse<Config>> => {
     method: 'get',
   })
 }
+
+// 根据 ID 获取配置
+export const getConfigById = (id: number): Promise<ApiResponse<Config>> => {
+  return service({
+    url: `/config/${id}`,
+    method: 'get',
+  })
+}
+
+// 获取所有启用的配置
+export const getActiveConfigs = (): Promise<ApiResponse<Config[]>> => {
+  return service({
+    url: '/config/active',
+    method: 'get',
+  })
+}

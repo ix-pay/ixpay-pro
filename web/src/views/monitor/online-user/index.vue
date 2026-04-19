@@ -42,7 +42,7 @@
         <el-table-column prop="lastActiveTime" label="最后活跃" width="160" />
         <el-table-column label="操作" width="100" fixed="right">
           <template #default="scope">
-            <el-button size="small" type="danger" link @click="handleForceLogout(scope.row.token)">
+            <el-button type="danger" @click="handleForceLogout(scope.row.token)">
               强制下线
             </el-button>
           </template>

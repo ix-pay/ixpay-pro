@@ -12,7 +12,7 @@ import '@/assets/styles/global.scss'
 
 import run from '@/core/ixpay-pro'
 import auth from '@/directive/auth'
-import authBtn from '@/directive/authBtn'
+import authBtn from '@/directive/auth-btn'
 import { store } from '@/stores'
 import App from './App.vue'
 import router from './router'

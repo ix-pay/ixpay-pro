@@ -97,12 +97,10 @@
         </el-table-column>
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="scope">
-            <div v-if="!isAdminUser(scope.row)" class="flex gap-1">
+            <div v-if="!isAdminUser(scope.row)" class="flex gap-2">
               <el-button
                 v-auth-btn="'system:user:edit'"
-                size="small"
                 type="primary"
-                link
                 @click="handleEditUser(scope.row)"
               >
                 编辑
@@ -110,18 +108,14 @@
               <!-- 管理员账户不允许删除 -->
               <el-button
                 v-auth-btn="'system:user:delete'"
-                size="small"
                 type="danger"
-                link
                 @click="handleDeleteUser(scope.row.id)"
               >
                 删除
               </el-button>
               <el-button
                 v-auth-btn="'system:user:view'"
-                size="small"
                 type="warning"
-                link
                 @click="handleResetPassword(scope.row.id)"
               >
                 重置密码

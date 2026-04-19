@@ -1,5 +1,5 @@
 /**
- * 全局样式 - 精简版
+ * 全局样式 - 现代化科技金融美学
  * 
  * 原则：
  * 1. 仅保留必要的基础样式重置
@@ -32,19 +32,17 @@ body {
 }
 
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
   line-height: 1.5;
   color: var(--text-primary);
-  background-color: var(--bg-color);
+  background-color: var(--bg-primary);
 }
 
 /* ==========================================================================
-   滚动条样式
+   滚动条样式 - 现代化设计
    ========================================================================== */
 
 ::-webkit-scrollbar {
@@ -53,49 +51,64 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--bg-dark);
-  border-radius: 4px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--border-dark);
-  border-radius: 4px;
-  border: 2px solid var(--bg-dark);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--primary-gradient);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--bg-tertiary);
+  transition: all var(--duration-normal) var(--ease-in-out);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--info-light);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 html.dark ::-webkit-scrollbar-track {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-tertiary);
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
-  border: 2px solid var(--bg-dark);
+  background: var(--primary-gradient);
+  border: 2px solid var(--bg-tertiary);
 }
 
 html.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--info-light);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 /* ==========================================================================
-   链接样式
+   链接样式 - 渐变效果
    ========================================================================== */
 
 a {
   color: var(--primary-color);
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-normal) var(--ease-in-out);
   font-weight: 500;
+  position: relative;
 }
 
 a:hover {
   color: var(--primary-light);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration: none;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-gradient);
+  transition: width var(--duration-normal) var(--ease-in-out);
 }
 
 a:active {
@@ -119,138 +132,187 @@ html.dark a:active {
 }
 
 /* ==========================================================================
-   Element Plus 组件主题变量（白天模式 + 强制覆盖 Tailwind 暗黑模式类）
+   选择文本样式
+   ========================================================================== */
+
+::selection {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Element Plus 组件主题变量（白天模式）
    ========================================================================== */
 
 :root {
-  // 标签页组件背景色 - 使用 !important 覆盖 Tailwind 的 dark:bg-gray-900
-  --el-tabs-bg-color: var(--bg-color) !important;
-  --el-tabs-header-bg-color: var(--bg-color) !important;
-  --el-tabs-item-bg-color: var(--bg-light) !important;
-  --el-tabs-item-hover-bg-color: var(--bg-hover) !important;
-  --el-tabs-item-active-bg-color: var(--bg-color) !important;
-  --el-tabs-border-color: var(--border-color) !important;
+  // 主色
+  --el-color-primary: var(--primary-color);
+  --el-color-primary-light-3: var(--primary-light);
+  --el-color-primary-light-5: #c7d2fe;
+  --el-color-primary-light-7: #e0e7ff;
+  --el-color-primary-light-8: #eef2ff;
+  --el-color-primary-light-9: #f5f7ff;
+  --el-color-primary-dark-2: var(--primary-dark);
 
-  // 卡片组件背景色
-  --el-card-bg-color: var(--bg-color) !important;
-  --el-card-border-color: var(--border-color) !important;
+  // 成功色
+  --el-color-success: var(--success-color);
+  --el-color-success-light-3: var(--success-light);
+  --el-color-success-light-5: #a7f3d0;
+  --el-color-success-light-7: #d1fae5;
+  --el-color-success-light-8: #ecfdf5;
+  --el-color-success-light-9: #f6fffa;
 
-  // 表格组件背景色 - 强制覆盖 Element Plus 默认值
-  --el-table-bg-color: var(--bg-color) !important;
-  --el-table-tr-bg-color: var(--bg-color) !important;
-  --el-table-header-bg-color: var(--bg-light) !important;
-  --el-table-row-hover-bg-color: var(--bg-hover) !important;
-  --el-table-border-color: var(--border-color) !important;
-  --el-table-fixed-box-shadow: 0 0 10px rgba(0, 0, 0, 0.12) !important;
-  --el-fill-color-blank: var(--bg-color) !important;
-  --el-bg-color: var(--bg-color) !important;
+  // 警告色
+  --el-color-warning: var(--warning-color);
+  --el-color-warning-light-3: var(--warning-light);
+  --el-color-warning-light-5: #fde68a;
+  --el-color-warning-light-7: #fef3c7;
+  --el-color-warning-light-8: #fffbeb;
+  --el-color-warning-light-9: #fffcf5;
 
-  // 对话框组件背景色
-  --el-dialog-bg-color: var(--bg-color) !important;
+  // 危险色
+  --el-color-danger: var(--danger-color);
+  --el-color-danger-light-3: var(--danger-light);
+  --el-color-danger-light-5: #fca5a5;
+  --el-color-danger-light-7: #fee2e2;
+  --el-color-danger-light-8: #fef2f2;
+  --el-color-danger-light-9: #fffbfb;
 
-  // 下拉菜单背景色
-  --el-dropdown-menu-bg-color: var(--bg-color) !important;
+  // 信息色
+  --el-color-info: var(--info-color);
+  --el-color-info-light-3: var(--info-light);
+  --el-color-info-light-5: #67e8f9;
+  --el-color-info-light-7: #cffafe;
+  --el-color-info-light-8: #ecfeff;
+  --el-color-info-light-9: #faffff;
 
-  // 弹出框背景色
-  --el-popover-bg-color: var(--bg-color) !important;
+  // 背景色
+  --el-bg-color: var(--bg-primary);
+  --el-bg-color-page: var(--bg-secondary);
+  --el-bg-color-overlay: var(--bg-primary);
 
-  // 选择器背景色
-  --el-select-dropdown-bg-color: var(--bg-color) !important;
-  --el-select-option-bg-color: var(--bg-color) !important;
-  --el-select-option-hover-bg-color: var(--bg-hover) !important;
+  // 文字颜色
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-secondary: var(--text-tertiary);
+  --el-text-color-placeholder: var(--text-placeholder);
+  --el-text-color-disabled: var(--text-placeholder);
 
-  // 日期选择器背景色
-  --el-datepicker-bg-color: var(--bg-color) !important;
+  // 边框颜色
+  --el-border-color: var(--border-primary);
+  --el-border-color-light: var(--border-secondary);
+  --el-border-color-lighter: var(--border-light);
+  --el-border-color-extra-light: rgba(226, 232, 240, 0.3);
 
-  // 输入框背景色
-  --el-input-bg-color: var(--bg-color) !important;
-  --el-input-border-color: var(--border-color) !important;
-  --el-input-hover-border-color: var(--border-dark) !important;
+  // 阴影
+  --el-box-shadow: var(--shadow-md);
+  --el-box-shadow-light: var(--shadow-sm);
+  --el-box-shadow-lighter: var(--shadow-sm);
+  --el-box-shadow-dark: var(--shadow-lg);
 
-  // 按钮背景色
-  --el-button-bg-color: transparent !important;
-  --el-button-border-color: var(--border-color) !important;
+  // 圆角
+  --el-border-radius-base: var(--radius-md);
+  --el-border-radius-round: var(--radius-lg);
+  --el-border-radius-circle: var(--radius-full);
 
-  // 分割线颜色
-  --el-divider-border-color: var(--border-color) !important;
+  // 输入框
+  --el-input-bg-color: var(--bg-primary);
+  --el-input-border-color: var(--border-primary);
+  --el-input-hover-border-color: var(--primary-color);
+  --el-input-focus-border-color: var(--primary-color);
+  --el-input-focus-box-shadow: 0 0 0 2px var(--primary-glow);
 
-  // 面包屑文字颜色
-  --el-breadcrumb-text-color: var(--text-primary) !important;
+  // 按钮
+  --el-button-bg-color: transparent;
+  --el-button-border-color: var(--border-primary);
+  --el-button-hover-border-color: var(--primary-color);
+  --el-button-hover-text-color: var(--primary-color);
 
-  // 徽章背景色
-  --el-badge-bg-color: var(--danger-color) !important;
-}
+  // 卡片
+  --el-card-bg-color: var(--bg-primary);
+  --el-card-border-color: var(--border-primary);
+  --el-card-border-radius: var(--radius-xl);
+  --el-card-padding: var(--space-6);
 
-// 强制覆盖 Tailwind 暗黑模式类对 el-tabs 的影响
-html:not(.dark) .el-tabs,
-html:not(.dark) .el-tabs__header,
-html:not(.dark) .el-tabs__content,
-html:not(.dark) .el-tabs__nav-wrap,
-html:not(.dark) .el-card,
-html:not(.dark) .el-table,
-html:not(.dark) .el-table__header-wrapper,
-html:not(.dark) .el-table__body-wrapper {
-  background-color: var(--bg-color) !important;
-}
+  // 表格
+  --el-table-bg-color: var(--bg-primary);
+  --el-table-tr-bg-color: var(--bg-primary);
+  --el-table-header-bg-color: var(--bg-secondary);
+  --el-table-row-hover-bg-color: var(--bg-secondary);
+  --el-table-border-color: var(--border-primary);
+  --el-table-fixed-box-shadow: var(--shadow-lg);
+  --el-table-text-color: var(--text-primary);
+  --el-table-header-text-color: var(--text-secondary);
 
-// 强制移除 Tailwind 的 dark:bg-gray-900 等暗黑模式类在白天模式下的影响
-html:not(.dark) *[class*='dark:bg'] {
-  background-color: var(--bg-color) !important;
-}
+  // 标签页
+  --el-tabs-bg-color: var(--bg-primary);
+  --el-tabs-header-bg-color: var(--bg-primary);
+  --el-tabs-border-color: var(--border-primary);
+  --el-tabs-header-text-color: var(--text-secondary);
+  --el-tabs-header-hover-text-color: var(--primary-color);
+  --el-tabs-header-active-text-color: var(--primary-color);
 
-// 针对 el-tabs 的强制背景色设置（覆盖任何可能的 Tailwind 类和 Element Plus 默认样式）
-// 使用最高优先级的选择器，确保覆盖所有可能的背景色设置
-body .el-tabs.el-tabs--card,
-body .el-tabs.el-tabs--card .el-tabs__header,
-body .el-tabs.el-tabs--card .el-tabs__nav-wrap {
-  background-color: var(--bg-color) !important;
-}
+  // 对话框
+  --el-dialog-bg-color: var(--bg-primary);
+  --el-dialog-border-radius: var(--radius-2xl);
+  --el-dialog-box-shadow: var(--shadow-2xl);
 
-body .el-tabs,
-body .el-tabs__header,
-body .el-tabs__nav-wrap {
-  background-color: var(--bg-color) !important;
-}
+  // 下拉菜单
+  --el-dropdown-menu-bg-color: var(--bg-primary);
+  --el-dropdown-menu-item-hover-bg-color: var(--bg-secondary);
+  --el-dropdown-menu-item-hover-text-color: var(--primary-color);
 
-body .el-tabs__content {
-  background-color: transparent !important;
-}
+  // 弹出框
+  --el-popover-bg-color: var(--bg-primary);
+  --el-popover-border-color: var(--border-primary);
+  --el-popover-border-radius: var(--radius-lg);
+  --el-popover-shadow: var(--shadow-xl);
 
-body .el-card {
-  background-color: var(--bg-color) !important;
-}
+  // 选择器
+  --el-select-dropdown-bg-color: var(--bg-primary);
+  --el-select-option-bg-color: var(--bg-primary);
+  --el-select-option-hover-bg-color: var(--bg-secondary);
+  --el-select-option-focus-bg-color: var(--bg-secondary);
+  --el-select-option-focus-text-color: var(--primary-color);
 
-// 针对 el-table 的强制背景色设置（覆盖 Element Plus 默认样式）
-body .el-table,
-body .el-table__inner-wrapper,
-body .el-table__header-wrapper,
-body .el-table__body-wrapper {
-  background-color: var(--bg-color) !important;
-}
+  // 日期选择器
+  --el-datepicker-bg-color: var(--bg-primary);
+  --el-datepicker-border-color: var(--border-primary);
+  --el-datepicker-inner-border-color: var(--border-primary);
+  --el-datepicker-active-bg-color: var(--primary-color);
+  --el-datepicker-hover-bg-color: var(--bg-secondary);
 
-// 暗黑模式下的 el-tabs 背景色
-html.dark .el-tabs.el-tabs--card,
-html.dark .el-tabs.el-tabs--card .el-tabs__header,
-html.dark .el-tabs.el-tabs--card .el-tabs__nav-wrap {
-  background-color: var(--bg-color) !important;
-}
+  // 分割线
+  --el-divider-border-color: var(--border-primary);
 
-html.dark .el-tabs,
-html.dark .el-tabs__header,
-html.dark .el-tabs__nav-wrap {
-  background-color: var(--bg-color) !important;
-}
+  // 面包屑
+  --el-breadcrumb-text-color: var(--text-secondary);
 
-html.dark .el-card {
-  background-color: var(--bg-color) !important;
-}
+  // 徽章
+  --el-badge-bg-color: var(--danger-color);
 
-// 暗黑模式下的 el-table 背景色
-html.dark .el-table,
-html.dark .el-table__inner-wrapper,
-html.dark .el-table__header-wrapper,
-html.dark .el-table__body-wrapper {
-  background-color: var(--bg-color) !important;
+  // 消息提示
+  --el-message-bg-color: var(--bg-primary);
+  --el-message-border-color: var(--border-primary);
+  --el-message-shadow: var(--shadow-xl);
+  --el-message-success-bg-color: var(--success-color);
+  --el-message-warning-bg-color: var(--warning-color);
+  --el-message-error-bg-color: var(--danger-color);
+  --el-message-info-bg-color: var(--info-color);
+
+  // 通知
+  --el-notification-bg-color: var(--bg-primary);
+  --el-notification-border-color: var(--border-primary);
+  --el-notification-shadow: var(--shadow-xl);
+  --el-notification-success-bg-color: var(--success-color);
+  --el-notification-warning-bg-color: var(--warning-color);
+  --el-notification-error-bg-color: var(--danger-color);
+  --el-notification-info-bg-color: var(--info-color);
 }
 
 /* ==========================================================================
@@ -258,58 +320,507 @@ html.dark .el-table__body-wrapper {
    ========================================================================== */
 
 html.dark {
-  // 表格组件背景色
-  --el-table-bg-color: var(--bg-color) !important;
-  --el-table-tr-bg-color: var(--bg-color) !important;
-  --el-table-header-bg-color: var(--bg-light) !important;
-  --el-table-row-hover-bg-color: var(--bg-hover) !important;
-  --el-table-border-color: var(--border-color) !important;
-  --el-table-fixed-box-shadow: 0 0 10px rgba(0, 0, 0, 0.12) !important;
+  // 主色
+  --el-color-primary: var(--primary-color);
+  --el-color-primary-light-3: var(--primary-light);
+  --el-color-primary-light-5: #312e81;
+  --el-color-primary-light-7: #1e1b4b;
+  --el-color-primary-light-8: #1e1b4b;
+  --el-color-primary-light-9: #0f172a;
+  --el-color-primary-dark-2: var(--primary-dark);
 
-  // 标签页组件背景色
-  --el-tabs-bg-color: var(--bg-color) !important;
-  --el-tabs-header-bg-color: var(--bg-color) !important;
-  --el-tabs-item-bg-color: var(--bg-light) !important;
-  --el-tabs-item-hover-bg-color: var(--bg-hover) !important;
-  --el-tabs-item-active-bg-color: var(--bg-color) !important;
-  --el-tabs-border-color: var(--border-color) !important;
+  // 成功色
+  --el-color-success: var(--success-color);
+  --el-color-success-light-3: var(--success-light);
+  --el-color-success-light-5: #064e3b;
+  --el-color-success-light-7: #022c22;
+  --el-color-success-light-8: #022c22;
+  --el-color-success-light-9: #0f172a;
 
-  // 卡片组件背景色
-  --el-card-bg-color: var(--bg-color) !important;
-  --el-card-border-color: var(--border-color) !important;
+  // 警告色
+  --el-color-warning: var(--warning-color);
+  --el-color-warning-light-3: var(--warning-light);
+  --el-color-warning-light-5: #78350f;
+  --el-color-warning-light-7: #451a03;
+  --el-color-warning-light-8: #451a03;
+  --el-color-warning-light-9: #0f172a;
 
-  // 对话框组件背景色
-  --el-dialog-bg-color: var(--bg-color) !important;
+  // 危险色
+  --el-color-danger: var(--danger-color);
+  --el-color-danger-light-3: var(--danger-light);
+  --el-color-danger-light-5: #7f1d1d;
+  --el-color-danger-light-7: #450a0a;
+  --el-color-danger-light-8: #450a0a;
+  --el-color-danger-light-9: #0f172a;
 
-  // 下拉菜单背景色
-  --el-dropdown-menu-bg-color: var(--bg-color) !important;
+  // 信息色
+  --el-color-info: var(--info-color);
+  --el-color-info-light-3: var(--info-light);
+  --el-color-info-light-5: #164e63;
+  --el-color-info-light-7: #083344;
+  --el-color-info-light-8: #083344;
+  --el-color-info-light-9: #0f172a;
 
-  // 弹出框背景色
-  --el-popover-bg-color: var(--bg-color) !important;
+  // 背景色
+  --el-bg-color: var(--bg-primary);
+  --el-bg-color-page: var(--bg-secondary);
+  --el-bg-color-overlay: var(--bg-primary);
 
-  // 选择器背景色
-  --el-select-dropdown-bg-color: var(--bg-color) !important;
-  --el-select-option-bg-color: var(--bg-color) !important;
-  --el-select-option-hover-bg-color: var(--bg-hover) !important;
+  // 文字颜色
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-secondary: var(--text-tertiary);
+  --el-text-color-placeholder: var(--text-placeholder);
+  --el-text-color-disabled: var(--text-placeholder);
 
-  // 日期选择器背景色
-  --el-datepicker-bg-color: var(--bg-color) !important;
+  // 边框颜色
+  --el-border-color: var(--border-primary);
+  --el-border-color-light: var(--border-secondary);
+  --el-border-color-lighter: var(--border-light);
+  --el-border-color-extra-light: rgba(51, 65, 85, 0.3);
 
-  // 输入框背景色
-  --el-input-bg-color: var(--bg-color) !important;
-  --el-input-border-color: var(--border-color) !important;
-  --el-input-hover-border-color: var(--border-dark) !important;
+  // 阴影
+  --el-box-shadow: var(--shadow-md);
+  --el-box-shadow-light: var(--shadow-sm);
+  --el-box-shadow-lighter: var(--shadow-sm);
+  --el-box-shadow-dark: var(--shadow-lg);
 
-  // 按钮背景色
-  --el-button-bg-color: transparent !important;
-  --el-button-border-color: var(--border-color) !important;
+  // 输入框
+  --el-input-bg-color: var(--bg-primary);
+  --el-input-border-color: var(--border-primary);
+  --el-input-hover-border-color: var(--primary-color);
+  --el-input-focus-border-color: var(--primary-color);
+  --el-input-focus-box-shadow: 0 0 0 2px var(--primary-glow);
 
-  // 分割线颜色
-  --el-divider-border-color: var(--border-color) !important;
+  // 按钮
+  --el-button-bg-color: transparent;
+  --el-button-border-color: var(--border-primary);
+  --el-button-hover-border-color: var(--primary-color);
+  --el-button-hover-text-color: var(--primary-color);
 
-  // 面包屑文字颜色
-  --el-breadcrumb-text-color: var(--text-primary) !important;
+  // 卡片
+  --el-card-bg-color: var(--bg-primary);
+  --el-card-border-color: var(--border-primary);
 
-  // 徽章背景色
-  --el-badge-bg-color: var(--danger-color) !important;
+  // 表格
+  --el-table-bg-color: var(--bg-primary);
+  --el-table-tr-bg-color: var(--bg-primary);
+  --el-table-header-bg-color: var(--bg-secondary);
+  --el-table-row-hover-bg-color: var(--bg-secondary);
+  --el-table-border-color: var(--border-primary);
+  --el-table-fixed-box-shadow: var(--shadow-lg);
+  --el-table-text-color: var(--text-primary);
+  --el-table-header-text-color: var(--text-secondary);
+
+  // 标签页
+  --el-tabs-bg-color: var(--bg-primary);
+  --el-tabs-header-bg-color: var(--bg-primary);
+  --el-tabs-border-color: var(--border-primary);
+  --el-tabs-header-text-color: var(--text-secondary);
+  --el-tabs-header-hover-text-color: var(--primary-color);
+  --el-tabs-header-active-text-color: var(--primary-color);
+
+  // 对话框
+  --el-dialog-bg-color: var(--bg-primary);
+  --el-dialog-border-radius: var(--radius-2xl);
+  --el-dialog-box-shadow: var(--shadow-2xl);
+
+  // 下拉菜单
+  --el-dropdown-menu-bg-color: var(--bg-primary);
+  --el-dropdown-menu-item-hover-bg-color: var(--bg-secondary);
+  --el-dropdown-menu-item-hover-text-color: var(--primary-color);
+
+  // 弹出框
+  --el-popover-bg-color: var(--bg-primary);
+  --el-popover-border-color: var(--border-primary);
+  --el-popover-border-radius: var(--radius-lg);
+  --el-popover-shadow: var(--shadow-xl);
+
+  // 选择器
+  --el-select-dropdown-bg-color: var(--bg-primary);
+  --el-select-option-bg-color: var(--bg-primary);
+  --el-select-option-hover-bg-color: var(--bg-secondary);
+  --el-select-option-focus-bg-color: var(--bg-secondary);
+  --el-select-option-focus-text-color: var(--primary-color);
+
+  // 日期选择器
+  --el-datepicker-bg-color: var(--bg-primary);
+  --el-datepicker-border-color: var(--border-primary);
+  --el-datepicker-inner-border-color: var(--border-primary);
+  --el-datepicker-active-bg-color: var(--primary-color);
+  --el-datepicker-hover-bg-color: var(--bg-secondary);
+
+  // 分割线
+  --el-divider-border-color: var(--border-primary);
+
+  // 面包屑
+  --el-breadcrumb-text-color: var(--text-secondary);
+
+  // 徽章
+  --el-badge-bg-color: var(--danger-color);
+
+  // 消息提示
+  --el-message-bg-color: var(--bg-primary);
+  --el-message-border-color: var(--border-primary);
+  --el-message-shadow: var(--shadow-xl);
+
+  // 通知
+  --el-notification-bg-color: var(--bg-primary);
+  --el-notification-border-color: var(--border-primary);
+  --el-notification-shadow: var(--shadow-xl);
+}
+
+/* ==========================================================================
+   通用组件样式增强
+   ========================================================================== */
+
+// 卡片组件增强
+.el-card {
+  transition: all var(--duration-normal) var(--ease-in-out);
+  border: 1px solid var(--border-primary);
+
+  &:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-2px);
+  }
+}
+
+// 按钮渐变背景
+.el-button--primary {
+  background: var(--primary-gradient) !important;
+  border: none !important;
+
+  &:hover,
+  &:focus {
+    opacity: 0.9;
+    box-shadow: var(--shadow-primary-glow);
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.el-button--success {
+  background: var(--success-gradient) !important;
+  border: none !important;
+
+  &:hover,
+  &:focus {
+    opacity: 0.9;
+    box-shadow: var(--shadow-success-glow);
+  }
+}
+
+.el-button--warning {
+  background: var(--warning-gradient) !important;
+  border: none !important;
+
+  &:hover,
+  &:focus {
+    opacity: 0.9;
+    box-shadow: var(--shadow-warning-glow);
+  }
+}
+
+.el-button--danger {
+  background: var(--danger-gradient) !important;
+  border: none !important;
+
+  &:hover,
+  &:focus {
+    opacity: 0.9;
+    box-shadow: var(--shadow-danger-glow);
+  }
+}
+
+.el-button--info {
+  background: var(--info-gradient) !important;
+  border: none !important;
+
+  &:hover,
+  &:focus {
+    opacity: 0.9;
+    box-shadow: var(--shadow-info-glow);
+  }
+}
+
+// 输入框聚焦效果增强
+.el-input__wrapper {
+  transition: all var(--duration-normal) var(--ease-in-out);
+  box-shadow: 0 0 0 1px var(--border-primary) inset !important;
+
+  &:hover {
+    box-shadow: 0 0 0 1px var(--primary-color) inset !important;
+  }
+
+  &.is-focus {
+    box-shadow:
+      0 0 0 2px var(--primary-glow),
+      0 0 0 1px var(--primary-color) inset !important;
+  }
+}
+
+// 表格样式增强
+.el-table {
+  --el-table-row-hover-bg-color: var(--bg-secondary) !important;
+
+  th.el-table__cell {
+    background-color: var(--bg-secondary) !important;
+    font-weight: 600;
+  }
+
+  .el-table__body tr:hover > td {
+    background-color: var(--bg-secondary) !important;
+  }
+}
+
+// el-table 操作栏按钮样式增强
+.el-table .el-table-column--operation .el-button,
+.el-table .el-button--small {
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-in-out);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 优化 link 类型按钮在表格中的显示
+.el-table .el-button--text {
+  padding: 8px 12px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-in-out);
+
+  &:hover {
+    background-color: var(--bg-secondary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// 标签页样式增强
+.el-tabs--card {
+  .el-tabs__item {
+    transition: all var(--duration-normal) var(--ease-in-out);
+    border: none !important;
+
+    &:hover {
+      color: var(--primary-color);
+    }
+
+    &.is-active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+  }
+}
+
+// 对话框样式增强
+.el-dialog {
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  padding: var(--space-6) var(--space-6);
+  border-bottom: 1px solid var(--border-primary);
+  margin-right: 0;
+}
+
+.el-dialog__title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.el-dialog__body {
+  padding: var(--space-6);
+}
+
+.el-dialog__footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--border-primary);
+}
+
+// 消息提示样式增强
+.el-message {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  min-width: 300px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+// 通知样式增强
+.el-notification {
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-2xl);
+}
+
+// 下拉菜单样式增强
+.el-dropdown-menu {
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-primary);
+}
+
+.el-dropdown-menu__item {
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  transition: all var(--duration-fast) var(--ease-in-out);
+
+  &:hover {
+    background-color: var(--bg-secondary);
+  }
+}
+
+// 选择器下拉菜单样式增强
+.el-select-dropdown {
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-primary);
+}
+
+.el-select-dropdown__item {
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  transition: all var(--duration-fast) var(--ease-in-out);
+
+  &.hover,
+  &:hover {
+    background-color: var(--bg-secondary);
+  }
+
+  &.selected {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+}
+
+/* ==========================================================================
+   工具类
+   ========================================================================== */
+
+// 渐变背景
+.bg-gradient-primary {
+  background: var(--primary-gradient);
+}
+
+.bg-gradient-success {
+  background: var(--success-gradient);
+}
+
+.bg-gradient-warning {
+  background: var(--warning-gradient);
+}
+
+.bg-gradient-danger {
+  background: var(--danger-gradient);
+}
+
+.bg-gradient-info {
+  background: var(--info-gradient);
+}
+
+// 光晕效果
+.glow-primary {
+  box-shadow: var(--shadow-primary-glow);
+}
+
+.glow-success {
+  box-shadow: var(--shadow-success-glow);
+}
+
+.glow-warning {
+  box-shadow: var(--shadow-warning-glow);
+}
+
+.glow-danger {
+  box-shadow: var(--shadow-danger-glow);
+}
+
+.glow-info {
+  box-shadow: var(--shadow-info-glow);
+}
+
+// 玻璃态
+.glass {
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-dark {
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+// 渐变文字
+.gradient-text-primary {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-success {
+  background: var(--success-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-danger {
+  background: var(--danger-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// 过渡动画
+.transition-base {
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.transition-fast {
+  transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.transition-slow {
+  transition: all var(--duration-slow) var(--ease-in-out);
+}
+
+// 悬浮效果
+.hover-lift {
+  transition: all var(--duration-normal) var(--ease-in-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+// 数字字体
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings:
+    'tnum' on,
+    'lnum' on;
 }

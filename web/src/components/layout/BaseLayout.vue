@@ -1,22 +1,24 @@
 <template>
-  <el-container class="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+  <el-container class="h-screen w-screen overflow-hidden bg-[var(--bg-secondary)]">
     <!-- 水印 -->
     <el-watermark
       v-if="config.show_watermark"
-      :font="font"
+      :font="watermarkFont"
       :z-index="9999"
       :gap="[180, 150]"
       :content="userStore.userInfo.nickname"
+      class="pointer-events-none"
     />
 
     <!-- 侧边栏 -->
     <el-aside
-      :width="isSidebarCollapsed ? '64px' : '240px'"
-      :class="{
-        'mobile-sidebar': isMobile,
-        'transition-all duration-300': true,
-      }"
-      class="relative z-100 h-full overflow-hidden"
+      :width="sidebarWidth"
+      :class="[
+        'relative h-full overflow-hidden transition-all',
+        isMobile ? 'fixed inset-y-0 left-0 z-[1000]' : '',
+        sidebarWidthClass,
+        mobileSidebarClass,
+      ]"
     >
       <gva-aside
         :is-collapsed="isSidebarCollapsed"
@@ -25,18 +27,31 @@
       />
     </el-aside>
 
-    <!-- 遮罩层（仅移动设备显示） -->
-    <div
-      v-if="isMobile && !isSidebarCollapsed"
-      class="fixed inset-0 bg-black/50 z-999 animate-fade-in"
-      @click="toggleSidebar"
-    />
+    <!-- 移动端遮罩层 -->
+    <Transition
+      enter-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isMobile && !isSidebarCollapsed"
+        class="fixed inset-0 bg-black/50 z-[999]"
+        @click="toggleSidebar"
+      />
+    </Transition>
 
     <!-- 右侧区域：上中下布局 -->
-    <el-container class="flex flex-col h-full relative z-1">
+    <el-container class="flex flex-col h-full relative z-[1] overflow-hidden">
       <!-- 页头 -->
       <el-header
-        class="!p-0 !h-16 flex-shrink-0 overflow-hidden bg-[var(--bg-color)] transition-colors duration-300"
+        :class="[
+          'flex-shrink-0 overflow-hidden bg-[var(--bg-primary)]',
+          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+          'border-b border-[var(--border-primary)]',
+        ]"
       >
         <gva-header
           :breadcrumb-list="breadcrumbList"
@@ -46,13 +61,23 @@
       </el-header>
 
       <!-- 内容区域 -->
-      <el-main class="!p-0 flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <el-main
+        :class="[
+          'flex-1 overflow-hidden bg-[var(--bg-secondary)]',
+          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+        ]"
+      >
         <tab-manager ref="tabManagerRef" />
       </el-main>
 
       <!-- 页脚 -->
       <el-footer
-        class="!p-0 h-auto min-h-[40px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-t border-gray-200 dark:border-gray-700 flex-shrink-0 transition-colors duration-300"
+        :class="[
+          'h-auto min-h-[40px] flex-shrink-0',
+          'bg-[var(--bg-primary)] text-[var(--text-primary)]',
+          'border-t border-[var(--border-primary)]',
+          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+        ]"
       >
         <BottomInfo />
       </el-footer>
@@ -65,32 +90,32 @@ import GvaAside from '@/components/layout/Sidebar.vue'
 import GvaHeader from '@/components/layout/Header.vue'
 import TabManager from '@/components/layout/TabManager.vue'
 import useResponsive from '@/hooks/responsive'
-import BottomInfo from '@/components/business/bottomInfo/bottomInfo.vue'
+import BottomInfo from '@/components/business/BottomInfo/index.vue'
 import { ref, reactive, watchEffect, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/modules/user'
 import { useAppStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
-const appStore = useAppStore()
-const { config, isDark } = storeToRefs(appStore)
-
 defineOptions({
   name: 'BaseLayout',
 })
 
+const appStore = useAppStore()
+const { config, isDark } = storeToRefs(appStore)
+const router = useRouter()
+const route = useRoute()
+const userStore = useUserStore()
+
 // 响应式
 const { screenWidth } = useResponsive(true)
-const font = reactive({
+const watermarkFont = reactive({
   color: 'rgba(0, 0, 0, .15)',
 })
 
 watchEffect(() => {
-  font.color = isDark.value ? 'rgba(255,255,255, .15)' : 'rgba(0, 0, 0, .15)'
+  watermarkFont.color = isDark.value ? 'rgba(255,255,255, .15)' : 'rgba(0, 0, 0, .15)'
 })
-
-const router = useRouter()
-const route = useRoute()
 
 // 判断是否为移动设备（小于 768px）
 const isMobile = computed(() => screenWidth.value < 768)
@@ -115,9 +140,6 @@ watch(
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value
 }
-
-// 获取用户存储
-const userStore = useUserStore()
 
 // TabManager 引用
 const tabManagerRef = ref<InstanceType<typeof TabManager> | null>(null)
@@ -146,6 +168,22 @@ const handleMenuSelect = (path: string) => {
   router.push(path)
 }
 
+// 侧边栏宽度计算
+const sidebarWidth = computed(() => {
+  return isSidebarCollapsed.value ? '64px' : '240px'
+})
+
+// 侧边栏宽度 class
+const sidebarWidthClass = computed(() => {
+  return isSidebarCollapsed.value ? 'w-[64px]' : 'w-[240px]'
+})
+
+// 移动端侧边栏 class
+const mobileSidebarClass = computed(() => {
+  if (!isMobile.value) return ''
+  return isSidebarCollapsed.value ? '-translate-x-full' : 'translate-x-0'
+})
+
 onMounted(() => {
   if (userStore.loadingInstance && typeof userStore.loadingInstance.close === 'function') {
     userStore.loadingInstance.close()
@@ -155,28 +193,32 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-// 侧边栏移动端样式
+// 移动端侧边栏样式
 :deep(.mobile-sidebar) {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   z-index: 1000;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
-// 淡入动画
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+// 侧边栏过渡动画优化
+.el-aside {
+  transition:
+    width var(--duration-normal) cubic-bezier(0.4, 0, 0.2, 1),
+    transform var(--duration-normal) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease;
+// 内容区自适应过渡
+.el-main {
+  transition:
+    padding var(--duration-normal) cubic-bezier(0.4, 0, 0.2, 1),
+    margin var(--duration-normal) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// 暗黑模式下的阴影增强
+html.dark :deep(.mobile-sidebar) {
+  box-shadow: var(--shadow-2xl);
 }
 </style>

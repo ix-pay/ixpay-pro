@@ -125,13 +125,9 @@
         </el-table-column>
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="scope">
-            <div class="flex gap-1">
-              <el-button size="small" type="primary" link @click="handleViewDetail(scope.row)">
-                详情
-              </el-button>
-              <el-button size="small" type="danger" link @click="handleDeleteLog(scope.row.id)">
-                删除
-              </el-button>
+            <div class="flex gap-2">
+              <el-button type="primary" @click="handleViewDetail(scope.row)"> 详情 </el-button>
+              <el-button type="danger" @click="handleDeleteLog(scope.row.id)"> 删除 </el-button>
             </div>
           </template>
         </el-table-column>

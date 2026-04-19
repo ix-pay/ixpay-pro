@@ -105,12 +105,9 @@ export const getUserList = (params: {
 // @Param data body api.SetUserAuth true "设置用户权限"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setUserAuthority [post]
+// @Deprecated 此接口后端未实现，已移除
 export const setUserAuthority = (data: Record<string, unknown>): Promise<ApiResponse> => {
-  return service({
-    url: '/user/setUserAuthority',
-    method: 'post',
-    data: data,
-  })
+  throw new Error('此接口后端未实现')
 }
 
 // @Tags SysUser
@@ -188,12 +185,9 @@ export const updateUserInfo = (data: {
 // @Param data body model.SysUser true "设置用户信息"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setSelfInfo [put]
+// @Deprecated 此接口与 updateUserInfo 重复，已移除
 export const setSelfInfo = (data: Record<string, unknown>): Promise<ApiResponse> => {
-  return service({
-    url: '/user/setSelfInfo',
-    method: 'put',
-    data: data,
-  })
+  throw new Error('此接口与 updateUserInfo 重复')
 }
 
 // @Tags SysUser
@@ -203,11 +197,9 @@ export const setSelfInfo = (data: Record<string, unknown>): Promise<ApiResponse>
 // @Produce application/json
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /user/getSelfSetting [get]
+// @Deprecated 此接口路径需要修正为 /user/get-user-settings
 export const getSelfSetting = (): Promise<ApiResponse> => {
-  return service({
-    url: '/user/getSelfSetting',
-    method: 'get',
-  })
+  throw new Error('此接口路径需要修正为 /user/get-user-settings')
 }
 
 // @Tags SysUser
@@ -218,12 +210,9 @@ export const getSelfSetting = (): Promise<ApiResponse> => {
 // @Param data body model.SysUser true "设置自身界面配置"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setSelfSetting [put]
+// @Deprecated 此接口路径需要修正为 /user/update-user-settings
 export const setSelfSetting = (data: Record<string, unknown>): Promise<ApiResponse> => {
-  return service({
-    url: '/user/setSelfSetting',
-    method: 'put',
-    data: data,
-  })
+  throw new Error('此接口路径需要修正为 /user/update-user-settings')
 }
 
 // @Tags User
@@ -234,12 +223,9 @@ export const setSelfSetting = (data: Record<string, unknown>): Promise<ApiRespon
 // @Param data body api.setUserAuthorities true "设置用户权限"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setUserAuthorities [post]
+// @Deprecated 此接口后端未实现，已移除
 export const setUserAuthorities = (data: Record<string, unknown>): Promise<ApiResponse> => {
-  return service({
-    url: '/user/setUserAuthorities',
-    method: 'post',
-    data: data,
-  })
+  throw new Error('此接口后端未实现')
 }
 
 // @Tags User
@@ -297,4 +283,48 @@ export const switchRole = (data: { roleId: string | number }): Promise<ApiRespon
     method: 'post',
     data: data,
   })
+}
+
+// 以下为后端未实现或路径需要确认的接口（已废弃）
+
+// @Summary 设置用户权限 (单角色)
+// @Description 此接口后端未实现，已废弃
+// @Router /user/setUserAuthority [post]
+// @Deprecated
+export const setUserAuthorityDeprecated = (data: Record<string, unknown>): Promise<ApiResponse> => {
+  throw new Error('此接口后端未实现')
+}
+
+// @Summary 设置用户权限 (多角色)
+// @Description 此接口后端未实现，已废弃
+// @Router /user/setUserAuthorities [post]
+// @Deprecated
+export const setUserAuthoritiesDeprecated = (
+  data: Record<string, unknown>,
+): Promise<ApiResponse> => {
+  throw new Error('此接口后端未实现')
+}
+
+// @Summary 设置用户信息
+// @Description 此接口与 updateUserInfo 重复，已废弃
+// @Router /user/setSelfInfo [put]
+// @Deprecated
+export const setSelfInfoDeprecated = (data: Record<string, unknown>): Promise<ApiResponse> => {
+  throw new Error('此接口与 updateUserInfo 重复')
+}
+
+// @Summary 获取自身界面配置
+// @Description 此接口路径需要修正为 /user/get-user-settings，已废弃
+// @Router /user/getSelfSetting [get]
+// @Deprecated
+export const getSelfSettingDeprecated = (): Promise<ApiResponse> => {
+  throw new Error('此接口路径需要修正为 /user/get-user-settings')
+}
+
+// @Summary 设置自身界面配置
+// @Description 此接口路径需要修正为 /user/update-user-settings，已废弃
+// @Router /user/setSelfSetting [put]
+// @Deprecated
+export const setSelfSettingDeprecated = (data: Record<string, unknown>): Promise<ApiResponse> => {
+  throw new Error('此接口路径需要修正为 /user/update-user-settings')
 }

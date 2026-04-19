@@ -1,4 +1,4 @@
-// using ES6 modules
+// 使用 ES6 模块导出
 import mitt from 'mitt'
 
 // 定义事件类型接口

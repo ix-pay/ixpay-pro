@@ -1,4 +1,4 @@
-// 静态导入所有页面组件，确保 Keep-Alive 正常工作
+// 静态导入所有页面组件，确保 Keep-Alive 和路由缓存正常工作
 const staticComponents: Record<string, () => Promise<{ default: import('vue').Component }>> = {
   // 基础页面
   'views/base/login/index': () => import('@/views/base/login/index.vue'),
@@ -38,21 +38,21 @@ import type { ExtendedRouteRecordRaw } from '@/stores/modules/router'
 export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
   // 只在开发环境输出详细日志
   if (import.meta.env.DEV) {
-    console.log('asyncRouterHandle - Starting to handle routes:', asyncRouter.length)
+    console.log('异步路由处理 - 开始处理路由:', asyncRouter.length)
   }
 
   asyncRouter.forEach((item) => {
     // 只在开发环境输出详细日志
     if (import.meta.env.DEV) {
-      console.log('asyncRouterHandle - Processing route:', item.path, item.name)
-      console.log('asyncRouterHandle - Route component type:', typeof item.component)
+      console.log('异步路由处理 - 处理路由:', item.path, item.name)
+      console.log('异步路由处理 - 路由组件类型:', typeof item.component)
     }
 
     // 处理组件加载 - 优先使用静态导入
     if (item.component && typeof item.component === 'string') {
       // 只在开发环境输出详细日志
       if (import.meta.env.DEV) {
-        console.log('asyncRouterHandle - Processing string component:', item.component)
+        console.log('异步路由处理 - 处理字符串组件:', item.component)
       }
 
       item.meta.path = '/src/' + item.component
@@ -67,7 +67,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
         if (!comp) {
           if (import.meta.env.DEV) {
             console.warn(
-              'asyncRouterHandle - Component not in static map, using dynamic import:',
+              '异步路由处理 - 组件不在静态映射中，使用动态导入:',
               item.component,
             )
           }
@@ -87,12 +87,12 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
           item.component = comp
           // 只在开发环境输出详细日志
           if (import.meta.env.DEV) {
-            console.log('asyncRouterHandle - Successfully loaded component:', item.component)
+            console.log('异步路由处理 - 成功加载组件:', item.component)
           }
         } else {
           // 只在开发环境输出错误日志
           if (import.meta.env.DEV) {
-            console.error('asyncRouterHandle - Failed to load component:', item.component)
+            console.error('异步路由处理 - 加载组件失败:', item.component)
           }
           // 无论是否有子路由，都需要将 component 设置为有效的值
           // 对于有子路由的父路由，设置为 undefined，让 Vue Router 处理
@@ -101,7 +101,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
       } catch (error) {
         // 只在开发环境输出错误日志
         if (import.meta.env.DEV) {
-          console.error(`asyncRouterHandle - Error loading component ${item.component}:`, error)
+          console.error(`异步路由处理 - 加载组件 ${item.component} 出错:`, error)
         }
         // 无论是否有子路由，都需要将 component 设置为有效的值
         // 对于有子路由的父路由，设置为 undefined，让 Vue Router 处理
@@ -110,12 +110,12 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
     } else if (item.component) {
       // 只在开发环境输出详细日志
       if (import.meta.env.DEV) {
-        console.log('asyncRouterHandle - Component is already a function:', item.component)
+        console.log('异步路由处理 - 组件已经是函数:', item.component)
       }
     } else {
       // 只在开发环境输出详细日志
       if (import.meta.env.DEV) {
-        console.log('asyncRouterHandle - No component specified for route:', item.path)
+        console.log('异步路由处理 - 路由没有组件:', item.path)
       }
     }
 
@@ -123,7 +123,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
       // 只在开发环境输出详细日志
       if (import.meta.env.DEV) {
         console.log(
-          'asyncRouterHandle - Processing children for route:',
+          '异步路由处理 - 处理子路由:',
           item.path,
           item.children.length,
         )
@@ -136,7 +136,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
         // 只在开发环境输出详细日志
         if (import.meta.env.DEV) {
           console.log(
-            'asyncRouterHandle - Parent route has no component but has children:',
+            '异步路由处理 - 父路由没有组件但有子路由:',
             item.path,
           )
         }
@@ -147,7 +147,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
 
   // 只在开发环境输出详细日志
   if (import.meta.env.DEV) {
-    console.log('asyncRouterHandle - Finished handling routes')
+    console.log('异步路由处理 - 完成路由处理')
   }
 }
 
@@ -157,14 +157,14 @@ function dynamicImport(
 ) {
   // 只在开发环境输出详细日志
   if (import.meta.env.DEV) {
-    console.log('Trying to find component:', component)
+    console.log('正在查找组件:', component)
   }
 
   const keys = Object.keys(dynamicViewsModules)
 
   // 只在开发环境输出详细日志
   if (import.meta.env.DEV && keys.length > 0) {
-    console.log('Available modules count:', keys.length)
+    console.log('可用模块数量:', keys.length)
   }
 
   // 先尝试精确匹配
@@ -192,21 +192,21 @@ function dynamicImport(
   if (!matchKey) {
     // 只在开发环境输出错误日志
     if (import.meta.env.DEV) {
-      console.error(`Component not found: ${component}`)
+      console.error(`组件未找到：${component}`)
     }
-    // 检查是否是系统菜单，返回基础layout作为fallback
+    // 检查是否是系统菜单，返回基础 layout 作为 fallback
     if (component.startsWith('views/base')) {
       return dynamicViewsModules['../views/base/index.vue'] as () => Promise<{
         default: import('vue').Component
       }>
     }
-    // 不返回null，而是返回undefined
+    // 不返回 null，而是返回 undefined
     return undefined
   }
 
   // 只在开发环境输出详细日志
   if (import.meta.env.DEV) {
-    console.log('Found component:', matchKey)
+    console.log('找到组件:', matchKey)
   }
 
   return dynamicViewsModules[matchKey] as () => Promise<{ default: import('vue').Component }>

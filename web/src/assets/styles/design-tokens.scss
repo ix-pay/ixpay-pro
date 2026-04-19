@@ -1,73 +1,186 @@
 /**
  * 设计令牌系统 - Design Tokens
  * 
- * 精简版：仅保留必要的 CSS 变量，用于组件间共享和主题定制
- * 大部分样式使用 Tailwind CSS 的原子类
+ * 现代化科技金融美学设计系统
+ * 融合现代科技的精致感与金融行业的专业感
  */
+
+/* ==========================================================================
+   根选择器 - 白天模式
+   ========================================================================== */
 
 :root {
   /* ==========================================================================
-     核心配色 - 用于业务组件和主题定制
+     核心配色系统
      ========================================================================== */
 
-  // 主色调
-  --primary-color: #3b82f6;
-  --primary-light: #60a5fa;
-  --primary-dark: #2563eb;
+  // 主色调 - 科技蓝渐变
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-color: #667eea;
+  --primary-light: #a8b5f5;
+  --primary-dark: #5568d3;
+  --primary-glow: rgba(102, 126, 234, 0.15);
+  --primary-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
 
-  // 功能色
+  // 成功色 - 翡翠绿渐变
+  --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --success-color: #10b981;
+  --success-light: #34d399;
+  --success-dark: #059669;
+  --success-glow: rgba(16, 185, 129, 0.15);
+  --success-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+
+  // 警告色 - 琥珀色渐变
+  --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   --warning-color: #f59e0b;
+  --warning-light: #fbbf24;
+  --warning-dark: #d97706;
+  --warning-glow: rgba(245, 158, 11, 0.15);
+  --warning-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+
+  // 危险色 - 玫瑰红渐变
+  --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   --danger-color: #ef4444;
-  --info-color: #6b7280;
+  --danger-light: #f87171;
+  --danger-dark: #dc2626;
+  --danger-glow: rgba(239, 68, 68, 0.15);
+  --danger-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+
+  // 信息色 - 青蓝色渐变
+  --info-gradient: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  --info-color: #06b6d4;
+  --info-light: #22d3ee;
+  --info-dark: #0891b2;
+  --info-glow: rgba(6, 182, 212, 0.15);
+  --info-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
 
   /* ==========================================================================
-     布局组件颜色 - 用于侧边栏、头部等
+     中性色系统 - 白天模式
      ========================================================================== */
 
-  --sidebar-bg: #1f2937;
-  --sidebar-text: #d1d5db;
-  --sidebar-active-bg: #3b82f6;
+  // 背景色
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-gradient: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+
+  // 文字颜色
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-placeholder: #cbd5e1;
+
+  // 边框颜色
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+  --border-light: rgba(226, 232, 240, 0.5);
+
+  /* ==========================================================================
+     布局组件颜色
+     ========================================================================== */
+
+  // 侧边栏 - 深蓝渐变
+  --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  --sidebar-bg-solid: #1e293b;
+  --sidebar-text: #94a3b8;
+  --sidebar-text-hover: #f1f5f9;
+  --sidebar-active-bg: var(--primary-gradient);
   --sidebar-active-text: #ffffff;
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
+  --sidebar-border: rgba(255, 255, 255, 0.05);
 
-  --header-bg: #ffffff;
-  --header-text: #1f2937;
-  --header-border: #e5e7eb;
-
-  /* ==========================================================================
-     基础背景色 - 用于页面内容区域
-     ========================================================================== */
-
-  --bg-color: #ffffff;
-  --bg-dark: #f3f4f6;
-  --bg-light: #f9fafb;
-  --bg-hover: #f9fafb;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-regular: #4b5563;
-  --text-placeholder: #9ca3af;
-  --border-color: #e5e7eb;
-  --border-dark: #d1d5db;
+  // 头部导航 - 玻璃态
+  --header-bg: rgba(255, 255, 255, 0.85);
+  --header-bg-blur: blur(10px);
+  --header-text: #0f172a;
+  --header-border: rgba(226, 232, 240, 0.8);
 
   /* ==========================================================================
-     基础间距单位 - 用于需要精确控制的场景
+     字体系统
      ========================================================================== */
 
-  --space-unit: 4px;
-  --space-xs: calc(var(--space-unit) * 2); // 8px
-  --space-sm: calc(var(--space-unit) * 3); // 12px
-  --space-md: calc(var(--space-unit) * 4); // 16px
-  --space-lg: calc(var(--space-unit) * 6); // 24px
-  --space-xl: calc(var(--space-unit) * 8); // 32px
-  --space-2xl: calc(var(--space-unit) * 12); // 48px
+  // 字体家族
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial,
+    'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  // 字体大小
+  --text-xs: 0.75rem; // 12px
+  --text-sm: 0.875rem; // 14px
+  --text-base: 1rem; // 16px
+  --text-lg: 1.125rem; // 18px
+  --text-xl: 1.25rem; // 20px
+  --text-2xl: 1.5rem; // 24px
+  --text-3xl: 1.875rem; // 30px
+  --text-4xl: 2.25rem; // 36px
 
   /* ==========================================================================
-     过渡动画 - 用于统一动画效果
+     间距系统
      ========================================================================== */
 
-  --transition-duration: 150ms;
-  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --space-1: 0.25rem; // 4px
+  --space-2: 0.5rem; // 8px
+  --space-3: 0.75rem; // 12px
+  --space-4: 1rem; // 16px
+  --space-5: 1.25rem; // 20px
+  --space-6: 1.5rem; // 24px
+  --space-8: 2rem; // 32px
+  --space-10: 2.5rem; // 40px
+  --space-12: 3rem; // 48px
+  --space-16: 4rem; // 64px
+  --space-20: 5rem; // 80px
+  --space-24: 6rem; // 96px
+
+  /* ==========================================================================
+     圆角系统
+     ========================================================================== */
+
+  --radius-sm: 0.375rem; // 6px
+  --radius-md: 0.5rem; // 8px
+  --radius-lg: 0.75rem; // 12px
+  --radius-xl: 1rem; // 16px
+  --radius-2xl: 1.5rem; // 24px
+  --radius-full: 9999px;
+
+  /* ==========================================================================
+     阴影系统 - 白天模式
+     ========================================================================== */
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  // 彩色光晕阴影
+  --shadow-primary-glow: 0 0 30px rgba(102, 126, 234, 0.3);
+  --shadow-success-glow: 0 0 30px rgba(16, 185, 129, 0.3);
+  --shadow-warning-glow: 0 0 30px rgba(245, 158, 11, 0.3);
+  --shadow-danger-glow: 0 0 30px rgba(239, 68, 68, 0.3);
+  --shadow-info-glow: 0 0 30px rgba(6, 182, 212, 0.3);
+
+  /* ==========================================================================
+     动效系统
+     ========================================================================== */
+
+  // 过渡时间
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+
+  // 缓动函数
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  // 通用过渡
+  --transition-base: all var(--duration-normal) var(--ease-in-out);
+  --transition-fast: all var(--duration-fast) var(--ease-in-out);
+  --transition-slow: all var(--duration-slow) var(--ease-in-out);
 }
 
 /* ==========================================================================
@@ -75,26 +188,356 @@
    ========================================================================== */
 
 html.dark {
-  // 布局组件颜色
-  --sidebar-bg: #1f2937;
-  --sidebar-text: #d1d5db;
-  --sidebar-active-bg: rgba(59, 130, 246, 0.3);
+  /* ==========================================================================
+     核心配色系统 - 暗黑模式（降低饱和度，提高亮度）
+     ========================================================================== */
+
+  --primary-color: #818cf8;
+  --primary-light: #a5b4fc;
+  --primary-dark: #6366f1;
+  --primary-glow: rgba(129, 140, 248, 0.2);
+  --primary-shadow: 0 0 30px rgba(129, 140, 248, 0.4);
+
+  --success-color: #34d399;
+  --success-light: #6ee7b7;
+  --success-dark: #10b981;
+  --success-glow: rgba(52, 211, 153, 0.2);
+  --success-shadow: 0 0 30px rgba(52, 211, 153, 0.4);
+
+  --warning-color: #fbbf24;
+  --warning-light: #fcd34d;
+  --warning-dark: #f59e0b;
+  --warning-glow: rgba(251, 191, 36, 0.2);
+  --warning-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+
+  --danger-color: #f87171;
+  --danger-light: #fca5a5;
+  --danger-dark: #ef4444;
+  --danger-glow: rgba(248, 113, 113, 0.2);
+  --danger-shadow: 0 0 30px rgba(248, 113, 113, 0.4);
+
+  --info-color: #22d3ee;
+  --info-light: #67e8f9;
+  --info-dark: #06b6d4;
+  --info-glow: rgba(34, 211, 238, 0.2);
+  --info-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+
+  /* ==========================================================================
+     中性色系统 - 暗黑模式
+     ========================================================================== */
+
+  // 背景色 - 深蓝系
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-gradient: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+
+  // 文字颜色
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-placeholder: #64748b;
+
+  // 边框颜色
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --border-light: rgba(51, 65, 85, 0.5);
+
+  /* ==========================================================================
+     布局组件颜色 - 暗黑模式
+     ========================================================================== */
+
+  // 侧边栏
+  --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  --sidebar-bg-solid: #0f172a;
+  --sidebar-text: #64748b;
+  --sidebar-text-hover: #f1f5f9;
+  --sidebar-active-bg: var(--primary-gradient);
   --sidebar-active-text: #ffffff;
   --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+  --sidebar-border: rgba(255, 255, 255, 0.03);
 
-  --header-bg: #1f2937;
-  --header-text: #f9fafb;
-  --header-border: #374151;
+  // 头部导航 - 增强玻璃态
+  --header-bg: rgba(15, 23, 42, 0.85);
+  --header-bg-blur: blur(12px);
+  --header-text: #f1f5f9;
+  --header-border: rgba(51, 65, 85, 0.8);
 
-  // 基础背景色 - 暗黑模式
-  --bg-color: #1f2937;
-  --bg-dark: #111827;
-  --bg-light: #374151;
-  --bg-hover: #374151;
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-regular: #d1d5db;
-  --text-placeholder: #6b7280;
-  --border-color: #374151;
-  --border-dark: #4b5563;
+  /* ==========================================================================
+     阴影系统 - 暗黑模式
+     ========================================================================== */
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+
+  // 彩色光晕阴影 - 暗黑模式（增强）
+  --shadow-primary-glow: 0 0 40px rgba(129, 140, 248, 0.5);
+  --shadow-success-glow: 0 0 40px rgba(52, 211, 153, 0.5);
+  --shadow-warning-glow: 0 0 40px rgba(251, 191, 36, 0.5);
+  --shadow-danger-glow: 0 0 40px rgba(248, 113, 113, 0.5);
+  --shadow-info-glow: 0 0 40px rgba(34, 211, 238, 0.5);
+}
+
+/* ==========================================================================
+   动画关键帧
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--primary-glow);
+  }
+}
+
+@keyframes pulse-success {
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--success-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--success-glow);
+  }
+}
+
+@keyframes pulse-danger {
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--danger-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--danger-glow);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   动画工具类
+   ========================================================================== */
+
+.animate-fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown var(--duration-slow) var(--ease-out);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-normal) var(--ease-out);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight var(--duration-normal) var(--ease-out);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft var(--duration-normal) var(--ease-out);
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-tertiary) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ==========================================================================
+   延迟工具类（用于 stagger 动画）
+   ========================================================================== */
+
+.delay-75 {
+  animation-delay: 75ms;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-150 {
+  animation-delay: 150ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+/* ==========================================================================
+   玻璃态效果工具类
+   ========================================================================== */
+
+.glass {
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-dark {
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ==========================================================================
+   渐变文字工具类
+   ========================================================================== */
+
+.gradient-text-primary {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-success {
+  background: var(--success-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-danger {
+  background: var(--danger-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ==========================================================================
+   数字字体（用于统计数据展示）
+   ========================================================================== */
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings:
+    'tnum' on,
+    'lnum' on;
 }

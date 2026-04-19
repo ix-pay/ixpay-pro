@@ -1,24 +1,55 @@
 <template>
-  <div class="w-full h-full flex flex-col overflow-hidden">
+  <div class="w-full h-full flex flex-col overflow-hidden bg-[var(--bg-color)]">
     <!-- 标签栏容器 - 固定不滚动 -->
-    <div class="flex-shrink-0 bg-[var(--bg-color)]">
-      <el-tabs
-        v-model="activeTab"
-        type="card"
-        :closable="tabs.length > 1"
-        @tab-click="handleTabClick"
-        @tab-remove="handleTabRemove"
-        @contextmenu.prevent="handleContextMenu"
-        class="[&_.el-tabs__header]:border-b [&_.el-tabs__header]:border-[var(--border-color)] [&_.el-tabs__nav-wrap]:overflow-x-auto [&_.el-tabs__nav-wrap::-webkit-scrollbar]:h-1 [&_.el-tabs__nav-wrap::-webkit-scrollbar-thumb]:bg-[var(--border-color)] [&_.el-tabs__nav-wrap::-webkit-scrollbar-thumb]:rounded-[2px]"
-      >
-        <template #default>
-          <el-tab-pane v-for="tab in tabs" :key="tab.path" :label="tab.label" :name="tab.path">
-          </el-tab-pane>
-        </template>
-      </el-tabs>
+    <div class="flex-shrink-0 bg-[var(--bg-color)] border-b border-[var(--border-color)]">
+      <div ref="scrollContainerRef" class="tab-scroll-container">
+        <el-tabs
+          v-model="activeTab"
+          type="card"
+          :closable="tabs.length > 1"
+          @tab-click="handleTabClick"
+          @tab-remove="handleTabRemove"
+          @contextmenu.prevent="handleContextMenu"
+          class="custom-tabs"
+        >
+          <template #default>
+            <el-tab-pane
+              v-for="tab in tabs"
+              :key="tab.path"
+              :label="tab.label"
+              :name="tab.path"
+              class="custom-tab-pane"
+            >
+            </el-tab-pane>
+          </template>
+        </el-tabs>
+
+        <!-- 滚动控制按钮 -->
+        <div class="scroll-controls flex items-center gap-1 px-2" v-if="showScrollButtons">
+          <button
+            @click="scrollLeft"
+            class="scroll-btn p-1.5 rounded-md hover:bg-[var(--bg-hover-color)] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            :disabled="scrollLeftDisabled"
+          >
+            <el-icon class="text-[var(--text-secondary)]">
+              <ArrowLeft />
+            </el-icon>
+          </button>
+          <button
+            @click="scrollRight"
+            class="scroll-btn p-1.5 rounded-md hover:bg-[var(--bg-hover-color)] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            :disabled="scrollRightDisabled"
+          >
+            <el-icon class="text-[var(--text-secondary)]">
+              <ArrowRight />
+            </el-icon>
+          </button>
+        </div>
+      </div>
     </div>
+
     <!-- 标签页内容区域 - 可滚动 -->
-    <div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+    <div class="flex-1 overflow-y-auto bg-[var(--bg-page)] transition-colors duration-300">
       <keep-alive :include="keepAliveNames">
         <component :is="getComponentByPath(activeTab)" v-show="true" />
       </keep-alive>
@@ -28,57 +59,55 @@
     <div
       v-show="contextMenuVisible"
       :style="{ left: contextMenuLeft + 'px', top: contextMenuTop + 'px' }"
-      class="fixed z-[9999] bg-[var(--bg-color)] border border-[var(--border-color)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] py-2 min-w-[160px]"
+      class="fixed z-[9999] bg-[var(--bg-menu)] border border-[var(--border-color)] rounded-lg shadow-2xl py-1.5 min-w-[180px] backdrop-blur-sm animate-fade-in"
     >
-      <el-menu :ellipsis="false" class="border-none bg-transparent" style="max-width: 100%">
-        <el-menu-item
-          index="closeLeft"
-          class="px-4 py-2 h-auto hover:bg-[var(--el-menu-hover-bg-color)]"
+      <div class="context-menu-list">
+        <button
+          class="context-menu-item px-4 py-2.5 w-full flex items-center gap-3 hover:bg-[var(--bg-hover-color)] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           :disabled="currentIndex === 0"
           @click="handleContextMenuAction('closeLeft')"
         >
-          <el-icon class="mr-2">
-            <DArrowLeft />
+          <el-icon class="text-base">
+            <ArrowLeft />
           </el-icon>
-          <span>关闭左侧</span>
-        </el-menu-item>
+          <span class="text-sm font-medium text-[var(--text-primary)]">关闭左侧</span>
+        </button>
 
-        <el-menu-item
-          index="closeRight"
-          class="px-4 py-2 h-auto hover:bg-[var(--el-menu-hover-bg-color)]"
+        <button
+          class="context-menu-item px-4 py-2.5 w-full flex items-center gap-3 hover:bg-[var(--bg-hover-color)] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           :disabled="currentIndex === tabs.length - 1"
           @click="handleContextMenuAction('closeRight')"
         >
-          <el-icon class="mr-2">
-            <DArrowRight />
+          <el-icon class="text-base">
+            <ArrowRight />
           </el-icon>
-          <span>关闭右侧</span>
-        </el-menu-item>
+          <span class="text-sm font-medium text-[var(--text-primary)]">关闭右侧</span>
+        </button>
 
-        <el-menu-item
-          index="closeOther"
-          class="px-4 py-2 h-auto hover:bg-[var(--el-menu-hover-bg-color)]"
+        <button
+          class="context-menu-item px-4 py-2.5 w-full flex items-center gap-3 hover:bg-[var(--bg-hover-color)] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           :disabled="tabs.length <= 2"
           @click="handleContextMenuAction('closeOther')"
         >
-          <el-icon class="mr-2">
+          <el-icon class="text-base">
             <CloseBold />
           </el-icon>
-          <span>关闭其他</span>
-        </el-menu-item>
+          <span class="text-sm font-medium text-[var(--text-primary)]">关闭其他</span>
+        </button>
 
-        <el-menu-item
-          index="closeAll"
-          class="px-4 py-2 h-auto hover:bg-[var(--el-menu-hover-bg-color)]"
+        <div class="border-t border-[var(--border-color)] my-1"></div>
+
+        <button
+          class="context-menu-item px-4 py-2.5 w-full flex items-center gap-3 hover:bg-[var(--bg-hover-color)] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent text-red-500 hover:text-red-600"
           :disabled="tabs.length <= 1"
           @click="handleContextMenuAction('closeAll')"
         >
-          <el-icon class="mr-2">
+          <el-icon class="text-base">
             <FolderDelete />
           </el-icon>
-          <span>关闭全部</span>
-        </el-menu-item>
-      </el-menu>
+          <span class="text-sm font-medium">关闭全部</span>
+        </button>
+      </div>
     </div>
 
     <!-- 遮罩层，点击关闭右键菜单 -->
@@ -92,7 +121,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useRouterStore } from '@/stores/modules/router'
 import type { ExtendedRouteRecordRaw } from '@/stores/modules/router'
 import { storeToRefs } from 'pinia'
-import { DArrowLeft, DArrowRight, CloseBold, FolderDelete } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight, CloseBold, FolderDelete } from '@element-plus/icons-vue'
 import { emitter } from '@/utils/bus'
 
 const router = useRouter()
@@ -111,6 +140,11 @@ const contextMenuTop = ref(0)
 const currentContextMenuPath = ref<string>('')
 // keep-alive 缓存的路由名称列表
 const keepAliveNames = ref<string[]>([])
+// 滚动控制相关
+const scrollContainerRef = ref<HTMLElement | null>(null)
+const showScrollButtons = ref(false)
+const scrollLeftDisabled = ref(true)
+const scrollRightDisabled = ref(true)
 
 // 标签页类型定义
 interface TabItem {
@@ -462,6 +496,34 @@ const closeAllTabs = () => {
   saveTabsToStorage()
 }
 
+// 滚动控制方法
+const scrollLeft = () => {
+  const container = scrollContainerRef.value?.querySelector('.el-tabs__nav-wrap') as HTMLElement
+  if (container) {
+    container.scrollBy({ left: -300, behavior: 'smooth' })
+  }
+}
+
+const scrollRight = () => {
+  const container = scrollContainerRef.value?.querySelector('.el-tabs__nav-wrap') as HTMLElement
+  if (container) {
+    container.scrollBy({ left: 300, behavior: 'smooth' })
+  }
+}
+
+const checkScrollButtons = () => {
+  const container = scrollContainerRef.value?.querySelector('.el-tabs__nav-wrap') as HTMLElement
+  if (!container) return
+
+  const scrollWidth = container.scrollWidth
+  const clientWidth = container.clientWidth
+  const scrollLeft = container.scrollLeft
+
+  showScrollButtons.value = scrollWidth > clientWidth
+  scrollLeftDisabled.value = scrollLeft <= 0
+  scrollRightDisabled.value = scrollLeft + clientWidth >= scrollWidth - 1
+}
+
 // 重置所有 tabs（用于角色切换等场景）
 const resetTabs = () => {
   // 保留首页 tab
@@ -542,6 +604,17 @@ onMounted(() => {
 
     // 保存更新后的标签页状态
     saveTabsToStorage()
+
+    // 初始化滚动按钮状态
+    nextTick(() => {
+      checkScrollButtons()
+
+      // 监听滚动容器的滚动事件
+      const container = scrollContainerRef.value?.querySelector('.el-tabs__nav-wrap') as HTMLElement
+      if (container) {
+        container.addEventListener('scroll', checkScrollButtons)
+      }
+    })
   }, 100)
 })
 
@@ -562,55 +635,307 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 使用 Tailwind CSS 重构后，样式已通过 class 定义 */
+/* ========================================
+   设计令牌变量定义
+   ======================================== */
+:root {
+  /* 背景色 */
+  --bg-color: #ffffff;
+  --bg-page: #f5f7fa;
+  --bg-hover-color: #f0f2f5;
+  --bg-menu: #ffffff;
 
-/* 激活标签页下边框效果 - 类似菜单激活效果 */
-:deep(.el-tabs__item.is-active) {
-  position: relative;
+  /* 边框色 */
+  --border-color: #e5e7eb;
+
+  /* 文本色 */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+
+  /* 主题色 */
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
-:deep(.el-tabs__item.is-active::after) {
+/* 暗黑模式 */
+html.dark {
+  --bg-color: #1f2937;
+  --bg-page: #111827;
+  --bg-hover-color: #374151;
+  --bg-menu: #1f2937;
+
+  --border-color: #374151;
+
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-tertiary: #6b7280;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   标签滚动容器
+   ======================================== */
+.tab-scroll-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ========================================
+   自定义标签页样式
+   ======================================== */
+.custom-tabs {
+  flex: 1;
+  width: auto;
+}
+
+/* 标签栏头部 */
+.custom-tabs :deep(.el-tabs__header) {
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-color);
+  transition: all 0.3s ease;
+}
+
+/* 标签导航包装器 */
+.custom-tabs :deep(.el-tabs__nav-wrap) {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+/* Webkit 滚动条样式 */
+.custom-tabs :deep(.el-tabs__nav-wrap::-webkit-scrollbar) {
+  height: 4px;
+}
+
+.custom-tabs :deep(.el-tabs__nav-wrap::-webkit-scrollbar-track) {
+  background: transparent;
+}
+
+.custom-tabs :deep(.el-tabs__nav-wrap::-webkit-scrollbar-thumb) {
+  background: var(--border-color);
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.custom-tabs :deep(.el-tabs__nav-wrap::-webkit-scrollbar-thumb:hover) {
+  background: var(--text-secondary);
+}
+
+/* 标签导航 */
+.custom-tabs :deep(.el-tabs__nav) {
+  display: flex;
+  gap: 2px;
+  padding: 8px 8px 0;
+}
+
+/* 单个标签项 */
+.custom-tabs :deep(.el-tabs__item) {
+  padding: 8px 16px;
+  height: auto;
+  line-height: 1.5;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 标签项悬浮效果 */
+.custom-tabs :deep(.el-tabs__item:not(.is-active):hover) {
+  color: var(--primary-color);
+  background: var(--bg-hover-color);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.15);
+}
+
+/* 激活的标签项 */
+.custom-tabs :deep(.el-tabs__item.is-active) {
+  color: var(--primary-color);
+  background: var(--bg-color);
+  border-color: var(--primary-color);
+  border-bottom-color: transparent;
+  z-index: 10;
+}
+
+/* 激活标签项底部指示器 */
+.custom-tabs :deep(.el-tabs__item.is-active::after) {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--primary-color);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
-  animation: tab-active-border 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+  box-shadow: 0 -2px 8px rgba(59, 130, 246, 0.4);
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes tab-active-border {
+@keyframes slideIn {
   from {
     transform: scaleX(0);
     opacity: 0;
   }
-
   to {
     transform: scaleX(1);
     opacity: 1;
   }
 }
 
-/* 右键菜单项禁用状态 */
-:deep(.el-menu-item.is-disabled) {
-  opacity: 0.5;
+/* 标签项波纹效果 */
+.custom-tabs :deep(.el-tabs__item::before) {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.1);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s ease,
+    height 0.6s ease;
+}
+
+.custom-tabs :deep(.el-tabs__item:active::before) {
+  width: 200px;
+  height: 200px;
+}
+
+/* 标签内容 */
+.custom-tabs :deep(.el-tabs__content) {
+  padding: 0;
+  overflow: visible;
+}
+
+/* ========================================
+   关闭按钮样式
+   ======================================== */
+.custom-tabs :deep(.el-tabs__item.is-closable .el-icon-close) {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  padding: 2px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.custom-tabs :deep(.el-tabs__item.is-closable .el-icon-close:hover) {
+  color: #ffffff;
+  background: #ef4444;
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* ========================================
+   滚动控制按钮
+   ======================================== */
+.scroll-controls {
+  flex-shrink: 0;
+}
+
+.scroll-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scroll-btn:hover:not(:disabled) {
+  background: var(--bg-hover-color);
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.scroll-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.scroll-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.3;
 }
 
-/* 右键菜单项图标 */
-:deep(.el-menu-item .el-icon) {
-  font-size: 16px;
+/* ========================================
+   右键菜单样式
+   ======================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* 确保右键菜单在暗黑模式下正常工作 */
-html.dark :deep(.el-menu-item) {
-  background-color: transparent;
-  color: var(--el-text-color-primary);
+.animate-fade-in {
+  animation: fadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-html.dark :deep(.el-menu-item:hover) {
-  background-color: var(--el-menu-hover-bg-color);
+.context-menu-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.context-menu-item {
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.context-menu-item:focus {
+  background: var(--bg-hover-color);
+}
+
+/* ========================================
+   暗黑模式特殊适配
+   ======================================== */
+html.dark .custom-tabs :deep(.el-tabs__item.is-active) {
+  background: var(--bg-color);
+  box-shadow: 0 -2px 8px rgba(59, 130, 246, 0.2);
+}
+
+html.dark .scroll-btn {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .context-menu-item:hover {
+  box-shadow: inset 2px 0 0 var(--primary-color);
 }
 </style>

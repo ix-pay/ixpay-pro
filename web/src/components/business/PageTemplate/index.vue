@@ -119,29 +119,29 @@ const handleRefresh = async () => {
 
 <style scoped>
 .ix-page {
-  background-color: var(--bg-color);
+  background-color: var(--bg-primary);
 }
 
 header {
-  background-color: var(--bg-light);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
 }
 
 footer {
-  border-top-color: var(--border-color);
+  border-top-color: var(--border-primary);
 }
 
 /* 暗黑模式适配 */
 html.dark .ix-page {
-  background-color: var(--bg-color);
+  background-color: var(--bg-primary);
 }
 
 html.dark header {
-  background-color: var(--bg-light);
-  border-bottom-color: var(--border-color);
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-primary);
 }
 
 html.dark footer {
-  border-top-color: var(--border-color);
+  border-top-color: var(--border-primary);
 }
 </style>

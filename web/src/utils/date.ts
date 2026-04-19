@@ -47,7 +47,7 @@ function toDate(input: number | string | Date): Date | null {
  */
 function formatDate(date: Date, fmt: string): string {
   if (!isValidDate(date)) {
-    throw new Error('Invalid date')
+    throw new Error('无效的日期')
   }
 
   const year = date.getFullYear()
@@ -101,7 +101,7 @@ export function formatTimeToStr(
 ): string {
   const date = toDate(input)
   if (!date) {
-    console.warn('Invalid date input:', input)
+    console.warn('无效的日期输入:', input)
     return ''
   }
   return formatDate(date, pattern)
@@ -121,7 +121,7 @@ export function formatDateWithIntl(
 ): string {
   const date = toDate(input)
   if (!date) {
-    console.warn('Invalid date input:', input)
+    console.warn('无效的日期输入:', input)
     return ''
   }
 
@@ -136,7 +136,7 @@ export function formatDateWithIntl(
 export function getRelativeTime(input: number | string | Date): string {
   const date = toDate(input)
   if (!date) {
-    console.warn('Invalid date input:', input)
+    console.warn('无效的日期输入:', input)
     return ''
   }
 

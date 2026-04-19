@@ -56,13 +56,11 @@
         <el-table-column prop="createdAt" label="创建时间" width="160" />
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="scope">
-            <div class="flex gap-1">
+            <div class="flex gap-2">
               <el-button
                 v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:edit'"
-                size="small"
                 type="primary"
-                link
                 @click="handleEditRole(scope.row)"
               >
                 编辑
@@ -70,9 +68,7 @@
               <el-button
                 v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:assign'"
-                size="small"
                 type="primary"
-                link
                 @click="handlePermission(scope.row)"
               >
                 权限设置
@@ -80,9 +76,7 @@
               <el-button
                 v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:delete'"
-                size="small"
                 type="danger"
-                link
                 @click="handleDeleteRole(scope.row.id)"
               >
                 删除

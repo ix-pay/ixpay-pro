@@ -51,3 +51,45 @@ export const batchForceLogout = (data: { tokens: string[] }): Promise<ApiRespons
     data,
   })
 }
+
+// 获取在线用户详情
+export const getOnlineUserById = (userId: number): Promise<ApiResponse<OnlineUser>> => {
+  return service({
+    url: `/online-user/${userId}`,
+    method: 'get',
+  })
+}
+
+// 获取在线用户数量
+export const getOnlineCount = (): Promise<ApiResponse<{ count: number }>> => {
+  return service({
+    url: '/online-user/count',
+    method: 'get',
+  })
+}
+
+// 检查用户是否在线
+export const isUserOnline = (userId: number): Promise<ApiResponse<{ isOnline: boolean }>> => {
+  return service({
+    url: '/online-user/online',
+    method: 'get',
+    params: { userId },
+  })
+}
+
+// 强制用户下线（使用 DELETE 方法）
+export const forceOffline = (userId: number): Promise<ApiResponse> => {
+  return service({
+    url: `/online-user/${userId}`,
+    method: 'delete',
+  })
+}
+
+// 批量强制用户下线
+export const batchForceOffline = (data: { userIds: number[] }): Promise<ApiResponse> => {
+  return service({
+    url: '/online-user/batch',
+    method: 'post',
+    data,
+  })
+}

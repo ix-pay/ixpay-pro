@@ -23,7 +23,7 @@ export const formatDate = (time: string | number | Date | null | undefined): str
     const date = new Date(time)
     return formatTimeToStr(date, 'yyyy-MM-dd hh:mm:ss')
   } catch {
-    console.warn('Invalid date input:', time)
+    console.warn('无效的日期输入:', time)
     return ''
   }
 }
@@ -130,7 +130,7 @@ export const returnArrImg = formatImageUrls
  */
 export const downloadFile = (url: string): void => {
   if (!url) {
-    console.warn('Invalid file URL')
+    console.warn('无效的文件 URL')
     return
   }
 
@@ -219,7 +219,7 @@ const generateDarkColor = (baseColor: string, factor: number): string => {
  * @returns 生成的浅色
  */
 const generateLightColor = (baseColor: string, factor: number): string => {
-  return generateColorVariant(baseColor, factor, [240, 248, 255]) // RGB for blue white color
+  return generateColorVariant(baseColor, factor, [240, 248, 255]) // 蓝白色的 RGB 值
 }
 
 /**

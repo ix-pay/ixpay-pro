@@ -284,16 +284,16 @@ html.dark :deep(.error-preview-container) {
     color: var(--text-primary);
   }
 
-  // 调整卡片背景和边框
+  // 调整卡片样式
   .el-card {
-    background-color: var(--bg-dark);
-    border-color: var(--border-color);
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
   }
 
-  // 调整alert组件样式
+  // 调整 alert 组件样式
   .el-alert {
-    background-color: var(--bg-light);
-    border-color: var(--border-color);
+    background-color: var(--bg-primary);
+    border-color: var(--border-primary);
     color: var(--text-primary);
   }
 

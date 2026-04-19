@@ -61,3 +61,33 @@ export const deleteDepartment = (id: number): Promise<ApiResponse> => {
     method: 'delete',
   })
 }
+
+// 获取部门树形结构
+export const getDepartmentTree = (): Promise<ApiResponse<Department[]>> => {
+  return service({
+    url: '/dept/tree',
+    method: 'get',
+  })
+}
+
+// 获取部门详情
+export const getDepartmentById = (id: number): Promise<ApiResponse<Department>> => {
+  return service({
+    url: `/dept/${id}`,
+    method: 'get',
+  })
+}
+
+// 更新部门负责人
+export const updateDepartmentLeader = (
+  id: number,
+  data: {
+    leaderId: number
+  },
+): Promise<ApiResponse> => {
+  return service({
+    url: `/dept/${id}/leader`,
+    method: 'put',
+    data,
+  })
+}

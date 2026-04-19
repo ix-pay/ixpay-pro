@@ -73,3 +73,25 @@ export const clearLoginLogs = (data: {
     data,
   })
 }
+
+// 获取登录统计
+export const getLoginStatistics = (): Promise<
+  ApiResponse<{ total: number; success: number; failed: number }>
+> => {
+  return service({
+    url: '/login-log/statistics',
+    method: 'get',
+  })
+}
+
+// 获取异常登录查询
+export const getAbnormalLogins = (params?: {
+  page?: number
+  pageSize?: number
+}): Promise<ApiResponse<{ list: LoginLog[]; total: number }>> => {
+  return service({
+    url: '/login-log/abnormal',
+    method: 'get',
+    params,
+  })
+}

@@ -179,23 +179,19 @@
         <!-- 操作列 -->
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <div style="display: flex; align-items: center; gap: 4px">
+            <div style="display: flex; align-items: center; gap: 8px">
               <!-- 目录的操作 -->
               <template v-if="scope.row.type === 1">
                 <el-button
                   v-auth-btn="'system:menu:edit'"
-                  size="small"
                   type="primary"
-                  link
                   @click="handleEditMenu(scope.row)"
                 >
                   编辑
                 </el-button>
                 <el-button
                   v-auth-btn="'system:menu:add'"
-                  size="small"
                   type="success"
-                  link
                   @click="(e) => handleAddMenu(e as MouseEvent, scope.row)"
                 >
                   添加菜单
@@ -206,18 +202,14 @@
               <template v-else-if="scope.row.type === 2">
                 <el-button
                   v-auth-btn="'system:menu:edit'"
-                  size="small"
                   type="primary"
-                  link
                   @click="handleEditMenu(scope.row)"
                 >
                   编辑
                 </el-button>
                 <el-button
                   v-auth-btn="'system:menu:add'"
-                  size="small"
                   type="warning"
-                  link
                   @click="(e) => handleAddButton(e as MouseEvent, scope.row)"
                 >
                   添加按钮
@@ -228,9 +220,7 @@
               <template v-else-if="scope.row.type === 3">
                 <el-button
                   v-auth-btn="'system:menu:edit'"
-                  size="small"
                   type="primary"
-                  link
                   @click="handleEditMenu(scope.row)"
                 >
                   编辑
@@ -240,9 +230,7 @@
               <!-- 删除按钮 -->
               <el-popconfirm title="确定要删除吗？" @confirm="handleDeleteMenu(scope.row.id)">
                 <template #reference>
-                  <el-button v-auth-btn="'system:menu:delete'" size="small" type="danger" link>
-                    删除
-                  </el-button>
+                  <el-button v-auth-btn="'system:menu:delete'" type="danger"> 删除 </el-button>
                 </template>
               </el-popconfirm>
             </div>

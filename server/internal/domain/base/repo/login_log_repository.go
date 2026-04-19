@@ -1,7 +1,10 @@
 package repo
 
-import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
-import "time"
+import (
+	"time"
+
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
+)
 
 // LoginLogRepository 登录日志仓库接口
 type LoginLogRepository interface {

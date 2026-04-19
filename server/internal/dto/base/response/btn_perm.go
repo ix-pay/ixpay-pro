@@ -1,8 +1,9 @@
 package response
 
 import (
-	"github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 	"time"
+
+	"github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 )
 
 // BtnPermResponse 按钮权限响应模型

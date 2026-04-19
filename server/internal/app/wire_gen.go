@@ -9,9 +9,9 @@ package app
 import (
 	"github.com/google/wire"
 	"github.com/ix-pay/ixpay-pro/internal/app/base"
-	"github.com/ix-pay/ixpay-pro/internal/app/base/api"
+	baseapi "github.com/ix-pay/ixpay-pro/internal/app/base/api"
 	"github.com/ix-pay/ixpay-pro/internal/app/wx"
-	"github.com/ix-pay/ixpay-pro/internal/app/wx/api"
+	wxapi "github.com/ix-pay/ixpay-pro/internal/app/wx/api"
 	"github.com/ix-pay/ixpay-pro/internal/config"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
 	service2 "github.com/ix-pay/ixpay-pro/internal/domain/wx/service"
@@ -24,12 +24,10 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/captcha"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/snowflake"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/task"
-	"github.com/ix-pay/ixpay-pro/internal/persistence/base"
+	persistence "github.com/ix-pay/ixpay-pro/internal/persistence/base"
 	persistence2 "github.com/ix-pay/ixpay-pro/internal/persistence/wx"
 	redis2 "github.com/redis/go-redis/v9"
-)
 
-import (
 	_ "github.com/ix-pay/ixpay-pro/docs"
 )
 

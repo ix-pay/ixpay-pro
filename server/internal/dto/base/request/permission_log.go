@@ -15,7 +15,7 @@ type GetPermissionLogListRequest struct {
 
 // GetRolePermissionLogsRequest 获取角色权限日志请求
 type GetRolePermissionLogsRequest struct {
-	RoleID   int64 `uri:"roleId" binding:"required"` // 角色 ID
-	Page     int   `form:"page" binding:"required"`  // 页码
+	RoleID   int64 `uri:"roleId" binding:"required"`    // 角色 ID
+	Page     int   `form:"page" binding:"required"`     // 页码
 	PageSize int   `form:"pageSize" binding:"required"` // 每页数量
 }

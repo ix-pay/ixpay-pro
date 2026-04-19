@@ -3865,6 +3865,84 @@
                 }
             }
         },
+        "/api/admin/jwt/jsonInBlacklist": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "将 JWT token 加入黑名单，使其立即失效",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证服务"
+                ],
+                "summary": "将 JWT token 加入黑名单",
+                "parameters": [
+                    {
+                        "description": "JWT token",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.JsonInBlacklistRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "加入黑名单成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/login-log": {
             "get": {
                 "security": [
@@ -4221,6 +4299,162 @@
                                                 }
                                             ]
                                         },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/login-log/batch-delete": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "批量删除指定的登录日志记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登录日志管理"
+                ],
+                "summary": "批量删除登录日志",
+                "parameters": [
+                    {
+                        "description": "批量删除请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BatchDeleteLoginLogsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/login-log/clear": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据时间范围清空登录日志",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登录日志管理"
+                ],
+                "summary": "清空登录日志",
+                "parameters": [
+                    {
+                        "description": "清空请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ClearLoginLogsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "清空成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
                                         "msg": {
                                             "type": "string"
                                         }
@@ -6588,6 +6822,142 @@
                 }
             }
         },
+        "/api/admin/permission-logs": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取系统权限变更日志（支持分页和筛选）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限日志管理"
+                ],
+                "summary": "获取权限日志列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "用户 ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "userName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "操作类型",
+                        "name": "operation",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模块",
+                        "name": "module",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期（YYYY-MM-DD）",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期（YYYY-MM-DD）",
+                        "name": "end_date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "权限日志列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/baseRes.PageResult"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {}
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/position": {
             "get": {
                 "security": [
@@ -7588,6 +7958,112 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/roles/:roleId/permission-logs": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取指定角色的权限变更历史",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限日志管理"
+                ],
+                "summary": "获取角色权限日志",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "角色 ID",
+                        "name": "role_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "角色权限日志列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/baseRes.PageResult"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {}
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -8767,6 +9243,162 @@
                 "responses": {
                     "200": {
                         "description": "重置成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/setUserAuthorities": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "为用户设置多个角色权限",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "设置用户权限（多角色）",
+                "parameters": [
+                    {
+                        "description": "权限设置信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetUserAuthoritiesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "设置成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/setUserAuthority": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "为用户设置单个角色权限",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "设置用户权限（单角色）",
+                "parameters": [
+                    {
+                        "description": "权限设置信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetUserAuthorityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "设置成功",
                         "schema": {
                             "allOf": [
                                 {
@@ -10796,6 +11428,21 @@
                 }
             }
         },
+        "request.BatchDeleteLoginLogsRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "登录日志 ID 列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "request.BatchDeleteOperationLogRequest": {
             "type": "object",
             "required": [
@@ -10845,6 +11492,23 @@
                     "type": "string",
                     "maxLength": 30,
                     "minLength": 6
+                }
+            }
+        },
+        "request.ClearLoginLogsRequest": {
+            "type": "object",
+            "required": [
+                "endTime",
+                "startTime"
+            ],
+            "properties": {
+                "endTime": {
+                    "description": "结束时间（YYYY-MM-DD HH:mm:ss）",
+                    "type": "string"
+                },
+                "startTime": {
+                    "description": "开始时间（YYYY-MM-DD HH:mm:ss）",
+                    "type": "string"
                 }
             }
         },
@@ -11245,6 +11909,18 @@
                 }
             }
         },
+        "request.JsonInBlacklistRequest": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "description": "JWT token",
+                    "type": "string"
+                }
+            }
+        },
         "request.LoginRequest": {
             "type": "object",
             "required": [
@@ -11420,6 +12096,39 @@
             "properties": {
                 "group": {
                     "type": "string"
+                }
+            }
+        },
+        "request.SetUserAuthoritiesRequest": {
+            "type": "object",
+            "required": [
+                "roleIds",
+                "userId"
+            ],
+            "properties": {
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "userId": {
+                    "description": "支持 string 和 int64"
+                }
+            }
+        },
+        "request.SetUserAuthorityRequest": {
+            "type": "object",
+            "required": [
+                "roleId",
+                "userId"
+            ],
+            "properties": {
+                "roleId": {
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "支持 string 和 int64"
                 }
             }
         },

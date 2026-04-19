@@ -1112,6 +1112,16 @@ definitions:
     - roleId
     - userIds
     type: object
+  request.BatchDeleteLoginLogsRequest:
+    properties:
+      ids:
+        description: 登录日志 ID 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   request.BatchDeleteOperationLogRequest:
     properties:
       ids:
@@ -1147,6 +1157,18 @@ definitions:
     required:
     - newPassword
     - oldPassword
+    type: object
+  request.ClearLoginLogsRequest:
+    properties:
+      endTime:
+        description: 结束时间（YYYY-MM-DD HH:mm:ss）
+        type: string
+      startTime:
+        description: 开始时间（YYYY-MM-DD HH:mm:ss）
+        type: string
+    required:
+    - endTime
+    - startTime
     type: object
   request.ClearOperationLogByTimeRangeRequest:
     properties:
@@ -1435,6 +1457,14 @@ definitions:
     required:
     - id
     type: object
+  request.JsonInBlacklistRequest:
+    properties:
+      token:
+        description: JWT token
+        type: string
+    required:
+    - token
+    type: object
   request.LoginRequest:
     properties:
       captcha:
@@ -1559,6 +1589,28 @@ definitions:
         type: string
     required:
     - group
+    type: object
+  request.SetUserAuthoritiesRequest:
+    properties:
+      roleIds:
+        items:
+          type: string
+        type: array
+      userId:
+        description: 支持 string 和 int64
+    required:
+    - roleIds
+    - userId
+    type: object
+  request.SetUserAuthorityRequest:
+    properties:
+      roleId:
+        type: string
+      userId:
+        description: 支持 string 和 int64
+    required:
+    - roleId
+    - userId
     type: object
   request.SwitchRoleRequest:
     properties:
@@ -5211,6 +5263,53 @@ paths:
       summary: 根据字典ID获取字典项列表
       tags:
       - 字典管理
+  /api/admin/jwt/jsonInBlacklist:
+    post:
+      consumes:
+      - application/json
+      description: 将 JWT token 加入黑名单，使其立即失效
+      parameters:
+      - description: JWT token
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.JsonInBlacklistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 加入黑名单成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 将 JWT token 加入黑名单
+      tags:
+      - 认证服务
   /api/admin/login-log:
     get:
       consumes:
@@ -5448,6 +5547,100 @@ paths:
       security:
       - BearerAuth: []
       summary: 获取异常登录查询
+      tags:
+      - 登录日志管理
+  /api/admin/login-log/batch-delete:
+    post:
+      consumes:
+      - application/json
+      description: 批量删除指定的登录日志记录
+      parameters:
+      - description: 批量删除请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.BatchDeleteLoginLogsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 批量删除登录日志
+      tags:
+      - 登录日志管理
+  /api/admin/login-log/clear:
+    post:
+      consumes:
+      - application/json
+      description: 根据时间范围清空登录日志
+      parameters:
+      - description: 清空请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.ClearLoginLogsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 清空成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 清空登录日志
       tags:
       - 登录日志管理
   /api/admin/login-log/statistics:
@@ -6867,6 +7060,90 @@ paths:
       summary: 检查用户是否在线
       tags:
       - 在线用户管理
+  /api/admin/permission-logs:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统权限变更日志（支持分页和筛选）
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 用户 ID
+        format: int64
+        in: query
+        name: user_id
+        type: integer
+      - description: 用户名
+        in: query
+        name: userName
+        type: string
+      - description: 操作类型
+        in: query
+        name: operation
+        type: string
+      - description: 模块
+        in: query
+        name: module
+        type: string
+      - description: 开始日期（YYYY-MM-DD）
+        in: query
+        name: start_date
+        type: string
+      - description: 结束日期（YYYY-MM-DD）
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 权限日志列表
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/baseRes.PageResult'
+                  - properties:
+                      list:
+                        items: {}
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取权限日志列表
+      tags:
+      - 权限日志管理
   /api/admin/position:
     get:
       consumes:
@@ -7471,6 +7748,70 @@ paths:
       summary: 根据 ID 获取角色
       tags:
       - 角色管理
+  /api/admin/roles/:roleId/permission-logs:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定角色的权限变更历史
+      parameters:
+      - description: 角色 ID
+        in: path
+        name: role_id
+        required: true
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 角色权限日志列表
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/baseRes.PageResult'
+                  - properties:
+                      list:
+                        items: {}
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取角色权限日志
+      tags:
+      - 权限日志管理
   /api/admin/task:
     get:
       consumes:
@@ -8276,6 +8617,100 @@ paths:
       security:
       - BearerAuth: []
       summary: 重置密码
+      tags:
+      - 用户管理
+  /api/admin/user/setUserAuthorities:
+    post:
+      consumes:
+      - application/json
+      description: 为用户设置多个角色权限
+      parameters:
+      - description: 权限设置信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SetUserAuthoritiesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 设置成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 设置用户权限（多角色）
+      tags:
+      - 用户管理
+  /api/admin/user/setUserAuthority:
+    post:
+      consumes:
+      - application/json
+      description: 为用户设置单个角色权限
+      parameters:
+      - description: 权限设置信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SetUserAuthorityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 设置成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/baseRes.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 设置用户权限（单角色）
       tags:
       - 用户管理
   /api/admin/user/switch-role:

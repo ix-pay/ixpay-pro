@@ -22,7 +22,7 @@ func NewPermissionLogService(repo repo.PermissionLogRepository, log logger.Logge
 // GetPermissionLogList 获取权限日志列表
 func (s *PermissionLogService) GetPermissionLogList(page, pageSize int, filters map[string]interface{}) ([]interface{}, int64, error) {
 	s.log.Info("获取权限日志列表", "page", page, "pageSize", pageSize)
-	
+
 	// TODO: 调用 repository 查询数据
 	// 目前返回空列表，等待 repository 实现后补充
 	return []interface{}{}, 0, nil
@@ -31,7 +31,7 @@ func (s *PermissionLogService) GetPermissionLogList(page, pageSize int, filters 
 // GetRolePermissionLogs 获取角色权限日志
 func (s *PermissionLogService) GetRolePermissionLogs(roleID int64, page, pageSize int) ([]interface{}, int64, error) {
 	s.log.Info("获取角色权限日志", "role_id", roleID, "page", page, "pageSize", pageSize)
-	
+
 	// TODO: 调用 repository 查询数据
 	// 目前返回空列表，等待 repository 实现后补充
 	return []interface{}{}, 0, nil

@@ -13,10 +13,10 @@ import (
 // AuthMiddleware 认证中间件
 func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 从Authorization头获取令牌
+		// 从 Authorization 头获取令牌
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization 头是必需的"})
 			c.Abort()
 			return
 		}
@@ -24,7 +24,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 		// 检查令牌格式
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header format must be Bearer {token}"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization 头格式必须为 Bearer {token}"})
 			c.Abort()
 			return
 		}
@@ -32,7 +32,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 		// 解析和验证令牌
 		claims, err := jwtAuth.ParseToken(parts[1])
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "令牌无效或已过期"})
 			c.Abort()
 			return
 		}

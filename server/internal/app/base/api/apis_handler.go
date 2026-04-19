@@ -31,7 +31,7 @@ func NewAPIController(apisService *service.APIService, log logger.Logger) *APICo
 func (c *APIController) checkAdminPermission(ctx *gin.Context) (string, bool) {
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		c.log.Error("Permission denied", "user_role", role)
+		c.log.Error("权限被拒绝", "user_role", role)
 		baseRes.FailWithMessage("无权限访问", ctx)
 		return "", false
 	}
@@ -133,12 +133,12 @@ func (c *APIController) GetAPIs(ctx *gin.Context) {
 
 	routes, total, err := c.apisService.GetAPIRouteList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("Failed to get API routes", "error", err)
+		c.log.Error("获取 API 路由列表失败", "error", err)
 		baseRes.FailWithMessage("获取 API 路由列表失败", ctx)
 		return
 	}
 
-	c.log.Info("Successfully retrieved API routes", "count", len(routes), "total", total)
+	c.log.Info("成功获取 API 路由列表", "count", len(routes), "total", total)
 
 	apiResponses := make([]response.APIResponse, 0, len(routes))
 	for _, route := range routes {
@@ -194,12 +194,12 @@ func (c *APIController) GetRouteByID(ctx *gin.Context) {
 
 	route, err := c.apisService.GetRouteByID(idInt)
 	if err != nil {
-		c.log.Error("Failed to get route by ID", "error", err, "id", id)
+		c.log.Error("根据 ID 获取路由失败", "error", err, "id", id)
 		baseRes.FailWithMessage("获取路由信息失败", ctx)
 		return
 	}
 
-	c.log.Info("Successfully retrieved route by ID", "id", id)
+	c.log.Info("成功根据 ID 获取路由", "id", id)
 	routeResp := convertToAPIResponse(route)
 	baseRes.OkWithDetailed(routeResp, "获取成功", ctx)
 }
@@ -227,7 +227,7 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 
 	var req request.CreateAPIRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("Invalid request parameters", "error", err)
+		c.log.Error("请求参数无效", "error", err)
 		baseRes.FailWithMessage("参数验证失败", ctx)
 		return
 	}
@@ -274,12 +274,12 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 	}
 
 	if err := c.apisService.CreateAPIRoute(route, operatorIDInt); err != nil {
-		c.log.Error("Failed to create API route", "error", err)
+		c.log.Error("创建 API 路由失败", "error", err)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("API route created successfully", "id", route.ID, "path", route.Path, "method", route.Method)
+	c.log.Info("API 路由创建成功", "id", route.ID, "path", route.Path, "method", route.Method)
 	routeResp := convertToAPIResponse(route)
 	baseRes.OkWithDetailed(routeResp, "创建成功", ctx)
 }
@@ -309,7 +309,7 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 
 	var req request.UpdateAPIRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.log.Error("Invalid request parameters", "error", err)
+		c.log.Error("请求参数无效", "error", err)
 		baseRes.FailWithMessage("参数验证失败", ctx)
 		return
 	}
@@ -357,12 +357,12 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 	}
 
 	if err := c.apisService.UpdateAPIRoute(route, operatorIDInt); err != nil {
-		c.log.Error("Failed to update API route", "error", err, "id", route.ID)
+		c.log.Error("更新 API 路由失败", "error", err, "id", route.ID)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("API route updated successfully", "id", route.ID)
+	c.log.Info("API 路由更新成功", "id", route.ID)
 	routeResp := convertToAPIResponse(route)
 	baseRes.OkWithDetailed(routeResp, "更新成功", ctx)
 }
@@ -405,12 +405,12 @@ func (c *APIController) DeleteAPI(ctx *gin.Context) {
 	}
 
 	if err := c.apisService.DeleteAPIRoute(idInt); err != nil {
-		c.log.Error("Failed to delete API route", "error", err, "id", id)
+		c.log.Error("删除 API 路由失败", "error", err, "id", id)
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("API route deleted successfully", "id", id)
+	c.log.Info("API 路由删除成功", "id", id)
 	baseRes.OkWithMessage("删除成功", ctx)
 }
 
@@ -458,12 +458,12 @@ func (c *APIController) GetAPIList(ctx *gin.Context) {
 
 	routes, total, err := c.apisService.GetAPIRouteList(req.Page, req.PageSize, filters)
 	if err != nil {
-		c.log.Error("Failed to get API route list", "error", err)
+		c.log.Error("获取 API 路由列表失败", "error", err)
 		baseRes.FailWithMessage("获取路由列表失败", ctx)
 		return
 	}
 
-	c.log.Info("API route list retrieved successfully", "count", len(routes), "total", total)
+	c.log.Info("成功获取 API 路由列表", "count", len(routes), "total", total)
 
 	apiResponses := make([]response.APIResponse, 0, len(routes))
 	for _, route := range routes {

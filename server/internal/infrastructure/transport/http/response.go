@@ -68,20 +68,20 @@ func ErrorResponse(c *gin.Context, code int, message string, err error) {
 	})
 }
 
-// Ok 返回200 OK响应
+// Ok 返回 200 OK 响应
 // 参数:
-// - c: Gin上下文
+// - c: Gin 上下文
 // - data: 响应数据
 func Ok(c *gin.Context, data interface{}) {
-	SuccessResponse(c, http.StatusOK, "success", data)
+	SuccessResponse(c, http.StatusOK, "成功", data)
 }
 
-// Created 返回201 Created响应
+// Created 返回 201 Created 响应
 // 参数:
-// - c: Gin上下文
+// - c: Gin 上下文
 // - data: 响应数据
 func Created(c *gin.Context, data interface{}) {
-	SuccessResponse(c, http.StatusCreated, "created", data)
+	SuccessResponse(c, http.StatusCreated, "已创建", data)
 }
 
 // BadRequest 返回400 Bad Request响应

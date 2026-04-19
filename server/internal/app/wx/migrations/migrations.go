@@ -135,7 +135,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 	for _, sql := range sqlStatements {
 		execResult := db.Exec(sql)
 		if execResult.Error != nil {
-			log.Error("Failed to execute migration SQL", "error", execResult.Error)
+			log.Error("执行迁移 SQL 失败", "error", execResult.Error)
 			return
 		}
 	}

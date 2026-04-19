@@ -769,3 +769,109 @@ func (c *UserController) SwitchRole(ctx *gin.Context) {
 
 	baseRes.OkWithMessage("切换角色成功", ctx)
 }
+
+// SetUserAuthority 设置用户权限（单角色）
+//
+//	@Summary		设置用户权限（单角色）
+//	@Description	为用户设置单个角色权限
+//	@Tags			用户管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			data	body		request.SetUserAuthorityRequest	true	"权限设置信息"
+//	@Success		200		{object}	baseRes.Response{msg=string}		"设置成功"
+//	@Failure		400		{object}	map[string]string				"请求参数错误"
+//	@Failure		401		{object}	map[string]string				"未授权"
+//	@Failure		500		{object}	map[string]string				"服务器内部错误"
+//	@Router			/api/admin/user/setUserAuthority [post]
+func (c *UserController) SetUserAuthority(ctx *gin.Context) {
+	var req request.SetUserAuthorityRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := req.UserID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	// 将 RoleID 从 string 转换为 int64
+	roleIDInt, err := strconv.ParseInt(req.RoleID, 10, 64)
+	if err != nil {
+		c.log.Error("角色 ID 格式错误", "role_id", req.RoleID, "error", err)
+		baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+		return
+	}
+
+	// 调用服务层设置用户权限
+	if err := c.service.SetUserAuthority(userIDInt, roleIDInt); err != nil {
+		baseRes.FailWithMessage(err.Error(), ctx)
+		return
+	}
+
+	c.log.Info("设置用户权限成功", "user_id", userIDInt, "role_id", roleIDInt)
+	baseRes.OkWithMessage("设置成功", ctx)
+}
+
+// SetUserAuthorities 设置用户权限（多角色）
+//
+//	@Summary		设置用户权限（多角色）
+//	@Description	为用户设置多个角色权限
+//	@Tags			用户管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			data	body		request.SetUserAuthoritiesRequest	true	"权限设置信息"
+//	@Success		200		{object}	baseRes.Response{msg=string}			"设置成功"
+//	@Failure		400		{object}	map[string]string					"请求参数错误"
+//	@Failure		401		{object}	map[string]string					"未授权"
+//	@Failure		500		{object}	map[string]string					"服务器内部错误"
+//	@Router			/api/admin/user/setUserAuthorities [post]
+func (c *UserController) SetUserAuthorities(ctx *gin.Context) {
+	var req request.SetUserAuthoritiesRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	// 将 userID 转换为 int64
+	var userIDInt int64
+	switch v := req.UserID.(type) {
+	case string:
+		userIDInt, _ = strconv.ParseInt(v, 10, 64)
+	case int64:
+		userIDInt = v
+	case int:
+		userIDInt = int64(v)
+	}
+
+	// 将 roleIDs 从 []string 转换为 []int64
+	roleIDs := make([]int64, len(req.RoleIDs))
+	for i, roleIDStr := range req.RoleIDs {
+		roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+		if err != nil {
+			c.log.Error("角色 ID 格式错误", "role_id", roleIDStr, "error", err)
+			baseRes.FailWithMessage("角色 ID 格式错误", ctx)
+			return
+		}
+		roleIDs[i] = roleID
+	}
+
+	// 调用服务层设置用户权限
+	if err := c.service.SetUserAuthorities(userIDInt, roleIDs); err != nil {
+		baseRes.FailWithMessage(err.Error(), ctx)
+		return
+	}
+
+	c.log.Info("设置用户权限成功", "user_id", userIDInt, "role_ids", roleIDs)
+	baseRes.OkWithMessage("设置成功", ctx)
+}

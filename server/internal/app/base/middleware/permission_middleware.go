@@ -26,7 +26,7 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		// 检查认证
 		userID, exists := c.Get("userID")
 		if !exists || userID == "" {
-			httpresponse.UnauthorizedResponse(c, "Unauthorized")
+			httpresponse.UnauthorizedResponse(c, "未授权")
 			c.Abort()
 			return
 		}
@@ -35,7 +35,7 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		roleValue, roleExists := c.Get("role")
 		if !roleExists {
 			log.Error("✗ 角色不存在于上下文中", "path", path, "method", method, "userID", userID)
-			httpresponse.UnauthorizedResponse(c, "Role not found")
+			httpresponse.UnauthorizedResponse(c, "未找到角色")
 			c.Abort()
 			return
 		}
@@ -62,7 +62,7 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		authType, err := getAPIAuthType(roleRepo, path, method, log, cacheClient)
 		if err != nil {
 			log.Error("获取 API 授权类型失败", "error", err, "path", path, "method", method)
-			httpresponse.InternalServerErrorResponse(c, "Failed to get API auth type")
+			httpresponse.InternalServerErrorResponse(c, "获取 API 授权类型失败")
 			c.Abort()
 			return
 		}
@@ -78,14 +78,14 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		hasPermission, err := checkPermissionFromCache(roleRepo, role, method, path, log, cacheClient)
 		if err != nil {
 			log.Error("从缓存检查权限失败", "error", err, "role", role, "path", path, "method", method)
-			httpresponse.InternalServerErrorResponse(c, "Failed to check permission")
+			httpresponse.InternalServerErrorResponse(c, "检查权限失败")
 			c.Abort()
 			return
 		}
 
 		// 权限验证失败
 		if !hasPermission {
-			httpresponse.ForbiddenResponse(c, "Forbidden")
+			httpresponse.ForbiddenResponse(c, "禁止访问")
 			c.Abort()
 			return
 		}
@@ -273,13 +273,13 @@ func getBtnPermsByUserId(userId int64, permissionService *service.PermissionServ
 	// 通过用户 ID 获取角色
 	roles, err := permissionService.GetRolesByUserId(userId)
 	if err != nil {
-		log.Error("Failed to get roles by user ID", "error", err, "userId", userId)
+		log.Error("通过用户 ID 获取角色失败", "error", err, "userId", userId)
 		return nil, err
 	}
 
 	// 如果角色列表为空，返回空的按钮权限列表
 	if len(roles) == 0 {
-		log.Info("User has no roles", "userId", userId)
+		log.Info("用户没有角色", "userId", userId)
 		return []string{}, nil
 	}
 
@@ -290,7 +290,7 @@ func getBtnPermsByUserId(userId int64, permissionService *service.PermissionServ
 	for _, role := range roles {
 		buttons, err := permissionService.GetBtnPermsByRole(role.ID)
 		if err != nil {
-			log.Error("Failed to get button permissions by role", "error", err, "roleID", role.ID)
+			log.Error("通过角色获取按钮权限失败", "error", err, "roleID", role.ID)
 			continue
 		}
 
@@ -330,7 +330,7 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 		// 从 gin.Context 中获取用户 ID
 		userID, exists := c.Get("userID")
 		if !exists {
-			httpresponse.UnauthorizedResponse(c, "User not authenticated")
+			httpresponse.UnauthorizedResponse(c, "用户未认证")
 			c.Abort()
 			return
 		}
@@ -345,7 +345,7 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 		case int64:
 			userIDInt = v
 		default:
-			httpresponse.BadRequestResponse(c, "Invalid user ID format")
+			httpresponse.BadRequestResponse(c, "用户 ID 格式无效")
 			c.Abort()
 			return
 		}
@@ -353,7 +353,7 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 		// 获取用户所有角色
 		roles, err := roleRepo.GetRolesByUser(userIDInt)
 		if err != nil {
-			httpresponse.InternalServerErrorResponse(c, "Failed to get user roles")
+			httpresponse.InternalServerErrorResponse(c, "获取用户角色失败")
 			c.Abort()
 			return
 		}
@@ -374,7 +374,7 @@ func RolePermissionMiddleware(requiredRoles []string, roleRepo repo.RoleReposito
 
 		// 如果没有所需角色，拒绝访问
 		if !hasRequiredRole {
-			httpresponse.ForbiddenResponse(c, fmt.Sprintf("Required role(s): %s", strings.Join(requiredRoles, ", ")))
+			httpresponse.ForbiddenResponse(c, fmt.Sprintf("需要角色：%s", strings.Join(requiredRoles, ", ")))
 			c.Abort()
 			return
 		}

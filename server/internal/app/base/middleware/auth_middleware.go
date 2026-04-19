@@ -20,7 +20,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache, log logger.L
 		// 从 Authorization 头获取令牌
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			httpresponse.UnauthorizedResponse(c, "Authorization header is required")
+			httpresponse.UnauthorizedResponse(c, "Authorization 头是必需的")
 			c.Abort()
 			return
 		}
@@ -28,7 +28,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache, log logger.L
 		// 检查令牌格式
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			httpresponse.UnauthorizedResponse(c, "Authorization header format must be Bearer {token}")
+			httpresponse.UnauthorizedResponse(c, "Authorization 头格式必须为 Bearer {token}")
 			c.Abort()
 			return
 		}
@@ -36,7 +36,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache, log logger.L
 		// 解析和验证令牌
 		claims, err := jwtAuth.ParseToken(parts[1])
 		if err != nil {
-			httpresponse.UnauthorizedResponse(c, "Invalid or expired token")
+			httpresponse.UnauthorizedResponse(c, "令牌无效或已过期")
 			c.Abort()
 			return
 		}
@@ -45,13 +45,13 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, cacheClient cache.Cache, log logger.L
 		blacklistKey := "blacklist:user:" + claims.UserID
 		exists, err := cacheClient.Exists(blacklistKey)
 		if err != nil {
-			httpresponse.InternalServerErrorResponse(c, "Failed to check user status")
+			httpresponse.InternalServerErrorResponse(c, "检查用户状态失败")
 			c.Abort()
 			return
 		}
 
 		if exists {
-			httpresponse.UnauthorizedResponse(c, "User has logged out")
+			httpresponse.UnauthorizedResponse(c, "用户已退出登录")
 			c.Abort()
 			return
 		}

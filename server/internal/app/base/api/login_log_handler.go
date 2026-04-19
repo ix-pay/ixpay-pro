@@ -346,3 +346,102 @@ func (c *LoginLogController) GetLoginLogByID(ctx *gin.Context) {
 
 	baseRes.OkWithDetailed(detailDTO, "获取登录日志详情成功", ctx)
 }
+
+// BatchDeleteLoginLogs 批量删除登录日志
+//
+//	@Summary		批量删除登录日志
+//	@Description	批量删除指定的登录日志记录
+//	@Tags			登录日志管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			data	body		request.BatchDeleteLoginLogsRequest	true	"批量删除请求参数"
+//	@Success		200		{object}	baseRes.Response{msg=string}			"删除成功"
+//	@Failure		400		{object}	map[string]string					"请求参数错误"
+//	@Failure		401		{object}	map[string]string					"未授权"
+//	@Failure		500		{object}	map[string]string					"服务器内部错误"
+//	@Router			/api/admin/login-log/batch-delete [post]
+func (c *LoginLogController) BatchDeleteLoginLogs(ctx *gin.Context) {
+	// 检查用户是否已登录
+	_, exists := ctx.Get("userID")
+	if !exists {
+		c.log.Error("未登录")
+		baseRes.NoAuth("未登录", ctx)
+		return
+	}
+
+	var req request.BatchDeleteLoginLogsRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	if len(req.IDs) == 0 {
+		c.log.Error("登录日志 ID 列表不能为空")
+		baseRes.FailWithMessage("登录日志 ID 列表不能为空", ctx)
+		return
+	}
+
+	if err := c.service.BatchDeleteLoginLogs(req.IDs); err != nil {
+		baseRes.FailWithMessage(err.Error(), ctx)
+		return
+	}
+
+	c.log.Info("批量删除登录日志成功", "ids", req.IDs)
+	baseRes.OkWithMessage("批量删除成功", ctx)
+}
+
+// ClearLoginLogs 清空登录日志
+//
+//	@Summary		清空登录日志
+//	@Description	根据时间范围清空登录日志
+//	@Tags			登录日志管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			data	body		request.ClearLoginLogsRequest	true	"清空请求参数"
+//	@Success		200		{object}	baseRes.Response{msg=string}		"清空成功"
+//	@Failure		400		{object}	map[string]string				"请求参数错误"
+//	@Failure		401		{object}	map[string]string				"未授权"
+//	@Failure		500		{object}	map[string]string				"服务器内部错误"
+//	@Router			/api/admin/login-log/clear [post]
+func (c *LoginLogController) ClearLoginLogs(ctx *gin.Context) {
+	// 检查用户是否已登录
+	_, exists := ctx.Get("userID")
+	if !exists {
+		c.log.Error("未登录")
+		baseRes.NoAuth("未登录", ctx)
+		return
+	}
+
+	var req request.ClearLoginLogsRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	// 解析时间
+	startTime, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
+	if err != nil {
+		c.log.Error("开始时间格式错误", "error", err)
+		baseRes.FailWithMessage("开始时间格式错误，应为 YYYY-MM-DD HH:mm:ss", ctx)
+		return
+	}
+
+	endTime, err := time.Parse("2006-01-02 15:04:05", req.EndTime)
+	if err != nil {
+		c.log.Error("结束时间格式错误", "error", err)
+		baseRes.FailWithMessage("结束时间格式错误，应为 YYYY-MM-DD HH:mm:ss", ctx)
+		return
+	}
+
+	if err := c.service.ClearLoginLogs(startTime, endTime); err != nil {
+		baseRes.FailWithMessage(err.Error(), ctx)
+		return
+	}
+
+	c.log.Info("清空登录日志成功", "start_time", req.StartTime, "end_time", req.EndTime)
+	baseRes.OkWithMessage("清空成功", ctx)
+}

@@ -32,7 +32,7 @@ func NewAppWX(
 ) (*AppWX, error) {
 	// 执行数据库迁移，创建所有需要的表
 	// if err := db.Migrate(log); err != nil {
-	// 	log.Error("Failed to migrate database", "error", err)
+	// 	log.Error("数据库迁移失败", "error", err)
 	// 	return nil, err
 	// }
 

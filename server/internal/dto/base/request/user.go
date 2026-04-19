@@ -57,3 +57,15 @@ type GetUserListRequest struct {
 type SwitchRoleRequest struct {
 	RoleID string `json:"roleId" binding:"required"`
 }
+
+// SetUserAuthorityRequest 设置用户权限（单角色）请求参数
+type SetUserAuthorityRequest struct {
+	UserID interface{} `json:"userId" binding:"required"` // 支持 string 和 int64
+	RoleID string      `json:"roleId" binding:"required"`
+}
+
+// SetUserAuthoritiesRequest 设置用户权限（多角色）请求参数
+type SetUserAuthoritiesRequest struct {
+	UserID  interface{} `json:"userId" binding:"required"` // 支持 string 和 int64
+	RoleIDs []string    `json:"roleIds" binding:"required"`
+}

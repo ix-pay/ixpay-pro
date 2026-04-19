@@ -296,3 +296,15 @@ func (r *loginLogRepository) GetStatistics(startTime, endTime time.Time) (*entit
 	// TODO: 实现登录统计信息
 	return &entity.LoginStatistics{}, nil
 }
+
+// BatchDelete 批量删除登录日志
+func (r *loginLogRepository) BatchDelete(ids []int64) error {
+	result := r.db.Where("id IN (?)", ids).Delete(&loginLogModel{})
+	return result.Error
+}
+
+// ClearByTimeRange 清空指定时间范围的登录日志
+func (r *loginLogRepository) ClearByTimeRange(startTime, endTime time.Time) error {
+	result := r.db.Where("login_time >= ? AND login_time <= ?", startTime, endTime).Delete(&loginLogModel{})
+	return result.Error
+}

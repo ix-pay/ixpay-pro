@@ -41,6 +41,7 @@ type AppBase struct {
 	loginLogController     *baseapi.LoginLogController
 	onlineUserController   *baseapi.OnlineUserController
 	monitorController      *baseapi.MonitorController
+	permissionLogController *baseapi.PermissionLogController
 	userRepo               repo.UserRepository
 	apiRepo                repo.APIRepository
 	roleRepo               repo.RoleRepository
@@ -77,6 +78,7 @@ func NewAppBase(
 	loginLogController *baseapi.LoginLogController,
 	onlineUserController *baseapi.OnlineUserController,
 	monitorController *baseapi.MonitorController,
+	permissionLogController *baseapi.PermissionLogController,
 	userRepo repo.UserRepository,
 	apiRepo repo.APIRepository,
 	roleRepo repo.RoleRepository,
@@ -112,6 +114,7 @@ func NewAppBase(
 		loginLogController:     loginLogController,
 		onlineUserController:   onlineUserController,
 		monitorController:      monitorController,
+		permissionLogController: permissionLogController,
 		userRepo:               userRepo,
 		apiRepo:                apiRepo,
 		roleRepo:               roleRepo,

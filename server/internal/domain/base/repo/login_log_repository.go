@@ -16,4 +16,7 @@ type LoginLogRepository interface {
 	CountByUser(userID int64) (int64, error)
 	CountByResult(result entity.LoginResult) (int64, error)
 	GetStatistics(startTime, endTime time.Time) (*entity.LoginStatistics, error)
+	// 批量操作
+	BatchDelete(ids []int64) error
+	ClearByTimeRange(startTime, endTime time.Time) error
 }

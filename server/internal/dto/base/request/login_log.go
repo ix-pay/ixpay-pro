@@ -62,3 +62,14 @@ type RecordLoginRequest struct {
 	Success   bool   `json:"success"`                     // 是否成功
 	ErrorMsg  string `json:"errorMsg"`                    // 错误信息
 }
+
+// BatchDeleteLoginLogsRequest 批量删除登录日志请求
+type BatchDeleteLoginLogsRequest struct {
+	IDs []int64 `json:"ids" binding:"required"` // 登录日志 ID 列表
+}
+
+// ClearLoginLogsRequest 清空登录日志请求
+type ClearLoginLogsRequest struct {
+	StartTime string `json:"startTime" binding:"required"` // 开始时间（YYYY-MM-DD HH:mm:ss）
+	EndTime   string `json:"endTime" binding:"required"`   // 结束时间（YYYY-MM-DD HH:mm:ss）
+}

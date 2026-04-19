@@ -212,3 +212,35 @@ func (c *AuthController) Logout(ctx *gin.Context) {
 
 	baseRes.OkWithMessage("登出成功", ctx)
 }
+
+// JsonInBlacklist 将 JWT token 加入黑名单
+//
+//	@Summary		将 JWT token 加入黑名单
+//	@Description	将 JWT token 加入黑名单，使其立即失效
+//	@Tags			认证服务
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			data	body		request.JsonInBlacklistRequest	true	"JWT token"
+//	@Success		200		{object}	baseRes.Response{msg=string}		"加入黑名单成功"
+//	@Failure		400		{object}	map[string]string				"请求参数错误"
+//	@Failure		401		{object}	map[string]string				"未授权"
+//	@Failure		500		{object}	map[string]string				"服务器内部错误"
+//	@Router			/api/admin/jwt/jsonInBlacklist [post]
+func (c *AuthController) JsonInBlacklist(ctx *gin.Context) {
+	var req request.JsonInBlacklistRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	// 调用服务层将 token 加入黑名单
+	if err := c.service.JsonInBlacklist(req.Token); err != nil {
+		baseRes.FailWithMessage(err.Error(), ctx)
+		return
+	}
+
+	c.log.Info("JWT token 加入黑名单成功")
+	baseRes.OkWithMessage("加入黑名单成功", ctx)
+}

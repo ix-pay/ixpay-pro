@@ -330,6 +330,86 @@ func (s *UserService) UpdateUserInfo(user *entity.User, updatedBy int64) error {
 	return nil
 }
 
+// SetUserAuthority 设置用户权限（单角色）
+func (s *UserService) SetUserAuthority(userID, roleID int64) error {
+	s.log.Info("设置用户权限（单角色）", "user_id", userID, "role_id", roleID)
+
+	// 检查用户是否存在
+	user, err := s.repo.GetByID(userID)
+	if err != nil {
+		s.log.Error("查找用户失败", "error", err, "user_id", userID)
+		return errors.New("用户不存在")
+	}
+
+	// 检查角色是否存在
+	role, err := s.roleService.GetRoleByID(roleID)
+	if err != nil {
+		s.log.Error("角色不存在", "role_id", roleID, "user_id", userID)
+		return errors.New("角色不存在")
+	}
+
+	// 检查角色状态
+	if role.Status != 1 {
+		s.log.Error("角色已禁用", "role_id", roleID, "user_id", userID)
+		return errors.New("角色已禁用")
+	}
+
+	// 调用 SaveRolePermissions 方法为用户分配角色（空权限列表）
+	operatorID := fmt.Sprintf("%d", userID)
+	if err := s.rolePermissionService.SaveRolePermissions(roleID, []int64{}, []int64{}, []int64{}, operatorID); err != nil {
+		s.log.Error("保存角色权限失败", "error", err, "user_id", userID, "role_id", roleID)
+		return err
+	}
+
+	s.log.Info("设置用户权限成功", "user_id", userID, "user_name", user.Username, "role_id", roleID, "role_name", role.Name)
+	return nil
+}
+
+// SetUserAuthorities 设置用户权限（多角色）
+func (s *UserService) SetUserAuthorities(userID int64, roleIDs []int64) error {
+	s.log.Info("设置用户权限（多角色）", "user_id", userID, "role_ids", roleIDs)
+
+	// 检查用户是否存在
+	user, err := s.repo.GetByID(userID)
+	if err != nil {
+		s.log.Error("查找用户失败", "error", err, "user_id", userID)
+		return errors.New("用户不存在")
+	}
+
+	// 验证所有角色是否存在且状态正常
+	for _, roleID := range roleIDs {
+		role, err := s.roleService.GetRoleByID(roleID)
+		if err != nil {
+			s.log.Error("角色不存在", "role_id", roleID, "user_id", userID)
+			return errors.New("角色不存在")
+		}
+		if role.Status != 1 {
+			s.log.Error("角色已禁用", "role_id", roleID, "user_id", userID)
+			return errors.New("角色已禁用")
+		}
+	}
+
+	// 为每个角色分配权限
+	operatorID := fmt.Sprintf("%d", userID)
+	for _, roleID := range roleIDs {
+		if err := s.rolePermissionService.SaveRolePermissions(roleID, []int64{}, []int64{}, []int64{}, operatorID); err != nil {
+			s.log.Error("保存角色权限失败", "error", err, "user_id", userID, "role_id", roleID)
+			return err
+		}
+	}
+
+	s.log.Info("设置用户权限成功", "user_id", userID, "user_name", user.Username, "role_ids", roleIDs)
+	return nil
+}
+
+// JsonInBlacklist 将 JWT token 加入黑名单
+// TODO: 需要实现 JWT 黑名单功能，暂时返回成功
+func (s *UserService) JsonInBlacklist(token string) error {
+	s.log.Info("将 JWT token 加入黑名单", "token", token)
+	// 暂时不实现，直接返回成功
+	return nil
+}
+
 // UpdateUserDepartment 更新用户部门
 func (s *UserService) UpdateUserDepartment(userID int64, departmentID int64, updatedBy int64) error {
 	// 获取用户

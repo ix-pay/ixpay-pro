@@ -78,14 +78,14 @@ func (t *MockTask) GetName() string {
 func (c *TaskController) CreateTask(ctx *gin.Context) {
 	var req request.AddTaskRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误：" + err.Error()})
 		return
 	}
 
 	// 检查用户角色是否有权限添加任务
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
@@ -99,7 +99,7 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		}
 
 		if err := c.manager.AddScheduledTask(scheduledTask); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
 			return
 		}
 	} else if req.Type == "one_time" {
@@ -110,7 +110,7 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		executeTime, err := time.Parse(time.RFC3339, req.Expression)
 		if err != nil {
 			c.log.Error("无效的时间表达式", "error", err)
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid time expression"})
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的时间表达式"})
 			return
 		}
 
@@ -122,7 +122,7 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 
 		c.manager.AddOneTimeTask(onetimeTask, delay)
 	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task type"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的任务类型"})
 		return
 	}
 
@@ -161,16 +161,16 @@ func (c *TaskController) DeleteTask(ctx *gin.Context) {
 	// 检查用户角色是否有权限移除任务
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
 	if err := c.manager.RemoveScheduledTask(taskID); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Task removed successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "任务移除成功"})
 }
 
 // StartTask 启动任务
@@ -193,18 +193,18 @@ func (c *TaskController) StartTask(ctx *gin.Context) {
 	// 检查用户角色是否有权限启动任务
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
-	// 在TaskManager中，定时任务添加后会自动启动，这里我们只是立即执行一次
+	// 在 TaskManager 中，定时任务添加后会自动启动，这里我们只是立即执行一次
 	if success := c.manager.RunTaskNow(taskID); !success {
 		c.log.Error("立即运行任务失败", "taskID", taskID)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to run task"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "任务运行失败"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Task run successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "任务运行成功"})
 }
 
 // StopTask 停止任务
@@ -227,17 +227,17 @@ func (c *TaskController) StopTask(ctx *gin.Context) {
 	// 检查用户角色是否有权限停止任务
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
 	// 在 TaskManager 中，停止任务相当于移除任务
 	if err := c.manager.RemoveScheduledTask(taskID); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Task stopped successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "任务停止成功"})
 }
 
 // RetryTask 重试任务
@@ -260,17 +260,17 @@ func (c *TaskController) RetryTask(ctx *gin.Context) {
 	// 检查用户角色是否有权限重试任务
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
 	if success := c.manager.RetryFailedTask(taskID); !success {
 		c.log.Error("重试任务失败", "taskID", taskID)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retry task"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "任务重试失败"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Task retry triggered successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "任务重试触发成功"})
 }
 
 // GetTasks 获取所有任务
@@ -289,7 +289,7 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取任务列表
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
@@ -347,14 +347,14 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取任务日志
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
 	// 获取分页参数
 	var req request.GetTaskExecutionLogsRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误：" + err.Error()})
 		return
 	}
 	req.TaskID = taskID
@@ -419,7 +419,7 @@ func (c *TaskController) GetStatistics(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取统计
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
@@ -475,13 +475,13 @@ func (c *TaskController) SetTaskGroup(ctx *gin.Context) {
 	// 检查用户角色是否有权限设置分组
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
 	var req request.SetTaskGroupRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误：" + err.Error()})
 		return
 	}
 
@@ -519,14 +519,14 @@ func (c *TaskController) GetTask(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取任务
 	role, exists := ctx.Get("role")
 	if !exists || role != "admin" {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
 
 	// 获取单个任务
 	task, exists := c.manager.GetTask(taskID)
 	if !exists {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "任务不存在"})
 		return
 	}
 

@@ -50,7 +50,7 @@ func PermissionMiddleware(permissionManager *auth.PermissionManager) gin.Handler
 
 		// 检查权限
 		if !permissionManager.CheckPermission(ctx, method, path) {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Permission denied"})
+			c.JSON(http.StatusForbidden, gin.H{"error": "权限被拒绝"})
 			c.Abort()
 			return
 		}

@@ -32,6 +32,7 @@ func (a *AppBase) setupRoutes() {
 			{
 				auth.POST("/refresh-token", a.authController.RefreshToken)
 				auth.POST("/logout", a.authController.Logout)
+				auth.POST("/jwt/jsonInBlacklist", a.authController.JsonInBlacklist)
 			}
 			// 用户路由
 			user := authenticated.Group("/user")
@@ -46,6 +47,8 @@ func (a *AppBase) setupRoutes() {
 				user.GET("/get-user-settings", a.userController.GetUserSettings)
 				user.PUT("/update-user-settings", a.userController.UpdateUserSettings)
 				user.POST("/switch-role", a.userController.SwitchRole)
+				user.POST("/setUserAuthority", a.userController.SetUserAuthority)
+				user.POST("/setUserAuthorities", a.userController.SetUserAuthorities)
 			}
 
 			// 角色路由
@@ -245,6 +248,19 @@ func (a *AppBase) setupRoutes() {
 				loginLog.GET("/abnormal", a.loginLogController.GetAbnormalLogins)
 				// 记录登录日志（内部调用）
 				loginLog.POST("", a.loginLogController.RecordLogin)
+				// 批量删除登录日志
+				loginLog.POST("/batch-delete", a.loginLogController.BatchDeleteLoginLogs)
+				// 清空登录日志
+				loginLog.POST("/clear", a.loginLogController.ClearLoginLogs)
+			}
+
+			// 权限日志管理路由
+			permissionLog := authenticated.Group("/permission-logs")
+			{
+				// 获取权限日志列表
+				permissionLog.GET("", a.permissionLogController.GetPermissionLogList)
+				// 获取角色权限日志
+				permissionLog.GET("/roles/:roleId", a.permissionLogController.GetRolePermissionLogs)
 			}
 
 			// 在线用户管理路由

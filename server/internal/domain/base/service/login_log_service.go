@@ -240,3 +240,37 @@ func (s *LoginLogService) GetAbnormalLogins(page, pageSize int) ([]*entity.Abnor
 
 	return result, total, nil
 }
+
+// BatchDeleteLoginLogs 批量删除登录日志
+func (s *LoginLogService) BatchDeleteLoginLogs(ids []int64) error {
+	s.log.Info("批量删除登录日志", "ids", ids)
+
+	if len(ids) == 0 {
+		return errors.New("登录日志 ID 列表不能为空")
+	}
+
+	if err := s.repo.BatchDelete(ids); err != nil {
+		s.log.Error("批量删除登录日志失败", "error", err, "ids", ids)
+		return err
+	}
+
+	s.log.Info("批量删除登录日志成功", "ids", ids)
+	return nil
+}
+
+// ClearLoginLogs 清空指定时间范围的登录日志
+func (s *LoginLogService) ClearLoginLogs(startTime, endTime time.Time) error {
+	s.log.Info("清空登录日志", "start_time", startTime, "end_time", endTime)
+
+	if startTime.After(endTime) {
+		return errors.New("开始时间不能晚于结束时间")
+	}
+
+	if err := s.repo.ClearByTimeRange(startTime, endTime); err != nil {
+		s.log.Error("清空登录日志失败", "error", err, "start_time", startTime, "end_time", endTime)
+		return err
+	}
+
+	s.log.Info("清空登录日志成功", "start_time", startTime, "end_time", endTime)
+	return nil
+}

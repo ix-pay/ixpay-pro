@@ -52,7 +52,7 @@ const createPersistPlugin = () => {
               avatar: state.userInfo?.avatar,
               status: state.userInfo?.status,
               // 只保留角色的简单信息，避免循环引用
-              roles: (state.userInfo?.roles || []).map((r: any) => ({
+              roles: (state.userInfo?.roles || []).map((r: { id: number | string; name: string; code: string }) => ({
                 id: r.id,
                 name: r.name,
                 code: r.code,

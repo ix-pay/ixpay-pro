@@ -88,6 +88,10 @@ const props = withDefaults(defineProps<Props>(), {
   dark: false,
 })
 
+defineOptions({
+  name: 'AppGrid',
+})
+
 /**
  * 组件 Emits 定义
  */

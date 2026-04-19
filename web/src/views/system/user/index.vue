@@ -4,16 +4,14 @@
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
     <!-- 顶部操作栏 -->
-    <div
-      class="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
       <div class="flex flex-wrap items-center gap-3">
         <el-input
           v-model="searchForm.userName"
           placeholder="请输入用户名"
           clearable
-          size="default"
-          class="w-64"
+          style="width: 192px"
           @keyup.enter="loadUserList"
         >
           <template #prefix>
@@ -35,6 +33,8 @@
           重置
         </el-button>
       </div>
+
+      <!-- 第二行：功能按钮 -->
       <div class="flex flex-wrap items-center gap-2">
         <el-button type="primary" v-auth-btn="'system:user:add'" @click="handleAddUser">
           <el-icon>
@@ -97,10 +97,11 @@
         </el-table-column>
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="scope">
-            <div v-if="!isAdminUser(scope.row)" class="flex gap-2">
+            <div v-if="!isAdminUser(scope.row)" class="flex flex-wrap gap-2">
               <el-button
                 v-auth-btn="'system:user:edit'"
                 type="primary"
+                size="small"
                 @click="handleEditUser(scope.row)"
               >
                 编辑
@@ -109,6 +110,7 @@
               <el-button
                 v-auth-btn="'system:user:delete'"
                 type="danger"
+                size="small"
                 @click="handleDeleteUser(scope.row.id)"
               >
                 删除
@@ -116,6 +118,7 @@
               <el-button
                 v-auth-btn="'system:user:view'"
                 type="warning"
+                size="small"
                 @click="handleResetPassword(scope.row.id)"
               >
                 重置密码
@@ -553,9 +556,21 @@ onMounted(() => {
 
 /* 固定列背景色 - 使用项目主题变量 */
 :deep(.el-table__header th) {
-  background-color: var(--bg-dark) !important;
+  background-color: var(--bg-tertiary) !important;
   color: var(--text-primary) !important;
   font-weight: 600 !important;
+}
+
+/* 修复固定列表头背景色 - 确保滚动时背景色一致 */
+:deep(.el-table__fixed-header-wrapper th),
+:deep(.el-table__fixed-right-header-wrapper th) {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* 确保固定列单元格的背景色 */
+:deep(.el-table__fixed-body-wrapper),
+:deep(.el-table__fixed-right-body-wrapper) {
+  background-color: var(--bg-primary);
 }
 
 /* 表格单元格内容 */

@@ -140,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
             closeTab: true,
             hidden: true,
           },
-          component: () => import('@/components/business/error/index.vue'),
+          component: () => import('@/components/business/Error/index.vue'),
         })
       }
 

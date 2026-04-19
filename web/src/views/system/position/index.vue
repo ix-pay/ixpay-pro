@@ -2,42 +2,42 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="flex items-center gap-2">
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
         <el-input
           v-model="searchForm.name"
           placeholder="请输入职位名称"
           clearable
-          size="small"
-          class="w-48"
+          style="width: 192px"
         />
         <el-select
           v-model="searchForm.status"
           placeholder="选择状态"
           clearable
-          size="small"
-          class="w-32"
+          style="width: 192px"
         >
           <el-option label="启用" :value="1" />
           <el-option label="禁用" :value="0" />
         </el-select>
-        <el-button type="primary" size="small" @click="loadPositionList">
+        <el-button @click="loadPositionList">
           <el-icon><Search /></el-icon>
           搜索
         </el-button>
+        <el-button @click="resetSearch">
+          <el-icon><Refresh /></el-icon>
+          重置
+        </el-button>
       </div>
-      <el-button
-        type="primary"
-        size="small"
-        v-auth-btn="'system:position:add'"
-        @click="handleAddPosition"
-      >
-        <el-icon><Plus /></el-icon>
-        添加职位
-      </el-button>
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="primary" v-auth-btn="'system:position:add'" @click="handleAddPosition">
+          <el-icon><Plus /></el-icon>
+          添加职位
+        </el-button>
+      </div>
     </div>
 
     <!-- 表格区域 - 占满剩余空间 -->
@@ -61,12 +61,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" width="160" />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <el-button
                 v-auth-btn="'system:position:edit'"
                 type="primary"
+                size="small"
                 @click="handleEditPosition(scope.row)"
               >
                 编辑
@@ -74,6 +75,7 @@
               <el-button
                 v-auth-btn="'system:position:delete'"
                 type="danger"
+                size="small"
                 @click="handleDeletePosition(scope.row.id)"
               >
                 删除
@@ -226,6 +228,13 @@ const loadPositionList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 重置搜索
+const resetSearch = () => {
+  searchForm.name = ''
+  searchForm.status = undefined
+  loadPositionList()
 }
 
 // 分页大小变化

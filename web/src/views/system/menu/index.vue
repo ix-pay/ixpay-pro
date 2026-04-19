@@ -2,16 +2,14 @@
   <!-- 菜单管理页面 - 专业的树形表格设计 -->
   <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md">
     <!-- 顶部操作栏 -->
-    <div
-      class="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
       <div class="flex flex-wrap items-center gap-3">
         <el-input
           v-model="searchForm.keyword"
           placeholder="搜索菜单名称、路径或权限标识"
           clearable
-          size="default"
-          class="w-64"
+          style="width: 192px"
           @keyup.enter="loadMenuList"
         >
           <template #prefix>
@@ -20,7 +18,7 @@
             </el-icon>
           </template>
         </el-input>
-        <el-button type="primary" @click="loadMenuList">
+        <el-button @click="loadMenuList">
           <el-icon>
             <Search />
           </el-icon>
@@ -33,6 +31,8 @@
           重置
         </el-button>
       </div>
+
+      <!-- 第二行：功能按钮 -->
       <div class="flex flex-wrap items-center gap-2">
         <el-button type="primary" v-auth-btn="'system:menu:add'" @click="handleAddDirectory">
           <el-icon>
@@ -177,14 +177,15 @@
         </el-table-column>
 
         <!-- 操作列 -->
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="scope">
-            <div style="display: flex; align-items: center; gap: 8px">
+            <div class="flex flex-wrap gap-2">
               <!-- 目录的操作 -->
               <template v-if="scope.row.type === 1">
                 <el-button
                   v-auth-btn="'system:menu:edit'"
                   type="primary"
+                  size="small"
                   @click="handleEditMenu(scope.row)"
                 >
                   编辑
@@ -192,6 +193,7 @@
                 <el-button
                   v-auth-btn="'system:menu:add'"
                   type="success"
+                  size="small"
                   @click="(e) => handleAddMenu(e as MouseEvent, scope.row)"
                 >
                   添加菜单
@@ -203,6 +205,7 @@
                 <el-button
                   v-auth-btn="'system:menu:edit'"
                   type="primary"
+                  size="small"
                   @click="handleEditMenu(scope.row)"
                 >
                   编辑
@@ -210,6 +213,7 @@
                 <el-button
                   v-auth-btn="'system:menu:add'"
                   type="warning"
+                  size="small"
                   @click="(e) => handleAddButton(e as MouseEvent, scope.row)"
                 >
                   添加按钮
@@ -221,6 +225,7 @@
                 <el-button
                   v-auth-btn="'system:menu:edit'"
                   type="primary"
+                  size="small"
                   @click="handleEditMenu(scope.row)"
                 >
                   编辑
@@ -230,7 +235,9 @@
               <!-- 删除按钮 -->
               <el-popconfirm title="确定要删除吗？" @confirm="handleDeleteMenu(scope.row.id)">
                 <template #reference>
-                  <el-button v-auth-btn="'system:menu:delete'" type="danger"> 删除 </el-button>
+                  <el-button v-auth-btn="'system:menu:delete'" type="danger" size="small">
+                    删除
+                  </el-button>
                 </template>
               </el-popconfirm>
             </div>

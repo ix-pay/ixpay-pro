@@ -5,7 +5,7 @@ description: 当进行 Vue3 前端开发时触发，执行组件规范检查、A
 
 ## 核心原则
 
-1. **混合架构优先**：优先使用 Element Plus + Tailwind CSS + 设计系统的混合架构
+1. **混合架构优先**：使用 Element Plus + Tailwind CSS + 设计系统的混合架构（详细规范参考 [前端设计技能](../前端设计/SKILL.md)）
 2. **规范检查自动触发**：编写代码时自动检查 API 路径、响应格式、弹窗规范等
 3. **命令执行准确**：根据项目实际配置执行正确的 npm 命令
 4. **代码生成规范化**：生成的组件必须符合项目架构和命名规范
@@ -156,115 +156,12 @@ interface ListResponse<T> {
 
 ## 功能 2：混合架构开发规范
 
-### 2.1 Element Plus + Tailwind CSS 协同
+**详细说明**：Element Plus + Tailwind CSS 协同使用的完整规范请参考 [前端设计技能](../前端设计/SKILL.md)。
 
 **核心原则**：
 - **布局/排版/装饰** → 使用 Tailwind CSS
 - **复杂交互组件** → 使用 Element Plus
 - **深度定制** → 使用 SCSS + CSS 变量
-
-**使用场景对比**：
-
-| 场景 | 使用技术 | 示例 |
-|------|---------|------|
-| 布局（flex/grid） | Tailwind CSS | `flex items-center justify-between` |
-| 间距（padding/margin） | Tailwind CSS | `p-4 m-2 gap-4` |
-| 表格/表单/弹窗 | Element Plus | `<el-table>`, `<el-form>`, `<el-dialog>` |
-| 按钮/输入框 | Element Plus | `<el-button>`, `<el-input>` |
-| 复杂动画 | SCSS | `@keyframes` + CSS 变量 |
-| 主题定制 | SCSS + CSS 变量 | `var(--primary-color)` |
-
----
-
-### 2.2 代码示例
-
-**正面示例** ✅：
-```vue
-<template>
-  <!-- 使用 Tailwind 进行布局和装饰 -->
-  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md">
-    <!-- 顶部操作栏 -->
-    <div class="flex items-center justify-between p-4 border-b">
-      <div class="flex items-center gap-2">
-        <el-input v-model="search" placeholder="搜索" class="w-48" />
-        <el-button type="primary" @click="handleSearch">
-          <el-icon><Search /></el-icon>
-          搜索
-        </el-button>
-      </div>
-      <el-button type="primary" @click="handleAdd">
-        <el-icon><Plus /></el-icon>
-        添加
-      </el-button>
-    </div>
-
-    <!-- 表格区域 -->
-    <div class="flex-1 overflow-hidden">
-      <el-table :data="list" stripe class="w-full h-full">
-        <el-table-column prop="name" label="名称" />
-      </el-table>
-    </div>
-  </div>
-</template>
-```
-
-**反面示例** ❌：
-```vue
-<template>
-  <!-- 避免内联样式和硬编码 -->
-  <div :style="{ padding: '24px', backgroundColor: '#fff' }">
-    <h1 style="color: #333; font-size: 20px;">标题</h1>
-    <div class="user-management-container-wrapper-inner">
-      <table class="user-table-style">...</table>
-    </div>
-  </div>
-</template>
-
-<style scoped>
-.user-management-container-wrapper-inner {
-  background-color: #ffffff;  /* 硬编码颜色 */
-  padding: 20px;
-}
-</style>
-```
-
----
-
-### 2.3 设计令牌使用
-
-**配色系统**：
-```vue
-<template>
-  <!-- Tailwind 颜色 -->
-  <div class="bg-blue-500 text-white" />
-  <div class="text-gray-900 dark:text-white" />
-  
-  <!-- CSS 变量 -->
-  <div :style="{ color: 'var(--primary-color)' }" />
-</template>
-```
-
-**间距系统**：
-```vue
-<template>
-  <!-- Tailwind 间距 -->
-  <div class="p-4 m-2 space-x-4 gap-6" />
-  
-  <!-- CSS 变量 -->
-  <div :style="{ padding: 'var(--space-md)' }" />
-</template>
-```
-
-**圆角系统**：
-```vue
-<template>
-  <!-- Tailwind 圆角 -->
-  <div class="rounded-lg rounded-xl rounded-full" />
-  
-  <!-- CSS 变量 -->
-  <div :style="{ borderRadius: 'var(--radius-lg)' }" />
-</template>
-```
 
 ---
 

@@ -79,15 +79,15 @@
      布局组件颜色
      ========================================================================== */
 
-  // 侧边栏 - 深蓝渐变
-  --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  --sidebar-bg-solid: #1e293b;
-  --sidebar-text: #94a3b8;
-  --sidebar-text-hover: #f1f5f9;
-  --sidebar-active-bg: var(--primary-gradient);
+  // 侧边栏 - 白天模式使用浅色背景
+  --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --sidebar-bg-solid: #ffffff;
+  --sidebar-text: #374151;
+  --sidebar-text-hover: #111827;
+  --sidebar-active-bg: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   --sidebar-active-text: #ffffff;
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
-  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-hover-bg: rgba(102, 126, 234, 0.08);
+  --sidebar-border: rgba(226, 232, 240, 0.8);
 
   // 头部导航 - 玻璃态
   --header-bg: rgba(255, 255, 255, 0.85);

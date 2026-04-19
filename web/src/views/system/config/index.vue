@@ -2,20 +2,44 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <span class="text-sm text-gray-600 dark:text-gray-400">系统配置</span>
-      <el-button
-        type="primary"
-        size="small"
-        v-auth-btn="'system:config:add'"
-        @click="handleAddConfig"
-      >
-        <el-icon><Plus /></el-icon>
-        添加配置
-      </el-button>
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
+        <el-input
+          v-model="searchForm.keyword"
+          placeholder="请输入配置名称或键"
+          clearable
+          style="width: 192px"
+          @keyup.enter="loadConfigList"
+        >
+          <template #prefix>
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-button @click="loadConfigList">
+          <el-icon>
+            <Search />
+          </el-icon>
+          搜索
+        </el-button>
+        <el-button @click="resetSearch">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
+      </div>
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="primary" v-auth-btn="'system:config:add'" @click="handleAddConfig">
+          <el-icon><Plus /></el-icon>
+          添加配置
+        </el-button>
+      </div>
     </div>
 
     <!-- 表格区域 - 占满剩余空间 -->
@@ -39,12 +63,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" width="160" />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <el-button
                 v-auth-btn="'system:config:edit'"
                 type="primary"
+                size="small"
                 @click="handleEditConfig(scope.row)"
               >
                 编辑
@@ -52,6 +77,7 @@
               <el-button
                 v-auth-btn="'system:config:delete'"
                 type="danger"
+                size="small"
                 @click="handleDeleteConfig(scope.row.id)"
               >
                 删除
@@ -125,7 +151,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, Search, Refresh } from '@element-plus/icons-vue'
 import { getConfigList, createConfig, updateConfig, deleteConfig } from '@/api/modules/config'
 
 defineOptions({
@@ -145,6 +171,10 @@ interface Config {
 
 const configList = ref<Config[]>([])
 const loading = ref(false)
+// 搜索表单
+const searchForm = reactive({
+  keyword: '',
+})
 const pagination = reactive({
   page: 1,
   pageSize: 10,
@@ -186,6 +216,12 @@ const loadConfigList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 重置搜索
+const resetSearch = () => {
+  searchForm.keyword = ''
+  loadConfigList()
 }
 
 // 分页大小变化

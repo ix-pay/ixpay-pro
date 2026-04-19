@@ -122,18 +122,55 @@ module.exports = {
         '4xl': 'var(--text-4xl)',  // 36px
       },
       spacing: {
-        1: 'var(--space-1)',   // 4px
-        2: 'var(--space-2)',   // 8px
-        3: 'var(--space-3)',   // 12px
-        4: 'var(--space-4)',   // 16px
-        5: 'var(--space-5)',   // 20px
-        6: 'var(--space-6)',   // 24px
-        8: 'var(--space-8)',   // 32px
-        10: 'var(--space-10)', // 40px
-        12: 'var(--space-12)', // 48px
-        16: 'var(--space-16)', // 64px
-        20: 'var(--space-20)', // 80px
-        24: 'var(--space-24)', // 96px
+        // 标准 Tailwind 间距值 (0-96)
+        px: '1px',
+        0: '0',
+        0.5: '0.125rem',
+        1: '0.25rem',
+        1.5: '0.375rem',
+        2: '0.5rem',
+        2.5: '0.625rem',
+        3: '0.75rem',
+        3.5: '0.875rem',
+        4: '1rem',
+        5: '1.25rem',
+        6: '1.5rem',
+        7: '1.75rem',
+        8: '2rem',
+        9: '2.25rem',
+        10: '2.5rem',
+        11: '2.75rem',
+        12: '3rem',
+        14: '3.5rem',
+        16: '4rem',
+        20: '5rem',
+        24: '6rem',
+        28: '7rem',
+        32: '8rem',
+        36: '9rem',
+        40: '10rem',
+        44: '11rem',
+        48: '12rem',
+        52: '13rem',
+        56: '14rem',
+        60: '15rem',
+        64: '16rem',
+        72: '18rem',
+        80: '20rem',
+        96: '24rem',
+        // 自定义间距值（使用 CSS 变量）
+        'space-1': 'var(--space-1)',   // 4px
+        'space-2': 'var(--space-2)',   // 8px
+        'space-3': 'var(--space-3)',   // 12px
+        'space-4': 'var(--space-4)',   // 16px
+        'space-5': 'var(--space-5)',   // 20px
+        'space-6': 'var(--space-6)',   // 24px
+        'space-8': 'var(--space-8)',   // 32px
+        'space-10': 'var(--space-10)', // 40px
+        'space-12': 'var(--space-12)', // 48px
+        'space-16': 'var(--space-16)', // 64px
+        'space-20': 'var(--space-20)', // 80px
+        'space-24': 'var(--space-24)', // 96px
       },
       borderRadius: {
         none: '0',

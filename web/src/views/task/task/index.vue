@@ -3,41 +3,57 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="flex items-center gap-2">
-        <el-input v-model="searchForm.name" placeholder="任务名称" size="small" class="w-40" />
-        <el-select v-model="searchForm.type" placeholder="类型" size="small" class="w-32">
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
+        <el-input v-model="searchForm.name" placeholder="任务名称" style="width: 192px" />
+        <el-select v-model="searchForm.type" placeholder="类型" style="width: 192px">
           <el-option label="全部" :value="''" />
           <el-option label="HTTP" value="HTTP" />
           <el-option label="SCRIPT" value="SCRIPT" />
           <el-option label="EMAIL" value="EMAIL" />
           <el-option label="NOTIFICATION" value="NOTIFICATION" />
         </el-select>
-        <el-select v-model="searchForm.status" placeholder="状态" size="small" class="w-28">
+        <el-select v-model="searchForm.status" placeholder="状态" style="width: 192px">
           <el-option label="全部" :value="-1" />
           <el-option label="启用" :value="1" />
           <el-option label="禁用" :value="0" />
         </el-select>
-        <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
-        <el-button size="small" @click="handleReset">重置</el-button>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="handleReset">重置</el-button>
       </div>
-      <div class="flex items-center gap-2">
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
         <el-button
           type="info"
-          size="small"
           v-auth-btn="'task:task:execute'"
           @click="(e) => handleRunTask(e as MouseEvent)"
         >
           <el-icon><VideoPlay /></el-icon>
           执行任务
         </el-button>
-        <el-button type="primary" size="small" v-auth-btn="'task:task:add'" @click="handleAddTask">
+        <el-button type="primary" v-auth-btn="'task:task:add'" @click="handleAddTask">
           <el-icon><Plus /></el-icon>
           添加任务
         </el-button>
+      </div>
+    </div>
+
+    <!-- 统计信息区域 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="text-gray-600 dark:text-gray-400">
+          任务总数：<strong class="text-gray-900 dark:text-white">{{ pagination.total }}</strong>
+        </span>
+        <span class="text-gray-600 dark:text-gray-400">
+          选中任务：<strong class="text-gray-900 dark:text-white">{{
+            selectedTasks.length
+          }}</strong>
+        </span>
       </div>
     </div>
 
@@ -73,10 +89,11 @@
         <el-table-column prop="createdAt" label="创建时间" width="160" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <el-button
                 v-auth-btn="'task:task:edit'"
                 type="primary"
+                size="small"
                 @click="handleEditTask(scope.row)"
               >
                 编辑
@@ -84,14 +101,18 @@
               <el-button
                 v-auth-btn="'task:task:execute'"
                 type="success"
+                size="small"
                 @click="(e) => handleRunTask(e as MouseEvent, scope.row.id)"
               >
                 执行
               </el-button>
-              <el-button type="primary" @click="handleViewLog(scope.row)"> 日志 </el-button>
+              <el-button type="primary" size="small" @click="handleViewLog(scope.row)">
+                日志
+              </el-button>
               <el-button
                 v-auth-btn="'task:task:delete'"
                 type="danger"
+                size="small"
                 @click="handleDeleteTask(scope.row.id)"
               >
                 删除

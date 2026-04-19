@@ -2,33 +2,46 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="flex items-center gap-2">
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
         <el-input
           v-model="searchForm.userName"
           placeholder="请输入用户名"
           clearable
-          size="small"
-          class="w-48"
+          style="width: 192px"
         />
         <el-select
           v-model="searchForm.status"
           placeholder="选择状态"
           clearable
-          size="small"
-          class="w-32"
+          style="width: 192px"
         >
           <el-option label="成功" :value="1" />
           <el-option label="失败" :value="0" />
         </el-select>
-        <el-button type="primary" size="small" @click="loadLoginLogList">
+        <el-button type="primary" @click="loadLoginLogList">
           <el-icon>
             <Search />
           </el-icon>
           搜索
+        </el-button>
+        <el-button @click="resetSearch">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
+      </div>
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="danger" @click="handleClearLog">
+          <el-icon>
+            <Delete />
+          </el-icon>
+          清空日志
         </el-button>
       </div>
     </div>
@@ -56,6 +69,15 @@
         </el-table-column>
         <el-table-column prop="message" label="消息" width="150" show-overflow-tooltip />
         <el-table-column prop="loginTime" label="登录时间" width="160" />
+        <el-table-column label="操作" width="120" fixed="right">
+          <template #default="scope">
+            <div class="flex flex-wrap gap-2">
+              <el-button type="primary" size="small" @click="handleViewDetail(scope.row)">
+                详情
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -80,9 +102,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
-import { getLoginLogList } from '@/api/modules/login-log'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Search, Delete, Refresh } from '@element-plus/icons-vue'
+import { getLoginLogList, clearLoginLogs } from '@/api/modules/login-log'
 
 defineOptions({
   name: 'LoginLogManagement',
@@ -111,6 +133,8 @@ const pagination = reactive({
 const searchForm = reactive({
   userName: '',
   status: undefined,
+  startTime: '',
+  endTime: '',
 })
 
 // 加载登录日志列表
@@ -134,6 +158,35 @@ const loadLoginLogList = async () => {
   }
 }
 
+// 重置搜索
+const resetSearch = () => {
+  searchForm.userName = ''
+  searchForm.status = undefined
+  loadLoginLogList()
+}
+
+// 清空日志
+const handleClearLog = async () => {
+  try {
+    await ElMessageBox.confirm('确定要清空所有登录日志吗？', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    await clearLoginLogs({
+      startTime: searchForm.startTime,
+      endTime: searchForm.endTime,
+    })
+    ElMessage.success('清空日志成功')
+    loadLoginLogList()
+  } catch (error: unknown) {
+    if (error !== 'cancel') {
+      ElMessage.error('清空日志失败')
+      console.error('清空日志失败:', error)
+    }
+  }
+}
+
 const handleSizeChange = (val: number) => {
   pagination.pageSize = val
   pagination.page = 1
@@ -143,6 +196,11 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = (val: number) => {
   pagination.page = val
   loadLoginLogList()
+}
+
+// 查看详情
+const handleViewDetail = (row: LoginLog) => {
+  ElMessage.info(`查看日志详情：${row.userName}`)
 }
 
 onMounted(() => {

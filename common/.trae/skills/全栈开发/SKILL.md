@@ -1013,11 +1013,11 @@ package repo
 import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 
 type UserRepository interface {
-    GetByID(id string) (*entity.User, error)           // ✅ ID 使用 string
+    GetByID(id int64, relations ...UserRelation) (*entity.User, error)           // ✅ ID 使用 int64
     GetByUsername(userName string) (*entity.User, error)
     GetByWechatID(wxID string) (*entity.User, error)
     Save(user *entity.User) error
-    Delete(id string) error                            // ✅ ID 使用 string
+    Delete(id int64) error                            // ✅ ID 使用 int64
 }
 ```
 
@@ -1256,10 +1256,10 @@ type CreateUserRequest struct {
 package response
 
 type UserResponse struct {
-    ID        string   `json:"id"`        // ✅ ID 使用 string
+    ID        int64    `json:"id,string"`        // ✅ ID 使用 int64 + json:",string"
     Username  string   `json:"userName"`
     Email     string   `json:"email"`
-    RoleIds   []string `json:"roleIds"`   // ✅ 使用 camelCase
+    RoleIds   []int64  `json:"roleIds"`   // ✅ 使用 camelCase
     CreatedAt string   `json:"createdAt"` // ✅ 使用 camelCase
 }
 ```
@@ -1440,7 +1440,7 @@ const (
 type UserRepository interface {
     // GetByID 根据 ID 查询用户并支持加载关联数据
     // relations 参数使用 UserRelation 类型，提供编译期类型检查
-    GetByID(id string, relations ...UserRelation) (*entity.User, error)
+    GetByID(id int64, relations ...UserRelation) (*entity.User, error)
     // ... 其他方法
 }
 ```
@@ -1456,7 +1456,7 @@ type UserRepository interface {
 
 ```Go
 // internal/domain/base/service/user_service.go
-func (s *UserService) GetUserInfo(userID string) (*entity.User, error) {
+func (s *UserService) GetUserInfo(userID int64) (*entity.User, error) {
     // ✅ 正确：使用类型安全的常量
     user, err := s.repo.GetByID(userID, repo.UserRelationDepartment)
     
@@ -1477,14 +1477,9 @@ func (s *UserService) GetUserInfo(userID string) (*entity.User, error) {
 
 ```Go
 // GetByID 根据 ID 查询用户并支持加载关联数据
-func (r *userRepository) GetByID(id string, relations ...repo.UserRelation) (*entity.User, error) {
-    intID, err := common.ParseInt64(id)
-    if err != nil {
-        return nil, err
-    }
-
+func (r *userRepository) GetByID(id int64, relations ...repo.UserRelation) (*entity.User, error) {
     var dbModel userModel
-    query := r.db.Where("id = ?", intID)
+    query := r.db.Where("id = ?", id)
     
     // 根据指定的关联关系进行 Preload
     for _, relation := range relations {
@@ -1602,58 +1597,20 @@ db.Preload("Department").
 
 ### 0. Element Plus + Tailwind CSS 混合架构规范
 
-**核心原则**：
+**详细说明**：完整的 Element Plus + Tailwind CSS 协同规范、页面布局规范、设计令牌使用、响应式规则、暗黑模式适配等，请参考 [前端设计技能](../前端设计/SKILL.md)。
 
+**核心原则**：
 1. **混合架构**：Element Plus（交互组件）+ Tailwind CSS（布局样式）
 2. **职责分离**：Element Plus 负责交互，Tailwind 负责视觉
 3. **主题支持**：必须支持白天/黑暗模式切换
 4. **样式隔离**：Element Plus 组件标签不使用 Tailwind CSS
 
 **使用规范**：
-
-**Tailwind CSS（布局与装饰）**
-
 - ✅ 普通 HTML 标签使用 Tailwind CSS（flex、grid、spacing、颜色等）
 - ✅ 暗黑模式使用 `dark:` 前缀
-
-**Element Plus（交互组件）**
-
 - ✅ 表格、表单、弹窗等使用 Element Plus
 - ❌ **禁止在 Element Plus 组件标签上添加 Tailwind CSS 类**
 - ✅ 使用 Element Plus 原生属性（width、height、size、type 等）
-
-**禁止事项**：
-
-- ❌ 禁止在 Element Plus 组件标签上使用 Tailwind CSS 类
-- ❌ 禁止使用内联样式
-- ❌ 禁止手写媒体查询
-- ❌ 禁止自定义无意义类名
-
-**示例代码**：
-
-```Vue
-<!-- ✅ 正确：普通 HTML 使用 Tailwind，Element Plus 使用原生属性 -->
-<template>
-  <div class="flex items-center gap-4 p-4">
-    <el-button type="primary" size="large" @click="handleClick">
-      点击
-    </el-button>
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="name" label="姓名" />
-    </el-table>
-  </div>
-</template>
-
-<!-- ❌ 错误：在 Element Plus 组件上使用 Tailwind CSS 类 -->
-<template>
-  <el-button type="primary" class="mt-4 p-2">  <!-- ❌ -->
-    点击
-  </el-button>
-  <el-table :data="tableData" class="w-full">  <!-- ❌ -->
-    <el-table-column prop="name" label="姓名" class="p-4" />  <!-- ❌ -->
-  </el-table>
-</template>
-```
 
 ### 1. 代码格式
 
@@ -1751,7 +1708,11 @@ const handleEdit = (user: UserInfo) => {
 
 ### 7. 样式规范
 
+**详细说明**：完整的样式规范请参考 [前端设计技能](../前端设计/SKILL.md)。
+
 - 必须使用 scoped 或 CSS Modules
+- 使用 CSS 变量实现主题切换
+- 支持暗黑模式（使用 `dark:` 前缀）
 
 ***
 
@@ -1870,7 +1831,7 @@ const handleEdit = (user: UserInfo) => {
 - [ ] 响应格式一致
 - [ ] 错误处理一致
 - [ ] 分页格式一致
-- [ ] 数据类型一致（ID 使用 string）
+- [ ] 数据类型一致（前端 string ↔ 后端 int64 + json:",string"）
 
 ***
 
@@ -2217,10 +2178,17 @@ A: 至少 80%：核心业务 > 80%，一般业务 > 60%，简单 CRUD > 40%
 A: 每次提交前：新增功能、修改功能、修复 Bug、重构代码后都要审查
 
 **Q4: 如何保证前后端数据类型一致？**
-A: 统一规范：ID 使用 string，时间使用 ISO8601 字符串，数字使用 number，布尔值使用 bool
+A: 统一规范：
+- ID 字段：Domain/Repository 层使用 int64，Response DTO 使用 int64+json:",string"，Request DTO 使用 string
+- 时间字段：使用 ISO8601 字符串（time.RFC3339）
+- 数字字段：使用 number
+- 布尔字段：使用 bool
 
 **Q5: 如何处理 ID 类型转换？**
-A: Repository 层负责 `string ↔ int64` 的转换，应用层和 DTO 层使用 string 类型
+A: 
+- Request DTO（string）→ API Handler（string → int64 转换）→ Domain/Repository（int64，无需转换）
+- Response DTO（int64 + json:",string"）→ 自动序列化为 string
+- Repository 层直接赋值，无需类型转换
 
 ***
 

@@ -2,37 +2,55 @@
   <!-- Dashboard 首页 - 现代化数据可视化设计 -->
   <div class="min-h-screen bg-bg-secondary">
     <!-- 顶部欢迎区域 - 渐变背景设计 -->
-    <div class="relative overflow-hidden bg-gradient-to-r from-primary-color to-purple-600">
+    <div
+      class="relative overflow-hidden"
+      style="background: linear-gradient(135deg, var(--primary-color) 0%, #764ba2 100%)"
+    >
       <!-- 装饰性光晕 -->
-      <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
-      <div class="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
+      <div
+        class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"
+      ></div>
 
       <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <!-- 欢迎标题区 -->
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h1 class="mb-2 text-3xl font-bold text-white">欢迎回来，{{ userName }}！</h1>
-            <p class="text-primary-light text-sm">{{ curDate }}</p>
+            <h1 class="mb-2 text-3xl font-bold text-white drop-shadow-sm">
+              欢迎回来，{{ userName }}！
+            </h1>
+            <p class="text-white/90 text-sm font-medium">{{ curDate }}</p>
           </div>
-          <el-button :icon="RefreshRight" circle size="small"
-            class="border-none bg-white/20 text-white hover:bg-white/30" @click="refreshData" />
+          <el-button
+            :icon="RefreshRight"
+            circle
+            size="small"
+            class="border-none bg-white/20 text-white hover:bg-white/30"
+            @click="refreshData"
+          />
         </div>
 
         <!-- 总统计数据展示 -->
         <div class="grid grid-cols-1 gap-4 border-t border-white/20 pt-4 md:grid-cols-3">
           <div class="text-center">
-            <div class="mb-1 text-2xl font-bold text-white">{{ totalUsers.toLocaleString() }}</div>
-            <div class="text-primary-light text-xs">总用户数</div>
+            <div class="mb-1 text-2xl font-bold text-white drop-shadow-sm">
+              {{ totalUsers.toLocaleString() }}
+            </div>
+            <div class="text-white/90 text-xs font-medium">总用户数</div>
           </div>
           <div class="border-l border-white/20 text-center">
-            <div class="mb-1 text-2xl font-bold text-white">{{ totalOrders.toLocaleString() }}</div>
-            <div class="text-primary-light text-xs">总订单数</div>
+            <div class="mb-1 text-2xl font-bold text-white drop-shadow-sm">
+              {{ totalOrders.toLocaleString() }}
+            </div>
+            <div class="text-white/90 text-xs font-medium">总订单数</div>
           </div>
           <div class="border-l border-white/20 text-center">
-            <div class="mb-1 text-2xl font-bold text-white">
+            <div class="mb-1 text-2xl font-bold text-white drop-shadow-sm">
               {{ formatCurrency(totalRevenue) }}
             </div>
-            <div class="text-primary-light text-xs">总交易额</div>
+            <div class="text-white/90 text-xs font-medium">总交易额</div>
           </div>
         </div>
       </div>
@@ -42,14 +60,46 @@
     <div class="main-content mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <!-- 统计卡片区域 - 响应式网格布局 -->
       <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <IxStatCard title="今日订单" :value="todayOrders" change="+5.2%" change-type="positive" change-label="较昨日"
-          icon="GoodsFilled" color="blue" :show-title-icon="true" />
-        <IxStatCard title="今日交易额" :value="formatCurrency(todayAmount)" change="+12.8%" change-type="positive"
-          change-label="较昨日" icon="Money" color="green" :show-title-icon="true" />
-        <IxStatCard title="新增用户" :value="newUsers" change="+3.6%" change-type="positive" change-label="较昨日" icon="User"
-          color="purple" :show-title-icon="true" />
-        <IxStatCard title="退款订单" :value="refundOrders" change="-2.4%" change-type="negative" change-label="较昨日"
-          icon="Warning" color="red" :show-title-icon="true" />
+        <IxStatCard
+          title="今日订单"
+          :value="todayOrders"
+          change="+5.2%"
+          change-type="positive"
+          change-label="较昨日"
+          icon="GoodsFilled"
+          color="blue"
+          :show-title-icon="true"
+        />
+        <IxStatCard
+          title="今日交易额"
+          :value="formatCurrency(todayAmount)"
+          change="+12.8%"
+          change-type="positive"
+          change-label="较昨日"
+          icon="Money"
+          color="green"
+          :show-title-icon="true"
+        />
+        <IxStatCard
+          title="新增用户"
+          :value="newUsers"
+          change="+3.6%"
+          change-type="positive"
+          change-label="较昨日"
+          icon="User"
+          color="purple"
+          :show-title-icon="true"
+        />
+        <IxStatCard
+          title="退款订单"
+          :value="refundOrders"
+          change="-2.4%"
+          change-type="negative"
+          change-label="较昨日"
+          icon="Warning"
+          color="red"
+          :show-title-icon="true"
+        />
       </div>
 
       <!-- 图表区域 - 双列布局 -->
@@ -63,12 +113,20 @@
               <el-option label="月" value="month" />
             </el-select>
           </template>
-          <IxEcharts :options="salesTrendOptions as EChartsOption" height="320px" :hover-effect="true" />
+          <IxEcharts
+            :options="salesTrendOptions as EChartsOption"
+            height="320px"
+            :hover-effect="true"
+          />
         </IxCard>
 
         <!-- 订单类型分布 -->
         <IxCard title="订单类型分布" hover-effect>
-          <IxEcharts :options="orderDistributionOptions as EChartsOption" height="320px" :hover-effect="true" />
+          <IxEcharts
+            :options="orderDistributionOptions as EChartsOption"
+            height="320px"
+            :hover-effect="true"
+          />
         </IxCard>
       </div>
 
@@ -81,8 +139,13 @@
               查看全部
             </el-button>
           </template>
-          <el-table :data="recentOrders" style="width: 100%" class="modern-table" :header-cell-style="headerCellStyle"
-            :cell-style="cellStyle">
+          <el-table
+            :data="recentOrders"
+            style="width: 100%"
+            class="modern-table"
+            :header-cell-style="headerCellStyle"
+            :cell-style="cellStyle"
+          >
             <el-table-column prop="orderNo" label="订单号" min-width="180" />
             <el-table-column prop="amount" label="金额" min-width="120">
               <template #default="scope">
@@ -101,7 +164,12 @@
             <el-table-column prop="createTime" label="创建时间" min-width="180" />
             <el-table-column label="操作" min-width="100" fixed="right">
               <template #default="scope">
-                <el-button type="primary" size="small" :icon="View" @click="viewOrderDetails(scope.row.orderNo)">
+                <el-button
+                  type="primary"
+                  size="small"
+                  :icon="View"
+                  @click="viewOrderDetails(scope.row.orderNo)"
+                >
                   详情
                 </el-button>
               </template>
@@ -115,7 +183,8 @@
           <IxCard title="系统状态" hover-effect>
             <div class="grid grid-cols-2 gap-4">
               <div
-                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105">
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
                 <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
@@ -127,7 +196,8 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105">
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
                 <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
@@ -139,7 +209,8 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105">
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
                 <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
@@ -151,7 +222,8 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 rounded-xl bg-warning-light/10 p-3 transition-all duration-300 hover:scale-105">
+                class="flex items-center gap-3 rounded-xl bg-warning-light/10 p-3 transition-all duration-300 hover:scale-105"
+              >
                 <div class="text-warning-color">
                   <el-icon :size="24">
                     <Warning />
@@ -168,29 +240,37 @@
           <!-- 快速操作入口 -->
           <IxCard title="快速操作" hover-effect>
             <div class="grid grid-cols-2 gap-3">
-              <el-button type="primary"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
+              <el-button
+                type="primary"
+                class="flex h-20 w-full flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
+              >
                 <el-icon :size="20">
                   <Plus />
                 </el-icon>
                 <span class="text-xs">创建订单</span>
               </el-button>
-              <el-button type="success"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
+              <el-button
+                type="success"
+                class="flex h-20 w-full flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
+              >
                 <el-icon :size="20">
                   <Download />
                 </el-icon>
                 <span class="text-xs">导出报表</span>
               </el-button>
-              <el-button type="info"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
+              <el-button
+                type="info"
+                class="flex h-20 w-full flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
+              >
                 <el-icon :size="20">
                   <Setting />
                 </el-icon>
                 <span class="text-xs">系统设置</span>
               </el-button>
-              <el-button type="warning"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
+              <el-button
+                type="warning"
+                class="flex h-20 w-full flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
+              >
                 <el-icon :size="20">
                   <Message />
                 </el-icon>
@@ -617,7 +697,7 @@ onMounted(() => {
       border-bottom-color: var(--border-primary);
     }
 
-    .el-table__body tr:hover>td {
+    .el-table__body tr:hover > td {
       background-color: var(--bg-secondary) !important;
     }
   }

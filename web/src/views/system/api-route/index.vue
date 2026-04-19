@@ -2,39 +2,42 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="flex items-center gap-2">
-        <el-input v-model="searchForm.group" placeholder="路由分组" size="small" class="w-40" />
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
+        <el-input
+          v-model="searchForm.group"
+          placeholder="路由分组"
+          clearable
+          style="width: 192px"
+        />
         <el-select
           v-model="searchForm.authRequired"
           placeholder="认证"
-          size="small"
-          class="w-28"
           clearable
+          style="width: 192px"
         >
           <el-option label="是" :value="true" />
           <el-option label="否" :value="false" />
         </el-select>
-        <el-button type="primary" size="small" @click="handleSearch">
+        <el-button type="primary" @click="handleSearch">
           <el-icon><Search /></el-icon>
           搜索
         </el-button>
-        <el-button size="small" @click="handleReset">重置</el-button>
+        <el-button @click="handleReset">
+          <el-icon><Refresh /></el-icon>
+          重置
+        </el-button>
       </div>
-      <div class="flex items-center gap-2">
-        <el-button type="info" size="small" @click="handleRefresh">
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="info" @click="handleRefresh">
           <el-icon><Refresh /></el-icon>
           刷新
         </el-button>
-        <el-button
-          type="primary"
-          size="small"
-          v-auth-btn="'system:api-route:add'"
-          @click="handleAddApiRoute"
-        >
+        <el-button type="primary" v-auth-btn="'system:api-route:add'" @click="handleAddApiRoute">
           <el-icon><Plus /></el-icon>
           添加 API
         </el-button>
@@ -71,12 +74,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" width="160" />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <el-button
                 v-auth-btn="'system:api-route:edit'"
                 type="primary"
+                size="small"
                 @click="handleEditApiRoute(scope.row)"
               >
                 编辑
@@ -84,6 +88,7 @@
               <el-button
                 v-auth-btn="'system:api-route:delete'"
                 type="danger"
+                size="small"
                 @click="handleDeleteApiRoute(scope.row.id)"
               >
                 删除

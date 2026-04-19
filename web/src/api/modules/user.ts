@@ -106,7 +106,7 @@ export const getUserList = (params: {
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setUserAuthority [post]
 // @Deprecated 此接口后端未实现，已移除
-export const setUserAuthority = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setUserAuthority = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口后端未实现')
 }
 
@@ -186,7 +186,7 @@ export const updateUserInfo = (data: {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setSelfInfo [put]
 // @Deprecated 此接口与 updateUserInfo 重复，已移除
-export const setSelfInfo = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setSelfInfo = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口与 updateUserInfo 重复')
 }
 
@@ -211,7 +211,7 @@ export const getSelfSetting = (): Promise<ApiResponse> => {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setSelfSetting [put]
 // @Deprecated 此接口路径需要修正为 /user/update-user-settings
-export const setSelfSetting = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setSelfSetting = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口路径需要修正为 /user/update-user-settings')
 }
 
@@ -224,7 +224,7 @@ export const setSelfSetting = (data: Record<string, unknown>): Promise<ApiRespon
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setUserAuthorities [post]
 // @Deprecated 此接口后端未实现，已移除
-export const setUserAuthorities = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setUserAuthorities = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口后端未实现')
 }
 
@@ -291,7 +291,7 @@ export const switchRole = (data: { roleId: string | number }): Promise<ApiRespon
 // @Description 此接口后端未实现，已废弃
 // @Router /user/setUserAuthority [post]
 // @Deprecated
-export const setUserAuthorityDeprecated = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setUserAuthorityDeprecated = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口后端未实现')
 }
 
@@ -300,7 +300,7 @@ export const setUserAuthorityDeprecated = (data: Record<string, unknown>): Promi
 // @Router /user/setUserAuthorities [post]
 // @Deprecated
 export const setUserAuthoritiesDeprecated = (
-  data: Record<string, unknown>,
+  _data: Record<string, unknown>,
 ): Promise<ApiResponse> => {
   throw new Error('此接口后端未实现')
 }
@@ -309,7 +309,7 @@ export const setUserAuthoritiesDeprecated = (
 // @Description 此接口与 updateUserInfo 重复，已废弃
 // @Router /user/setSelfInfo [put]
 // @Deprecated
-export const setSelfInfoDeprecated = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setSelfInfoDeprecated = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口与 updateUserInfo 重复')
 }
 
@@ -325,6 +325,6 @@ export const getSelfSettingDeprecated = (): Promise<ApiResponse> => {
 // @Description 此接口路径需要修正为 /user/update-user-settings，已废弃
 // @Router /user/setSelfSetting [put]
 // @Deprecated
-export const setSelfSettingDeprecated = (data: Record<string, unknown>): Promise<ApiResponse> => {
+export const setSelfSettingDeprecated = (_data: Record<string, unknown>): Promise<ApiResponse> => {
   throw new Error('此接口路径需要修正为 /user/update-user-settings')
 }

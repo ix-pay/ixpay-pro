@@ -3,42 +3,75 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="flex items-center gap-2">
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
         <el-input
           v-model="searchForm.name"
           placeholder="请输入角色名称"
           clearable
-          size="small"
-          class="w-48"
+          style="width: 192px"
           @keyup.enter="loadRoleList"
         />
         <el-select
           v-model="searchForm.status"
           placeholder="选择状态"
           clearable
-          size="small"
-          class="w-32"
+          style="width: 192px"
         >
           <el-option label="启用" :value="1" />
           <el-option label="禁用" :value="0" />
         </el-select>
-        <el-button type="primary" size="small" @click="loadRoleList">
+        <el-button type="primary" @click="loadRoleList">
           <el-icon>
             <Search />
           </el-icon>
           搜索
         </el-button>
+        <el-button @click="resetSearch">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
       </div>
-      <el-button type="primary" size="small" v-auth-btn="'system:role:add'" @click="handleAddRole">
-        <el-icon>
-          <Plus />
-        </el-icon>
-        添加角色
-      </el-button>
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="primary" v-auth-btn="'system:role:add'" @click="handleAddRole">
+          <el-icon>
+            <Plus />
+          </el-icon>
+          添加角色
+        </el-button>
+      </div>
+    </div>
+
+    <!-- 统计信息 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
+            <User />
+          </el-icon>
+          角色总数：<span class="font-medium">{{ pagination.total }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-green-500">
+            <SuccessFilled />
+          </el-icon>
+          启用：<span class="font-medium">{{ roleList.filter((r) => r.status === 1).length }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-orange-500">
+            <CircleClose />
+          </el-icon>
+          禁用：<span class="font-medium">{{ roleList.filter((r) => r.status === 0).length }}</span>
+        </span>
+      </div>
     </div>
 
     <!-- 表格区域 - 占满剩余空间 -->
@@ -56,11 +89,12 @@
         <el-table-column prop="createdAt" label="创建时间" width="160" />
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="scope">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <el-button
                 v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:edit'"
                 type="primary"
+                size="small"
                 @click="handleEditRole(scope.row)"
               >
                 编辑
@@ -69,6 +103,7 @@
                 v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:assign'"
                 type="primary"
+                size="small"
                 @click="handlePermission(scope.row)"
               >
                 权限设置
@@ -77,6 +112,7 @@
                 v-if="!scope.row.is_system && !isAdminRole(scope.row)"
                 v-auth-btn="'system:role:delete'"
                 type="danger"
+                size="small"
                 @click="handleDeleteRole(scope.row.id)"
               >
                 删除
@@ -151,7 +187,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
-import { Plus, Search } from '@element-plus/icons-vue'
+import { Plus, Search, Refresh, User, SuccessFilled, CircleClose } from '@element-plus/icons-vue'
 import { getRoleList, deleteRole, createRole, updateRole } from '@/api/modules/role'
 import RolePermissionDialog from './RolePermissionDialog.vue'
 
@@ -235,6 +271,13 @@ const loadRoleList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 重置搜索
+const resetSearch = () => {
+  searchForm.name = ''
+  searchForm.status = undefined
+  loadRoleList()
 }
 
 // 分页处理

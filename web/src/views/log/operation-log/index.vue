@@ -2,11 +2,10 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="flex items-center gap-2 flex-wrap">
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
         <el-date-picker
           v-model="dateRange"
           type="daterange"
@@ -14,29 +13,20 @@
           start-placeholder="开始"
           end-placeholder="结束"
           value-format="YYYY-MM-DD"
-          size="small"
-          class="w-64"
+          style="width: 192px"
         />
         <el-input
           v-model="searchForm.userName"
           placeholder="用户名"
           clearable
-          size="small"
-          class="w-36"
+          style="width: 192px"
         />
-        <el-input
-          v-model="searchForm.module"
-          placeholder="模块"
-          clearable
-          size="small"
-          class="w-36"
-        />
+        <el-input v-model="searchForm.module" placeholder="模块" clearable style="width: 192px" />
         <el-select
           v-model="searchForm.operationType"
           placeholder="操作类型"
           clearable
-          size="small"
-          class="w-32"
+          style="width: 192px"
         >
           <el-option label="登录" :value="1" />
           <el-option label="登出" :value="2" />
@@ -45,37 +35,28 @@
           <el-option label="删除" :value="5" />
           <el-option label="查询" :value="6" />
         </el-select>
-        <el-select
-          v-model="searchForm.isSuccess"
-          placeholder="结果"
-          clearable
-          size="small"
-          class="w-28"
-        >
+        <el-select v-model="searchForm.isSuccess" placeholder="结果" clearable style="width: 192px">
           <el-option label="成功" :value="true" />
           <el-option label="失败" :value="false" />
         </el-select>
-        <el-button type="primary" size="small" @click="loadLogList">
+        <el-button type="primary" @click="loadLogList">
           <el-icon>
             <Search />
           </el-icon>
           搜索
         </el-button>
-        <el-button size="small" @click="handleReset">重置</el-button>
+        <el-button @click="handleReset">重置</el-button>
       </div>
-      <div class="flex items-center gap-2">
-        <el-button
-          type="danger"
-          size="small"
-          @click="handleBatchDelete"
-          :disabled="selectedIds.length === 0"
-        >
+
+      <!-- 第二行：功能按钮 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="danger" @click="handleBatchDelete" :disabled="selectedIds.length === 0">
           <el-icon>
             <Delete />
           </el-icon>
           批量删除
         </el-button>
-        <el-button type="warning" size="small" @click="handleClearLogs">
+        <el-button type="warning" @click="handleClearLogs">
           <el-icon>
             <Delete />
           </el-icon>
@@ -123,11 +104,15 @@
             {{ formatDate(scope.row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right">
+        <el-table-column label="操作" width="160" fixed="right">
           <template #default="scope">
-            <div class="flex gap-2">
-              <el-button type="primary" @click="handleViewDetail(scope.row)"> 详情 </el-button>
-              <el-button type="danger" @click="handleDeleteLog(scope.row.id)"> 删除 </el-button>
+            <div class="flex flex-wrap gap-2">
+              <el-button type="primary" size="small" @click="handleViewDetail(scope.row)">
+                详情
+              </el-button>
+              <el-button type="danger" size="small" @click="handleDeleteLog(scope.row.id)">
+                删除
+              </el-button>
             </div>
           </template>
         </el-table-column>

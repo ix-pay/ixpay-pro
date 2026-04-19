@@ -16,105 +16,103 @@
       @select="handleMenuSelect"
       router
     >
-      <!-- 动态菜单 -->
-      <template v-if="menuList.length > 0">
-        <template v-for="menu in menuList" :key="menu.id">
-          <!-- 有子菜单的情况 -->
-          <el-sub-menu
-            v-if="menu.children && menu.children.length > 0"
-            :index="String(menu.name)"
-            class="menu-item"
-          >
-            <template #title>
-              <el-icon class="menu-icon">
-                <component :is="getIconComponent(menu.meta.icon)" />
-              </el-icon>
-              <span class="menu-text">{{ menu.meta.title }}</span>
-            </template>
-            <!-- 递归渲染子菜单 -->
-            <template v-for="subMenu in menu.children" :key="subMenu.id">
-              <el-menu-item
-                v-if="!subMenu.children || subMenu.children.length === 0"
-                :index="getFullPath(menu.path, subMenu.path)"
-                class="menu-item"
-              >
-                <template #default>
-                  <el-icon class="menu-icon">
-                    <component :is="getIconComponent(subMenu.meta.icon)" />
-                  </el-icon>
-                  <span class="menu-text">{{ subMenu.meta.title }}</span>
-                </template>
-              </el-menu-item>
-              <!-- 三级子菜单 -->
-              <el-sub-menu v-else :index="String(subMenu.name)" class="menu-item">
-                <template #title>
-                  <el-icon class="menu-icon">
-                    <component :is="getIconComponent(subMenu.meta.icon)" />
-                  </el-icon>
-                  <span class="menu-text">{{ subMenu.meta.title }}</span>
-                </template>
+      <!-- 可滚动的菜单内容区域 -->
+      <div class="menu-content">
+        <!-- 动态菜单 -->
+        <template v-if="menuList.length > 0">
+          <template v-for="menu in menuList" :key="menu.id">
+            <!-- 有子菜单的情况 -->
+            <el-sub-menu
+              v-if="menu.children && menu.children.length > 0"
+              :index="String(menu.name)"
+              class="menu-item"
+            >
+              <template #title>
+                <el-icon class="menu-icon">
+                  <component :is="getIconComponent(menu.meta.icon)" />
+                </el-icon>
+                <span class="menu-text">{{ menu.meta.title }}</span>
+              </template>
+              <!-- 递归渲染子菜单 -->
+              <template v-for="subMenu in menu.children" :key="subMenu.id">
                 <el-menu-item
-                  v-for="thirdMenu in subMenu.children"
-                  :key="thirdMenu.id"
-                  :index="getFullPath(menu.path, getFullPath(subMenu.path, thirdMenu.path))"
+                  v-if="!subMenu.children || subMenu.children.length === 0"
+                  :index="getFullPath(menu.path, subMenu.path)"
                   class="menu-item"
                 >
                   <template #default>
                     <el-icon class="menu-icon">
-                      <component :is="getIconComponent(thirdMenu.meta.icon)" />
+                      <component :is="getIconComponent(subMenu.meta.icon)" />
                     </el-icon>
-                    <span class="menu-text">{{ thirdMenu.meta.title }}</span>
+                    <span class="menu-text">{{ subMenu.meta.title }}</span>
                   </template>
                 </el-menu-item>
-              </el-sub-menu>
-            </template>
-          </el-sub-menu>
-          <!-- 没有子菜单的情况 -->
-          <el-menu-item
-            v-else
-            :index="getMenuPath(menu.path)"
-            class="menu-item"
-          >
-            <template #default>
-              <el-icon class="menu-icon">
-                <component :is="getIconComponent(menu.meta.icon)" />
+                <!-- 三级子菜单 -->
+                <el-sub-menu v-else :index="String(subMenu.name)" class="menu-item">
+                  <template #title>
+                    <el-icon class="menu-icon">
+                      <component :is="getIconComponent(subMenu.meta.icon)" />
+                    </el-icon>
+                    <span class="menu-text">{{ subMenu.meta.title }}</span>
+                  </template>
+                  <el-menu-item
+                    v-for="thirdMenu in subMenu.children"
+                    :key="thirdMenu.id"
+                    :index="getFullPath(menu.path, getFullPath(subMenu.path, thirdMenu.path))"
+                    class="menu-item"
+                  >
+                    <template #default>
+                      <el-icon class="menu-icon">
+                        <component :is="getIconComponent(thirdMenu.meta.icon)" />
+                      </el-icon>
+                      <span class="menu-text">{{ thirdMenu.meta.title }}</span>
+                    </template>
+                  </el-menu-item>
+                </el-sub-menu>
+              </template>
+            </el-sub-menu>
+            <!-- 没有子菜单的情况 -->
+            <el-menu-item v-else :index="getMenuPath(menu.path)" class="menu-item">
+              <template #default>
+                <el-icon class="menu-icon">
+                  <component :is="getIconComponent(menu.meta.icon)" />
+                </el-icon>
+                <span class="menu-text">{{ menu.meta.title }}</span>
+              </template>
+            </el-menu-item>
+          </template>
+        </template>
+        <!-- 加载状态 -->
+        <template v-else-if="loading">
+          <el-menu-item disabled class="menu-item">
+            <template #title>
+              <el-icon class="is-loading menu-icon">
+                <Loading />
               </el-icon>
-              <span class="menu-text">{{ menu.meta.title }}</span>
+              <span class="menu-text">加载菜单中...</span>
             </template>
           </el-menu-item>
         </template>
-      </template>
-      <!-- 加载状态 -->
-      <template v-else-if="loading">
-        <el-menu-item disabled class="menu-item">
-          <template #title>
-            <el-icon class="is-loading menu-icon">
-              <Loading />
-            </el-icon>
-            <span class="menu-text">加载菜单中...</span>
-          </template>
-        </el-menu-item>
-      </template>
-      <!-- 无菜单数据状态 -->
-      <template v-else>
-        <el-menu-item disabled class="menu-item">
-          <template #title>
-            <el-icon class="menu-icon">
-              <DocumentRemove />
-            </el-icon>
-            <span class="menu-text">暂无菜单数据</span>
-          </template>
-        </el-menu-item>
-      </template>
+        <!-- 无菜单数据状态 -->
+        <template v-else>
+          <el-menu-item disabled class="menu-item">
+            <template #title>
+              <el-icon class="menu-icon">
+                <DocumentRemove />
+              </el-icon>
+              <span class="menu-text">暂无菜单数据</span>
+            </template>
+          </el-menu-item>
+        </template>
+      </div>
 
-      <!-- 菜单底部折叠按钮 -->
-      <div class="menu-bottom" @click="toggleCollapse" :title="isCollapsed ? '展开菜单' : '收起菜单'">
-        <el-button
-          type="text"
-          size="small"
-          class="collapse-btn"
-          tabindex="-1"
-        >
+      <!-- 菜单底部折叠按钮 - 固定在底部 -->
+      <div
+        class="menu-bottom"
+        @click="toggleCollapse"
+        :title="isCollapsed ? '展开菜单' : '收起菜单'"
+      >
+        <el-button type="text" size="small" class="collapse-btn" tabindex="-1">
           <template #icon>
             <ArrowRight v-if="isCollapsed" class="collapse-icon" />
             <ArrowLeft v-else class="collapse-icon" />
@@ -152,8 +150,6 @@ const emit = defineEmits(['toggle', 'menu-select'])
 
 // 从 routerStore 获取菜单数据
 const menuList = computed<ExtendedRouteRecordRaw[]>(() => {
-  routerStore.asyncRouterFlag
-
   const defaultIndexMenu: ExtendedRouteRecordRaw = {
     id: 1,
     name: 'index',
@@ -354,6 +350,7 @@ onMounted(() => {})
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 .logo-section:hover .logo-image {
@@ -369,7 +366,6 @@ onMounted(() => {})
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   white-space: nowrap;
-  flex: 1;
   position: relative;
 }
 
@@ -407,13 +403,19 @@ onMounted(() => {})
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
 }
 
+/* 菜单内容区域 - 可滚动 */
+.sidebar-menu .menu-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 /* ===== 菜单项通用样式 ===== */
 .menu-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
   position: relative;
-  overflow: hidden;
 }
 
 .menu-item::before {
@@ -465,27 +467,59 @@ onMounted(() => {})
 }
 
 /* ===== 激活状态的菜单项 ===== */
-.menu-item.is-active {
-  background: linear-gradient(
-    135deg,
-    var(--sidebar-active-bg) 0%,
-    var(--sidebar-active-bg-secondary) 100%
-  ) !important;
+/* 只有一级菜单项激活时才应用完整样式 */
+.el-menu-item.is-active {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
   transform: translateX(4px);
 }
 
-.menu-item.is-active::before {
+.el-menu-item.is-active::before {
   opacity: 1;
   transform: translateY(0);
 }
 
-.menu-item.is-active .menu-icon {
+.el-menu-item.is-active .menu-icon {
   color: var(--sidebar-active-text);
   transform: scale(1.1);
 }
 
-.menu-item.is-active .menu-text {
+.el-menu-item.is-active .menu-text {
+  color: var(--sidebar-active-text);
+  font-weight: 600;
+}
+
+/* 子菜单标题即使激活也不应用高亮背景，只保持普通状态 */
+.el-sub-menu.is-active .el-sub-menu__title,
+.el-sub-menu .el-sub-menu__title {
+  background: transparent !important;
+  color: var(--sidebar-text);
+}
+
+.el-sub-menu.is-active .el-sub-menu__title .menu-icon,
+.el-sub-menu .el-sub-menu__title .menu-icon {
+  color: var(--sidebar-text);
+}
+
+.el-sub-menu.is-active .el-sub-menu__title .menu-text,
+.el-sub-menu .el-sub-menu__title .menu-text {
+  color: var(--sidebar-text);
+  font-weight: 500;
+}
+
+/* 子菜单内的菜单项激活时才应用高亮 */
+.el-sub-menu .el-menu-item.is-active {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transform: translateX(4px);
+}
+
+.el-sub-menu .el-menu-item.is-active .menu-icon {
+  color: var(--sidebar-active-text);
+  transform: scale(1.1);
+}
+
+.el-sub-menu .el-menu-item.is-active .menu-text {
   color: var(--sidebar-active-text);
   font-weight: 600;
 }
@@ -493,7 +527,6 @@ onMounted(() => {})
 /* ===== 子菜单样式 ===== */
 :deep(.el-sub-menu) {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
 }
 
 :deep(.el-sub-menu .el-sub-menu__title) {
@@ -507,7 +540,6 @@ onMounted(() => {})
 :deep(.el-sub-menu .el-menu) {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%) !important;
   border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
-  overflow: hidden;
 }
 
 :deep(.el-sub-menu .el-menu .el-menu-item) {
@@ -526,10 +558,11 @@ onMounted(() => {})
   padding: var(--space-sm) 0;
   background: linear-gradient(0deg, var(--sidebar-bg) 0%, var(--sidebar-bg-secondary) 100%);
   border-top: 1px solid var(--border-color);
-  position: relative;
+  position: sticky;
+  bottom: 0;
   height: 50px;
   flex-shrink: 0;
-  margin-top: auto;
+  z-index: 102;
 }
 
 .menu-bottom::before {
@@ -632,31 +665,62 @@ onMounted(() => {})
 
 /* ===== 暗黑模式 ===== */
 html.dark .sidebar-container {
-  background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--sidebar-bg-secondary) 100%);
+  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
   box-shadow: var(--shadow-md);
 }
 
 html.dark .logo-section {
-  background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--sidebar-bg-secondary) 100%);
-  border-bottom-color: var(--border-color);
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 html.dark .menu-bottom {
-  background: linear-gradient(0deg, var(--sidebar-bg) 0%, var(--sidebar-bg-secondary) 100%);
-  border-top-color: var(--border-color);
+  background: linear-gradient(0deg, #0f172a 0%, #020617 100%);
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 html.dark .menu-item:hover {
-  background: var(--sidebar-hover-bg);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-html.dark .menu-item.is-active {
-  background: linear-gradient(
-    135deg,
-    var(--sidebar-active-bg) 0%,
-    var(--sidebar-active-bg-secondary) 100%
-  ) !important;
+/* 暗黑模式下只有一级菜单项激活时才应用高亮 */
+html.dark .el-menu-item.is-active {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* 子菜单标题在暗黑模式下保持普通状态，不应用高亮 */
+html.dark .el-sub-menu.is-active .el-sub-menu__title,
+html.dark .el-sub-menu .el-sub-menu__title {
+  background: transparent !important;
+  color: var(--sidebar-text);
+}
+
+html.dark .el-sub-menu.is-active .el-sub-menu__title .menu-icon,
+html.dark .el-sub-menu .el-sub-menu__title .menu-icon {
+  color: var(--sidebar-text);
+}
+
+html.dark .el-sub-menu.is-active .el-sub-menu__title .menu-text,
+html.dark .el-sub-menu .el-sub-menu__title .menu-text {
+  color: var(--sidebar-text);
+  font-weight: 500;
+}
+
+/* 暗黑模式下子菜单内的菜单项激活时才应用高亮 */
+html.dark .el-sub-menu .el-menu-item.is-active {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+html.dark .el-sub-menu .el-menu-item.is-active .menu-icon {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+html.dark .el-sub-menu .el-menu-item.is-active .menu-text {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 html.dark :deep(.el-sub-menu .el-menu) {

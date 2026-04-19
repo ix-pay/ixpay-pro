@@ -762,6 +762,8 @@ html.dark {
   user-select: none;
   position: relative;
   overflow: hidden;
+  /* 增强边界可见性 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 /* 标签项悬浮效果 */
@@ -770,7 +772,9 @@ html.dark {
   background: var(--bg-hover-color);
   border-color: var(--primary-color);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.15);
+  box-shadow:
+    0 2px 4px rgba(59, 130, 246, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 /* 激活的标签项 */
@@ -780,6 +784,10 @@ html.dark {
   border-color: var(--primary-color);
   border-bottom-color: transparent;
   z-index: 10;
+  /* 增强激活状态的边界和阴影效果 */
+  box-shadow:
+    0 -2px 8px rgba(59, 130, 246, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* 激活标签项底部指示器 */
@@ -926,13 +934,25 @@ html.dark {
 /* ========================================
    暗黑模式特殊适配
    ======================================== */
+html.dark .custom-tabs :deep(.el-tabs__item) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 html.dark .custom-tabs :deep(.el-tabs__item.is-active) {
   background: var(--bg-color);
-  box-shadow: 0 -2px 8px rgba(59, 130, 246, 0.2);
+  box-shadow:
+    0 -2px 8px rgba(59, 130, 246, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .custom-tabs :deep(.el-tabs__item:not(.is-active):hover) {
+  box-shadow:
+    0 2px 4px rgba(59, 130, 246, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 html.dark .scroll-btn {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 html.dark .context-menu-item:hover {

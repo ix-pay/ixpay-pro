@@ -49,12 +49,12 @@ class LoadingManager {
         this.isLoadingVisible = true
 
         // 设置强制关闭定时器，防止 loading 永远不关闭（30 秒超时）
-      this.forceCloseTimer = window.setTimeout(() => {
-        if (this.isLoadingVisible && this.loadingInstance) {
-          console.warn('Loading 强制关闭：超时 30 秒')
-          this.close()
-        }
-      }, 30000)
+        this.forceCloseTimer = window.setTimeout(() => {
+          if (this.isLoadingVisible && this.loadingInstance) {
+            console.warn('Loading 强制关闭：超时 30 秒')
+            this.close()
+          }
+        }, 30000)
       }
     }, 400)
   }

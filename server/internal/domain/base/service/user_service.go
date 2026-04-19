@@ -301,6 +301,16 @@ func (s *UserService) Login(userName, password, captchaId, captchaVal, ip, userA
 
 	// 记录成功的登录日志
 	s.loginLogService.RecordLogin(user.ID, userName, ip, loginPlace, device, browser, os, userAgent, true, "")
+
+	// 【新增】登录成功后,清除之前退出登录的黑名单
+	blacklistKey := fmt.Sprintf("blacklist:user:%s", fmt.Sprintf("%d", user.ID))
+	if delErr := s.cache.Delete(blacklistKey); delErr != nil {
+		s.log.Warn("清除用户黑名单失败", "error", delErr, "userID", user.ID)
+		// 不阻塞主流程,仅记录警告
+	} else {
+		s.log.Info("已清除用户退出登录黑名单", "userID", user.ID)
+	}
+
 	return user, accessToken, refreshToken, accessExpire, refreshExpire, nil
 }
 

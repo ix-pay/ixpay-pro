@@ -384,7 +384,16 @@ watch(
 /* 使用 Tailwind CSS 重构后，仅保留必要的 Element Plus 组件深度样式和响应式 */
 
 :deep(.el-page-header) {
-  @apply bg-[var(--bg-primary)] shadow-[var(--shadow-md)] px-[var(--space-lg)] border-b border-[var(--border-primary)] h-full leading-[84px] box-border text-[var(--text-primary)] overflow-hidden rounded-none;
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+  padding: 0 var(--space-lg);
+  border-bottom: 1px solid var(--border-primary);
+  height: 100%;
+  line-height: 84px;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  overflow: hidden;
+  border-radius: 0;
   transition:
     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -393,37 +402,50 @@ watch(
 }
 
 :deep(.el-page-header__left) {
-  @apply flex items-center gap-[var(--space-lg)] text-[var(--text-primary)] flex-1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  color: var(--text-primary);
+  flex: 1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :deep(.el-page-header__extra) {
-  @apply flex items-center gap-[var(--space-sm)] text-[var(--text-primary)] h-full overflow-hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* 8px - 使用固定值而非未定义的 CSS 变量 */
+  color: var(--text-primary);
+  height: 100%;
+  overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 角色切换下拉框激活样式 */
 :deep(.el-dropdown-menu__item.is-active) {
-  @apply bg-[var(--primary-color)] text-white;
+  background-color: var(--primary-color);
+  color: white;
 }
 
 :deep(.el-dropdown-menu__item.is-active:hover) {
-  @apply bg-[var(--primary-color)] text-white;
+  background-color: var(--primary-color);
+  color: white;
 }
 
 /* 角色切换下拉框禁用样式（当前角色） */
 :deep(.el-dropdown-menu__item.is-disabled) {
-  @apply cursor-not-allowed opacity-60;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 :deep(.el-dropdown-menu__item.is-disabled:hover) {
-  @apply bg-transparent;
+  background-color: transparent;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   :deep(.el-page-header) {
-    @apply px-[var(--space-md)];
+    padding: 0 var(--space-md);
   }
 
   :deep(.el-page-header__left) {
@@ -431,25 +453,30 @@ watch(
   }
 
   :deep(.el-page-header__extra) {
-    gap: var(--space-md);
+    gap: 0.5rem;
+    /* 8px */
   }
 
   :deep(.el-breadcrumb) {
-    @apply hidden;
+    display: none;
   }
 }
 
 @media (max-width: 480px) {
   :deep(.el-page-header__extra) {
-    gap: var(--space-sm);
+    gap: 0.25rem;
+    /* 4px */
   }
 
   :deep(.el-dropdown:nth-last-child(1))>div {
-    @apply px-[var(--space-xs)] py-[var(--space-sm)];
+    padding: 0 var(--space-xs);
+    padding-top: var(--space-sm);
+    padding-bottom: var(--space-sm);
   }
 
   :deep(.el-dropdown:nth-last-child(1)) .el-avatar {
-    @apply w-7 h-7;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   :deep(.el-dropdown:nth-last-child(1)) .el-dropdown-menu {

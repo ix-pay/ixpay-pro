@@ -2,7 +2,6 @@
   <div id="app">
     <el-config-provider :locale="locale">
       <router-view />
-      <Application />
     </el-config-provider>
   </div>
 </template>
@@ -11,7 +10,6 @@
 import { ref, computed } from 'vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import en from 'element-plus/es/locale/lang/en'
-import Application from '@/components/business/application/index.vue'
 
 defineOptions({
   name: 'App',

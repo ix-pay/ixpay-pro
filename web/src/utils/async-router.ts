@@ -19,14 +19,17 @@ const staticComponents: Record<string, () => Promise<{ default: import('vue').Co
   'views/system/api-route/index': () => import('@/views/system/api-route/index.vue'),
 
   // 监控页面
+  'views/monitor/index': () => import('@/views/monitor/index.vue'),
   'views/monitor/monitor/index': () => import('@/views/monitor/monitor/index.vue'),
   'views/monitor/online-user/index': () => import('@/views/monitor/online-user/index.vue'),
 
   // 日志页面
+  'views/log/index': () => import('@/views/log/index.vue'),
   'views/log/operation-log/index': () => import('@/views/log/operation-log/index.vue'),
   'views/log/login-log/index': () => import('@/views/log/login-log/index.vue'),
 
   // 任务页面
+  'views/task/index': () => import('@/views/task/index.vue'),
   'views/task/task/index': () => import('@/views/task/task/index.vue'),
 }
 
@@ -66,10 +69,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
         // 方法 2: 如果静态映射表中没有，使用动态查找作为后备
         if (!comp) {
           if (import.meta.env.DEV) {
-            console.warn(
-              '异步路由处理 - 组件不在静态映射中，使用动态导入:',
-              item.component,
-            )
+            console.warn('异步路由处理 - 组件不在静态映射中，使用动态导入:', item.component)
           }
 
           if (item.component.split('/')[0] === 'view') {
@@ -122,11 +122,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
     if (item.children && item.children.length > 0) {
       // 只在开发环境输出详细日志
       if (import.meta.env.DEV) {
-        console.log(
-          '异步路由处理 - 处理子路由:',
-          item.path,
-          item.children.length,
-        )
+        console.log('异步路由处理 - 处理子路由:', item.path, item.children.length)
       }
       // 递归处理子路由
       asyncRouterHandle(item.children)
@@ -135,10 +131,7 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
       if (item.component === undefined && item.children.length > 0) {
         // 只在开发环境输出详细日志
         if (import.meta.env.DEV) {
-          console.log(
-            '异步路由处理 - 父路由没有组件但有子路由:',
-            item.path,
-          )
+          console.log('异步路由处理 - 父路由没有组件但有子路由:', item.path)
         }
         // 不设置默认组件，让 Vue Router 处理
       }

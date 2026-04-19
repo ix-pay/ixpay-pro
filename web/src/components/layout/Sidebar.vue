@@ -72,7 +72,7 @@
           <!-- 没有子菜单的情况 -->
           <el-menu-item
             v-else
-            :index="menu.path.startsWith('/') ? menu.path : '/' + menu.path"
+            :index="getMenuPath(menu.path)"
             class="menu-item"
           >
             <template #default>
@@ -108,13 +108,12 @@
       </template>
 
       <!-- 菜单底部折叠按钮 -->
-      <div class="menu-bottom">
+      <div class="menu-bottom" @click="toggleCollapse" :title="isCollapsed ? '展开菜单' : '收起菜单'">
         <el-button
           type="text"
           size="small"
           class="collapse-btn"
-          @click="toggleCollapse"
-          :title="isCollapsed ? '展开菜单' : '收起菜单'"
+          tabindex="-1"
         >
           <template #icon>
             <ArrowRight v-if="isCollapsed" class="collapse-icon" />
@@ -275,6 +274,15 @@ const getFullPath = (parentPath: string, childPath: string): string => {
   const cleanParentPath = parentPath.endsWith('/') ? parentPath.slice(0, -1) : parentPath
   const cleanChildPath = childPath.startsWith('/') ? childPath.slice(1) : childPath
   return `/${cleanParentPath}/${cleanChildPath}`
+}
+
+// 获取正确的菜单路径
+const getMenuPath = (path: string): string => {
+  if (!path) return '/'
+  // 如果路径已经是绝对路径，直接返回
+  if (path.startsWith('/')) return path
+  // 否则添加前缀
+  return `/${path}`
 }
 
 watch(

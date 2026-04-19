@@ -63,7 +63,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	systemDir, err := ms.createOrGetMenu(logger, &entity.Menu{
 		Path:        "system",
 		Name:        "SystemManagement",
-		Component:   "",
+		Component:   "views/system/index",
 		Title:       "系统管理",
 		Icon:        "Setting",
 		Hidden:      false,
@@ -80,7 +80,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	taskDir, err := ms.createOrGetMenu(logger, &entity.Menu{
 		Path:        "task",
 		Name:        "TaskManagement",
-		Component:   "",
+		Component:   "views/task/index",
 		Title:       "任务管理",
 		Icon:        "Clock",
 		Hidden:      false,
@@ -97,7 +97,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	monitorDir, err := ms.createOrGetMenu(logger, &entity.Menu{
 		Path:        "monitor",
 		Name:        "SystemMonitor",
-		Component:   "",
+		Component:   "views/monitor/index",
 		Title:       "系统监控",
 		Icon:        "Monitor",
 		Hidden:      false,
@@ -114,7 +114,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	logDir, err := ms.createOrGetMenu(logger, &entity.Menu{
 		Path:        "log",
 		Name:        "LogManagement",
-		Component:   "",
+		Component:   "views/log/index",
 		Title:       "日志管理",
 		Icon:        "Document",
 		Hidden:      false,
@@ -293,7 +293,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	}
 
 	// 任务管理下的菜单
-	_, err = ms.createOrGetMenu(logger, &entity.Menu{
+	taskMenu, err := ms.createOrGetMenu(logger, &entity.Menu{
 		ParentID:    taskDir.ID,
 		Path:        "task",
 		Name:        "ScheduledTask",
@@ -588,7 +588,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 
 	// 定时任务按钮权限
 	_, err = ms.createOrGetMenu(logger, &entity.Menu{
-		ParentID:   taskDir.ID,
+		ParentID:   taskMenu.ID,
 		Name:       "TaskAdd",
 		Title:      "新增任务",
 		Icon:       "Plus",
@@ -602,7 +602,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	}
 
 	_, err = ms.createOrGetMenu(logger, &entity.Menu{
-		ParentID:   taskDir.ID,
+		ParentID:   taskMenu.ID,
 		Name:       "TaskEdit",
 		Title:      "编辑任务",
 		Icon:       "Edit",
@@ -616,7 +616,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	}
 
 	_, err = ms.createOrGetMenu(logger, &entity.Menu{
-		ParentID:   taskDir.ID,
+		ParentID:   taskMenu.ID,
 		Name:       "TaskDelete",
 		Title:      "删除任务",
 		Icon:       "Delete",
@@ -630,7 +630,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 	}
 
 	_, err = ms.createOrGetMenu(logger, &entity.Menu{
-		ParentID:   taskDir.ID,
+		ParentID:   taskMenu.ID,
 		Name:       "TaskExecute",
 		Title:      "执行任务",
 		Icon:       "VideoPlay",

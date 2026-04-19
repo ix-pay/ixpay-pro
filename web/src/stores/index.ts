@@ -39,6 +39,29 @@ const createPersistPlugin = () => {
           }
         }
 
+        // 对于 user store，只保存简单字段，避免循环引用
+        if (store.$id === 'user') {
+          state = {
+            token: state.token,
+            userInfo: {
+              id: state.userInfo?.id,
+              userName: state.userInfo?.userName,
+              nickname: state.userInfo?.nickname,
+              email: state.userInfo?.email,
+              phone: state.userInfo?.phone,
+              avatar: state.userInfo?.avatar,
+              status: state.userInfo?.status,
+              // 只保留角色的简单信息，避免循环引用
+              roles: (state.userInfo?.roles || []).map((r: any) => ({
+                id: r.id,
+                name: r.name,
+                code: r.code,
+              })),
+              currentRoleId: state.userInfo?.currentRoleId,
+            },
+          }
+        }
+
         // 简单的状态克隆，避免循环引用
         const cloneState = JSON.parse(
           JSON.stringify(state, (key, value) => {
@@ -46,8 +69,8 @@ const createPersistPlugin = () => {
             if (typeof value === 'function' || key === '__ob__') {
               return undefined
             }
-            // 过滤 parent 属性，避免循环引用（parent -> children -> parent）
-            if (key === 'parent') {
+            // 过滤 parent、component 等属性，避免循环引用
+            if (key === 'parent' || key === 'component' || key === 'meta') {
               return undefined
             }
             return value

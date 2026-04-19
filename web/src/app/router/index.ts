@@ -106,7 +106,15 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 已登录状态下，确保动态路由已加载
-  if (!routerStore.asyncRouterFlag) {
+  // 检查是否已经添加过动态路由（通过检查 layout 下是否有动态路由）
+  const hasDynamicRoutes = router.getRoutes().some((route) => {
+    // 检查是否有系统管理相关的动态路由
+    return ['SystemManagement', 'TaskManagement', 'SystemMonitor', 'LogManagement'].includes(
+      route.name?.toString() || '',
+    )
+  })
+
+  if (!hasDynamicRoutes) {
     try {
       // 加载用户信息
       await userStore.GetUserInfo()
@@ -138,7 +146,7 @@ router.beforeEach(async (to, from, next) => {
 
       // 重新导航以应用新路由
       // 确保导航到正确的路径，而不是默认的首页
-      next({ path: to.path, replace: true })
+      next({ ...to, replace: true })
       return
     } catch {
       userStore.ClearStorage()
@@ -163,15 +171,9 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // 检查动态路由中是否存在该路由
-  const routeExists = routerStore.asyncRouters.some((route) => {
-    if (route.name === to.name) return true
-    // 递归检查子路由
-    if (route.children) {
-      return route.children.some((child) => child.name === to.name)
-    }
-    return false
-  })
+  // 检查 Vue Router 中是否存在该路由（通过 getRoutes 检查）
+  const allRoutes = router.getRoutes()
+  const routeExists = allRoutes.some((route) => route.name === to.name)
 
   if (!routeExists) {
     // 没有权限访问，重定向到 404 页面

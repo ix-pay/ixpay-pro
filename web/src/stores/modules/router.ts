@@ -421,6 +421,10 @@ export const useRouterStore = defineStore('router', () => {
           )
           normalizedRoute.path = normalizedRoute.path.slice(1)
         }
+        // 确保 path 不以 / 开头（因为会被添加到 layout 下）
+        if (normalizedRoute.path && normalizedRoute.path.startsWith('/')) {
+          normalizedRoute.path = normalizedRoute.path.slice(1)
+        }
         return normalizedRoute
       })
       console.log('设置异步路由 - 标准化后的路由数量:', normalizedRoutes.length)
@@ -447,10 +451,7 @@ export const useRouterStore = defineStore('router', () => {
         }
       }
 
-      console.log(
-        '设置异步路由 - asyncRouterHandle 前的 finalRoutes 数量:',
-        finalRoutes.length,
-      )
+      console.log('设置异步路由 - asyncRouterHandle 前的 finalRoutes 数量:', finalRoutes.length)
       console.log(
         '设置异步路由 - asyncRouterHandle 前的第一个路由:',
         JSON.stringify(finalRoutes[0], null, 2),
@@ -482,12 +483,20 @@ export const useRouterStore = defineStore('router', () => {
           return false
         }
 
+        // type: 1 的目录菜单必须有子路由
+        const menuItem = route as ApiMenuItem
+        if (menuItem.type === 1) {
+          if (!route.children || route.children.length === 0) {
+            console.log('设置异步路由 - 过滤掉没有子路由的目录菜单:', route.path)
+            return false
+          }
+          // 目录菜单有子路由即可，组件会在 asyncRouterHandle 中处理
+          return true
+        }
+
         // 确保有组件或有子路由（父路由可以没有组件但必须有子路由）
         if (!route.component && (!route.children || route.children.length === 0)) {
-          console.log(
-            '设置异步路由 - 过滤掉没有组件或子路由的路由:',
-            route.path,
-          )
+          console.log('设置异步路由 - 过滤掉没有组件或子路由的路由:', route.path)
           return false
         }
 

@@ -4,12 +4,8 @@
     <!-- 顶部欢迎区域 - 渐变背景设计 -->
     <div class="relative overflow-hidden bg-gradient-to-r from-primary-color to-purple-600">
       <!-- 装饰性光晕 -->
-      <div
-        class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"
-      ></div>
+      <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
+      <div class="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
 
       <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <!-- 欢迎标题区 -->
@@ -18,13 +14,8 @@
             <h1 class="mb-2 text-3xl font-bold text-white">欢迎回来，{{ userName }}！</h1>
             <p class="text-primary-light text-sm">{{ curDate }}</p>
           </div>
-          <el-button
-            :icon="RefreshRight"
-            circle
-            size="small"
-            class="border-none bg-white/20 text-white hover:bg-white/30"
-            @click="refreshData"
-          />
+          <el-button :icon="RefreshRight" circle size="small"
+            class="border-none bg-white/20 text-white hover:bg-white/30" @click="refreshData" />
         </div>
 
         <!-- 总统计数据展示 -->
@@ -48,49 +39,17 @@
     </div>
 
     <!-- 主内容区 -->
-    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="main-content mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <!-- 统计卡片区域 - 响应式网格布局 -->
       <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <IxStatCard
-          title="今日订单"
-          :value="todayOrders"
-          change="+5.2%"
-          change-type="positive"
-          change-label="较昨日"
-          icon="GoodsFilled"
-          color="blue"
-          :show-title-icon="true"
-        />
-        <IxStatCard
-          title="今日交易额"
-          :value="formatCurrency(todayAmount)"
-          change="+12.8%"
-          change-type="positive"
-          change-label="较昨日"
-          icon="Money"
-          color="green"
-          :show-title-icon="true"
-        />
-        <IxStatCard
-          title="新增用户"
-          :value="newUsers"
-          change="+3.6%"
-          change-type="positive"
-          change-label="较昨日"
-          icon="User"
-          color="purple"
-          :show-title-icon="true"
-        />
-        <IxStatCard
-          title="退款订单"
-          :value="refundOrders"
-          change="-2.4%"
-          change-type="negative"
-          change-label="较昨日"
-          icon="Warning"
-          color="red"
-          :show-title-icon="true"
-        />
+        <IxStatCard title="今日订单" :value="todayOrders" change="+5.2%" change-type="positive" change-label="较昨日"
+          icon="GoodsFilled" color="blue" :show-title-icon="true" />
+        <IxStatCard title="今日交易额" :value="formatCurrency(todayAmount)" change="+12.8%" change-type="positive"
+          change-label="较昨日" icon="Money" color="green" :show-title-icon="true" />
+        <IxStatCard title="新增用户" :value="newUsers" change="+3.6%" change-type="positive" change-label="较昨日" icon="User"
+          color="purple" :show-title-icon="true" />
+        <IxStatCard title="退款订单" :value="refundOrders" change="-2.4%" change-type="negative" change-label="较昨日"
+          icon="Warning" color="red" :show-title-icon="true" />
       </div>
 
       <!-- 图表区域 - 双列布局 -->
@@ -104,20 +63,12 @@
               <el-option label="月" value="month" />
             </el-select>
           </template>
-          <IxEcharts
-            :options="salesTrendOptions as EChartsOption"
-            height="320px"
-            :hover-effect="true"
-          />
+          <IxEcharts :options="salesTrendOptions as EChartsOption" height="320px" :hover-effect="true" />
         </IxCard>
 
         <!-- 订单类型分布 -->
         <IxCard title="订单类型分布" hover-effect>
-          <IxEcharts
-            :options="orderDistributionOptions as EChartsOption"
-            height="320px"
-            :hover-effect="true"
-          />
+          <IxEcharts :options="orderDistributionOptions as EChartsOption" height="320px" :hover-effect="true" />
         </IxCard>
       </div>
 
@@ -130,13 +81,8 @@
               查看全部
             </el-button>
           </template>
-          <el-table
-            :data="recentOrders"
-            style="width: 100%"
-            class="modern-table"
-            :header-cell-style="headerCellStyle"
-            :cell-style="cellStyle"
-          >
+          <el-table :data="recentOrders" style="width: 100%" class="modern-table" :header-cell-style="headerCellStyle"
+            :cell-style="cellStyle">
             <el-table-column prop="orderNo" label="订单号" min-width="180" />
             <el-table-column prop="amount" label="金额" min-width="120">
               <template #default="scope">
@@ -155,12 +101,7 @@
             <el-table-column prop="createTime" label="创建时间" min-width="180" />
             <el-table-column label="操作" min-width="100" fixed="right">
               <template #default="scope">
-                <el-button
-                  type="primary"
-                  size="small"
-                  :icon="View"
-                  @click="viewOrderDetails(scope.row.orderNo)"
-                >
+                <el-button type="primary" size="small" :icon="View" @click="viewOrderDetails(scope.row.orderNo)">
                   详情
                 </el-button>
               </template>
@@ -174,8 +115,7 @@
           <IxCard title="系统状态" hover-effect>
             <div class="grid grid-cols-2 gap-4">
               <div
-                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
-              >
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105">
                 <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
@@ -187,8 +127,7 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
-              >
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105">
                 <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
@@ -200,8 +139,7 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105"
-              >
+                class="flex items-center gap-3 rounded-xl bg-success-light/10 p-3 transition-all duration-300 hover:scale-105">
                 <div class="text-success-color">
                   <el-icon :size="24">
                     <CircleCheckFilled />
@@ -213,8 +151,7 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-3 rounded-xl bg-warning-light/10 p-3 transition-all duration-300 hover:scale-105"
-              >
+                class="flex items-center gap-3 rounded-xl bg-warning-light/10 p-3 transition-all duration-300 hover:scale-105">
                 <div class="text-warning-color">
                   <el-icon :size="24">
                     <Warning />
@@ -231,37 +168,29 @@
           <!-- 快速操作入口 -->
           <IxCard title="快速操作" hover-effect>
             <div class="grid grid-cols-2 gap-3">
-              <el-button
-                type="primary"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
-              >
+              <el-button type="primary"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
                 <el-icon :size="20">
                   <Plus />
                 </el-icon>
                 <span class="text-xs">创建订单</span>
               </el-button>
-              <el-button
-                type="success"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
-              >
+              <el-button type="success"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
                 <el-icon :size="20">
                   <Download />
                 </el-icon>
                 <span class="text-xs">导出报表</span>
               </el-button>
-              <el-button
-                type="info"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
-              >
+              <el-button type="info"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
                 <el-icon :size="20">
                   <Setting />
                 </el-icon>
                 <span class="text-xs">系统设置</span>
               </el-button>
-              <el-button
-                type="warning"
-                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
-              >
+              <el-button type="warning"
+                class="flex h-20 flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105">
                 <el-icon :size="20">
                   <Message />
                 </el-icon>
@@ -271,7 +200,7 @@
           </IxCard>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 </template>
 
@@ -506,11 +435,11 @@ const getStatusTagType = (
   status: '已完成' | '处理中' | '已取消' | '待支付' | '已退款',
 ): 'success' | 'primary' | 'danger' | 'warning' | 'info' => {
   const statusMap: Record<string, 'success' | 'primary' | 'danger' | 'warning' | 'info'> = {
-    '已完成': 'success',
-    '处理中': 'primary',
-    '已取消': 'danger',
-    '待支付': 'warning',
-    '已退款': 'danger',
+    已完成: 'success',
+    处理中: 'primary',
+    已取消: 'danger',
+    待支付: 'warning',
+    已退款: 'danger',
   }
   return statusMap[status] || 'info'
 }
@@ -688,7 +617,7 @@ onMounted(() => {
       border-bottom-color: var(--border-primary);
     }
 
-    .el-table__body tr:hover > td {
+    .el-table__body tr:hover>td {
       background-color: var(--bg-secondary) !important;
     }
   }
@@ -696,7 +625,7 @@ onMounted(() => {
 
 // 响应式调整
 @media (max-width: 768px) {
-  main {
+  .main-content {
     padding: 12px;
   }
 

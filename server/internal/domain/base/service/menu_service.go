@@ -100,13 +100,20 @@ func convertToMenuResponse(menu *entity.Menu) *response.MenuResponse {
 		fillMenuMeta(menu)
 	}
 
+	// 处理组件路径
+	component := menu.Component
+	// 如果是目录类型(type=1)且component为空，设置默认占位组件路径
+	if menu.Type == entity.MenuTypeDirectory && component == "" {
+		component = "views/" + menu.Path + "/index"
+	}
+
 	// 转换为响应结构
 	resp := &response.MenuResponse{
 		ID:           menu.ID,
 		ParentID:     menu.ParentID,
 		Path:         menu.Path,
 		Name:         menu.Name,
-		Component:    menu.Component,
+		Component:    component,
 		Title:        menu.Title,
 		Icon:         menu.Icon,
 		Hidden:       menu.Hidden,

@@ -103,9 +103,10 @@ interface Emits {
 const emit = defineEmits<Emits>()
 
 /**
- * 暗黑模式状态
+ * 暗黑模式状态 - 在 setup 顶层调用 useDark
  */
-const isDark = computed(() => props.dark || useDark().value)
+const useDarkMode = useDark()
+const isDark = computed(() => props.dark || useDarkMode.value)
 
 /**
  * 处理点击事件

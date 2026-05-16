@@ -1,0 +1,16 @@
+name: gxy
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gxy-gateway
+    restart: unless-stopped
+    ports:
+      - "8385:8385"
+      - "8384:8384"
+    volumes:
+      - ../run/gxy/config.json:/app/config.json:ro
+      - ../run/gxy/logs:/app/logs
+    command: ["./gateway", "-config", "/app/config.json", "-log", "/app/logs/gateway.log"]

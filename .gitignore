@@ -1,0 +1,7 @@
+# 项目根目录 .gitignore 文件
+specs/
+documents/
+*/console/*
+
+# 运行文件
+run/

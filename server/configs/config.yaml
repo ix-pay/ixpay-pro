@@ -1,0 +1,59 @@
+server:
+  host: "0.0.0.0"
+  port: "8586"
+  read_timeout: 5
+  write_timeout: 10
+  idle_timeout: 120
+  captcha_time_out: 60
+  captcha_len: 4
+  open_captcha: true
+  machine_id: "1"
+  init_seed_data: true
+  update_routes_on_start: true
+  slow_query_threshold: 1000
+  node_role: "all"
+  node_id: ""
+  task_max_concurrent: 10
+
+postgres:
+  host: "127.0.0.1"
+  port: "5432"
+  user: "magic"
+  password: "magic@520"
+  dbname: "ixpay-pro"
+  sslmode: "disable"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime: 30
+
+redis:
+  address: "127.0.0.1:6379"
+  password: ""
+  db: 0
+  dial_timeout: 5
+  read_timeout: 3
+  write_timeout: 3
+  pool_size: 10
+  pre_key: "ixpay-pro:"
+
+jwt:
+  secret_key: "G1LuFZ6s9eNvhirEc3xmVgnqTbta42YJHoMw0UldBkApXWK5S7Dj8yQCzPIfRO"
+  access_token_expire: 30m
+  refresh_token_expire: 720h
+
+logging:
+  level: "${LOG_LEVEL:-info}"
+  format: "json"
+  file_path: "logs/app.log"
+  error_file: "logs/error.log"
+  task_file: "logs/task.log"
+  request_file: "logs/request.log"
+  audit_file: "logs/audit.log"
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  separate_log: false
+
+swagger:
+  enabled: true
+  path: "/swagger"

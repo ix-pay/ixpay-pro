@@ -1,0 +1,20 @@
+basePath: /
+host: 127.0.0.1:8586
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+  description: 基于Gin和PostgreSQL的微信支付API服务
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: 微信支付API服务
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  BearerAuth:
+    in: header [Bearer ]
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

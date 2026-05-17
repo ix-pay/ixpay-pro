@@ -18,9 +18,12 @@
           </template>
         </el-input>
         <el-select v-model="searchForm.type" placeholder="公告类型" clearable style="width: 192px">
-          <el-option label="系统公告" value="system" />
-          <el-option label="活动公告" value="activity" />
-          <el-option label="维护公告" value="maintenance" />
+          <el-option
+            v-for="item in noticeTypeOptions"
+            :key="item.itemKey"
+            :label="item.itemValue"
+            :value="item.itemKey"
+          />
         </el-select>
         <el-select v-model="searchForm.status" placeholder="状态" clearable style="width: 192px">
           <el-option label="启用" :value="1" />
@@ -173,9 +176,12 @@
         </el-form-item>
         <el-form-item label="公告类型" prop="type">
           <el-select v-model="noticeForm.type" placeholder="请选择公告类型" class="w-full">
-            <el-option label="系统公告" value="system" />
-            <el-option label="活动公告" value="activity" />
-            <el-option label="维护公告" value="maintenance" />
+            <el-option
+              v-for="item in noticeTypeOptions"
+              :key="item.itemKey"
+              :label="item.itemValue"
+              :value="item.itemKey"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="公告内容" prop="content">
@@ -221,6 +227,7 @@ import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { Plus, Search, Refresh, Bell, SuccessFilled, CircleClose } from '@element-plus/icons-vue'
 import { getNoticeList, createNotice, updateNotice, deleteNotice } from '@/api/modules/notice'
+import { getDictItems } from '@/api/modules/dict'
 import { formatDate } from '@/utils/format'
 
 defineOptions({
@@ -237,9 +244,16 @@ interface Notice {
   createdAt: string
 }
 
+interface DictItem {
+  itemKey: string
+  itemValue: string
+  sort: number
+}
+
 const noticeList = ref<Notice[]>([])
 const loading = ref(false)
 const isLoading = ref(false)
+const noticeTypeOptions = ref<DictItem[]>([])
 
 const searchForm = reactive({
   keyword: '',
@@ -271,6 +285,17 @@ const formRules = reactive({
   content: [{ required: true, message: '请输入公告内容', trigger: 'blur' }],
   type: [{ required: true, message: '请选择公告类型', trigger: 'change' }],
 })
+
+// 加载字典数据
+const loadNoticeTypeOptions = async () => {
+  try {
+    const res = await getDictItems('notice_type')
+    noticeTypeOptions.value = res.data || []
+  } catch (error) {
+    console.error('加载公告类型字典失败:', error)
+    noticeTypeOptions.value = []
+  }
+}
 
 const loadNoticeList = async () => {
   if (isLoading.value) return
@@ -385,6 +410,7 @@ const handleDeleteNotice = async (id: number) => {
 }
 
 onMounted(() => {
+  loadNoticeTypeOptions()
   loadNoticeList()
 })
 </script>

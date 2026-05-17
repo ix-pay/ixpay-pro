@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
 	"github.com/ix-pay/ixpay-pro/internal/dto/base/request"
@@ -76,7 +77,7 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限添加任务
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -153,7 +154,7 @@ func (c *TaskController) DeleteTask(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限移除任务
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -185,7 +186,7 @@ func (c *TaskController) StartTask(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限启动任务
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -219,7 +220,7 @@ func (c *TaskController) StopTask(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限停止任务
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -252,7 +253,7 @@ func (c *TaskController) RetryTask(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限重试任务
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -285,7 +286,7 @@ func (c *TaskController) RetryTask(ctx *gin.Context) {
 func (c *TaskController) GetTasks(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取任务列表
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		baseRes.FailWithMessage("权限不足", ctx)
 		return
 	}
@@ -430,7 +431,7 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限获取任务日志
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		baseRes.FailWithMessage("权限不足", ctx)
 		return
 	}
@@ -502,7 +503,7 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 func (c *TaskController) GetStatistics(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取统计
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		baseRes.FailWithMessage("权限不足", ctx)
 		return
 	}
@@ -558,7 +559,7 @@ func (c *TaskController) SetTaskGroup(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限设置分组
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -605,7 +606,7 @@ func (c *TaskController) GetManager() *task.TaskManager {
 func (c *TaskController) SearchExecutionLogs(ctx *gin.Context) {
 	// 检查用户角色是否有权限获取任务日志
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		baseRes.FailWithMessage("权限不足", ctx)
 		return
 	}
@@ -692,7 +693,7 @@ func (c *TaskController) EnableTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -714,13 +715,13 @@ func (c *TaskController) EnableTask(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	map[string]response.TaskDashboardResponse	"统计面板数据"
+//	@Success		200	{object}	baseRes.Response	"统计面板数据"
 //	@Failure		401	{object}	map[string]string		"未授权"
 //	@Failure		403	{object}	map[string]string		"无权限"
 //	@Router			/api/admin/task/dashboard [get]
 func (c *TaskController) GetDashboard(ctx *gin.Context) {
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		baseRes.FailWithMessage("权限不足", ctx)
 		return
 	}
@@ -780,7 +781,7 @@ func (c *TaskController) DisableTask(ctx *gin.Context) {
 	taskID := ctx.Param("id")
 
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
 		return
 	}
@@ -813,7 +814,7 @@ func (c *TaskController) GetTask(ctx *gin.Context) {
 
 	// 检查用户角色是否有权限获取任务
 	role, exists := ctx.Get("role")
-	if !exists || role != "admin" {
+	if !exists || role != dictconst.UserTypeAdmin {
 		baseRes.FailWithMessage("权限不足", ctx)
 		return
 	}

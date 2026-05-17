@@ -3718,6 +3718,439 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/admin/event": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取事件列表（支持分页和筛选）（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "获取事件列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "事件名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "事件状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "优先级",
+                        "name": "priority",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "事件列表",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventListResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "发布一个新的事件（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "创建事件",
+                "parameters": [
+                    {
+                        "description": "创建事件请求参数",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateEventRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "事件创建成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/event/:id": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据 ID 获取事件详情（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "获取事件详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "事件 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "事件详情",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "事件不存在",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/event/:id/retry": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "重试一个失败的事件（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "重试事件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "事件 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "事件重试成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "事件不存在",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/event/dead-letters": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取死信队列中的事件列表（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "获取死信列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "死信列表",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterListResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/event/dead-letters/:id/retry": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "重试死信队列中的事件（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "重试死信",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "死信 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "死信重试成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "死信不存在",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/jwt/jsonInBlacklist": {
             "post": {
                 "security": [
@@ -7497,6 +7930,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/admin/role/:id/available-menus": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取完整的菜单树结构，用于角色权限配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "获取角色可授权的菜单树",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "角色 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/role/:id/detail": {
             "get": {
                 "security": [
@@ -7897,6 +8382,224 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/subscriber": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取订阅者列表（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "获取订阅者列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "事件名称",
+                        "name": "eventName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "isActive",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "订阅者列表",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberListResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "创建一个事件订阅者（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "创建订阅者",
+                "parameters": [
+                    {
+                        "description": "创建订阅者请求参数",
+                        "name": "subscriber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateSubscriberRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "订阅者创建成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/subscriber/:id": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除一个订阅者（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "删除订阅者",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "订阅者 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "订阅者删除成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "订阅者不存在",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -8667,6 +9370,148 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "服务器内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/task/dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取任务统计面板数据，包括任务总数、启用数、禁用数、今日执行数（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "任务管理"
+                ],
+                "summary": "获取任务统计面板",
+                "responses": {
+                    "200": {
+                        "description": "统计面板数据",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/task/execution-logs": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "支持多条件搜索任务执行日志，可按任务ID、执行结果、日期范围筛选（管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "任务管理"
+                ],
+                "summary": "搜索任务执行日志",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "任务 ID",
+                        "name": "taskId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "执行结果（success/failed）",
+                        "name": "result",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期（RFC3339格式）",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期（RFC3339格式）",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "执行日志列表",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogsResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "无权限",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -9873,6 +10718,44 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/services": {
+            "get": {
+                "description": "从网关获取所有已注册的服务实例",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "网关管理"
+                ],
+                "summary": "获取网关服务列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_app_base_api.GatewayServiceInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -11612,6 +12495,33 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateEventRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "delay": {
+                    "description": "延迟秒数",
+                    "type": "integer"
+                },
+                "maxRetries": {
+                    "type": "integer"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                }
+            }
+        },
         "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateNoticeRequest": {
             "type": "object",
             "required": [
@@ -11696,6 +12606,33 @@ const docTemplate = `{
                         0,
                         1
                     ]
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateSubscriberRequest": {
+            "type": "object",
+            "required": [
+                "eventName",
+                "name"
+            ],
+            "properties": {
+                "endpoint": {
+                    "type": "string"
+                },
+                "eventName": {
+                    "type": "string"
+                },
+                "maxRetries": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "timeout": {
+                    "type": "integer"
                 }
             }
         },
@@ -12642,6 +13579,44 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterListResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "eventName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "maxRetries": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "retryCount": {
+                    "type": "integer"
+                }
+            }
+        },
         "github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentListResponse": {
             "type": "object",
             "properties": {
@@ -12847,6 +13822,77 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventListResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "delaySeconds": {
+                    "type": "integer"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "maxRetries": {
+                    "type": "integer"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nextRetryAt": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "processedAt": {
+                    "type": "string"
+                },
+                "retryCount": {
+                    "type": "integer"
+                },
+                "scheduledAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "statusLabel": {
+                    "type": "string"
+                },
+                "subscriberCount": {
+                    "type": "integer"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -13243,7 +14289,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "userName": {
                     "type": "string"
@@ -13612,6 +14659,62 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberListResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                },
+                "eventName": {
+                    "type": "string"
+                },
+                "failureCount": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "lastDeliveredAt": {
+                    "type": "string"
+                },
+                "maxRetries": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogResponse": {
             "type": "object",
             "properties": {
@@ -13632,11 +14735,11 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "operatorId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "result": {
                     "type": "string"
@@ -13646,7 +14749,7 @@ const docTemplate = `{
                 },
                 "taskId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "taskName": {
                     "type": "string"
@@ -13704,7 +14807,7 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "lastRunAt": {
                     "type": "string"
@@ -13764,7 +14867,7 @@ const docTemplate = `{
                 },
                 "taskId": {
                     "type": "string",
-                    "example": ""
+                    "example": "0"
                 },
                 "taskName": {
                     "type": "string"
@@ -14343,6 +15446,38 @@ const docTemplate = `{
                 },
                 "data": {},
                 "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_app_base_api.GatewayServiceInfo": {
+            "type": "object",
+            "properties": {
+                "activeConnections": {
+                    "type": "integer"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastSeen": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "status": {
                     "type": "string"
                 }
             }

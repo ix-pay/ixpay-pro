@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/service"
@@ -51,7 +52,7 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		log.Info("✓ 权限检查开始", "userID", userID, "role", role, "roleType", fmt.Sprintf("%T", role), "path", path, "method", method)
 
 		// 【新增】检查是否为管理员
-		if role == "admin" {
+		if role == dictconst.UserTypeAdmin {
 			// 管理员角色拥有所有权限，直接放行
 			log.Debug("✓ 管理员角色，跳过权限验证", "path", path, "method", method)
 			c.Next()

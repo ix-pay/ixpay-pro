@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/dto/base/response"
@@ -177,7 +178,7 @@ func convertToMenuResponseList(menus []*entity.Menu) []response.MenuResponse {
 func (s *MenuService) GetUserMenus(roleID int64) ([]response.MenuResponse, error) {
 	s.log.Info("获取用户菜单列表", "roleID", roleID)
 
-	// 检查是否为管理员角色 (code: "admin")
+	// 检查是否为管理员角色 (code: dictconst.UserTypeAdmin)
 	role, err := s.roleRepo.GetByID(roleID)
 	if err != nil {
 		s.log.Error("获取角色信息失败", "error", err, "roleID", roleID)
@@ -186,7 +187,7 @@ func (s *MenuService) GetUserMenus(roleID int64) ([]response.MenuResponse, error
 
 	var menus []*entity.Menu
 	// 如果是管理员角色，返回所有菜单
-	if role.Code == "admin" {
+	if role.Code == dictconst.UserTypeAdmin {
 		s.log.Info("管理员角色，返回所有菜单", "roleID", roleID)
 		menus, err = s.repo.GetAll()
 		if err != nil {

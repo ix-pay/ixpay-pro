@@ -345,3 +345,33 @@ func (s *DictItemService) GetActiveDictItemsByCode(dictCode string) ([]*entity.D
 	}
 	return dictItems, nil
 }
+
+// IsValidItemKey 验证字典项 Key 是否有效
+func (s *DictItemService) IsValidItemKey(dictCode, itemKey string) (bool, error) {
+	items, err := s.GetActiveDictItemsByCode(dictCode)
+	if err != nil {
+		return false, err
+	}
+
+	for _, item := range items {
+		if item.ItemKey == itemKey {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// GetItemValueByKey 根据字典编码和 ItemKey 获取 ItemValue
+func (s *DictItemService) GetItemValueByKey(dictCode, itemKey string) (string, error) {
+	items, err := s.GetActiveDictItemsByCode(dictCode)
+	if err != nil {
+		return "", err
+	}
+
+	for _, item := range items {
+		if item.ItemKey == itemKey {
+			return item.ItemValue, nil
+		}
+	}
+	return "", errors.New("字典项不存在")
+}

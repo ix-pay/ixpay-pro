@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	baseRepo "github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
@@ -118,7 +119,7 @@ func (s *PaymentService) UpdatePaymentStatus(paymentID int64, status entity.Paym
 // CreateWechatPayment 创建微信支付
 func (s *PaymentService) CreateWechatPayment(userID int64, orderID string, amount int64, description string) (*entity.Payment, error) {
 	// 创建支付记录
-	payment, err := s.CreatePayment(userID, orderID, amount, "wechat", description)
+	payment, err := s.CreatePayment(userID, orderID, amount, dictconst.UserTypeWechat, description)
 	if err != nil {
 		return nil, err
 	}

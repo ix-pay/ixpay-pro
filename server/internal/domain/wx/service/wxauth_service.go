@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	baseRepo "github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/domain/wx/entity"
 	wxRepo "github.com/ix-pay/ixpay-pro/internal/domain/wx/repo"
@@ -67,7 +68,7 @@ func (s *WXAuthService) LoginByCode(code string) (*entity.WXUser, string, string
 
 	// 3. 生成会话 token 返回给客户端
 	// 微信用户没有 nickname 字段，使用空字符串
-	accessToken, refreshToken, accessExpire, refreshExpire, err := s.auth.GenerateToken(fmt.Sprintf("%d", wxUser.ID), "", "", "user", "wechat")
+	accessToken, refreshToken, accessExpire, refreshExpire, err := s.auth.GenerateToken(fmt.Sprintf("%d", wxUser.ID), "", "", "user", dictconst.UserTypeWechat)
 	if err != nil {
 		s.log.Error("生成令牌失败", "error", err)
 		return nil, "", "", time.Time{}, time.Time{}, err

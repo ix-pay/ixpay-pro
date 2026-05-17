@@ -38,7 +38,7 @@ type GatewayServiceInfo struct {
 // @Tags 网关管理
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.Response{data=[]GatewayServiceInfo}
+// @Success 200 {object} baseRes.Response{data=[]GatewayServiceInfo}
 // @Router /gateway/services [get]
 func (h *GatewayServiceController) GetGatewayServices(c *gin.Context) {
 	gatewayURL := "http://127.0.0.1:8385"

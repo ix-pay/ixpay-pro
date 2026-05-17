@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/config"
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
@@ -1077,7 +1078,7 @@ func (s *UserService) UpdateUserRoles(userID int64, roleIDs []int64) error {
 	// 检查用户当前是否有管理员角色
 	hasAdminRole := false
 	for _, role := range currentRoles {
-		if role.Code == "admin" {
+		if role.Code == dictconst.UserTypeAdmin {
 			hasAdminRole = true
 			s.log.Info("用户当前拥有管理员角色", "userID", userID)
 			break
@@ -1093,7 +1094,7 @@ func (s *UserService) UpdateUserRoles(userID int64, roleIDs []int64) error {
 			return errors.New("角色不存在")
 		}
 		s.log.Info("新角色详情", "userID", userID, "roleID", roleID, "roleCode", role.Code, "roleName", role.Name)
-		if role.Code == "admin" {
+		if role.Code == dictconst.UserTypeAdmin {
 			willHaveAdminRole = true
 			s.log.Info("新角色列表包含管理员角色", "userID", userID)
 			break

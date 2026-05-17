@@ -3,17 +3,19 @@ package task
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 )
 
 // TaskType 任务类型
 type TaskType string
 
 const (
-	TaskTypeHTTP             TaskType = "http"
-	TaskTypeDatabase         TaskType = "database"
-	TaskTypeCache            TaskType = "cache"
-	TaskTypeScript           TaskType = "script"
-	TaskTypeStreamMaintenance TaskType = "stream_maintenance"
+	TaskTypeHTTP             TaskType = dictconst.TaskTypeHTTP
+	TaskTypeDatabase         TaskType = dictconst.TaskTypeDatabase
+	TaskTypeCache            TaskType = dictconst.TaskTypeCache
+	TaskTypeScript           TaskType = dictconst.TaskTypeScript
+	TaskTypeStreamMaintenance TaskType = dictconst.TaskTypeStreamMaintenance
 )
 
 // TaskCreator 任务创建函数

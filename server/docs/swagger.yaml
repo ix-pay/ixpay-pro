@@ -1264,6 +1264,24 @@ definitions:
     - dictCode
     - dictName
     type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateEventRequest:
+    properties:
+      delay:
+        description: 延迟秒数
+        type: integer
+      maxRetries:
+        type: integer
+      metadata:
+        type: string
+      name:
+        type: string
+      payload:
+        type: string
+      priority:
+        type: integer
+    required:
+    - name
+    type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateNoticeRequest:
     properties:
       content:
@@ -1325,6 +1343,24 @@ definitions:
         - 1
         type: integer
     required:
+    - name
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateSubscriberRequest:
+    properties:
+      endpoint:
+        type: string
+      eventName:
+        type: string
+      maxRetries:
+        type: integer
+      name:
+        type: string
+      priority:
+        type: integer
+      timeout:
+        type: integer
+    required:
+    - eventName
     - name
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.DeleteBtnPermRequest:
@@ -2002,6 +2038,31 @@ definitions:
         description: 更新时间
         type: string
     type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterListResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterResponse:
+    properties:
+      createdAt:
+        type: string
+      eventName:
+        type: string
+      id:
+        example: "0"
+        type: string
+      maxRetries:
+        type: integer
+      reason:
+        type: string
+      retryCount:
+        type: integer
+    type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.DepartmentListResponse:
     properties:
       list:
@@ -2150,6 +2211,53 @@ definitions:
         type: integer
       updatedAt:
         description: 更新时间
+        type: string
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventListResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse:
+    properties:
+      createdAt:
+        type: string
+      delaySeconds:
+        type: integer
+      errorMessage:
+        type: string
+      id:
+        example: "0"
+        type: string
+      maxRetries:
+        type: integer
+      metadata:
+        type: string
+      name:
+        type: string
+      nextRetryAt:
+        type: string
+      payload:
+        type: string
+      priority:
+        type: integer
+      processedAt:
+        type: string
+      retryCount:
+        type: integer
+      scheduledAt:
+        type: string
+      status:
+        type: integer
+      statusLabel:
+        type: string
+      subscriberCount:
+        type: integer
+      updatedAt:
         type: string
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.LoginLogDetailDTO:
@@ -2421,6 +2529,7 @@ definitions:
       userAgent:
         type: string
       userId:
+        example: "0"
         type: string
       userName:
         type: string
@@ -2669,6 +2778,43 @@ definitions:
       path:
         type: string
     type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberListResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberResponse:
+    properties:
+      createdAt:
+        type: string
+      endpoint:
+        type: string
+      eventName:
+        type: string
+      failureCount:
+        type: integer
+      id:
+        example: "0"
+        type: string
+      isActive:
+        type: boolean
+      lastDeliveredAt:
+        type: string
+      maxRetries:
+        type: integer
+      name:
+        type: string
+      priority:
+        type: integer
+      timeout:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogResponse:
     properties:
       cronExpr:
@@ -2682,17 +2828,17 @@ definitions:
       group:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       operatorId:
-        example: ""
+        example: "0"
         type: string
       result:
         type: string
       retryCount:
         type: integer
       taskId:
-        example: ""
+        example: "0"
         type: string
       taskName:
         type: string
@@ -2730,7 +2876,7 @@ definitions:
       group:
         type: string
       id:
-        example: ""
+        example: "0"
         type: string
       lastRunAt:
         type: string
@@ -2770,7 +2916,7 @@ definitions:
       successRate:
         type: number
       taskId:
-        example: ""
+        example: "0"
         type: string
       taskName:
         type: string
@@ -3163,6 +3309,27 @@ definitions:
         type: integer
       data: {}
       msg:
+        type: string
+    type: object
+  internal_app_base_api.GatewayServiceInfo:
+    properties:
+      activeConnections:
+        type: integer
+      address:
+        type: string
+      id:
+        type: string
+      lastSeen:
+        type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+      name:
+        type: string
+      port:
+        type: integer
+      status:
         type: string
     type: object
 host: 127.0.0.1:8586
@@ -5368,6 +5535,284 @@ paths:
       summary: 根据字典ID获取字典项列表
       tags:
       - 字典管理
+  /api/admin/event:
+    get:
+      consumes:
+      - application/json
+      description: 获取事件列表（支持分页和筛选）（管理员权限）
+      parameters:
+      - description: 事件名称
+        in: query
+        name: name
+        type: string
+      - description: 事件状态
+        in: query
+        name: status
+        type: integer
+      - description: 优先级
+        in: query
+        name: priority
+        type: integer
+      - description: 开始日期
+        in: query
+        name: startDate
+        type: string
+      - description: 结束日期
+        in: query
+        name: endDate
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 事件列表
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventListResponse'
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取事件列表
+      tags:
+      - 事件管理
+    post:
+      consumes:
+      - application/json
+      description: 发布一个新的事件（管理员权限）
+      parameters:
+      - description: 创建事件请求参数
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 事件创建成功
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse'
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 创建事件
+      tags:
+      - 事件管理
+  /api/admin/event/:id:
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取事件详情（管理员权限）
+      parameters:
+      - description: 事件 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 事件详情
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.EventResponse'
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 事件不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取事件详情
+      tags:
+      - 事件管理
+  /api/admin/event/:id/retry:
+    post:
+      consumes:
+      - application/json
+      description: 重试一个失败的事件（管理员权限）
+      parameters:
+      - description: 事件 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 事件重试成功
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 事件不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 重试事件
+      tags:
+      - 事件管理
+  /api/admin/event/dead-letters:
+    get:
+      consumes:
+      - application/json
+      description: 获取死信队列中的事件列表（管理员权限）
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 死信列表
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.DeadLetterListResponse'
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取死信列表
+      tags:
+      - 事件管理
+  /api/admin/event/dead-letters/:id/retry:
+    post:
+      consumes:
+      - application/json
+      description: 重试死信队列中的事件（管理员权限）
+      parameters:
+      - description: 死信 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 死信重试成功
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 死信不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 重试死信
+      tags:
+      - 事件管理
   /api/admin/jwt/jsonInBlacklist:
     post:
       consumes:
@@ -7665,6 +8110,36 @@ paths:
       summary: 获取角色可用的 API 列表
       tags:
       - 角色管理
+  /api/admin/role/:id/available-menus:
+    get:
+      consumes:
+      - application/json
+      description: 获取完整的菜单树结构，用于角色权限配置
+      parameters:
+      - description: 角色 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.MenuResponse'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取角色可授权的菜单树
+      tags:
+      - 角色管理
   /api/admin/role/:id/detail:
     get:
       consumes:
@@ -7910,6 +8385,146 @@ paths:
       summary: 获取角色权限日志
       tags:
       - 权限日志管理
+  /api/admin/subscriber:
+    get:
+      consumes:
+      - application/json
+      description: 获取订阅者列表（管理员权限）
+      parameters:
+      - description: 事件名称
+        in: query
+        name: eventName
+        type: string
+      - description: 是否活跃
+        in: query
+        name: isActive
+        type: boolean
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 订阅者列表
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberListResponse'
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取订阅者列表
+      tags:
+      - 事件管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个事件订阅者（管理员权限）
+      parameters:
+      - description: 创建订阅者请求参数
+        in: body
+        name: subscriber
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateSubscriberRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 订阅者创建成功
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.SubscriberResponse'
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 创建订阅者
+      tags:
+      - 事件管理
+  /api/admin/subscriber/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除一个订阅者（管理员权限）
+      parameters:
+      - description: 订阅者 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 订阅者删除成功
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 订阅者不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 删除订阅者
+      tags:
+      - 事件管理
   /api/admin/task:
     get:
       consumes:
@@ -8403,6 +9018,97 @@ paths:
       security:
       - BearerAuth: []
       summary: 停止任务
+      tags:
+      - 任务管理
+  /api/admin/task/dashboard:
+    get:
+      consumes:
+      - application/json
+      description: 获取任务统计面板数据，包括任务总数、启用数、禁用数、今日执行数（管理员权限）
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 统计面板数据
+          schema:
+            $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取任务统计面板
+      tags:
+      - 任务管理
+  /api/admin/task/execution-logs:
+    get:
+      consumes:
+      - application/json
+      description: 支持多条件搜索任务执行日志，可按任务ID、执行结果、日期范围筛选（管理员权限）
+      parameters:
+      - description: 任务 ID
+        in: query
+        name: taskId
+        type: string
+      - description: 执行结果（success/failed）
+        in: query
+        name: result
+        type: string
+      - description: 开始日期（RFC3339格式）
+        in: query
+        name: startDate
+        type: string
+      - description: 结束日期（RFC3339格式）
+        in: query
+        name: endDate
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 执行日志列表
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskExecutionLogsResponse'
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 搜索任务执行日志
       tags:
       - 任务管理
   /api/admin/task/statistics:
@@ -9134,6 +9840,28 @@ paths:
       summary: 刷新令牌
       tags:
       - 微信认证
+  /gateway/services:
+    get:
+      consumes:
+      - application/json
+      description: 从网关获取所有已注册的服务实例
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_app_base_api.GatewayServiceInfo'
+                  type: array
+              type: object
+      summary: 获取网关服务列表
+      tags:
+      - 网关管理
 securityDefinitions:
   BearerAuth:
     in: header [Bearer ]

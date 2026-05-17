@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/cache"
 )
@@ -108,8 +109,8 @@ func (p *PermissionManager) CheckPermission(ctx context.Context, method, path st
 		return false
 	}
 
-	// 超管admin角色拥有所有权限
-	if role == "admin" {
+	// 超管 admin 角色拥有所有权限
+	if role == dictconst.UserTypeAdmin {
 		p.log.Debug("管理员角色拥有完整访问权限", "method", method, "path", path)
 		return true
 	}
@@ -185,8 +186,8 @@ func (p *PermissionManager) CheckAPIPermissionWithButton(ctx context.Context, me
 		}
 	}
 
-	// 超管admin角色拥有所有权限，包括按钮权限
-	if roleExists && role == "admin" {
+	// 超管 admin 角色拥有所有权限，包括按钮权限
+	if roleExists && role == dictconst.UserTypeAdmin {
 		p.log.Debug("管理员角色拥有带按钮权限的完整访问权限", "method", method, "path", path)
 		return true
 	}

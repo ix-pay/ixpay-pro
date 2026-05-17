@@ -4,10 +4,26 @@
   >
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">节点管理</h2>
-      <div class="flex gap-2">
-        <el-button type="primary" @click="loadNodes" :loading="loading">
+      <div class="flex items-center gap-3">
+        <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
+        <el-select
+          v-model="refreshInterval"
+          size="small"
+          class="interval-select"
+          @change="changeRefreshInterval"
+        >
+          <el-option label="5 秒" :value="5000" />
+          <el-option label="10 秒" :value="10000" />
+          <el-option label="30 秒" :value="30000" />
+        </el-select>
+        <el-switch
+          v-model="autoRefreshEnabled"
+          active-text="自动刷新"
+          class="refresh-switch"
+          @change="toggleAutoRefresh"
+        />
+        <el-button type="primary" @click="refreshData" :loading="loading" circle>
           <el-icon><Refresh /></el-icon>
-          刷新
         </el-button>
       </div>
     </div>
@@ -59,44 +75,75 @@
       </el-select>
     </div>
 
-    <el-table :data="filteredNodes" stripe v-loading="loading">
-      <el-table-column prop="nodeId" label="节点ID" width="180" />
-      <el-table-column prop="role" label="角色" width="120">
-        <template #default="scope">
-          <el-tag :type="getRoleTag(scope.row.role)">
-            {{ getRoleLabel(scope.row.role) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 'online' ? 'success' : 'danger'">
-            {{ scope.row.status === 'online' ? '在线' : '离线' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="ipAddress" label="IP地址" width="150" />
-      <el-table-column prop="port" label="端口" width="80" />
-      <el-table-column prop="runningTasks" label="运行任务数" width="120" />
-      <el-table-column prop="maxConcurrent" label="最大并发" width="100" />
-      <el-table-column prop="lastHeartbeat" label="最后心跳" width="180" />
-      <el-table-column prop="registeredAt" label="注册时间" width="180" />
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleViewDetail(scope.row)">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div
+        v-for="node in filteredNodes"
+        :key="node.nodeId"
+        class="flex flex-col p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300"
+      >
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <el-tag :type="node.status === 'online' ? 'success' : 'danger'" size="small">
+              {{ node.status === 'online' ? '在线' : '离线' }}
+            </el-tag>
+            <el-tag :type="getRoleTag(node.role)" size="small">
+              {{ getRoleLabel(node.role) }}
+            </el-tag>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">节点 ID</span>
+            <span class="text-gray-900 dark:text-white font-mono">{{ node.nodeId }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">IP 地址</span>
+            <span class="text-gray-900 dark:text-white">{{ node.ipAddress }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">端口</span>
+            <span class="text-gray-900 dark:text-white">{{ node.port }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">运行任务数</span>
+            <span class="text-gray-900 dark:text-white font-semibold">{{ node.runningTasks }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">最大并发</span>
+            <span class="text-gray-900 dark:text-white font-semibold">{{ node.maxConcurrent }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">最后心跳</span>
+            <span class="text-gray-900 dark:text-white text-xs">{{ node.lastHeartbeat }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">注册时间</span>
+            <span class="text-gray-900 dark:text-white text-xs">{{ node.registeredAt }}</span>
+          </div>
+        </div>
+
+        <div class="flex gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+          <el-button
+            type="primary"
+            size="small"
+            class="flex-1"
+            @click="handleViewDetail(node)"
+          >
             详情
           </el-button>
           <el-button
-            v-if="scope.row.status === 'online'"
+            v-if="node.status === 'online'"
             type="danger"
             size="small"
-            @click="handleOfflineNode(scope.row)"
+            class="flex-1"
+            @click="handleOfflineNode(node)"
           >
             下线
           </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        </div>
+      </div>
+    </div>
 
     <el-alert
       v-if="filteredNodes.length === 0 && !loading"
@@ -146,6 +193,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Refresh } from '@element-plus/icons-vue'
 import { getNodeList, offlineNode as offlineNodeApi, getNodeStatistics } from '@/api/modules/node'
 import type { NodeInfo, NodeStatistics } from '@/api/modules/node'
+import { useAutoRefresh } from '@/composables/useAutoRefresh'
 
 defineOptions({
   name: 'TaskNodes',
@@ -162,6 +210,35 @@ const statistics = ref<NodeStatistics>({
 const filterRole = ref('')
 const filterStatus = ref('')
 
+// 加载节点列表函数（需要在 useAutoRefresh 之前定义）
+const loadNodes = async () => {
+  loading.value = true
+  try {
+    const res = await getNodeList()
+    if (res.code === 0) {
+      nodes.value = res.data || []
+      statistics.value.total = nodes.value.length
+      statistics.value.online = nodes.value.filter((n) => n.status === 'online').length
+      statistics.value.offline = nodes.value.filter((n) => n.status === 'offline').length
+    }
+  } catch (error) {
+    ElMessage.error('获取节点列表失败')
+    console.error('获取节点列表失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 定时刷新
+const {
+  autoRefresh: autoRefreshEnabled,
+  refreshInterval,
+  lastUpdateTime,
+  changeRefreshInterval,
+  toggleAutoRefresh,
+  refreshData,
+} = useAutoRefresh(loadNodes, true, 5000)
+
 const filteredNodes = computed(() => {
   return nodes.value.filter((node) => {
     if (filterRole.value && node.role !== filterRole.value) {
@@ -176,26 +253,6 @@ const filteredNodes = computed(() => {
 
 const detailDialogVisible = ref(false)
 const currentNode = ref<NodeInfo | null>(null)
-
-const loadNodes = async () => {
-  loading.value = true
-  try {
-    const [nodesRes, statsRes] = await Promise.all([getNodeList(), getNodeStatistics()])
-
-    if (nodesRes.code === 0) {
-      nodes.value = nodesRes.data || []
-    }
-
-    if (statsRes.code === 0) {
-      statistics.value = statsRes.data || { total: 0, online: 0, offline: 0 }
-    }
-  } catch (error) {
-    ElMessage.error('获取节点列表失败')
-    console.error('获取节点列表失败:', error)
-  } finally {
-    loading.value = false
-  }
-}
 
 const handleFilter = () => {}
 
@@ -253,5 +310,20 @@ onMounted(() => {
 <style scoped>
 :deep(.el-table) {
   --el-table-bg-color: transparent;
+}
+
+.update-time {
+  font-size: 12px;
+  color: #909399;
+}
+
+.interval-select {
+  width: 90px;
+}
+
+.refresh-switch {
+  :deep(.el-switch__label) {
+    font-size: 12px;
+  }
 }
 </style>

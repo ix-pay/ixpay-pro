@@ -14,6 +14,12 @@ func RequestLogMiddleware() gin.HandlerFunc {
 	requestLogger := logger.GetGlobalLogger(logger.RequestLogger)
 
 	return func(c *gin.Context) {
+		// 过滤掉健康检查接口的日志
+		if c.Request.RequestURI == "/health" {
+			c.Next()
+			return
+		}
+
 		// 开始时间
 		startTime := time.Now()
 

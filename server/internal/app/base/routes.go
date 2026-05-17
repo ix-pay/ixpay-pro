@@ -73,6 +73,7 @@ func (a *AppBase) setupRoutes() {
 			task := authenticated.Group("/task")
 			{
 				task.POST("", a.taskController.CreateTask)
+				task.PUT("/:id", a.taskController.UpdateTask)
 				task.DELETE("/:id", a.taskController.DeleteTask)
 				task.POST("/:id/start", a.taskController.StartTask)
 				task.POST("/:id/stop", a.taskController.StopTask)

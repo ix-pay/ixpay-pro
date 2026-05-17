@@ -3,6 +3,7 @@ package task
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -666,23 +667,31 @@ func (tm *TaskManager) EnableTask(taskID string) error {
 
 	taskEntity, err := repo.GetByTaskID(taskID)
 	if err != nil {
-		return fmt.Errorf("获取任务失败: %w", err)
+		// 尝试将 taskID 解析为 int64（数据库 ID）
+		id, parseErr := strconv.ParseInt(taskID, 10, 64)
+		if parseErr == nil {
+			// 如果是数字，使用数据库 ID 查询
+			taskEntity, err = repo.GetByID(id)
+		}
+		if err != nil {
+			return fmt.Errorf("获取任务失败：%w", err)
+		}
 	}
 
 	if taskEntity.Status == 1 {
 		return fmt.Errorf("任务已启用")
 	}
 
-	err = repo.UpdateStatus(taskID, 1)
+	err = repo.UpdateStatus(taskEntity.TaskID, 1)
 	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %w", err)
+		return fmt.Errorf("更新任务状态失败：%w", err)
 	}
 
 	if tm.factory == nil {
 		return fmt.Errorf("任务工厂未设置")
 	}
 
-	taskInst, err := tm.factory.CreateTask(taskID, TaskType(taskEntity.TaskType), []byte(taskEntity.Params))
+	taskInst, err := tm.factory.CreateTask(taskEntity.TaskID, TaskType(taskEntity.TaskType), []byte(taskEntity.Params))
 	if err != nil {
 		return fmt.Errorf("创建任务实例失败: %w", err)
 	}
@@ -697,7 +706,7 @@ func (tm *TaskManager) EnableTask(taskID string) error {
 		return fmt.Errorf("添加定时任务失败: %w", err)
 	}
 
-	tm.log.Info("Task enabled", "task_id", taskID)
+	tm.log.Info("Task enabled", "task_id", taskEntity.TaskID)
 	return nil
 }
 
@@ -720,15 +729,15 @@ func (tm *TaskManager) DisableTask(taskID string) error {
 		return fmt.Errorf("任务已禁用")
 	}
 
-	err = repo.UpdateStatus(taskID, 0)
+	err = repo.UpdateStatus(taskEntity.TaskID, 0)
 	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %w", err)
+		return fmt.Errorf("更新任务状态失败：%w", err)
 	}
 
-	if err := tm.RemoveScheduledTask(taskID); err != nil {
-		tm.log.Warn("移除定时任务失败", "task_id", taskID, "error", err)
+	if err := tm.RemoveScheduledTask(taskEntity.TaskID); err != nil {
+		tm.log.Warn("移除定时任务失败", "task_id", taskEntity.TaskID, "error", err)
 	}
 
-	tm.log.Info("Task disabled", "task_id", taskID)
+	tm.log.Info("Task disabled", "task_id", taskEntity.TaskID)
 	return nil
 }

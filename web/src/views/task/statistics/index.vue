@@ -4,12 +4,30 @@
   >
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">任务统计</h2>
-      <el-button type="primary" @click="loadStatistics">
-        <el-icon>
-          <Refresh />
-        </el-icon>
-        刷新
-      </el-button>
+      <div class="flex items-center gap-3">
+          <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
+          <el-select
+            v-model="refreshInterval"
+            size="small"
+            class="interval-select"
+            @change="changeRefreshInterval"
+          >
+            <el-option label="5 秒" :value="5000" />
+            <el-option label="10 秒" :value="10000" />
+            <el-option label="30 秒" :value="30000" />
+          </el-select>
+          <el-switch
+            v-model="autoRefreshEnabled"
+            active-text="自动刷新"
+            class="refresh-switch"
+            @change="toggleAutoRefresh"
+          />
+          <el-button type="primary" @click="refreshData" :loading="loading" circle>
+            <el-icon>
+              <Refresh />
+            </el-icon>
+          </el-button>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -149,6 +167,7 @@ import { ElMessage } from 'element-plus'
 import { Refresh, List, CircleCheck, VideoPlay, TrendCharts } from '@element-plus/icons-vue'
 import { getTaskStatistics, getTaskList } from '@/api/modules/task'
 import type { TaskStatistics } from '@/api/modules/task'
+import { useAutoRefresh } from '@/composables/useAutoRefresh'
 
 defineOptions({
   name: 'TaskStatistics',
@@ -164,6 +183,7 @@ const statistics = ref({
   avgSuccessRate: 0,
 })
 
+// 加载统计数据函数（需要在 useAutoRefresh 之前定义）
 const loadStatistics = async () => {
   loading.value = true
   try {
@@ -191,6 +211,16 @@ const loadStatistics = async () => {
   }
 }
 
+// 定时刷新
+const {
+  autoRefresh: autoRefreshEnabled,
+  refreshInterval,
+  lastUpdateTime,
+  changeRefreshInterval,
+  toggleAutoRefresh,
+  refreshData,
+} = useAutoRefresh(loadStatistics, true, 5000)
+
 const getSuccessRateTag = (rate: number) => {
   if (rate >= 90) return 'success'
   if (rate >= 70) return 'warning'
@@ -211,5 +241,20 @@ onMounted(() => {
 <style scoped>
 :deep(.el-card) {
   border-radius: 0.5rem;
+}
+
+.update-time {
+  font-size: 12px;
+  color: #909399;
+}
+
+.interval-select {
+  width: 90px;
+}
+
+.refresh-switch {
+  :deep(.el-switch__label) {
+    font-size: 12px;
+  }
 }
 </style>

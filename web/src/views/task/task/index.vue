@@ -2,45 +2,11 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-    <!-- 统计面板 -->
-    <div class="grid grid-cols-4 gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-          {{ dashboard.totalTasks }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">任务总数</div>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-          {{ dashboard.enabledTasks }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">启用数</div>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-          {{ dashboard.disabledTasks }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">禁用数</div>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-          {{ dashboard.todayExecutions }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">今日执行数</div>
-      </div>
-    </div>
+
 
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-3">
-        <el-input v-model="searchForm.taskId" placeholder="任务ID" style="width: 192px" />
+        <el-input v-model="searchForm.taskId" placeholder="任务 ID" style="width: 192px" />
         <el-select v-model="searchForm.taskType" placeholder="任务类型" style="width: 192px">
           <el-option label="全部" value="" />
           <el-option
@@ -77,15 +43,53 @@
     <div
       class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
     >
-      <div class="flex items-center gap-6 text-sm">
-        <span class="text-gray-600 dark:text-gray-400">
-          任务总数：<strong class="text-gray-900 dark:text-white">{{ pagination.total }}</strong>
-        </span>
-        <span class="text-gray-600 dark:text-gray-400">
-          选中任务：<strong class="text-gray-900 dark:text-white">{{
-            selectedTasks.length
-          }}</strong>
-        </span>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-6 text-sm">
+          <span class="text-gray-600 dark:text-gray-400">
+            任务总数：<strong class="text-gray-900 dark:text-white">{{ dashboard.totalTasks }}</strong>
+          </span>
+          <span class="text-gray-600 dark:text-gray-400">
+            启用数：<strong class="text-gray-900 dark:text-white">{{ dashboard.enabledTasks }}</strong>
+          </span>
+          <span class="text-gray-600 dark:text-gray-400">
+            禁用数：<strong class="text-gray-900 dark:text-white">{{ dashboard.disabledTasks }}</strong>
+          </span>
+          <span class="text-gray-600 dark:text-gray-400">
+            今日执行数：<strong class="text-gray-900 dark:text-white">{{ dashboard.todayExecutions }}</strong>
+          </span>
+          <span class="text-gray-600 dark:text-gray-400">
+            列表任务总数：<strong class="text-gray-900 dark:text-white">{{ pagination.total }}</strong>
+          </span>
+          <span class="text-gray-600 dark:text-gray-400">
+            选中任务：<strong class="text-gray-900 dark:text-white">{{
+              selectedTasks.length
+            }}</strong>
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
+          <el-select
+            v-model="refreshInterval"
+            size="small"
+            class="interval-select"
+            @change="changeRefreshInterval"
+          >
+            <el-option label="5 秒" :value="5000" />
+            <el-option label="10 秒" :value="10000" />
+            <el-option label="30 秒" :value="30000" />
+          </el-select>
+          <el-switch
+            v-model="autoRefreshEnabled"
+            active-text="自动刷新"
+            class="refresh-switch"
+            @change="toggleAutoRefresh"
+          />
+          <el-button @click="refreshData" circle>
+            <el-icon>
+              <Refresh />
+            </el-icon>
+          </el-button>
+        </div>
       </div>
     </div>
 
@@ -139,7 +143,7 @@
                 v-auth-btn="'task:task:execute'"
                 type="success"
                 size="small"
-                @click="(e) => handleRunTask(e as MouseEvent, scope.row.taskId)"
+                @click="(e) => handleRunTask(e as MouseEvent, scope.row.id)"
               >
                 执行
               </el-button>
@@ -434,7 +438,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import { Plus, VideoPlay } from '@element-plus/icons-vue'
+import { Plus, VideoPlay, Refresh } from '@element-plus/icons-vue'
 import {
   getTaskList,
   deleteTask,
@@ -450,6 +454,7 @@ import {
 import type { Task, TaskLog } from '@/api/modules/task'
 import { getDictItemsByCode } from '@/api/modules/dict'
 import type { DictItem } from '@/api/modules/dict'
+import { useAutoRefresh } from '@/composables/useAutoRefresh'
 
 defineOptions({
   name: 'TaskManagement',
@@ -491,6 +496,39 @@ const logPagination = reactive({
   pageSize: 10,
   total: 0,
 })
+
+// 加载任务列表函数（需要在 useAutoRefresh 之前定义）
+const loadTaskList = async () => {
+  loading.value = true
+  try {
+    const response = await getTaskList({
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      ...searchForm,
+    })
+    if (response.code === 0) {
+      taskList.value = response.data?.list || []
+      pagination.total = response.data?.total || 0
+    }
+    // 同时刷新 dashboard 数据
+    await loadDashboard()
+  } catch (error) {
+    console.error('加载任务列表失败:', error)
+    ElMessage.error('加载任务列表失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 定时刷新
+const {
+  autoRefresh: autoRefreshEnabled,
+  refreshInterval,
+  lastUpdateTime,
+  changeRefreshInterval,
+  toggleAutoRefresh,
+  refreshData,
+} = useAutoRefresh(loadTaskList, true, 5000)
 
 const formData = reactive({
   id: '',
@@ -566,25 +604,6 @@ const loadDashboard = async () => {
     }
   } catch (error) {
     console.error('获取任务统计面板数据失败:', error)
-  }
-}
-
-const loadTaskList = async () => {
-  loading.value = true
-  try {
-    const response = await getTaskList({
-      page: pagination.page,
-      pageSize: pagination.pageSize,
-      taskId: searchForm.taskId || undefined,
-      taskType: searchForm.taskType || undefined,
-    })
-    taskList.value = response.data?.list || []
-    pagination.total = response.data?.total || 0
-  } catch (error) {
-    ElMessage.error('获取任务列表失败')
-    console.error('获取任务列表失败:', error)
-  } finally {
-    loading.value = false
   }
 }
 
@@ -690,7 +709,7 @@ const handleRunTask = async (_event?: MouseEvent, taskId?: string) => {
     if (taskId) {
       taskIds = [taskId]
     } else if (selectedTasks.value.length > 0) {
-      taskIds = selectedTasks.value.map((task) => task.taskId)
+      taskIds = selectedTasks.value.map((task) => task.id)
     } else {
       ElMessage.warning('请选择要执行的任务')
       return
@@ -709,7 +728,7 @@ const handleRunTask = async (_event?: MouseEvent, taskId?: string) => {
 }
 
 const handleViewLog = async (row: Task) => {
-  currentTaskId.value = row.taskId
+  currentTaskId.value = row.id
   logPagination.page = 1
   await loadTaskLogs()
   logDialogVisible.value = true
@@ -890,5 +909,20 @@ onMounted(async () => {
 
 :deep(.dark .el-pagination) {
   --el-pagination-text-color: theme('colors.gray.400');
+}
+
+.update-time {
+  font-size: 12px;
+  color: #909399;
+}
+
+.interval-select {
+  width: 90px;
+}
+
+.refresh-switch {
+  :deep(.el-switch__label) {
+    font-size: 12px;
+  }
 }
 </style>

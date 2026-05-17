@@ -675,6 +675,144 @@ func (c *TaskController) GetFactory() *task.TaskFactory {
 	return c.factory
 }
 
+// UpdateTask 更新任务
+//
+//	@Summary		更新任务
+//	@Description	更新一个已存在的任务（管理员权限）
+//	@Tags			任务管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		string								true	"任务 ID"
+//	@Param			task	body		request.AddTaskRequest				true	"更新任务请求参数"
+//	@Success		200		{object}	map[string]response.TaskResponse	"任务更新成功"
+//	@Failure		400		{object}	map[string]string					"请求参数错误"
+//	@Failure		401		{object}	map[string]string					"未授权"
+//	@Failure		403		{object}	map[string]string					"无权限"
+//	@Failure		404		{object}	map[string]string					"任务不存在"
+//	@Failure		500		{object}	map[string]string					"服务器内部错误"
+//	@Router			/api/admin/task/:id [put]
+func (c *TaskController) UpdateTask(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+
+	// 检查用户角色是否有权限更新任务
+	role, exists := ctx.Get("role")
+	if !exists || role != dictconst.UserTypeAdmin {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "权限不足"})
+		return
+	}
+
+	// 将 ID 从 string 转换为 int64
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	// 解析请求参数
+	var req request.AddTaskRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误：" + err.Error()})
+		return
+	}
+
+	// 从数据库获取任务
+	oldTask, err := c.taskService.GetTaskByID(id)
+	if err != nil {
+		baseRes.FailWithMessage("任务不存在", ctx)
+		return
+	}
+
+	// 如果任务正在运行，先停止旧任务
+	if c.manager.IsTaskRunning(oldTask.TaskID) {
+		if err := c.manager.RemoveScheduledTask(oldTask.TaskID); err != nil {
+			c.log.Error("停止旧任务失败", "task_id", oldTask.TaskID, "error", err)
+		}
+	}
+
+	// 使用任务工厂创建新的任务实例
+	taskInst, err := c.factory.CreateTask(req.TaskID, task.TaskType(req.TaskType), req.Params)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "创建任务失败：" + err.Error()})
+		return
+	}
+
+	// 根据调度类型添加任务
+	if req.Type == "cron" {
+		scheduledTask := &task.ScheduledTask{
+			Task:     taskInst,
+			CronExpr: req.Expression,
+			Group:    req.Group,
+		}
+
+		if err := c.manager.AddScheduledTask(scheduledTask); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
+			return
+		}
+	} else if req.Type == "one_time" {
+		executeTime, err := time.Parse(time.RFC3339, req.Expression)
+		if err != nil {
+			c.log.Error("无效的时间表达式", "error", err)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的时间表达式"})
+			return
+		}
+
+		delay := time.Until(executeTime)
+		if delay < 0 {
+			delay = 0
+		}
+
+		c.manager.AddOneTimeTask(taskInst, delay)
+	} else {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的任务类型"})
+		return
+	}
+
+	// 更新数据库中的任务记录
+	oldTask.TaskID = req.TaskID
+	oldTask.TaskType = req.TaskType
+	oldTask.Type = req.Type
+	oldTask.Expression = req.Expression
+	oldTask.Description = req.Description
+	oldTask.Group = req.Group
+	oldTask.RetryCount = req.RetryCount
+	oldTask.UpdatedAt = time.Now()
+
+	if err := c.taskService.UpdateTask(oldTask); err != nil {
+		c.log.Error("更新数据库任务失败", "task_id", id, "error", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "更新任务失败：" + err.Error()})
+		return
+	}
+
+	// 获取更新后的任务
+	updatedTask, err := c.taskService.GetTaskByID(id)
+	if err != nil {
+		c.log.Error("获取更新后的任务失败", "task_id", id, "error", err)
+	}
+
+	// 构建响应
+	taskResponse := response.TaskResponse{
+		ID:          updatedTask.ID,
+		TaskID:      updatedTask.TaskID,
+		TaskType:    updatedTask.TaskType,
+		Type:        updatedTask.Type,
+		Expression:  updatedTask.Expression,
+		Description: updatedTask.Description,
+		Group:       updatedTask.Group,
+		Status:      "enabled",
+		StatusLabel: "running",
+		CreatedAt:   updatedTask.CreatedAt.Format("2006-01-02 15:04:05"),
+		LastRunAt:   "",
+		NextRunAt:   "",
+		RetryCount:  updatedTask.RetryCount,
+		MaxRetries:  3,
+		Concurrency: updatedTask.Concurrency,
+		Timeout:     updatedTask.Timeout,
+	}
+
+	baseRes.OkWithDetailed(taskResponse, "更新任务成功", ctx)
+}
+
 // EnableTask 启用任务
 //
 //	@Summary		启用任务

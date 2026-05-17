@@ -1,4 +1,4 @@
-# 二进制文件
+# 二进制文件（除了我们编译好的）
 *.exe
 *.exe~
 *.dll
@@ -12,29 +12,18 @@ vendor/
 *.mod
 *.sum
 
-# 构建输出
-build/
-out/
-
 # 日志文件
 logs/
 *.log
 
-# 配置文件
-configs/
-.env
-*.yaml
-*.yml
-*.json
-
-# IDE和编辑器文件
+# IDE 和编辑器文件
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS文件
+# OS 文件
 .DS_Store
 Thumbs.db
 

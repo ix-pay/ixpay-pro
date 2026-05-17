@@ -54,18 +54,18 @@ func (nr *NodeRegistry) Register(ctx context.Context) error {
 	key := fmt.Sprintf("%s%s", nr.keyPrefix, nr.nodeID)
 
 	ipAddress := getLocalIP()
-	
+
 	data := map[string]interface{}{
-		"node_id":         nr.nodeID,
-		"role":            string(nr.role),
-		"status":          "online",
-		"ip_address":      ipAddress,
-		"port":            0,
-		"running_tasks":   0,
-		"max_concurrent":  10,
-		"started_at":      time.Now().Format(time.RFC3339),
-		"last_heartbeat":  time.Now().Format(time.RFC3339),
-		"registered_at":   time.Now().Format(time.RFC3339),
+		"node_id":        nr.nodeID,
+		"role":           string(nr.role),
+		"status":         "online",
+		"ip_address":     ipAddress,
+		"port":           0,
+		"running_tasks":  0,
+		"max_concurrent": 10,
+		"started_at":     time.Now().Format(time.RFC3339),
+		"last_heartbeat": time.Now().Format(time.RFC3339),
+		"registered_at":  time.Now().Format(time.RFC3339),
 	}
 
 	if err := nr.redis.HSet(ctx, key, data).Err(); err != nil {
@@ -155,12 +155,12 @@ func (nr *NodeRegistry) GetNodeById(ctx context.Context, nodeID string) (map[str
 // SetNodeStatus 设置节点状态
 func (nr *NodeRegistry) SetNodeStatus(ctx context.Context, nodeID string, status string) error {
 	key := fmt.Sprintf("%s%s", nr.keyPrefix, nodeID)
-	
+
 	exists, err := nr.redis.Exists(ctx, key).Result()
 	if err != nil {
 		return fmt.Errorf("检查节点状态失败: %w", err)
 	}
-	
+
 	if exists == 0 {
 		return fmt.Errorf("节点不存在")
 	}

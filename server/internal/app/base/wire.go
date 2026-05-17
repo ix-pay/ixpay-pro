@@ -96,6 +96,7 @@ var ProviderSetBaseController = wire.NewSet(
 	baseapi.NewPermissionLogController,
 	baseapi.NewNodeController,
 	baseapi.NewEventController,
+	baseapi.NewGatewayServiceHandler,
 )
 var ProviderSetBaseApp = wire.NewSet(
 	// 应用层

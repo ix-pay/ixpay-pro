@@ -14,6 +14,7 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/snowflake"
+	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/task"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/transport/middleware"
 
 	_ "github.com/ix-pay/ixpay-pro/docs"
@@ -39,6 +40,8 @@ type Application struct {
 	appWX            *wx.AppWX
 	gatewayClient    *gateway.GatewayClient
 	cfg              *config.Config
+	nodeRegistry     *task.NodeRegistry
+	taskManager      *task.TaskManager
 }
 
 // NewApplication 创建应用程序实例
@@ -53,6 +56,8 @@ func SetupApplication(
 	cache cache.Cache,
 	appBase *base.AppBase,
 	appWX *wx.AppWX,
+	nodeRegistry *task.NodeRegistry,
+	taskManager *task.TaskManager,
 ) (*Application, error) {
 
 	// 创建路由引擎
@@ -65,6 +70,20 @@ func SetupApplication(
 
 	// 创建中间件配置中心
 	middlewareConfig := middleware.SetupMiddlewareConfig(auth, log, cache)
+
+	// 设置节点注册表到任务管理器
+	taskManager.SetNodeRegistry(nodeRegistry)
+
+	// 注册当前节点到 Redis
+	if err := nodeRegistry.Register(context.Background()); err != nil {
+		log.Warn("注册节点到 Redis 失败", "error", err)
+	} else {
+		log.Info("成功注册节点到 Redis", "node_id", nodeRegistry.GetNodeID())
+	}
+
+	// 启动节点心跳
+	nodeRegistry.StartHeartbeat(context.Background(), 10*time.Second)
+	log.Info("节点心跳已启动", "interval", "10s")
 
 	// 创建应用实例
 	app := &Application{
@@ -80,6 +99,8 @@ func SetupApplication(
 		appBase:          appBase,
 		appWX:            appWX,
 		cfg:              cfg,
+		nodeRegistry:     nodeRegistry,
+		taskManager:      taskManager,
 	}
 
 	// 设置中间件
@@ -170,6 +191,13 @@ func (a *Application) Start() error {
 // Shutdown 优雅关闭HTTP服务器
 func (a *Application) Shutdown(ctx context.Context) error {
 	a.logger.Info("正在关闭HTTP服务器")
+
+	// 注销节点
+	if a.nodeRegistry != nil {
+		a.logger.Info("正在注销节点")
+		a.nodeRegistry.Unregister(ctx)
+		a.nodeRegistry.Stop()
+	}
 
 	// 注销网关服务
 	if a.cfg.Gateway.Enabled && a.gatewayClient != nil {

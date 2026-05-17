@@ -369,6 +369,24 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			Description:  "获取所有角色",
 			Status:       1,
 		},
+		{
+			Path:         "/api/admin/role/:id/available-menus",
+			Method:       "GET",
+			Group:        "角色管理",
+			AuthRequired: true,
+			AuthType:     1,
+			Description:  "获取角色可授权的菜单树",
+			Status:       1,
+		},
+		{
+			Path:         "/api/admin/role/:id/permissions",
+			Method:       "POST",
+			Group:        "角色管理",
+			AuthRequired: true,
+			AuthType:     1,
+			Description:  "保存角色权限",
+			Status:       1,
+		},
 
 		// ==================== 菜单管理 ====================
 		{
@@ -432,6 +450,15 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			AuthRequired: true,
 			AuthType:     1,
 			Description:  "获取菜单分页列表",
+			Status:       1,
+		},
+		{
+			Path:         "/api/admin/menu/:id/delete-impact",
+			Method:       "GET",
+			Group:        "菜单管理",
+			AuthRequired: true,
+			AuthType:     1,
+			Description:  "获取菜单删除影响评估",
 			Status:       1,
 		},
 
@@ -1369,6 +1396,17 @@ func (as *APISeed) getAPIRoutes() []*entity.API {
 			AuthRequired: true,
 			AuthType:     1,
 			Description:  "获取角色权限日志",
+			Status:       1,
+		},
+
+		// ==================== 网关服务管理 ====================
+		{
+			Path:         "/api/admin/gateway/services",
+			Method:       "GET",
+			Group:        "网关服务管理",
+			AuthRequired: true,
+			AuthType:     1,
+			Description:  "获取网关注册服务列表",
 			Status:       1,
 		},
 	}

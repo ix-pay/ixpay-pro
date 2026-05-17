@@ -600,6 +600,24 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		return err
 	}
 
+	_, err = ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:    monitorDir.ID,
+		Path:        "gateway-services",
+		Name:        "GatewayServices",
+		Component:   "views/monitor/gateway-services/index",
+		Title:       "网关服务",
+		Icon:        "Connection",
+		Hidden:      false,
+		Sort:        3,
+		Status:      1,
+		KeepAlive:   true,
+		DefaultMenu: false,
+		Type:        entity.MenuTypeMenu,
+	})
+	if err != nil {
+		return err
+	}
+
 	// 日志管理下的菜单
 	opLogMenu, err := ms.createOrGetMenu(logger, &entity.Menu{
 		ParentID:    logDir.ID,

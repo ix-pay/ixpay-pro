@@ -52,20 +52,22 @@ func (a *AppBase) setupRoutes() {
 			}
 
 			// 角色路由
-			role := authenticated.Group("/role")
-			{
-				role.POST("", a.roleController.CreateRole)
-				role.GET("/:id", a.roleController.GetRoleByID)
-				role.GET("/:id/detail", a.roleController.GetRoleDetail)
-				role.GET("/:id/available-apis", a.roleController.GetAvailableAPIs)
-				role.PUT("", a.roleController.UpdateRole)
-				role.DELETE("", a.roleController.DeleteRole)
-				role.GET("", a.roleController.GetRoleList)
-				role.GET("/all", a.roleController.GetAllRoles)
-				role.POST("/assign-users", a.roleController.AssignUserToRole)
-				role.POST("/assign-menus", a.roleController.AssignMenuToRole)
-				role.POST("/assign-api-routes", a.roleController.AssignAPIToRole)
-			}
+		role := authenticated.Group("/role")
+		{
+			role.POST("", a.roleController.CreateRole)
+			role.GET("/:id", a.roleController.GetRoleByID)
+			role.GET("/:id/detail", a.roleController.GetRoleDetail)
+			role.GET("/:id/available-apis", a.roleController.GetAvailableAPIs)
+			role.GET("/:id/available-menus", a.roleController.GetAvailableMenus)
+			role.POST("/:id/permissions", a.roleController.SaveRolePermissions)
+			role.PUT("", a.roleController.UpdateRole)
+			role.DELETE("", a.roleController.DeleteRole)
+			role.GET("", a.roleController.GetRoleList)
+			role.GET("/all", a.roleController.GetAllRoles)
+			role.POST("/assign-users", a.roleController.AssignUserToRole)
+			role.POST("/assign-menus", a.roleController.AssignMenuToRole)
+			role.POST("/assign-api-routes", a.roleController.AssignAPIToRole)
+		}
 
 			// 任务路由（需要 admin 角色）
 			task := authenticated.Group("/task")
@@ -78,11 +80,11 @@ func (a *AppBase) setupRoutes() {
 				task.POST("/:id/enable", a.taskController.EnableTask)
 				task.POST("/:id/disable", a.taskController.DisableTask)
 				task.GET("", a.taskController.GetTasks)
-				task.GET("/:id", a.taskController.GetTask)
-				// 新增任务执行日志和统计路由
+				task.GET("/dashboard", a.taskController.GetDashboard)
 				task.GET("/execution-logs", a.taskController.SearchExecutionLogs)
-				task.GET("/:id/execution-logs", a.taskController.GetExecutionLogs)
 				task.GET("/statistics", a.taskController.GetStatistics)
+				task.GET("/:id", a.taskController.GetTask)
+				task.GET("/:id/execution-logs", a.taskController.GetExecutionLogs)
 				task.POST("/:id/group", a.taskController.SetTaskGroup)
 			}
 
@@ -102,15 +104,16 @@ func (a *AppBase) setupRoutes() {
 			}
 
 			// 菜单管理路由
-			menu := authenticated.Group("/menu")
-			{
-				menu.GET("", a.menuController.GetMenuList)
-				menu.POST("", a.menuController.CreateMenu)
-				menu.PUT("", a.menuController.UpdateMenu)
-				menu.DELETE("/:id", a.menuController.DeleteMenu)
-				menu.GET("/page", a.menuController.GetMenuPage)
-				menu.GET("/tree", a.menuController.GetMenuTree)
-			}
+		menu := authenticated.Group("/menu")
+		{
+			menu.GET("", a.menuController.GetMenuList)
+			menu.POST("", a.menuController.CreateMenu)
+			menu.PUT("", a.menuController.UpdateMenu)
+			menu.DELETE("/:id", a.menuController.DeleteMenu)
+			menu.GET("/page", a.menuController.GetMenuPage)
+			menu.GET("/tree", a.menuController.GetMenuTree)
+			menu.GET("/:id/delete-impact", a.menuController.GetMenuDeleteImpact)
+		}
 
 			// 按钮权限管理路由
 			btnPerm := authenticated.Group("/btn-perms")
@@ -322,6 +325,12 @@ func (a *AppBase) setupRoutes() {
 				subscriber.POST("", a.eventController.CreateSubscriber)
 				subscriber.GET("", a.eventController.ListSubscribers)
 				subscriber.DELETE("/:id", a.eventController.DeleteSubscriber)
+			}
+
+			// 网关服务管理路由
+			gateway := authenticated.Group("/gateway")
+			{
+				gateway.GET("/services", a.gatewayServiceController.GetGatewayServices)
 			}
 		}
 	}

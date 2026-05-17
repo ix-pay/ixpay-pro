@@ -22,47 +22,48 @@ import (
 
 // AppBase 应用程序结构
 type AppBase struct {
-	router                  *gin.Engine
-	db                      *database.PostgresDB
-	auth                    *auth.JWTAuth
-	permissions             *auth.PermissionManager
-	logger                  logger.Logger
-	config                  *config.Config
-	authController          *baseapi.AuthController
-	userController          *baseapi.UserController
-	taskController          *baseapi.TaskController
-	apiController           *baseapi.APIController
-	menuController          *baseapi.MenuController
-	roleController          *baseapi.RoleController
-	btnPermController       *baseapi.BtnPermController
-	configController        *baseapi.ConfigController
-	dictController          *baseapi.DictController
-	operationLogController  *baseapi.OperationLogController
-	departmentController    *baseapi.DepartmentController
-	positionController      *baseapi.PositionController
-	noticeController        *baseapi.NoticeController
-	loginLogController      *baseapi.LoginLogController
-	onlineUserController    *baseapi.OnlineUserController
-	monitorController       *baseapi.MonitorController
-	permissionLogController *baseapi.PermissionLogController
-	nodeController          *baseapi.NodeController
-	eventController         *baseapi.EventController
-	userRepo                repo.UserRepository
-	apiRepo                 repo.APIRepository
-	roleRepo                repo.RoleRepository
-	menuRepo                repo.MenuRepository
-	configRepo              repo.ConfigRepository
-	dictRepo                repo.DictRepository
-	dictItemRepo            repo.DictItemRepository
-	departmentRepo          repo.DepartmentRepository
-	positionRepo            repo.PositionRepository
-	permissionService       *service.PermissionService
-	operationLogService     *service.OperationLogService
-	onlineUserService       *service.OnlineUserService
-	taskExecutionLogRepo    repo.TaskExecutionLogRepository // 任务执行日志仓库
-	taskRepo                repo.TaskRepository             // 任务仓库
-	cache                   cache.Cache
-	eventBus                *eventbus.EventBus
+	router                   *gin.Engine
+	db                       *database.PostgresDB
+	auth                     *auth.JWTAuth
+	permissions              *auth.PermissionManager
+	logger                   logger.Logger
+	config                   *config.Config
+	authController           *baseapi.AuthController
+	userController           *baseapi.UserController
+	taskController           *baseapi.TaskController
+	apiController            *baseapi.APIController
+	menuController           *baseapi.MenuController
+	roleController           *baseapi.RoleController
+	btnPermController        *baseapi.BtnPermController
+	configController         *baseapi.ConfigController
+	dictController           *baseapi.DictController
+	operationLogController   *baseapi.OperationLogController
+	departmentController     *baseapi.DepartmentController
+	positionController       *baseapi.PositionController
+	noticeController         *baseapi.NoticeController
+	loginLogController       *baseapi.LoginLogController
+	onlineUserController     *baseapi.OnlineUserController
+	monitorController        *baseapi.MonitorController
+	permissionLogController  *baseapi.PermissionLogController
+	nodeController           *baseapi.NodeController
+	eventController          *baseapi.EventController
+	gatewayServiceController *baseapi.GatewayServiceController
+	userRepo                 repo.UserRepository
+	apiRepo                  repo.APIRepository
+	roleRepo                 repo.RoleRepository
+	menuRepo                 repo.MenuRepository
+	configRepo               repo.ConfigRepository
+	dictRepo                 repo.DictRepository
+	dictItemRepo             repo.DictItemRepository
+	departmentRepo           repo.DepartmentRepository
+	positionRepo             repo.PositionRepository
+	permissionService        *service.PermissionService
+	operationLogService      *service.OperationLogService
+	onlineUserService        *service.OnlineUserService
+	taskExecutionLogRepo     repo.TaskExecutionLogRepository // 任务执行日志仓库
+	taskRepo                 repo.TaskRepository             // 任务仓库
+	cache                    cache.Cache
+	eventBus                 *eventbus.EventBus
 }
 
 // NewAppBase 创建应用程序实例

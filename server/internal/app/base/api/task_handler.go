@@ -706,6 +706,62 @@ func (c *TaskController) EnableTask(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "任务启用成功"})
 }
 
+// GetDashboard 获取任务统计面板数据
+//
+//	@Summary		获取任务统计面板
+//	@Description	获取任务统计面板数据，包括任务总数、启用数、禁用数、今日执行数（管理员权限）
+//	@Tags			任务管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	map[string]response.TaskDashboardResponse	"统计面板数据"
+//	@Failure		401	{object}	map[string]string		"未授权"
+//	@Failure		403	{object}	map[string]string		"无权限"
+//	@Router			/api/admin/task/dashboard [get]
+func (c *TaskController) GetDashboard(ctx *gin.Context) {
+	role, exists := ctx.Get("role")
+	if !exists || role != "admin" {
+		baseRes.FailWithMessage("权限不足", ctx)
+		return
+	}
+
+	// 获取所有任务
+	allTasks, _, err := c.taskService.ListTasks(nil, 1, 10000)
+	if err != nil {
+		allTasks = []*entity.Task{}
+	}
+
+	// 统计总数和状态
+	totalTasks := len(allTasks)
+	enabledCount := 0
+	disabledCount := 0
+	for _, t := range allTasks {
+		if t.Status == 1 {
+			enabledCount++
+		} else {
+			disabledCount++
+		}
+	}
+
+	// 获取今日执行次数（从日志服务统计）
+	todayExecutions := int64(0)
+	now := time.Now()
+	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
+	todayEnd := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location()).Format(time.RFC3339)
+
+	logs, _, err := c.logService.SearchExecutionLogs(1, 10000, nil, "", todayStart, todayEnd)
+	if err == nil {
+		todayExecutions = int64(len(logs))
+	}
+
+	baseRes.OkWithDetailed(gin.H{
+		"totalTasks":      totalTasks,
+		"enabledTasks":    enabledCount,
+		"disabledTasks":   disabledCount,
+		"todayExecutions": todayExecutions,
+	}, "获取任务统计面板成功", ctx)
+}
+
 // DisableTask 禁用任务
 //
 //	@Summary		禁用任务

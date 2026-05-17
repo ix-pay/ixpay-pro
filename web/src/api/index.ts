@@ -51,3 +51,6 @@ export * from './modules/btn-perm'
 
 // 节点管理
 export * from './modules/node'
+
+// 网关服务管理
+export * from './modules/gateway'

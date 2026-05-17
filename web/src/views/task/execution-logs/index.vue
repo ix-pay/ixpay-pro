@@ -1,29 +1,11 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300">
     <div class="flex flex-col gap-3 mb-4 border-b pb-4">
       <div class="flex flex-wrap items-center gap-3">
-        <el-select
-          v-model="searchForm.taskId"
-          placeholder="选择任务"
-          clearable
-          filterable
-          style="width: 220px"
-        >
-          <el-option
-            v-for="task in taskOptions"
-            :key="task.id"
-            :label="task.taskId"
-            :value="task.taskId"
-          />
+        <el-select v-model="searchForm.taskId" placeholder="选择任务" clearable filterable style="width: 220px">
+          <el-option v-for="task in taskOptions" :key="task.id" :label="task.taskId" :value="task.taskId" />
         </el-select>
-        <el-select
-          v-model="searchForm.result"
-          placeholder="执行结果"
-          clearable
-          style="width: 150px"
-        >
+        <el-select v-model="searchForm.result" placeholder="执行结果" clearable style="width: 150px">
           <el-option label="全部" value="" />
           <el-option label="成功" value="success" />
           <el-option label="失败" value="failed" />
@@ -84,7 +66,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { searchTaskLogs, getAllTasks } from '@/api/modules/task'
+import { searchTaskLogs, getTaskList } from '@/api/modules/task'
 import type { TaskLog, Task } from '@/api/modules/task'
 
 defineOptions({
@@ -152,8 +134,8 @@ const handleReset = () => {
 
 const loadTasks = async () => {
   try {
-    const res = await getAllTasks()
-    taskOptions.value = res.data || []
+    const res = await getTaskList({ page: 1, pageSize: 1000 })
+    taskOptions.value = res.data?.list || []
   } catch (error) {
     console.error('获取任务列表失败:', error)
   }

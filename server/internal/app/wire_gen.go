@@ -96,7 +96,7 @@ func InitializeApp() (*Application, error) {
 	apiController := baseapi.NewAPIController(apiService, loggerLogger)
 	menuService := service.NewMenuService(menuRepository, btnPermRepository, roleRepository, apiRepository, loggerLogger)
 	menuController := baseapi.NewMenuController(menuService, loggerLogger)
-	roleController := baseapi.NewRoleController(roleService, rolePermissionService, apiService, loggerLogger)
+	roleController := baseapi.NewRoleController(roleService, rolePermissionService, apiService, menuService, loggerLogger)
 	btnPermService := service.NewBtnPermService(btnPermRepository, loggerLogger)
 	permissionRuleRepository := persistence.NewPermissionRuleRepository(postgresDB)
 	permissionService := service.NewPermissionService(roleService, userService, roleRepository, btnPermRepository, apiRepository, permissionRuleRepository, permissionGroupRepository, loggerLogger)
@@ -154,7 +154,7 @@ func InitializeApp() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	application, err := SetupApplication(configConfig, multiLogger, loggerLogger, postgresDB, snowflakeSnowflake, jwtAuth, permissionManager, cacheCache, appBase, appWX)
+	application, err := SetupApplication(configConfig, multiLogger, loggerLogger, postgresDB, snowflakeSnowflake, jwtAuth, permissionManager, cacheCache, appBase, appWX, nodeRegistry, taskManager)
 	if err != nil {
 		return nil, err
 	}

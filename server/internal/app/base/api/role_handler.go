@@ -19,15 +19,17 @@ type RoleController struct {
 	roleService           *service.RoleService
 	rolePermissionService *service.RolePermissionService
 	apiService            *service.APIService
+	menuService           *service.MenuService
 	log                   logger.Logger
 }
 
 // NewRoleController 创建角色控制器
-func NewRoleController(roleService *service.RoleService, rolePermissionService *service.RolePermissionService, apiService *service.APIService, log logger.Logger) *RoleController {
+func NewRoleController(roleService *service.RoleService, rolePermissionService *service.RolePermissionService, apiService *service.APIService, menuService *service.MenuService, log logger.Logger) *RoleController {
 	return &RoleController{
 		roleService:           roleService,
 		rolePermissionService: rolePermissionService,
 		apiService:            apiService,
+		menuService:           menuService,
 		log:                   log,
 	}
 }
@@ -598,4 +600,51 @@ func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 
 	c.log.Info("获取角色可用 API 列表成功", "roleID", roleID, "totalCount", len(allAPIs), "availableCount", len(availableAPIs))
 	baseRes.OkWithDetailed(availableAPIs, "获取可用 API 列表成功", ctx)
+}
+
+// GetAvailableMenus 获取角色可授权的菜单树
+//
+//	@Summary		获取角色可授权的菜单树
+//	@Description	获取完整的菜单树结构，用于角色权限配置
+//	@Tags			角色管理
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"角色 ID"
+//	@Success		200	{object}	baseRes.Response{data=[]response.MenuResponse}
+//	@Router			/api/admin/role/:id/available-menus [get]
+func (c *RoleController) GetAvailableMenus(ctx *gin.Context) {
+	// 将字符串 ID 转换为 int64
+	roleIDStr := ctx.Param("id")
+	if roleIDStr == "" {
+		c.log.Error("角色 ID 不能为空")
+		baseRes.FailWithMessage("角色 ID 不能为空", ctx)
+		return
+	}
+
+	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 ID 格式", "id", roleIDStr, "error", err)
+		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		return
+	}
+
+	// 获取完整的菜单树结构
+	menus, err := c.menuService.GetAllMenuTree()
+	if err != nil {
+		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取菜单树失败", ctx)
+		return
+	}
+
+	// 转换为响应结构
+	menuResponses := make([]response.MenuResponse, len(menus))
+	for i, menu := range menus {
+		resp := convertToMenuResponse(menu)
+		if resp != nil {
+			menuResponses[i] = *resp
+		}
+	}
+
+	c.log.Info("获取角色可授权菜单树成功", "roleID", roleID, "menuCount", len(menus))
+	baseRes.OkWithDetailed(menuResponses, "获取菜单树成功", ctx)
 }

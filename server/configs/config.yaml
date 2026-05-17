@@ -57,3 +57,10 @@ logging:
 swagger:
   enabled: true
   path: "/swagger"
+
+gateway:
+  enabled: true
+  gateway_url: "http://127.0.0.1:8385"
+  auth_key: "ihvke@2025"
+  service_name: "ixpay-server"
+  heartbeat_interval: 10

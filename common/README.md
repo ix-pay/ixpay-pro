@@ -161,7 +161,7 @@ go run cmd/ixpay-pro/main.go seed
 go run cmd/ixpay-pro/main.go
 
 # 生产模式
-go build -o ixpay-server cmd/ixpay-pro/main.go
+go build -o ./cmd/build/ixpay-server cmd/ixpay-pro/main.go
 ./ixpay-server
 
 # 访问 API 文档

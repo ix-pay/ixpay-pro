@@ -63,7 +63,7 @@ func TestWithDelaySeconds(t *testing.T) {
 
 	assert.Equal(t, 30, event.DelaySeconds)
 	assert.NotNil(t, event.ScheduledAt)
-	
+
 	expectedTime := time.Now().Add(30 * time.Second)
 	diff := expectedTime.Sub(*event.ScheduledAt)
 	assert.True(t, diff.Abs() < time.Second, "ScheduledAt should be approximately 30 seconds from now")

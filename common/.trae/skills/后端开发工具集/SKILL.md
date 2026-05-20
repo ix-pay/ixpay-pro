@@ -67,7 +67,7 @@ go imports -w .
 
 **构建项目**：
 ```bash
-go build -o ./build/ixpay-pro.exe ./cmd/ixpay-pro/main.go
+go build -o ./cmd/build/ixpay-pro.exe ./cmd/ixpay-pro/main.go
 ```
 
 **运行项目**：

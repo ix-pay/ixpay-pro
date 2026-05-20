@@ -8705,6 +8705,66 @@ paths:
       summary: 获取单个任务
       tags:
       - 任务管理
+    put:
+      consumes:
+      - application/json
+      description: 更新一个已存在的任务（管理员权限）
+      parameters:
+      - description: 任务 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 更新任务请求参数
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 任务更新成功
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.TaskResponse'
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 无权限
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 任务不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 更新任务
+      tags:
+      - 任务管理
   /api/admin/task/:id/disable:
     post:
       consumes:

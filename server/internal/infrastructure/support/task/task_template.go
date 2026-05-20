@@ -285,10 +285,10 @@ func (t *TaskTemplate) StreamTrimTemplate(
 	cronExpr string,
 ) error {
 	params := map[string]interface{}{
-		"stream_key":  streamKey,
-		"max_length":  maxLength,
-		"trim_type":   "approx",
-		"timeout":     30,
+		"stream_key": streamKey,
+		"max_length": maxLength,
+		"trim_type":  "approx",
+		"timeout":    30,
 	}
 
 	return t.helper.CreateCronTask(taskID, TaskTypeStreamMaintenance, cronExpr, params,

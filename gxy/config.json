@@ -1,6 +1,6 @@
 {
   "listen_addr": "0.0.0.0",
-  "listen_port": 8385,
+  "listen_port": 8585,
   "register_ttl": 30000000000,
   "health_check_interval": 10000000000,
   "health_check_timeout": 5000000000,
@@ -8,5 +8,5 @@
   "heartbeat_interval": 5000000000,
   "register_auth_key": "ihvke@2025",
   "enable_auto_discovery": true,
-  "node_discovery_port": 8384
+  "node_discovery_port": 8584
 }

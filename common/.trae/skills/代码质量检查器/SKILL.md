@@ -85,7 +85,7 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs
 
 ```bash
 # 执行后端项目构建
-go build -o build/ixpay-pro.exe ./cmd/ixpay-pro
+go build -o ./cmd/build/ixpay-pro.exe ./cmd/ixpay-pro
 ```
 
 **检查项目**：
@@ -526,7 +526,7 @@ npm run lint
   run: go vet ./...
 
 - name: Build Check
-  run: go build -o build/ixpay-pro.exe ./cmd/ixpay-pro
+  run: go build -o ./cmd/build/ixpay-pro.exe ./cmd/ixpay-pro
 
 - name: Unit Test Check
   run: go test ./tests/unit/... -v

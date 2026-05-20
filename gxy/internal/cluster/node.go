@@ -93,7 +93,7 @@ func (cs *ClusterSync) Start() {
 	// 4. 启动数据同步HTTP服务
 	cs.startSyncHTTPServer()
 
-	cs.logger.Info("Cluster sync service started. Local node: %s", cs.localNode.ID)
+	cs.logger.Debug("集群同步服务已启动，本地节点：%s", cs.localNode.ID)
 }
 
 // 生成节点ID（不依赖第三方库）
@@ -157,7 +157,7 @@ func (cs *ClusterSync) startAutoDiscovery() {
 			// 解析种子节点地址
 			seedAddr, err := net.ResolveTCPAddr("tcp", seedNode)
 			if err != nil {
-				cs.logger.Error("Failed to resolve seed node address %s: %v", seedNode, err)
+				cs.logger.Error("解析种子节点地址失败 %s: %v", seedNode, err)
 				continue
 			}
 
@@ -178,15 +178,13 @@ func (cs *ClusterSync) startAutoDiscovery() {
 
 	// 3. 启动定期扫描任务
 	go func() {
-		ticker := time.NewTicker(time.Second * 15) // 每15秒扫描一次
+		ticker := time.NewTicker(time.Second * 15) // 每 15 秒扫描一次
 		defer ticker.Stop()
 
 		for range ticker.C {
 			cs.scanClusterNodes()
 		}
 	}()
-
-	cs.logger.Info("Auto discovery started with seed nodes: %v", cs.config.SeedNodes)
 }
 
 // 发送HTTP请求（使用复用的客户端）
@@ -228,17 +226,17 @@ func (cs *ClusterSync) registerToSeedNode(seedNode *ClusterNode) {
 
 	resp, err := cs.makeHTTPRequest("POST", url, registerMsg)
 	if err != nil {
-		cs.logger.Error("Failed to register to seed node %s: %v", seedNode.Address, err)
+		cs.logger.Error("注册到种子节点失败 %s: %v", seedNode.Address, err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
-		cs.logger.Info("Successfully registered to seed node %s", seedNode.Address)
+		cs.logger.Info("成功注册到种子节点 %s", seedNode.Address)
 		// 同步数据
 		cs.syncWithNewNode(seedNode)
 	} else {
-		cs.logger.Error("Failed to register to seed node %s, status code: %d", seedNode.Address, resp.StatusCode)
+		cs.logger.Error("注册到种子节点失败 %s，状态码：%d", seedNode.Address, resp.StatusCode)
 	}
 }
 
@@ -254,7 +252,7 @@ func (cs *ClusterSync) syncWithNewNode(newNode *ClusterNode) {
 	// 发送同步请求到新节点
 	resp, err := cs.sendSyncRequest(newNode, syncReq)
 	if err != nil {
-		cs.logger.Error("Failed to send sync request to node %s: %v", newNode.ID, err)
+		cs.logger.Error("发送同步请求到节点 %s 失败：%v", newNode.ID, err)
 		return
 	}
 
@@ -308,7 +306,7 @@ func (cs *ClusterSync) applySyncData(resp *DataSyncRequest) {
 		}
 	}
 
-	cs.logger.Info("Successfully synced data from cluster")
+	cs.logger.Info("成功从集群同步数据")
 }
 
 // 启动心跳监控
@@ -322,10 +320,10 @@ func (cs *ClusterSync) startHeartbeatMonitor() {
 			// 检查所有节点的心跳
 			now := time.Now()
 			for nodeID, node := range cs.nodes {
-				// 如果节点超过3倍心跳间隔没有心跳，标记为离线
+				// 如果节点超过 3 倍心跳间隔没有心跳，标记为离线
 				if now.Sub(node.LastSeen) > cs.config.HeartbeatInterval*3 {
 					node.Status = "offline"
-					cs.logger.Info("Node %s marked as offline due to heartbeat timeout", nodeID)
+					cs.logger.Debug("节点 %s 因心跳超时而标记为离线", nodeID)
 
 					// 从节点列表中移除
 					delete(cs.nodes, nodeID)
@@ -335,7 +333,7 @@ func (cs *ClusterSync) startHeartbeatMonitor() {
 		}
 	}()
 
-	cs.logger.Info("Heartbeat monitor started with interval %v", cs.config.HeartbeatInterval)
+	cs.logger.Debug("心跳监控已启动，间隔：%v", cs.config.HeartbeatInterval)
 }
 
 // 启动同步HTTP服务
@@ -433,7 +431,7 @@ func (cs *ClusterSync) handleNodeDiscovery(msg *ClusterDiscoveryMessage, _ net.A
 	// 检查节点是否已存在
 	if _, exists := cs.nodes[newNode.ID]; !exists {
 		cs.nodes[newNode.ID] = newNode
-		cs.logger.Info("Discovered new cluster node: %s at %s:%d", newNode.ID, newNode.Address, newNode.Port)
+		cs.logger.Debug("发现新的集群节点：%s，地址：%s:%d", newNode.ID, newNode.Address, newNode.Port)
 
 		// 同步数据
 		go cs.syncWithNewNode(newNode)

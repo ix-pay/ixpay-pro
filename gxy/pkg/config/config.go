@@ -22,7 +22,7 @@ type Config struct {
 func LoadConfig(filePath string) (*Config, error) {
 	config := &Config{
 		ListenAddr:          "0.0.0.0",
-		ListenPort:          8385,
+		ListenPort:          8585,
 		RegisterTTL:         time.Second * 30,
 		HealthCheckInterval: time.Second * 10,
 		HealthCheckTimeout:  time.Second * 5,
@@ -30,7 +30,7 @@ func LoadConfig(filePath string) (*Config, error) {
 		HeartbeatInterval:   time.Second * 5,
 		RegisterAuthKey:     "ihvke@2025", // 使用正确的认证密钥
 		EnableAutoDiscovery: true,
-		NodeDiscoveryPort:   8384,
+		NodeDiscoveryPort:   8584,
 	}
 
 	if filePath != "" {

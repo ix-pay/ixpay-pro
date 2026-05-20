@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -210,9 +212,23 @@ func (gc *GatewayClient) GetInstance() *ServiceInstance {
 
 // BuildServiceInstance 构建服务实例
 func BuildServiceInstance(name, host string, port int, nodeRole, nodeID string, metadata map[string]string) *ServiceInstance {
+	var hostname string
 	if nodeID == "" {
-		hostname, _ := os.Hostname()
+		hostname, _ = os.Hostname()
 		nodeID = fmt.Sprintf("%s-%s-%d", name, hostname, port)
+	} else {
+		hostname, _ = os.Hostname()
+	}
+
+	// 如果 host 为 0.0.0.0，尝试获取容器 IP 地址
+	if host == "0.0.0.0" || host == "" {
+		containerIP := getContainerIP()
+		if containerIP != "" {
+			host = containerIP
+		} else {
+			// 如果无法获取容器 IP，使用主机名
+			host = hostname
+		}
 	}
 
 	if metadata == nil {
@@ -231,6 +247,51 @@ func BuildServiceInstance(name, host string, port int, nodeRole, nodeID string, 
 		LastSeen:          time.Now(),
 		ActiveConnections: 0,
 	}
+}
+
+// getContainerIP 获取容器 IP 地址
+func getContainerIP() string {
+	// 尝试从环境变量获取容器 IP
+	containerIP := os.Getenv("CONTAINER_IP")
+	if containerIP != "" {
+		return containerIP
+	}
+
+	// 从 /etc/hosts 文件读取容器 IP（Docker 会自动添加主机名映射）
+	hostsPath := "/etc/hosts"
+	data, err := os.ReadFile(hostsPath)
+	if err != nil {
+		return ""
+	}
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		return ""
+	}
+
+	// 解析 hosts 文件，查找主机名对应的 IP
+	lines := strings.Split(string(data), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.Fields(line)
+		if len(parts) >= 2 {
+			ip := parts[0]
+			host := parts[1]
+
+			// 匹配主机名（排除 127.0.0.1）
+			if host == hostname && !strings.HasPrefix(ip, "127.") {
+				if net.ParseIP(ip) != nil && net.ParseIP(ip).To4() != nil {
+					return ip
+				}
+			}
+		}
+	}
+
+	return ""
 }
 
 // ParsePort 从字符串解析端口

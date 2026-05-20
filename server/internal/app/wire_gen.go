@@ -139,7 +139,8 @@ func InitializeApp() (*Application, error) {
 	nodeController := baseapi.NewNodeController(nodeService, loggerLogger)
 	eventBus := SetupEventBus(postgresDB, client)
 	eventController := baseapi.NewEventController(eventBus, loggerLogger)
-	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, btnPermController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, permissionLogController, nodeController, eventController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, dictRepository, dictItemRepository, departmentRepository, positionRepository, operationLogService, onlineUserService, taskExecutionLogRepository, taskRepository, cacheCache, eventBus)
+	gatewayServiceController := baseapi.NewGatewayServiceHandler(loggerLogger, configConfig)
+	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, btnPermController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, permissionLogController, nodeController, eventController, gatewayServiceController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, dictRepository, dictItemRepository, departmentRepository, positionRepository, operationLogService, onlineUserService, taskExecutionLogRepository, taskRepository, cacheCache, eventBus)
 	if err != nil {
 		return nil, err
 	}

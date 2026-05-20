@@ -227,7 +227,7 @@ import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { Plus, Search, Refresh, Bell, SuccessFilled, CircleClose } from '@element-plus/icons-vue'
 import { getNoticeList, createNotice, updateNotice, deleteNotice } from '@/api/modules/notice'
-import { getDictItems } from '@/api/modules/dict'
+import { getDictItemsByCode } from '@/api/modules/dict'
 import { formatDate } from '@/utils/format'
 
 defineOptions({
@@ -289,7 +289,7 @@ const formRules = reactive({
 // 加载字典数据
 const loadNoticeTypeOptions = async () => {
   try {
-    const res = await getDictItems('notice_type')
+    const res = await getDictItemsByCode('notice_type')
     noticeTypeOptions.value = res.data || []
   } catch (error) {
     console.error('加载公告类型字典失败:', error)

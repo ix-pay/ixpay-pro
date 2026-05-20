@@ -25,45 +25,43 @@ func main() {
 	var logger *utils.Logger
 	if *logPath != "" {
 		var err error
-		logger, err = utils.NewLoggerWithFile(utils.INFO, false, *logPath)
+		logger, err = utils.NewLoggerWithFile(utils.INFO, false, *logPath, "网关")
 		if err != nil {
-			fmt.Printf("初始化日志文件失败: %v，将输出到终端\n", err)
-			logger = utils.NewLogger(utils.INFO, false)
+			fmt.Printf("初始化日志文件失败：%v，将输出到终端\n", err)
+			logger = utils.NewLogger(utils.INFO, false, "网关")
 		}
 	} else {
-		logger = utils.NewLogger(utils.INFO, true)
+		logger = utils.NewLogger(utils.INFO, true, "网关")
 	}
 	defer logger.Close()
-	logger.Info("Starting gateway service...")
+	logger.Info("正在启动网关服务...")
 
 	// 加载配置
 	cfg, err := config.LoadConfig(*configPath)
 	if err != nil {
-		logger.Warn("加载配置文件失败: %v，使用默认配置", err)
+		logger.Warn("加载配置文件失败：%v，使用默认配置", err)
 		cfg, err = config.LoadConfig("")
 		if err != nil {
-			logger.Fatal("加载默认配置失败: %v", err)
+			logger.Fatal("加载默认配置失败：%v", err)
 			os.Exit(1)
 		}
 	}
 
-	// Initialize components
+	// 初始化组件
 	registry := discovery.NewRegistry()
-	balancer := loadbalance.NewRoundRobinBalancer(100) // 连接数阈值设为100
+	balancer := loadbalance.NewRoundRobinBalancer(100) // 连接数阈值设为 100
 	proxy := proxy.NewProxy(registry, balancer, logger)
 	handler := api.NewHandler(registry, proxy, cfg, logger)
 	router := api.NewRouter(handler, proxy)
 	clusterSync := cluster.NewClusterSync(registry, cfg, logger)
 	healthChecker := discovery.NewHealthChecker(registry, cfg.HealthCheckInterval, cfg.HealthCheckTimeout, logger)
 
-	// Setup routes
+	// 设置路由
 	router.SetupRoutes()
 
-	// Start services
+	// 启动服务
 	healthChecker.Start()
 	clusterSync.Start()
-
-	// Start HTTP server
 	serverAddr := fmt.Sprintf("%s:%d", cfg.ListenAddr, cfg.ListenPort)
 	server := &http.Server{
 		Addr:         serverAddr,
@@ -73,10 +71,10 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	logger.Info("Gateway started and listening on %s", serverAddr)
-	logger.Info("Register auth key: %s", cfg.RegisterAuthKey)
+	logger.Info("网关已启动，监听地址：%s", serverAddr)
+	logger.Info("注册认证密钥：%s", cfg.RegisterAuthKey)
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.Fatal("Failed to start server: %v", err)
+		logger.Fatal("启动服务器失败：%v", err)
 	}
 }

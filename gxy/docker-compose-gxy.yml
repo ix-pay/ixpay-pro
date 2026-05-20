@@ -8,9 +8,17 @@ services:
     container_name: gxy-gateway
     restart: unless-stopped
     ports:
-      - "8385:8385"
-      - "8384:8384"
+      - "8585:8585"
+      - "8584:8584"
     volumes:
-      - ../../run/gxy/config.json:/app/config.json:ro
-      - ../../run/gxy/logs:/app/logs
+      - ./config.json:/app/config.json:ro
+      - ./logs:/app/logs
+      - ./gateway:/app/gateway:ro
     command: ["./gateway", "-config", "/app/config.json", "-log", "/app/logs/gateway.log"]
+    networks:
+      - ixpay-network
+
+networks:
+  ixpay-network:
+    name: server_ixpay-network
+    external: true

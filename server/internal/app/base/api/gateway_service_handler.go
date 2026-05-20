@@ -6,17 +6,20 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ix-pay/ixpay-pro/internal/config"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/utils/common/baseRes"
 )
 
 type GatewayServiceController struct {
 	logger logger.Logger
+	config *config.Config
 }
 
-func NewGatewayServiceHandler(log logger.Logger) *GatewayServiceController {
+func NewGatewayServiceHandler(log logger.Logger, cfg *config.Config) *GatewayServiceController {
 	return &GatewayServiceController{
 		logger: log,
+		config: cfg,
 	}
 }
 
@@ -41,7 +44,7 @@ type GatewayServiceInfo struct {
 // @Success 200 {object} baseRes.Response{data=[]GatewayServiceInfo}
 // @Router /gateway/services [get]
 func (h *GatewayServiceController) GetGatewayServices(c *gin.Context) {
-	gatewayURL := "http://127.0.0.1:8385"
+	gatewayURL := h.config.Gateway.GatewayURL
 
 	url := fmt.Sprintf("%s/api/services", gatewayURL)
 

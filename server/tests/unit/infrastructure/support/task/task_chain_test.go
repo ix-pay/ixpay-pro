@@ -67,7 +67,7 @@ func TestTaskChainBuilder_Options(t *testing.T) {
 
 	chain := tsk.NewTaskChain("options", log).
 		OnError(tsk.ChainSkipOnError).
-		Timeout(5 * time.Minute).
+		Timeout(5*time.Minute).
 		MaxRetries(5).
 		Description("test chain").
 		AddTask("task1", &mockTask{name: "task1"}).

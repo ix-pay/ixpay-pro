@@ -440,7 +440,7 @@ func (tm *TaskManager) RunTaskNow(taskName string) bool {
 	go func() {
 		ctx := logger.WithTraceID(context.Background(), logger.NewTraceID())
 		taskLogger := logger.GetGlobalLogger(logger.TaskLogger).With("trace_id", logger.GetTraceID(ctx))
-		
+
 		startTime := time.Now()
 		taskLogger.Info("手动执行任务", "task", taskName)
 

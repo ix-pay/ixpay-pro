@@ -89,7 +89,7 @@ func (p *Proxy) forwardRequest(instance *discovery.ServiceInstance, backendURL *
 	// 创建新的请求
 	proxyReq, err := http.NewRequest(r.Method, backendURL.String(), r.Body)
 	if err != nil {
-		p.logger.Error("Failed to create proxy request: %v", err)
+		p.logger.Error("创建代理请求失败：%v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -110,7 +110,7 @@ func (p *Proxy) forwardRequest(instance *discovery.ServiceInstance, backendURL *
 	// 发送请求到后端服务
 	resp, err := p.client.Do(proxyReq)
 	if err != nil {
-		p.logger.Error("Failed to forward request to %s:%d: %v", instance.Address, instance.Port, err)
+		p.logger.Error("转发请求到 %s:%d 失败：%v", instance.Address, instance.Port, err)
 		http.Error(w, "Service unavailable", http.StatusServiceUnavailable)
 		return
 	}
@@ -126,6 +126,6 @@ func (p *Proxy) forwardRequest(instance *discovery.ServiceInstance, backendURL *
 
 	// 复制响应体
 	if _, err := io.Copy(w, resp.Body); err != nil {
-		p.logger.Error("Failed to copy response body: %v", err)
+		p.logger.Error("复制响应体失败：%v", err)
 	}
 }

@@ -34,15 +34,15 @@ type Logger interface {
 
 // DelayedQueue 延迟任务队列（基于 Redis Streams + Sorted Set）
 type DelayedQueue struct {
-	redis       *redis.Client
-	streamKey   string // Redis Stream 键
-	groupName   string // 消费者组名称
-	consumerID  string // 消费者 ID
+	redis        *redis.Client
+	streamKey    string // Redis Stream 键
+	groupName    string // 消费者组名称
+	consumerID   string // 消费者 ID
 	sortedSetKey string // Sorted Set 键（时间范围筛选）
-	log         Logger
-	handler     TaskHandler
-	stopChan    chan struct{}
-	mu          sync.Mutex
+	log          Logger
+	handler      TaskHandler
+	stopChan     chan struct{}
+	mu           sync.Mutex
 }
 
 // NewDelayedQueue 创建延迟任务队列（Redis Streams 消费者组模式）
@@ -167,8 +167,8 @@ func (dq *DelayedQueue) processDueTasks(ctx context.Context) {
 
 	// 从 Sorted Set 获取到期任务的 ID
 	taskIDs, err := dq.redis.ZRangeByScore(ctx, dq.sortedSetKey, &redis.ZRangeBy{
-		Min: "-inf",
-		Max: fmt.Sprintf("%d", now),
+		Min:   "-inf",
+		Max:   fmt.Sprintf("%d", now),
 		Count: 50, // 每次最多处理 50 个
 	}).Result()
 

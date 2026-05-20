@@ -42,9 +42,20 @@ func (h *Handler) RegisterService(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// 3. 注册服务实例
+	// 3. 注册服务实例（检查是否首次注册）
+	isNew := true
+	existingInstances := h.registry.GetInstances(instance.Name)
+	for _, existing := range existingInstances {
+		if existing.ID == instance.ID {
+			isNew = false
+			break
+		}
+	}
+
 	h.registry.Register(&instance)
-	h.logger.Info("Service registered: %s (%s:%d)", instance.Name, instance.Address, instance.Port)
+	if isNew {
+		h.logger.Info("服务已注册：%s (%s:%d)", instance.Name, instance.Address, instance.Port)
+	}
 
 	// 4. 返回注册结果
 	w.Header().Set("Content-Type", "application/json")
@@ -74,7 +85,7 @@ func (h *Handler) DeregisterService(w http.ResponseWriter, r *http.Request) {
 
 	// 3. 注销服务实例
 	h.registry.Deregister(req.ServiceName, req.InstanceID)
-	h.logger.Info("Service deregistered: %s (instance: %s)", req.ServiceName, req.InstanceID)
+	h.logger.Debug("服务已注销：%s (实例 ID：%s)", req.ServiceName, req.InstanceID)
 
 	// 4. 返回注销结果
 	w.Header().Set("Content-Type", "application/json")

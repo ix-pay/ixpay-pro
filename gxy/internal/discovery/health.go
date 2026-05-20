@@ -48,7 +48,7 @@ func (hc *HealthChecker) Start() {
 		}
 	}()
 
-	hc.logger.Info("Health checker started with interval %v and timeout %v", hc.interval, hc.timeout)
+	hc.logger.Debug("健康检查器已启动，间隔：%v，超时：%v", hc.interval, hc.timeout)
 }
 
 func (hc *HealthChecker) checkAllServices() {
@@ -81,7 +81,7 @@ func (hc *HealthChecker) checkAllServices() {
 			}()
 
 			if !hc.checkService(instance) {
-				hc.logger.Warn("Service instance %s (%s:%d) is unhealthy, deregistering", instance.ID, instance.Address, instance.Port)
+				hc.logger.Warn("服务实例 %s (%s:%d) 不健康，正在注销", instance.ID, instance.Address, instance.Port)
 				hc.registry.Deregister(serviceName, instance.ID)
 			}
 		}(item.serviceName, item.instance)
@@ -108,10 +108,10 @@ func (hc *HealthChecker) checkService(instance *ServiceInstance) bool {
 
 	url := "http://" + instance.Address + ":" + strconv.Itoa(instance.Port) + healthCheckPath
 
-	// 发送健康检查请求，使用复用的HTTP客户端
+	// 发送健康检查请求，使用复用的 HTTP 客户端
 	resp, err := hc.client.Get(url)
 	if err != nil {
-		hc.logger.Debug("Health check failed for %s: %v", url, err)
+		hc.logger.Trace("健康检查失败 %s: %v", url, err)
 		return false
 	}
 	defer resp.Body.Close()

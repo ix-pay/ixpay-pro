@@ -339,8 +339,8 @@ go run cmd/ixpay-pro/main.go seed
 go run cmd/ixpay-pro/main.go
 
 # 生产模式
-go build -o ixpay-server cmd/ixpay-pro/main.go
-./ixpay-server
+go build -o cmd/build/ixpay-pro cmd/ixpay-pro/main.go
+./ixpay-pro
 ```
 
 #### 前端部署
@@ -611,13 +611,13 @@ go run cmd/ixpay-pro/main.go
 ```bash
 cd server
 # 构建可执行文件
-go build -o ixpay-server cmd/ixpay-pro/main.go
+go build -o cmd/build/ixpay-pro cmd/ixpay-pro/main.go
 
 # 运行服务
-./ixpay-server
+./ixpay-pro
 
 # 后台运行
-nohup ./ixpay-server > server.log 2>&1 &
+nohup ./ixpay-pro > server.log 2>&1 &
 ```
 
 #### 停止服务
@@ -856,8 +856,8 @@ npm run dev
    # 启动新服务
    go run cmd/ixpay-pro/main.go
    # 或使用生产模式
-   go build -o ixpay-server cmd/ixpay-pro/main.go
-   ./ixpay-server
+   go build -o cmd/build/ixpay-pro cmd/ixpay-pro/main.go
+   ./ixpay-pro
    ```
 
 ### 前端更新

@@ -74,6 +74,19 @@ func SetupApplication(
 	// 设置节点注册表到任务管理器
 	taskManager.SetNodeRegistry(nodeRegistry)
 
+	// 设置任务工厂和任务仓库到任务管理器（仅 Task 和 all 角色需要）
+	if cfg.Server.NodeRole == config.NodeRoleTask || cfg.Server.NodeRole == config.NodeRoleAll {
+		taskManager.SetTaskFactory(task.NewTaskFactory())
+		taskManager.SetDefaultTimeout(5 * time.Minute)
+
+		// 从数据库加载启用的任务
+		if err := taskManager.LoadTasksFromDB(); err != nil {
+			log.Warn("从数据库加载任务失败", "error", err)
+		} else {
+			log.Info("从数据库加载任务成功", "node_role", cfg.Server.NodeRole)
+		}
+	}
+
 	// 注册当前节点到 Redis
 	if err := nodeRegistry.Register(context.Background()); err != nil {
 		log.Warn("注册节点到 Redis 失败", "error", err)
@@ -103,56 +116,60 @@ func SetupApplication(
 		taskManager:      taskManager,
 	}
 
-	// 设置中间件
-	app.setupMiddleware()
+	// 设置中间件（仅 API 和 all 角色需要）
+	if cfg.Server.NodeRole == config.NodeRoleAPI || cfg.Server.NodeRole == config.NodeRoleAll {
+		app.setupMiddleware()
 
-	// 设置路由
-	app.setupRoutes()
+		// 设置路由（仅 API 和 all 角色需要）
+		app.setupRoutes()
 
-	// 设置雪花算法实例到数据库模块
-	database.SetSnowflakeInstance(app.snowflake)
+		// 设置雪花算法实例到数据库模块
+		database.SetSnowflakeInstance(app.snowflake)
 
-	// 初始化模块应用
-	app.appBase.Init(router)
-	app.appWX.Init(router)
+		// 初始化模块应用（仅 API 和 all 角色需要）
+		app.appBase.Init(router)
+		app.appWX.Init(router)
 
-	// 设置健康检查路由
-	app.setupHealthCheck()
+		// 设置健康检查路由
+		app.setupHealthCheck()
 
-	// 创建HTTP服务器
-	app.server = &http.Server{
-		Addr:         ":" + cfg.Server.Port,
-		Handler:      router,
-		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
-		WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
-		IdleTimeout:  time.Duration(cfg.Server.IdleTimeout) * time.Second,
-	}
-
-	// 初始化网关客户端
-	if cfg.Gateway.Enabled {
-		port := gateway.ParsePort(cfg.Server.Port, 8586)
-
-		metadata := map[string]string{
-			"node_role": cfg.Server.NodeRole,
-			"version":   "1.0.0",
+		// 创建 HTTP 服务器（仅 API 和 all 角色需要）
+		app.server = &http.Server{
+			Addr:         ":" + cfg.Server.Port,
+			Handler:      router,
+			ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
+			WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
+			IdleTimeout:  time.Duration(cfg.Server.IdleTimeout) * time.Second,
 		}
 
-		instance := gateway.BuildServiceInstance(
-			cfg.Gateway.ServiceName,
-			cfg.Server.Host,
-			port,
-			cfg.Server.NodeRole,
-			cfg.Server.NodeID,
-			metadata,
-		)
+		// 初始化网关客户端（仅 API 和 all 角色需要注册到网关）
+		if cfg.Gateway.Enabled {
+			port := gateway.ParsePort(cfg.Server.Port, 8586)
 
-		app.gatewayClient = gateway.NewGatewayClient(cfg.Gateway.GatewayURL, cfg.Gateway.AuthKey)
+			metadata := map[string]string{
+				"node_role": cfg.Server.NodeRole,
+				"version":   "1.0.0",
+			}
 
-		if err := app.gatewayClient.Register(context.Background(), instance); err != nil {
-			log.Warn("注册到网关失败", "error", err)
-		} else {
-			log.Info("成功注册到网关", "service", cfg.Gateway.ServiceName, "instance_id", instance.ID)
+			instance := gateway.BuildServiceInstance(
+				cfg.Gateway.ServiceName,
+				cfg.Server.Host,
+				port,
+				cfg.Server.NodeRole,
+				cfg.Server.NodeID,
+				metadata,
+			)
+
+			app.gatewayClient = gateway.NewGatewayClient(cfg.Gateway.GatewayURL, cfg.Gateway.AuthKey)
+
+			if err := app.gatewayClient.Register(context.Background(), instance); err != nil {
+				log.Warn("注册到网关失败", "error", err)
+			} else {
+				log.Info("成功注册到网关", "service", cfg.Gateway.ServiceName, "instance_id", instance.ID)
+			}
 		}
+	} else {
+		log.Info("Task 节点模式：不启动 API 服务，不注册到网关", "node_role", cfg.Server.NodeRole)
 	}
 
 	return app, nil
@@ -171,21 +188,35 @@ func (a *Application) setupMiddleware() {
 
 // setupRoutes 方法在routes.go文件中定义
 
-// Start 启动HTTP服务器
+// Start 启动应用程序
 func (a *Application) Start() error {
-	a.logger.Info("启动HTTP服务器", "address", a.server.Addr)
+	// 根据节点角色启动不同的服务
+	if a.cfg.Server.NodeRole == config.NodeRoleAPI || a.cfg.Server.NodeRole == config.NodeRoleAll {
+		// API 节点：启动 HTTP 服务器和网关心跳
+		a.logger.Info("启动 HTTP 服务器", "address", a.server.Addr)
 
-	// 启动网关心跳
-	if a.cfg.Gateway.Enabled && a.gatewayClient != nil {
-		heartbeatInterval := time.Duration(a.cfg.Gateway.HeartbeatInterval) * time.Second
-		if heartbeatInterval == 0 {
-			heartbeatInterval = 10 * time.Second
+		// 启动网关心跳
+		if a.cfg.Gateway.Enabled && a.gatewayClient != nil {
+			heartbeatInterval := time.Duration(a.cfg.Gateway.HeartbeatInterval) * time.Second
+			if heartbeatInterval == 0 {
+				heartbeatInterval = 10 * time.Second
+			}
+			a.gatewayClient.StartHeartbeat(context.Background(), heartbeatInterval)
+			a.logger.Info("网关心跳已启动", "interval", heartbeatInterval)
 		}
-		a.gatewayClient.StartHeartbeat(context.Background(), heartbeatInterval)
-		a.logger.Info("网关心跳已启动", "interval", heartbeatInterval)
+
+		return a.server.ListenAndServe()
+	} else if a.cfg.Server.NodeRole == config.NodeRoleTask || a.cfg.Server.NodeRole == config.NodeRoleAll {
+		// Task 节点：启动任务调度器
+		a.logger.Info("启动任务调度器", "node_role", a.cfg.Server.NodeRole)
+		a.taskManager.Start()
+
+		// Task 节点不启动 HTTP 服务器，进入等待状态
+		// 使用 channel 阻塞，等待关闭信号
+		select {}
 	}
 
-	return a.server.ListenAndServe()
+	return nil
 }
 
 // Shutdown 优雅关闭HTTP服务器

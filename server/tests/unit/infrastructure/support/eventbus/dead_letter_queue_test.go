@@ -50,7 +50,7 @@ func TestDeadLetterQueue_Retry_NotFound(t *testing.T) {
 
 func TestDeadLetterEntry(t *testing.T) {
 	entry := eb.DeadLetterEntry{
-		ID:   "test-id-123",
+		ID: "test-id-123",
 		Data: map[string]interface{}{
 			"event_id":   1,
 			"event_name": "test.event",

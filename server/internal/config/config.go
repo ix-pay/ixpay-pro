@@ -26,11 +26,11 @@ type Config struct {
 
 // GatewayConfig 网关配置
 type GatewayConfig struct {
-	Enabled       bool   `mapstructure:"enabled"`         // 是否启用网关注册
-	GatewayURL    string `mapstructure:"gateway_url"`     // 网关地址，如 http://127.0.0.1:8385
-	AuthKey       string `mapstructure:"auth_key"`        // 网关注册认证密钥
-	ServiceName   string `mapstructure:"service_name"`    // 服务名称，如 ixpay-server
-	HeartbeatInterval int `mapstructure:"heartbeat_interval"` // 心跳间隔(秒)
+	Enabled           bool   `mapstructure:"enabled"`            // 是否启用网关注册
+	GatewayURL        string `mapstructure:"gateway_url"`        // 网关地址，如 http://127.0.0.1:8585
+	AuthKey           string `mapstructure:"auth_key"`           // 网关注册认证密钥
+	ServiceName       string `mapstructure:"service_name"`       // 服务名称，如 ixpay-server
+	HeartbeatInterval int    `mapstructure:"heartbeat_interval"` // 心跳间隔(秒)
 }
 
 // DBPoolConfig 数据库连接池配置

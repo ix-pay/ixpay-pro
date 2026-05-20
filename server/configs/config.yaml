@@ -1,5 +1,5 @@
 server:
-  host: "0.0.0.0"
+  host: "${SERVER_HOST:-0.0.0.0}"
   port: "8586"
   read_timeout: 5
   write_timeout: 10
@@ -11,12 +11,12 @@ server:
   init_seed_data: true
   update_routes_on_start: true
   slow_query_threshold: 1000
-  node_role: "all"
+  node_role: "all" # api / task / all
   node_id: ""
   task_max_concurrent: 10
 
 postgres:
-  host: "127.0.0.1"
+  host: "host.docker.internal"
   port: "5432"
   user: "magic"
   password: "magic@520"
@@ -27,7 +27,7 @@ postgres:
   conn_max_lifetime: 30
 
 redis:
-  address: "127.0.0.1:6379"
+  address: "host.docker.internal:6379"
   password: ""
   db: 0
   dial_timeout: 5
@@ -60,7 +60,7 @@ swagger:
 
 gateway:
   enabled: true
-  gateway_url: "http://127.0.0.1:8385"
+  gateway_url: "http://gxy-gateway:8585"
   auth_key: "ihvke@2025"
   service_name: "ixpay-server"
   heartbeat_interval: 10

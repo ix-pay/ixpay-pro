@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
     }
   }
 
-  const base = "/"
+  const base = "/web"
   const root = "./"
   const outDir = "dist"
 

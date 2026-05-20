@@ -26,17 +26,17 @@ const (
 
 // 公告类型（notice_type）字典项 Key 常量
 const (
-	NoticeTypeSystem  = "system"
+	NoticeTypeSystem   = "system"
 	NoticeTypeActivity = "activity"
 	NoticeTypeNotice   = "notice"
 )
 
 // 任务类型（task_type）字典项 Key 常量
 const (
-	TaskTypeHTTP             = "http"
-	TaskTypeDatabase         = "database"
-	TaskTypeCache            = "cache"
-	TaskTypeScript           = "script"
+	TaskTypeHTTP              = "http"
+	TaskTypeDatabase          = "database"
+	TaskTypeCache             = "cache"
+	TaskTypeScript            = "script"
 	TaskTypeStreamMaintenance = "stream_maintenance"
 )
 

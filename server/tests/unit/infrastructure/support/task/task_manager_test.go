@@ -52,18 +52,22 @@ type mockLogger struct {
 	mux       sync.Mutex
 }
 
-func (m *mockLogger) Debug(msg string, fields ...interface{})               {}
+func (m *mockLogger) Debug(msg string, fields ...interface{}) {}
 func (m *mockLogger) Info(msg string, fields ...interface{}) {
-	m.mux.Lock(); defer m.mux.Unlock(); m.InfoLogs = append(m.InfoLogs, msg)
+	m.mux.Lock()
+	defer m.mux.Unlock()
+	m.InfoLogs = append(m.InfoLogs, msg)
 }
-func (m *mockLogger) Warn(msg string, fields ...interface{})               {}
+func (m *mockLogger) Warn(msg string, fields ...interface{}) {}
 func (m *mockLogger) Error(msg string, fields ...interface{}) {
-	m.mux.Lock(); defer m.mux.Unlock(); m.ErrorLogs = append(m.ErrorLogs, msg)
+	m.mux.Lock()
+	defer m.mux.Unlock()
+	m.ErrorLogs = append(m.ErrorLogs, msg)
 }
-func (m *mockLogger) Fatal(msg string, fields ...interface{})              {}
-func (m *mockLogger) With(fields ...interface{}) logger.Logger             { return m }
-func (m *mockLogger) WithContext(ctx context.Context) logger.Logger        { return m }
-func (m *mockLogger) Sync() error                                          { return nil }
+func (m *mockLogger) Fatal(msg string, fields ...interface{})       {}
+func (m *mockLogger) With(fields ...interface{}) logger.Logger      { return m }
+func (m *mockLogger) WithContext(ctx context.Context) logger.Logger { return m }
+func (m *mockLogger) Sync() error                                   { return nil }
 
 func TestNewTaskManager(t *testing.T) {
 	log := &mockLogger{}

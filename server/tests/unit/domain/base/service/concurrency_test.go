@@ -539,11 +539,11 @@ func (m *MockConfigRepositoryForTest) GetAllActive() ([]*entity.Config, error) {
 // MockLogger 简单的 Mock 日志实现
 type MockLogger struct{}
 
-func (m *MockLogger) Debug(msg string, fields ...interface{})              {}
-func (m *MockLogger) Info(msg string, fields ...interface{})               {}
-func (m *MockLogger) Warn(msg string, fields ...interface{})               {}
-func (m *MockLogger) Error(msg string, fields ...interface{})              {}
-func (m *MockLogger) Fatal(msg string, fields ...interface{})              {}
-func (m *MockLogger) With(fields ...interface{}) logger.Logger             { return &MockLogger{} }
-func (m *MockLogger) WithContext(ctx context.Context) logger.Logger        { return &MockLogger{} }
-func (m *MockLogger) Sync() error                                          { return nil }
+func (m *MockLogger) Debug(msg string, fields ...interface{})       {}
+func (m *MockLogger) Info(msg string, fields ...interface{})        {}
+func (m *MockLogger) Warn(msg string, fields ...interface{})        {}
+func (m *MockLogger) Error(msg string, fields ...interface{})       {}
+func (m *MockLogger) Fatal(msg string, fields ...interface{})       {}
+func (m *MockLogger) With(fields ...interface{}) logger.Logger      { return &MockLogger{} }
+func (m *MockLogger) WithContext(ctx context.Context) logger.Logger { return &MockLogger{} }
+func (m *MockLogger) Sync() error                                   { return nil }

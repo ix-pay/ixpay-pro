@@ -7,21 +7,21 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/ix-pay/ixpay-pro/internal/config"
-	a "github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
+	a "github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 	"github.com/stretchr/testify/assert"
 )
 
 type mockLogger struct{}
 
-func (m *mockLogger) Debug(msg string, fields ...interface{})               {}
-func (m *mockLogger) Info(msg string, fields ...interface{})                {}
-func (m *mockLogger) Warn(msg string, fields ...interface{})                {}
-func (m *mockLogger) Error(msg string, fields ...interface{})               {}
-func (m *mockLogger) Fatal(msg string, fields ...interface{})               {}
-func (m *mockLogger) With(fields ...interface{}) logger.Logger              { return m }
-func (m *mockLogger) WithContext(ctx context.Context) logger.Logger         { return m }
-func (m *mockLogger) Sync() error                                           { return nil }
+func (m *mockLogger) Debug(msg string, fields ...interface{})       {}
+func (m *mockLogger) Info(msg string, fields ...interface{})        {}
+func (m *mockLogger) Warn(msg string, fields ...interface{})        {}
+func (m *mockLogger) Error(msg string, fields ...interface{})       {}
+func (m *mockLogger) Fatal(msg string, fields ...interface{})       {}
+func (m *mockLogger) With(fields ...interface{}) logger.Logger      { return m }
+func (m *mockLogger) WithContext(ctx context.Context) logger.Logger { return m }
+func (m *mockLogger) Sync() error                                   { return nil }
 
 func newTestJWTAuth(t *testing.T) *a.JWTAuth {
 	log := &mockLogger{}
@@ -156,7 +156,7 @@ func TestParseToken_WrongAlgorithm(t *testing.T) {
 	jwtAuth := newTestJWTAuth(t)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodNone, &a.Claims{
-		UserID: "123",
+		UserID:   "123",
 		Username: "testuser",
 	})
 	tokenString, _ := token.SignedString(jwt.UnsafeAllowNoneSignatureType)

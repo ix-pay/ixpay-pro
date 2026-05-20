@@ -371,7 +371,7 @@ const loadRolesList = async () => {
 const loadDepartmentList = async () => {
   try {
     const response = await getDepartmentList({ page: 1, pageSize: 1000 })
-    const pageData = response.data as Record<string, unknown>
+    const pageData = response.data as any
     departmentList.value =
       (pageData?.list as DepartmentType[]) || (response.data as DepartmentType[]) || []
   } catch (error) {
@@ -383,9 +383,8 @@ const loadDepartmentList = async () => {
 const loadPositionList = async () => {
   try {
     const response = await getPositionList({ page: 1, pageSize: 1000 })
-    const pageData = response.data as Record<string, unknown>
-    positionList.value =
-      (pageData?.list as PositionType[]) || (response.data as PositionType[]) || []
+    const pageData = response.data as any
+    positionList.value = (pageData?.list as PositionType[]) || []
   } catch (error) {
     console.error('获取岗位列表失败:', error)
   }

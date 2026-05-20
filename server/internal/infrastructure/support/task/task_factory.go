@@ -11,10 +11,10 @@ import (
 type TaskType string
 
 const (
-	TaskTypeHTTP             TaskType = dictconst.TaskTypeHTTP
-	TaskTypeDatabase         TaskType = dictconst.TaskTypeDatabase
-	TaskTypeCache            TaskType = dictconst.TaskTypeCache
-	TaskTypeScript           TaskType = dictconst.TaskTypeScript
+	TaskTypeHTTP              TaskType = dictconst.TaskTypeHTTP
+	TaskTypeDatabase          TaskType = dictconst.TaskTypeDatabase
+	TaskTypeCache             TaskType = dictconst.TaskTypeCache
+	TaskTypeScript            TaskType = dictconst.TaskTypeScript
 	TaskTypeStreamMaintenance TaskType = dictconst.TaskTypeStreamMaintenance
 )
 

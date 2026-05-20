@@ -111,7 +111,9 @@
           </div>
           <div class="flex justify-between">
             <span class="text-gray-500 dark:text-gray-400">最大并发</span>
-            <span class="text-gray-900 dark:text-white font-semibold">{{ node.maxConcurrent }}</span>
+            <span class="text-gray-900 dark:text-white font-semibold">{{
+              node.maxConcurrent
+            }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-500 dark:text-gray-400">最后心跳</span>
@@ -124,12 +126,7 @@
         </div>
 
         <div class="flex gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <el-button
-            type="primary"
-            size="small"
-            class="flex-1"
-            @click="handleViewDetail(node)"
-          >
+          <el-button type="primary" size="small" class="flex-1" @click="handleViewDetail(node)">
             详情
           </el-button>
           <el-button
@@ -191,7 +188,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Refresh } from '@element-plus/icons-vue'
-import { getNodeList, offlineNode as offlineNodeApi, getNodeStatistics } from '@/api/modules/node'
+import { getNodeList, offlineNode as offlineNodeApi } from '@/api/modules/node'
 import type { NodeInfo, NodeStatistics } from '@/api/modules/node'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
 

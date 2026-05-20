@@ -2,8 +2,6 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-
-
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-3">
         <el-input v-model="searchForm.taskId" placeholder="任务 ID" style="width: 192px" />
@@ -46,19 +44,29 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-6 text-sm">
           <span class="text-gray-600 dark:text-gray-400">
-            任务总数：<strong class="text-gray-900 dark:text-white">{{ dashboard.totalTasks }}</strong>
+            任务总数：<strong class="text-gray-900 dark:text-white">{{
+              dashboard.totalTasks
+            }}</strong>
           </span>
           <span class="text-gray-600 dark:text-gray-400">
-            启用数：<strong class="text-gray-900 dark:text-white">{{ dashboard.enabledTasks }}</strong>
+            启用数：<strong class="text-gray-900 dark:text-white">{{
+              dashboard.enabledTasks
+            }}</strong>
           </span>
           <span class="text-gray-600 dark:text-gray-400">
-            禁用数：<strong class="text-gray-900 dark:text-white">{{ dashboard.disabledTasks }}</strong>
+            禁用数：<strong class="text-gray-900 dark:text-white">{{
+              dashboard.disabledTasks
+            }}</strong>
           </span>
           <span class="text-gray-600 dark:text-gray-400">
-            今日执行数：<strong class="text-gray-900 dark:text-white">{{ dashboard.todayExecutions }}</strong>
+            今日执行数：<strong class="text-gray-900 dark:text-white">{{
+              dashboard.todayExecutions
+            }}</strong>
           </span>
           <span class="text-gray-600 dark:text-gray-400">
-            列表任务总数：<strong class="text-gray-900 dark:text-white">{{ pagination.total }}</strong>
+            列表任务总数：<strong class="text-gray-900 dark:text-white">{{
+              pagination.total
+            }}</strong>
           </span>
           <span class="text-gray-600 dark:text-gray-400">
             选中任务：<strong class="text-gray-900 dark:text-white">{{

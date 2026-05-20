@@ -22,7 +22,8 @@ const staticComponents: Record<string, () => Promise<{ default: import('vue').Co
   'views/monitor/index': () => import('@/views/monitor/index.vue'),
   'views/monitor/monitor/index': () => import('@/views/monitor/monitor/index.vue'),
   'views/monitor/online-user/index': () => import('@/views/monitor/online-user/index.vue'),
-  'views/monitor/gateway-services/index': () => import('@/views/monitor/gateway-services/index.vue'),
+  'views/monitor/gateway-services/index': () =>
+    import('@/views/monitor/gateway-services/index.vue'),
 
   // 日志页面
   'views/log/index': () => import('@/views/log/index.vue'),

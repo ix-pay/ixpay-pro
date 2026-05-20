@@ -1,16 +1,28 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-3">
-        <el-input v-model="searchForm.group" placeholder="路由分组" clearable style="width: 192px"
-          @keyup.enter="handleSearch">
+        <el-input
+          v-model="searchForm.group"
+          placeholder="路由分组"
+          clearable
+          style="width: 192px"
+          @keyup.enter="handleSearch"
+        >
           <template #prefix>
             <el-icon>
               <Search />
             </el-icon>
           </template>
         </el-input>
-        <el-select v-model="searchForm.authRequired" placeholder="认证" clearable style="width: 192px">
+        <el-select
+          v-model="searchForm.authRequired"
+          placeholder="认证"
+          clearable
+          style="width: 192px"
+        >
           <el-option label="是" :value="true" />
           <el-option label="否" :value="false" />
         </el-select>
@@ -48,7 +60,9 @@
       </div>
     </div>
 
-    <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
       <div class="flex items-center gap-6 text-sm">
         <span class="flex items-center gap-1">
           <el-icon class="text-blue-500">
@@ -62,7 +76,7 @@
           </el-icon>
           需认证：<span class="font-medium">{{
             apiRouteList.filter((r) => r.authRequired).length
-            }}</span>
+          }}</span>
         </span>
         <span class="flex items-center gap-1">
           <el-icon class="text-orange-500">
@@ -70,13 +84,19 @@
           </el-icon>
           已启用：<span class="font-medium">{{
             apiRouteList.filter((r) => r.status === 1).length
-            }}</span>
+          }}</span>
         </span>
       </div>
     </div>
 
     <div class="flex-1 overflow-hidden">
-      <el-table v-loading="loading" :data="apiRouteList" stripe class="w-full h-full" :height="'100%'">
+      <el-table
+        v-loading="loading"
+        :data="apiRouteList"
+        stripe
+        class="w-full h-full"
+        :height="'100%'"
+      >
         <el-table-column prop="group" label="路由分组" width="120" />
         <el-table-column prop="path" label="路由路径" min-width="200" />
         <el-table-column prop="method" label="方法" width="90">
@@ -110,12 +130,20 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <div class="flex flex-wrap gap-2">
-              <el-button v-auth-btn="'system:api-route:edit'" type="primary" size="small"
-                @click="handleEditApiRoute(scope.row)">
+              <el-button
+                v-auth-btn="'system:api-route:edit'"
+                type="primary"
+                size="small"
+                @click="handleEditApiRoute(scope.row)"
+              >
                 编辑
               </el-button>
-              <el-button v-auth-btn="'system:api-route:delete'" type="danger" size="small"
-                @click="handleDeleteApiRoute(scope.row.id)">
+              <el-button
+                v-auth-btn="'system:api-route:delete'"
+                type="danger"
+                size="small"
+                @click="handleDeleteApiRoute(scope.row.id)"
+              >
                 删除
               </el-button>
             </div>
@@ -124,14 +152,28 @@
       </el-table>
     </div>
 
-    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+    <div
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+    >
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
+      <el-pagination
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="sizes, prev, pager, next"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        small
+      />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px" @close="handleDialogClose">
+    <el-dialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      width="500px"
+      @close="handleDialogClose"
+    >
       <el-form :model="formData" :rules="formRules" ref="formRef" label-width="110px">
         <el-form-item label="路由路径" prop="path">
           <el-input v-model="formData.path" placeholder="如：/api/admin/user" />
@@ -152,7 +194,12 @@
           <el-input v-model="formData.group" placeholder="请输入路由分组" />
         </el-form-item>
         <el-form-item label="路由描述" prop="description">
-          <el-input v-model="formData.description" type="textarea" placeholder="请输入路由描述" :rows="3" />
+          <el-input
+            v-model="formData.description"
+            type="textarea"
+            placeholder="请输入路由描述"
+            :rows="3"
+          />
         </el-form-item>
         <el-form-item label="需要认证" prop="authRequired">
           <el-switch v-model="formData.authRequired" />

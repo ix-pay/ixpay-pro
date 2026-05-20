@@ -5,29 +5,29 @@
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">任务统计</h2>
       <div class="flex items-center gap-3">
-          <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
-          <el-select
-            v-model="refreshInterval"
-            size="small"
-            class="interval-select"
-            @change="changeRefreshInterval"
-          >
-            <el-option label="5 秒" :value="5000" />
-            <el-option label="10 秒" :value="10000" />
-            <el-option label="30 秒" :value="30000" />
-          </el-select>
-          <el-switch
-            v-model="autoRefreshEnabled"
-            active-text="自动刷新"
-            class="refresh-switch"
-            @change="toggleAutoRefresh"
-          />
-          <el-button type="primary" @click="refreshData" :loading="loading" circle>
-            <el-icon>
-              <Refresh />
-            </el-icon>
-          </el-button>
-        </div>
+        <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
+        <el-select
+          v-model="refreshInterval"
+          size="small"
+          class="interval-select"
+          @change="changeRefreshInterval"
+        >
+          <el-option label="5 秒" :value="5000" />
+          <el-option label="10 秒" :value="10000" />
+          <el-option label="30 秒" :value="30000" />
+        </el-select>
+        <el-switch
+          v-model="autoRefreshEnabled"
+          active-text="自动刷新"
+          class="refresh-switch"
+          @change="toggleAutoRefresh"
+        />
+        <el-button type="primary" @click="refreshData" :loading="loading" circle>
+          <el-icon>
+            <Refresh />
+          </el-icon>
+        </el-button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -166,7 +166,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, List, CircleCheck, VideoPlay, TrendCharts } from '@element-plus/icons-vue'
 import { getTaskStatistics, getTaskList } from '@/api/modules/task'
-import type { TaskStatistics } from '@/api/modules/task'
+import type { TaskStatistics, Task } from '@/api/modules/task'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
 
 defineOptions({
@@ -196,8 +196,8 @@ const loadStatistics = async () => {
 
     const tasks = tasksRes.data?.list || []
     statistics.value.totalTasks = tasks.length
-    statistics.value.enabledTasks = tasks.filter((t: any) => t.status === 'enabled').length
-    statistics.value.runningTasks = tasks.filter((t: any) => t.statusLabel === 'running').length
+    statistics.value.enabledTasks = tasks.filter((t: Task) => t.status === 'enabled').length
+    statistics.value.runningTasks = tasks.filter((t: Task) => t.statusLabel === 'running').length
 
     if (statisticsList.value.length > 0) {
       const totalRate = statisticsList.value.reduce((sum, s) => sum + s.successRate, 0)

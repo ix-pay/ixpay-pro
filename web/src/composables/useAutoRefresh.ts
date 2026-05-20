@@ -7,7 +7,11 @@ import { ElMessage } from 'element-plus'
  * @param autoRefreshInitial 是否默认开启自动刷新
  * @param intervalInitial 初始刷新间隔（毫秒）
  */
-export function useAutoRefresh(refreshFn: () => Promise<void>, autoRefreshInitial = true, intervalInitial = 5000) {
+export function useAutoRefresh(
+  refreshFn: () => Promise<void>,
+  autoRefreshInitial = true,
+  intervalInitial = 5000,
+) {
   const autoRefresh = ref(autoRefreshInitial)
   const refreshInterval = ref(intervalInitial)
   const lastUpdateTime = ref('')

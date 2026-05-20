@@ -500,18 +500,6 @@ const itemFormRules = reactive({
   itemValue: [{ required: true, message: '请输入值', trigger: 'blur' }],
 })
 
-// 搜索防抖
-let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
-
-const handleSearchInput = () => {
-  if (searchDebounceTimer) {
-    clearTimeout(searchDebounceTimer)
-  }
-  searchDebounceTimer = setTimeout(() => {
-    pagination.page = 1
-    loadDictList()
-  }, 500)
-}
 const loadDictList = async () => {
   loading.value = true
   try {
@@ -551,10 +539,6 @@ const handleCurrentChange = (val: number) => {
   loadDictList()
 }
 
-const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
-  // TODO: 实现排序逻辑
-  console.log('排序字段:', prop, '排序方式:', order)
-}
 
 // 状态切换
 const handleStatusChange = async (dict: Dict) => {

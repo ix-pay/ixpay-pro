@@ -1,11 +1,29 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300"
+  >
     <div class="flex flex-col gap-3 mb-4 border-b pb-4">
       <div class="flex flex-wrap items-center gap-3">
-        <el-select v-model="searchForm.taskId" placeholder="选择任务" clearable filterable style="width: 220px">
-          <el-option v-for="task in taskOptions" :key="task.id" :label="task.taskId" :value="task.taskId" />
+        <el-select
+          v-model="searchForm.taskId"
+          placeholder="选择任务"
+          clearable
+          filterable
+          style="width: 220px"
+        >
+          <el-option
+            v-for="task in taskOptions"
+            :key="task.id"
+            :label="task.taskId"
+            :value="task.taskId"
+          />
         </el-select>
-        <el-select v-model="searchForm.result" placeholder="执行结果" clearable style="width: 150px">
+        <el-select
+          v-model="searchForm.result"
+          placeholder="执行结果"
+          clearable
+          style="width: 150px"
+        >
           <el-option label="全部" value="" />
           <el-option label="成功" value="success" />
           <el-option label="失败" value="failed" />
@@ -92,7 +110,7 @@ const pagination = reactive({
 const loadLogs = async () => {
   loading.value = true
   try {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: pagination.page,
       pageSize: pagination.pageSize,
     }

@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-2">
         <el-button type="primary" @click="handleRefresh">
@@ -9,7 +11,9 @@
       </div>
     </div>
 
-    <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
       <div class="flex items-center gap-6 text-sm">
         <span class="flex items-center gap-1">
           <el-icon class="text-blue-500">
@@ -21,7 +25,9 @@
           <el-icon class="text-green-500">
             <SuccessFilled />
           </el-icon>
-          健康服务：<span class="font-medium">{{ gatewayServiceList.filter((s) => s.status === 'healthy').length }}</span>
+          健康服务：<span class="font-medium">{{
+            gatewayServiceList.filter((s) => s.status === 'healthy').length
+          }}</span>
         </span>
       </div>
     </div>
@@ -68,7 +74,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, Connection, SuccessFilled } from '@element-plus/icons-vue'
@@ -85,7 +91,7 @@ const loadGatewayServices = async () => {
   try {
     const res = await getGatewayServices()
     gatewayServiceList.value = res.data || []
-  } catch (error) {
+  } catch {
     ElMessage.error('获取网关服务列表失败')
     gatewayServiceList.value = []
   } finally {

@@ -15,6 +15,6 @@ export interface GatewayService {
 export const getGatewayServices = (): Promise<ApiResponse<GatewayService[]>> => {
   return service({
     url: '/gateway/services',
-    method: 'get'
+    method: 'get',
   })
 }

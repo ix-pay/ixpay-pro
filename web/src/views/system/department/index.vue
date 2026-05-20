@@ -216,7 +216,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue'
-import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
+import { ElMessage, type FormInstance } from 'element-plus'
 import {
   Plus,
   Search,
@@ -332,12 +332,12 @@ const loadDepartmentList = async () => {
     if (Array.isArray(response.data)) {
       // 直接是数组格式
       list = response.data as Department[]
-    } else if ((response.data as any)?.list && Array.isArray((response.data as any).list)) {
+    } else if ((response.data as Record<string, unknown>)?.list && Array.isArray((response.data as Record<string, unknown>).list)) {
       // 分页格式 { list: [], total: 0 }
-      list = (response.data as any).list
-    } else if ((response.data as any)?.data && Array.isArray((response.data as any).data)) {
+      list = (response.data as Record<string, unknown>).list as Department[]
+    } else if ((response.data as Record<string, unknown>)?.data && Array.isArray((response.data as Record<string, unknown>).data)) {
       // 嵌套格式 { data: { data: [] } }
-      list = (response.data as any).data
+      list = (response.data as Record<string, unknown>).data as Department[]
     }
 
     // 如果有搜索条件，进行过滤

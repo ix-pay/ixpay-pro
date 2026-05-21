@@ -24,7 +24,7 @@ import (
 // @contact.email support@example.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host 127.0.0.1:8586
+// @host 127.0.0.1:8081
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header [Bearer ]

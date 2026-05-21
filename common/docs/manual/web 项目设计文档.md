@@ -524,8 +524,8 @@ build: {
 #### 7.2.1 开发环境
 
 ```env
-VITE_CLI_PORT = 8585
-VITE_SERVER_PORT = 8586
+VITE_CLI_PORT = 8085
+VITE_SERVER_PORT = 8081
 VITE_BASE_API = /api/admin
 VITE_BASE_PATH = http://127.0.0.1
 ```
@@ -543,7 +543,7 @@ VITE_BASE_PATH = /
 server: {
   proxy: {
     '/api/admin': {
-      target: 'http://127.0.0.1:8586/',
+      target: 'http://127.0.0.1:8081/',
       changeOrigin: true,
       rewrite: (path) => path  // 不移除前缀
     }

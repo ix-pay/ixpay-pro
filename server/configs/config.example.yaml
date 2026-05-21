@@ -2,7 +2,7 @@
 
 server:
   host: 127.0.0.1
-  port: "8586"
+  port: "8081"
   read_timeout: 10
   write_timeout: 10
   idle_timeout: 60
@@ -13,7 +13,7 @@ server:
 # 网关注册配置
 gateway:
   enabled: false              # 是否启用网关注册
-  gateway_url: "http://127.0.0.1:8585"  # 网关地址
+  gateway_url: "http://127.0.0.1:8085"  # 网关地址
   auth_key: "ihvke@2025"     # 网关注册认证密钥（需与网关配置一致）
   service_name: "ixpay-server"  # 服务名称
   heartbeat_interval: 10      # 心跳间隔（秒）

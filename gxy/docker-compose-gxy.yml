@@ -8,8 +8,8 @@ services:
     container_name: gxy-gateway
     restart: unless-stopped
     ports:
-      - "8585:8585"
-      - "8584:8584"
+      - "8085:8085"
+      - "8084:8084"
     volumes:
       - ./config.json:/app/config.json:ro
       - ./logs:/app/logs

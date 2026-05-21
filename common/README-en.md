@@ -127,7 +127,7 @@ docker-compose up -d
 ```
 
 This will start the following services:
-- **ixpay-server**: Backend service, port 8586
+- **ixpay-server**: Backend service, port 8081
 - **postgres**: PostgreSQL database, port 5432
 - **redis**: Redis cache, port 6379
 
@@ -165,7 +165,7 @@ go build -o ./cmd/build/ixpay-server cmd/ixpay-pro/main.go
 ./ixpay-server
 
 # Access API documentation
-http://127.0.0.1:8586/swagger/index.html
+http://127.0.0.1:8081/swagger/index.html
 ```
 
 ### Frontend Running
@@ -214,9 +214,9 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 
 The system integrates Swagger/OpenAPI documentation, accessible after starting the service:
 
-- **Swagger UI**: http://localhost:8586/swagger/index.html
-- **API Documentation JSON**: http://localhost:8586/swagger/doc.json
-- **API Documentation YAML**: http://localhost:8586/swagger/doc.yaml
+- **Swagger UI**: http://localhost:8081/swagger/index.html
+- **API Documentation JSON**: http://localhost:8081/swagger/doc.json
+- **API Documentation YAML**: http://localhost:8081/swagger/doc.yaml
 
 ### API Interface Classification
 
@@ -308,7 +308,7 @@ IXPay Pro supports configuring the system through environment variables, which o
 | Variable Name | Description | Default Value |
 |--------------|-------------|---------------|
 | LOG_LEVEL | Log level (debug/info/warn/error) | info |
-| SERVER_PORT | Service port | 8586 |
+| SERVER_PORT | Service port | 8081 |
 | SERVER_MODE | Server running mode (debug/release/test) | debug |
 | JWT_SECRET | JWT secret key | Randomly generated |
 | JWT_EXPIRE | JWT expiration time (seconds) | 3600 |
@@ -330,7 +330,7 @@ Main configuration file located at `server/configs/config.yaml`, including the f
 ```yaml
 # Server configuration
 server:
-  port: 8586            # Service port
+  port: 8081            # Service port
   mode: "debug"         # Running mode: debug, release, test
 
 # Database configuration
@@ -373,7 +373,7 @@ docker-compose up -d
 ```
 
 This will start the following services:
-- **ixpay-server**: Backend service, port 8586
+- **ixpay-server**: Backend service, port 8081
 - **postgres**: PostgreSQL database, port 5432
 - **redis**: Redis cache, port 6379
 
@@ -386,7 +386,7 @@ docker build -t ixpay-server .
 
 # Run container
 docker run -d --name ixpay-server \
-  -p 8586:8586 \
+  -p 8081:8081 \
   -e DB_HOST=postgres \
   -e DB_PORT=5432 \
   -e DB_USER=ixpay \
@@ -466,10 +466,10 @@ Backend logs are saved in `server/logs/` directory by default, classified by lev
 3. **Test API with curl**:
    ```bash
    # Test health check interface
-   curl http://localhost:8586/health
+   curl http://localhost:8081/health
    
    # Test login interface
-   curl -X POST http://localhost:8586/api/admin/auth/login \
+   curl -X POST http://localhost:8081/api/admin/auth/login \
      -H "Content-Type: application/json" \
      -d '{"userName": "admin", "password": "password123"}'
    ```

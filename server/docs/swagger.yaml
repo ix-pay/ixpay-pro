@@ -3332,7 +3332,7 @@ definitions:
       status:
         type: string
     type: object
-host: 127.0.0.1:8586
+host: 127.0.0.1:8081
 info:
   contact:
     email: support@example.com

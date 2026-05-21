@@ -148,7 +148,7 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 - Swagger YAML 文件（docs/swagger.yaml）
 - API 文档 HTML（docs/docs.go）
 
-**文档访问**：http://localhost:8586/swagger/index.html
+**文档访问**：http://localhost:8081/swagger/index.html
 
 ## 功能 7：Docker 部署
 
@@ -159,7 +159,7 @@ docker build -t ixpay-pro .
 
 **运行容器**：
 ```bash
-docker run -p 8586:8586 ixpay-pro
+docker run -p 8081:8081 ixpay-pro
 ```
 
 **Dockerfile 说明**：

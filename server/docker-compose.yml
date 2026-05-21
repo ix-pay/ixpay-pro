@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: ixpay-server
     ports:
-      - "8586:8586"
+      - "8081:8081"
     volumes:
       - ./configs/config.yaml:/app/configs/config.yaml:ro
       - ./logs:/app/logs

@@ -929,7 +929,7 @@ type BaseModel struct {
 ```yaml
 # 服务器配置
 server:
-  port: 8586
+  port: 8081
   mode: "debug"  # debug, release, test
   init_seed_data: true  # 是否初始化种子数据
   update_routes_on_start: true  # 启动时是否更新路由
@@ -1000,7 +1000,7 @@ services:
   ixpay-server:
     build: .
     ports:
-      - "8586:8586"
+      - "8081:8081"
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432

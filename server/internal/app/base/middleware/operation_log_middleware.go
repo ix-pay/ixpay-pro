@@ -91,8 +91,8 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 			userID, _ = strconv.ParseInt(userIDStr, 10, 64)
 		}
 
-		// 跳过监控接口，不记录到操作日志表
-		if strings.HasPrefix(path, "/api/admin/monitor") {
+		// 跳过监控接口和健康检查，不记录到操作日志表
+		if strings.HasPrefix(path, "/api/admin/monitor") || path == "/health" {
 			return
 		}
 

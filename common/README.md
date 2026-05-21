@@ -127,7 +127,7 @@ docker-compose up -d
 ```
 
 这将启动以下服务：
-- **ixpay-server**: 后端服务，端口 8586
+- **ixpay-server**: 后端服务，端口 8081
 - **postgres**: PostgreSQL 数据库，端口 5432
 - **redis**: Redis 缓存，端口 6379
 
@@ -165,7 +165,7 @@ go build -o ./cmd/build/ixpay-server cmd/ixpay-pro/main.go
 ./ixpay-server
 
 # 访问 API 文档
-http://127.0.0.1:8586/swagger/index.html
+http://127.0.0.1:8081/swagger/index.html
 ```
 
 ### 前端运行
@@ -214,9 +214,9 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 
 系统集成了 Swagger/OpenAPI 文档，启动服务后可访问：
 
-- **Swagger UI**: http://localhost:8586/swagger/index.html
-- **API 文档 JSON**: http://localhost:8586/swagger/doc.json
-- **API 文档 YAML**: http://localhost:8586/swagger/doc.yaml
+- **Swagger UI**: http://localhost:8081/swagger/index.html
+- **API 文档 JSON**: http://localhost:8081/swagger/doc.json
+- **API 文档 YAML**: http://localhost:8081/swagger/doc.yaml
 
 ### API 接口分类
 
@@ -308,7 +308,7 @@ IXPay Pro 支持通过环境变量来配置系统，环境变量会覆盖配置�
 | 变量名 | 描述 | 默认值 |
 |--------|------|--------|
 | LOG_LEVEL | 日志级别（debug/info/warn/error） | info |
-| SERVER_PORT | 服务端口 | 8586 |
+| SERVER_PORT | 服务端口 | 8081 |
 | SERVER_MODE | 服务器运行模式（debug/release/test） | debug |
 | JWT_SECRET | JWT 密钥 | 随机生成 |
 | JWT_EXPIRE | JWT 过期时间（秒） | 3600 |
@@ -330,7 +330,7 @@ IXPay Pro 支持通过环境变量来配置系统，环境变量会覆盖配置�
 ```yaml
 # 服务器配置
 server:
-  port: 8586            # 服务端口
+  port: 8081            # 服务端口
   mode: "debug"         # 运行模式：debug, release, test
 
 # 数据库配置
@@ -373,7 +373,7 @@ docker-compose up -d
 ```
 
 这将启动以下服务：
-- **ixpay-server**: 后端服务，端口 8586
+- **ixpay-server**: 后端服务，端口 8081
 - **postgres**: PostgreSQL 数据库，端口 5432
 - **redis**: Redis 缓存，端口 6379
 
@@ -386,7 +386,7 @@ docker build -t ixpay-server .
 
 # 运行容器
 docker run -d --name ixpay-server \
-  -p 8586:8586 \
+  -p 8081:8081 \
   -e DB_HOST=postgres \
   -e DB_PORT=5432 \
   -e DB_USER=ixpay \
@@ -466,10 +466,10 @@ docker run -d --name ixpay-server \
 3. **使用 curl 测试 API**:
    ```bash
    # 测试健康检查接口
-   curl http://localhost:8586/health
+   curl http://localhost:8081/health
    
    # 测试登录接口
-   curl -X POST http://localhost:8586/api/admin/auth/login \
+   curl -X POST http://localhost:8081/api/admin/auth/login \
      -H "Content-Type: application/json" \
      -d '{"userName": "admin", "password": "password123"}'
    ```

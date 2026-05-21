@@ -144,7 +144,7 @@ func SetupApplication(
 
 		// 初始化网关客户端（仅 API 和 all 角色需要注册到网关）
 		if cfg.Gateway.Enabled {
-			port := gateway.ParsePort(cfg.Server.Port, 8586)
+			port := gateway.ParsePort(cfg.Server.Port, 8081)
 
 			metadata := map[string]string{
 				"node_role": cfg.Server.NodeRole,

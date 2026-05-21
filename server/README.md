@@ -289,7 +289,7 @@ go mod tidy
 ```yaml
 # 服务器配置
 server:
-  port: 8586
+  port: 8081
   mode: "debug"  # debug, release, test
 
 # 数据库配置
@@ -366,8 +366,8 @@ npm run build
 
 服务启动后，可以通过以下方式验证：
 
-1. **API文档**：访问 http://localhost:8586/swagger/index.html
-2. **健康检查**：访问 http://localhost:8586/health
+1. **API文档**：访问 http://localhost:8081/swagger/index.html
+2. **健康检查**：访问 http://localhost:8081/health
 3. **前端应用**：访问 http://localhost:3000（开发模式）
 
 ## API文档
@@ -384,9 +384,9 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 
 系统集成了 Swagger/OpenAPI 文档，启动服务后可访问：
 
-- **Swagger UI**: http://localhost:8586/swagger/index.html
-- **API文档JSON**: http://localhost:8586/swagger/doc.json
-- **API文档YAML**: http://localhost:8586/swagger/doc.yaml
+- **Swagger UI**: http://localhost:8081/swagger/index.html
+- **API文档JSON**: http://localhost:8081/swagger/doc.json
+- **API文档YAML**: http://localhost:8081/swagger/doc.yaml
 
 ### API接口分类
 
@@ -475,7 +475,7 @@ IXPay Pro 支持通过环境变量来配置系统，环境变量会覆盖配置�
 | 变量名 | 描述 | 默认值 |
 | --- | --- | --- |
 | LOG_LEVEL | 日志级别（debug/info/warn/error） | info |
-| SERVER_PORT | 服务端口 | 8586 |
+| SERVER_PORT | 服务端口 | 8081 |
 | SERVER_MODE | 服务器运行模式（debug/release/test） | debug |
 | JWT_SECRET | JWT 密钥 | 随机生成 |
 | JWT_EXPIRE | JWT 过期时间（秒） | 3600 |
@@ -497,7 +497,7 @@ IXPay Pro 支持通过环境变量来配置系统，环境变量会覆盖配置�
 ```yaml
 # 服务器配置
 server:
-  port: 8586            # 服务端口
+  port: 8081            # 服务端口
   mode: "debug"         # 运行模式：debug, release, test
 
 # 数据库配置
@@ -559,7 +559,7 @@ docker-compose up -d
 ```
 
 这将启动以下服务：
-- **ixpay-server**: 后端服务，端口 8586
+- **ixpay-server**: 后端服务，端口 8081
 - **postgres**: PostgreSQL 数据库，端口 5432
 - **redis**: Redis 缓存，端口 6379
 
@@ -572,7 +572,7 @@ docker build -t ixpay-server .
 
 # 运行容器
 docker run -d --name ixpay-server \
-  -p 8586:8586 \
+  -p 8081:8081 \
   -e DB_HOST=postgres \
   -e DB_PORT=5432 \
   -e DB_USER=ixpay \
@@ -657,7 +657,7 @@ npm run build
 
 ```bash
 # 检查服务是否正常运行
-curl http://localhost:8586/health
+curl http://localhost:8081/health
 ```
 
 #### 查看日志
@@ -736,10 +736,10 @@ npm run dev
 3. **使用curl测试API**:
    ```bash
    # 测试健康检查接口
-   curl http://localhost:8586/health
+   curl http://localhost:8081/health
    
    # 测试登录接口
-   curl -X POST http://localhost:8586/api/admin/auth/login \
+   curl -X POST http://localhost:8081/api/admin/auth/login \
      -H "Content-Type: application/json" \
      -d '{"userName": "admin", "password": "password123"}'
    ```

@@ -33,4 +33,4 @@ COPY --from=builder /build/cmd/build/gateway ./gateway
 
 RUN chmod +x ./gateway
 
-EXPOSE 8585 8584
+EXPOSE 8085 8084

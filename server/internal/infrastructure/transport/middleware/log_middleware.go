@@ -17,6 +17,12 @@ const (
 
 func LogMiddleware(logger logger.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 跳过健康检查日志
+		if c.Request.URL.Path == "/health" {
+			c.Next()
+			return
+		}
+
 		startTime := time.Now()
 
 		c.Next()

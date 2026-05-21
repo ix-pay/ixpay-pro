@@ -19,7 +19,7 @@ RUN mkdir -p /app/logs && chmod 755 /app/logs
 RUN chmod +x ./ixpay-pro
 
 # 声明暴露的端口
-EXPOSE 8586
+EXPOSE 8081
 
 # 设置环境变量默认值
 ENV ENV=production \
@@ -27,7 +27,7 @@ ENV ENV=production \
 
 # 设置健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost:8586/health || exit 1
+  CMD wget -qO- http://localhost:8081/health || exit 1
 
 # 设置启动命令
 CMD ["./ixpay-pro"]

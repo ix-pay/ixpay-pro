@@ -371,9 +371,14 @@ const loadRolesList = async () => {
 const loadDepartmentList = async () => {
   try {
     const response = await getDepartmentList({ page: 1, pageSize: 1000 })
-    const pageData = response.data as Record<string, unknown>
-    departmentList.value =
-      (pageData?.list as DepartmentType[]) || (response.data as DepartmentType[]) || []
+    if (Array.isArray(response.data)) {
+      departmentList.value = response.data
+    } else if (response.data && typeof response.data === 'object') {
+      const dataObj = response.data as Record<string, unknown>
+      departmentList.value = (dataObj.list as DepartmentType[]) || []
+    } else {
+      departmentList.value = []
+    }
   } catch (error) {
     console.error('获取部门列表失败:', error)
   }

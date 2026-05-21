@@ -233,13 +233,13 @@ func (s *MenuService) GetDefaultRouter(roleID int64) (string, error) {
 
 // CreateMenu 创建菜单
 func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy int64) error {
-	s.log.Info("创建菜单", "name", menu.Name, "path", menu.Path)
-
 	// 验证菜单参数
 	if menu == nil {
 		s.log.Error("菜单参数不能为空")
 		return errors.New("菜单参数不能为空")
 	}
+
+	s.log.Info("创建菜单", "name", menu.Name, "path", menu.Path)
 
 	// 检查菜单名称是否已存在
 	existingMenus, _, err := s.repo.List(1, 1, map[string]interface{}{"name = ?": menu.Name})
@@ -268,6 +268,12 @@ func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy int64) error {
 
 // UpdateMenu 更新菜单
 func (s *MenuService) UpdateMenu(menu *entity.Menu, updatedBy int64) error {
+	// 验证菜单参数
+	if menu == nil {
+		s.log.Error("菜单参数不能为空")
+		return errors.New("菜单参数不能为空")
+	}
+
 	s.log.Info("更新菜单", "id", menu.ID, "name", menu.Name)
 
 	// 检查菜单是否存在

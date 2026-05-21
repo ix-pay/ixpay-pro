@@ -78,12 +78,12 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, Connection, SuccessFilled } from '@element-plus/icons-vue'
-import { getGatewayServices } from '@/api/modules/gateway'
+import { getGatewayServices, type GatewayService } from '@/api/modules/gateway'
 import { formatDate } from '@/utils/format'
 
 defineOptions({ name: 'GatewayServices' })
 
-const gatewayServiceList = ref([])
+const gatewayServiceList = ref<GatewayService[]>([])
 const loading = ref(false)
 
 const loadGatewayServices = async () => {

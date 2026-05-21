@@ -331,13 +331,16 @@ const loadDepartmentList = async () => {
     let list: Department[] = []
     if (Array.isArray(response.data)) {
       // 直接是数组格式
-      list = response.data as Department[]
-    } else if ((response.data as Record<string, unknown>)?.list && Array.isArray((response.data as Record<string, unknown>).list)) {
-      // 分页格式 { list: [], total: 0 }
-      list = (response.data as Record<string, unknown>).list as Department[]
-    } else if ((response.data as Record<string, unknown>)?.data && Array.isArray((response.data as Record<string, unknown>).data)) {
-      // 嵌套格式 { data: { data: [] } }
-      list = (response.data as Record<string, unknown>).data as Department[]
+      list = response.data
+    } else if (response.data && typeof response.data === 'object') {
+      const dataObj = response.data as Record<string, unknown>
+      if (Array.isArray(dataObj.list)) {
+        // 分页格式 { list: [], total: 0 }
+        list = dataObj.list as Department[]
+      } else if (Array.isArray(dataObj.data)) {
+        // 嵌套格式 { data: { data: [] } }
+        list = dataObj.data as Department[]
+      }
     }
 
     // 如果有搜索条件，进行过滤

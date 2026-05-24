@@ -411,7 +411,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="logDialogVisible" title="任务日志" width="800px">
+    <el-dialog v-model="logDialogVisible" title="任务日志" width="800px" append-to-body>
       <el-table :data="taskLogs" stripe class="w-full" v-loading="logLoading">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="taskName" label="任务名称" width="120" />

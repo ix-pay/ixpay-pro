@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
@@ -100,4 +101,28 @@ func (s *TaskService) DeleteTask(taskID string) error {
 	}
 	s.log.Info("删除任务成功", "task_id", taskID)
 	return nil
+}
+
+// GetTaskByTaskIDOrID 根据任务 ID 或数据库 ID 获取任务
+func (s *TaskService) GetTaskByTaskIDOrID(id string) (*entity.Task, error) {
+	// 先尝试按逻辑任务 ID 查找
+	task, err := s.repo.GetByTaskID(id)
+	if err == nil {
+		return task, nil
+	}
+
+	// 尝试将 id 解析为 int64（数据库 ID）
+	parsedID, parseErr := strconv.ParseInt(id, 10, 64)
+	if parseErr != nil {
+		return nil, errors.New("获取任务失败")
+	}
+
+	// 使用数据库 ID 查询
+	task, err = s.repo.GetByID(parsedID)
+	if err != nil {
+		s.log.Error("获取任务失败", "id", id, "error", err)
+		return nil, errors.New("获取任务失败")
+	}
+
+	return task, nil
 }

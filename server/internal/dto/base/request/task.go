@@ -4,13 +4,13 @@ import "encoding/json"
 
 // AddTaskRequest 添加任务请求参数
 type AddTaskRequest struct {
-	TaskID      string          `json:"task_id" binding:"required"`
-	TaskType    string          `json:"task_type" binding:"required,oneof=http database cache script"`
+	TaskID      string          `json:"taskId" binding:"required"`
+	TaskType    string          `json:"taskType" binding:"required,oneof=http database cache script"`
 	Type        string          `json:"type" binding:"required,oneof=cron one_time"`
 	Expression  string          `json:"expression" binding:"required"`
 	Description string          `json:"description"`
 	Group       string          `json:"group"`
-	RetryCount  int             `json:"retry_count" binding:"min=0,max=10"`
+	RetryCount  int             `json:"retryCount" binding:"min=0,max=10"`
 	Params      json.RawMessage `json:"params" binding:"required"`
 }
 

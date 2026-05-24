@@ -178,6 +178,30 @@ func (r *taskExecutionLogRepository) GetByTaskID(taskID int64, page, pageSize in
 	return logs, total, nil
 }
 
+// GetByTaskName 根据任务名称查询执行日志
+func (r *taskExecutionLogRepository) GetByTaskName(taskName string, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error) {
+	var total int64
+	var dbModels []taskExecutionLogModel
+
+	query := r.db.Model(&taskExecutionLogModel{}).Where("task_name = ?", taskName)
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC").Find(&dbModels).Error; err != nil {
+		return nil, 0, err
+	}
+
+	logs := make([]*entity.TaskExecutionLog, len(dbModels))
+	for i, model := range dbModels {
+		logs[i] = model.toDomain()
+	}
+
+	return logs, total, nil
+}
+
 // CountByTaskID 统计任务的执行次数
 func (r *taskExecutionLogRepository) CountByTaskID(taskID int64) (int64, error) {
 	var count int64

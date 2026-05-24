@@ -3,7 +3,6 @@ package task
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
@@ -512,8 +511,24 @@ func (tm *TaskManager) recordExecutionLog(
 	}
 
 	go func() {
+		// 尝试解析 taskID 为数据库 ID
+		logTaskID := common.TryParseInt64(taskID)
+
+		// 如果解析失败（taskID 是逻辑名称），通过 taskRepo 查询获取真实 ID
+		if logTaskID == 0 {
+			tm.taskRepoMux.RLock()
+			taskRepo := tm.taskRepo
+			tm.taskRepoMux.RUnlock()
+
+			if taskRepo != nil {
+				if taskEntity, err := taskRepo.GetByTaskID(taskName); err == nil {
+					logTaskID = taskEntity.ID
+				}
+			}
+		}
+
 		log := &entity.TaskExecutionLog{
-			TaskID:      common.TryParseInt64(taskID),
+			TaskID:      logTaskID,
 			TraceID:     traceID,
 			TaskName:    taskName,
 			Group:       group,
@@ -655,7 +670,7 @@ func (tm *TaskManager) LoadTasksFromDB() error {
 	return nil
 }
 
-// EnableTask 启用任务
+// EnableTask 启用任务（接收逻辑 taskID）
 func (tm *TaskManager) EnableTask(taskID string) error {
 	tm.taskRepoMux.RLock()
 	repo := tm.taskRepo
@@ -667,15 +682,7 @@ func (tm *TaskManager) EnableTask(taskID string) error {
 
 	taskEntity, err := repo.GetByTaskID(taskID)
 	if err != nil {
-		// 尝试将 taskID 解析为 int64（数据库 ID）
-		id, parseErr := strconv.ParseInt(taskID, 10, 64)
-		if parseErr == nil {
-			// 如果是数字，使用数据库 ID 查询
-			taskEntity, err = repo.GetByID(id)
-		}
-		if err != nil {
-			return fmt.Errorf("获取任务失败：%w", err)
-		}
+		return fmt.Errorf("获取任务失败：%w", err)
 	}
 
 	if taskEntity.Status == 1 {
@@ -710,7 +717,7 @@ func (tm *TaskManager) EnableTask(taskID string) error {
 	return nil
 }
 
-// DisableTask 禁用任务
+// DisableTask 禁用任务（接收逻辑 taskID）
 func (tm *TaskManager) DisableTask(taskID string) error {
 	tm.taskRepoMux.RLock()
 	repo := tm.taskRepo

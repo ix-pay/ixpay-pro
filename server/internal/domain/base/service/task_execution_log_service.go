@@ -80,6 +80,24 @@ func (s *TaskExecutionLogService) GetExecutionHistory(taskID int64, page, pageSi
 	return logs, total, nil
 }
 
+// GetExecutionHistoryByTaskName 根据任务名称查询执行历史
+func (s *TaskExecutionLogService) GetExecutionHistoryByTaskName(taskName string, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+
+	logs, total, err := s.repo.GetByTaskName(taskName, page, pageSize)
+	if err != nil {
+		s.log.Error("查询任务执行历史失败", "task_name", taskName, "error", err)
+		return nil, 0, errors.New("查询任务执行历史失败")
+	}
+
+	return logs, total, nil
+}
+
 // GetTaskStatistics 统计任务执行情况
 func (s *TaskExecutionLogService) GetTaskStatistics(taskID int64) (*entity.TaskStatistics, error) {
 	// 获取最近执行记录

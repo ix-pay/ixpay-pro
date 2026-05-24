@@ -245,5 +245,13 @@ func (a *Application) Shutdown(ctx context.Context) error {
 	if a.cache != nil {
 		a.cache.Close()
 	}
-	return a.server.Shutdown(ctx)
+
+	// 关闭 HTTP 服务器（仅 API 和 all 角色需要）
+	if a.server != nil {
+		a.logger.Info("正在关闭HTTP服务器")
+		return a.server.Shutdown(ctx)
+	}
+
+	a.logger.Info("Task 节点模式：无 HTTP 服务器需要关闭")
+	return nil
 }

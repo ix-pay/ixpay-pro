@@ -9,6 +9,7 @@ type TaskExecutionLogRepository interface {
 	Delete(id int64) error
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.TaskExecutionLog, int64, error)
 	GetByTaskID(taskID int64, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error)
+	GetByTaskName(taskName string, page, pageSize int) ([]*entity.TaskExecutionLog, int64, error)
 	CountByTaskID(taskID int64) (int64, error)
 	CountByTaskIDAndResult(taskID int64, result string) (int64, error)
 	CountByResult(result string) (int64, error)

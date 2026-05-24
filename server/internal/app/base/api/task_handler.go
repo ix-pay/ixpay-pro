@@ -159,7 +159,15 @@ func (c *TaskController) DeleteTask(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.manager.RemoveScheduledTask(taskID); err != nil {
+	// 尝试将传入的 ID 解析为数据库 ID，获取逻辑 taskID
+	taskEntity, err := c.taskService.GetTaskByTaskIDOrID(taskID)
+	if err != nil {
+		c.log.Error("解析任务 ID 失败", "taskID", taskID, "error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "任务不存在"})
+		return
+	}
+
+	if err := c.manager.RemoveScheduledTask(taskEntity.TaskID); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
 		return
 	}
@@ -191,8 +199,16 @@ func (c *TaskController) StartTask(ctx *gin.Context) {
 		return
 	}
 
+	// 尝试将传入的 ID 解析为数据库 ID，获取逻辑 taskID
+	resolvedTaskID, err := c.taskService.GetTaskByTaskIDOrID(taskID)
+	if err != nil {
+		c.log.Error("解析任务 ID 失败", "taskID", taskID, "error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "任务不存在"})
+		return
+	}
+
 	// 在 TaskManager 中，定时任务添加后会自动启动，这里我们只是立即执行一次
-	if success := c.manager.RunTaskNow(taskID); !success {
+	if success := c.manager.RunTaskNow(resolvedTaskID.TaskID); !success {
 		c.log.Error("立即运行任务失败", "taskID", taskID)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "任务运行失败"})
 		return
@@ -442,17 +458,16 @@ func (c *TaskController) GetExecutionLogs(ctx *gin.Context) {
 		baseRes.FailWithMessage("请求参数错误："+err.Error(), ctx)
 		return
 	}
-	req.TaskID = taskID
 
-	// 将 TaskID 从 string 转换为 int64
-	taskIDInt, err := strconv.ParseInt(taskID, 10, 64)
+	// 通过主键ID获取任务实体，获取逻辑 taskID
+	taskEntity, err := c.taskService.GetTaskByTaskIDOrID(taskID)
 	if err != nil {
-		baseRes.FailWithMessage("无效的 ID 格式", ctx)
+		baseRes.FailWithMessage("任务不存在", ctx)
 		return
 	}
 
-	// 查询执行历史
-	logs, total, err := c.logService.GetExecutionHistory(taskIDInt, req.Page, req.PageSize)
+	// 使用逻辑 taskID（TaskName）查询日志
+	logs, total, err := c.logService.GetExecutionHistoryByTaskName(taskEntity.TaskID, req.Page, req.PageSize)
 	if err != nil {
 		baseRes.FailWithMessage("查询任务执行历史失败", ctx)
 		return
@@ -723,11 +738,9 @@ func (c *TaskController) UpdateTask(ctx *gin.Context) {
 		return
 	}
 
-	// 如果任务正在运行，先停止旧任务
-	if c.manager.IsTaskRunning(oldTask.TaskID) {
-		if err := c.manager.RemoveScheduledTask(oldTask.TaskID); err != nil {
-			c.log.Error("停止旧任务失败", "task_id", oldTask.TaskID, "error", err)
-		}
+	// 尝试移除旧任务（如果存在），不管是否在执行中
+	if err := c.manager.RemoveScheduledTask(oldTask.TaskID); err != nil {
+		c.log.Debug("移除旧任务（可能不存在）", "task_id", oldTask.TaskID, "error", err)
 	}
 
 	// 使用任务工厂创建新的任务实例
@@ -836,8 +849,16 @@ func (c *TaskController) EnableTask(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.manager.EnableTask(taskID); err != nil {
-		c.log.Error("启用任务失败", "task_id", taskID, "error", err)
+	// 将主键ID解析为任务实体
+	taskEntity, err := c.taskService.GetTaskByTaskIDOrID(taskID)
+	if err != nil {
+		c.log.Error("解析任务 ID 失败", "taskID", taskID, "error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "任务不存在"})
+		return
+	}
+
+	if err := c.manager.EnableTask(taskEntity.TaskID); err != nil {
+		c.log.Error("启用任务失败", "task_id", taskEntity.TaskID, "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -924,8 +945,16 @@ func (c *TaskController) DisableTask(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.manager.DisableTask(taskID); err != nil {
-		c.log.Error("禁用任务失败", "task_id", taskID, "error", err)
+	// 将主键ID解析为任务实体
+	taskEntity, err := c.taskService.GetTaskByTaskIDOrID(taskID)
+	if err != nil {
+		c.log.Error("解析任务 ID 失败", "taskID", taskID, "error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "任务不存在"})
+		return
+	}
+
+	if err := c.manager.DisableTask(taskEntity.TaskID); err != nil {
+		c.log.Error("禁用任务失败", "task_id", taskEntity.TaskID, "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

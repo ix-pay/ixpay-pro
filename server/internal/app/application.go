@@ -177,8 +177,10 @@ func SetupApplication(
 
 // setupMiddleware 设置中间件
 func (a *Application) setupMiddleware() {
-	// 使用Gin默认的日志和恢复中间件
-	a.router.Use(gin.Logger())
+	// 使用Gin的日志和恢复中间件，跳过健康检查日志
+	a.router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		SkipPaths: []string{"/health"},
+	}))
 	a.router.Use(gin.Recovery())
 
 	// 通过中间件配置中心注册所有中间件

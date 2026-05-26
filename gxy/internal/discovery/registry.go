@@ -56,31 +56,30 @@ func (r *Registry) Register(instance *ServiceInstance) {
 	r.instances[instance.ID] = instance // 添加到instances映射
 }
 
-func (r *Registry) Deregister(serviceName, instanceID string) {
+func (r *Registry) Deregister(serviceName, instanceID string) bool {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	serviceList, exists := r.services[serviceName]
 	if !exists {
-		return
+		return false
 	}
 
 	for i, instance := range serviceList {
 		if instance.ID == instanceID {
-			// 从列表中删除实例
 			serviceList = append(serviceList[:i], serviceList[i+1:]...)
-			// 从instances映射中删除
 			delete(r.instances, instanceID)
-			break
+
+			if len(serviceList) == 0 {
+				delete(r.services, serviceName)
+			} else {
+				r.services[serviceName] = serviceList
+			}
+			return true
 		}
 	}
 
-	if len(serviceList) == 0 {
-		// 如果服务实例列表为空，删除该服务
-		delete(r.services, serviceName)
-	} else {
-		r.services[serviceName] = serviceList
-	}
+	return false
 }
 
 func (r *Registry) GetInstances(serviceName string) []*ServiceInstance {

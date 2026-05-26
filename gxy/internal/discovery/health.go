@@ -77,12 +77,12 @@ func (hc *HealthChecker) checkAllServices() {
 
 		go func(serviceName string, instance *ServiceInstance) {
 			defer func() {
-				<-semaphore // 释放信号量
+				<-semaphore
 			}()
 
 			if !hc.checkService(instance) {
 				hc.logger.Warn("服务实例 %s (%s:%d) 不健康，正在注销", instance.ID, instance.Address, instance.Port)
-				hc.registry.Deregister(serviceName, instance.ID)
+				hc.registry.Deregister(instance.Name, instance.ID)
 			}
 		}(item.serviceName, item.instance)
 	}

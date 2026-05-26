@@ -84,8 +84,10 @@ func (h *Handler) DeregisterService(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// 3. 注销服务实例
-	h.registry.Deregister(req.ServiceName, req.InstanceID)
-	h.logger.Debug("服务已注销：%s (实例 ID：%s)", req.ServiceName, req.InstanceID)
+	deregistered := h.registry.Deregister(req.ServiceName, req.InstanceID)
+	if deregistered {
+		h.logger.Debug("服务已注销：%s (实例 ID：%s)", req.ServiceName, req.InstanceID)
+	}
 
 	// 4. 返回注销结果
 	w.Header().Set("Content-Type", "application/json")

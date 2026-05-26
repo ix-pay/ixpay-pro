@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -149,7 +148,7 @@ func (l *Logger) checkAndRotate() {
 
 	l.file = f
 	l.currentDate = today
-	l.logger = log.New(io.MultiWriter(os.Stdout, f), "", 0)
+	l.logger = log.New(f, "", 0)
 }
 
 func (l *Logger) log(level LogLevel, format string, args ...interface{}) {

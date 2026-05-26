@@ -28,32 +28,38 @@ ixpay-pro/
 | Category | Technology/Framework | Version | Description |
 |----------|---------------------|---------|-------------|
 | **Language** | Go | 1.24.6 | Core development language, providing high performance and concurrency capabilities |
-| **Web Framework** | Gin | v1.10.1 | Lightweight HTTP service framework, providing routing, middleware, etc. |
+| **Web Framework** | Gin | v1.11.0 | Lightweight HTTP service framework, providing routing, middleware, etc. |
 | **Dependency Injection** | Wire | v0.7.0 | Compile-time dependency injection tool, improving code maintainability |
 | **Database** | PostgreSQL | 13+ | Powerful open-source relational database, supporting complex queries and transactions |
-| | GORM | v1.30.3 | Feature-rich ORM library, simplifying database operations |
-| **Cache** | Redis | 6+ | High-performance key-value storage, used for caching and session management |
+| | GORM | v1.31.1 | Feature-rich ORM library, simplifying database operations |
+| **Cache** | Redis (go-redis) | v9.17.2 | High-performance key-value storage, used for caching and session management |
 | **Authentication** | JWT | v5.3.0 | Stateless identity authentication token, supporting cross-service authentication |
-| **Configuration** | Viper | v1.20.1 | Flexible configuration file management tool, supporting multiple configuration formats |
-| **Logging** | Zap | v1.27.0 | High-performance structured logging library, supporting multiple log levels |
+| **Configuration** | Viper | v1.21.0 | Flexible configuration file management tool, supporting multiple configuration formats |
+| **Logging** | Zap | v1.27.1 | High-performance structured logging library, supporting multiple log levels |
 | **Task Scheduling** | Cron | v3.0.1 | Scheduled task scheduling library, used for executing periodic tasks |
-| **API Documentation** | Swagger | - | Automatic API documentation generation tool, facilitating interface debugging |
-| **Monitoring** | Prometheus | - | Open-source monitoring system, used for system performance monitoring |
-| **Rate Limiting** | golang.org/x/time/rate | - | API rate limiting library, preventing system overload |
+| **System Monitoring** | gopsutil | v4.26.2 | System resource monitoring library, obtaining CPU, memory, disk, etc. |
+| **Monitoring** | Prometheus | v1.23.2 | Open-source monitoring system, used for system performance monitoring |
+| **Rate Limiting** | golang.org/x/time/rate | v0.14.0 | API rate limiting library, preventing system overload |
+| **Circuit Breaker** | gobreaker | v1.0.0 | Service circuit breaker library, improving system fault tolerance |
+| **API Documentation** | Swagger | v1.16.6 | Automatic API documentation generation tool, facilitating interface debugging |
 | **Snowflake Algorithm** | Snowflake | - | Distributed ID generation algorithm, ensuring data uniqueness |
-| **Captcha** | captcha | - | Captcha generation and verification library, improving system security |
+| **Captcha** | base64Captcha | v1.3.8 | Captcha generation and verification library, improving system security |
 
 ### Frontend (web)
 
 | Category | Technology/Framework | Version | Description |
 |----------|---------------------|---------|-------------|
-| **Framework** | Vue 3 | - | Modern frontend framework, providing reactive data binding and component-based development |
+| **Framework** | Vue 3 | v3.5.18 | Modern frontend framework, providing reactive data binding and component-based development |
 | **UI Library** | Element Plus | v2.11.2 | Vue 3-based UI component library, providing rich interface elements |
-| **Language** | TypeScript | - | Static type checking, improving code quality and maintainability |
+| **Language** | TypeScript | v5.8.0 | Static type checking, improving code quality and maintainability |
 | **Build Tool** | Vite | v7.0.6 | Modern frontend build tool, providing fast development experience |
 | **State Management** | Pinia | v3.0.3 | Vue 3 official recommended state management library |
 | **Router** | Vue Router | v4.5.1 | Vue official router library, implementing single-page application navigation |
-| **HTTP Client** | Axios | - | Promise-based HTTP client, used for API calls |
+| **HTTP Client** | Axios | v1.12.2 | Promise-based HTTP client, used for API calls |
+| **Chart Library** | ECharts | v6.0.0 | Data visualization chart library |
+| **CSS Framework** | Tailwind CSS | v3.4.17 | Utility-first CSS framework |
+| **Linting** | ESLint | v9.31.0 | JavaScript/TypeScript code linting tool |
+| **Formatting** | Prettier | v3.6.2 | Code formatting tool |
 
 ### Gateway (gxy)
 
@@ -71,7 +77,11 @@ ixpay-pro/
 - **📋 Menu Management**: Menu CRUD, tree structure management, supporting dynamic menu generation
 - **⚙️ Configuration Management**: System configuration CRUD, supporting multi-environment configurations
 - **📚 Dictionary Management**: Dictionary table and dictionary item management, supporting data classification and standardization
+- **🏢 Department Management**: Organization department management with tree structure and hierarchical relationships
+- **📌 Position Management**: Position information CRUD, supporting user-position association
+- **📢 Notice Management**: System notice publication and management with reading record tracking
 - **📝 Operation Logs**: Records user operation logs, supporting log query and analysis
+- **🔑 Login Logs**: Records user login logs, supporting login behavior analysis
 - **🌱 Seed Data Management**: System initialization data management, ensuring rapid deployment and configuration
 
 ### Payment Functions
@@ -88,9 +98,14 @@ ixpay-pro/
 - **🔑 Captcha Service**: Supports generating and verifying captchas, improving system security
 - **🌐 CORS Support**: Built-in CORS middleware, solving cross-domain issues in front-end and back-end separation architecture
 - **📊 Monitoring System**: Supports Prometheus monitoring and Zap logging, ensuring stable system operation
+- **📈 System Monitoring**: Real-time monitoring of system CPU, memory, disk, and other system resources
+- **👥 Online Users**: Real-time online user monitoring and management
+- **🔄 Circuit Breaker Protection**: Integrated gobreaker circuit breaker, improving system fault tolerance
 - **🔒 Security Protection**: Built-in input validation, SQL injection prevention, XSS attack prevention, and other security measures
 - **⚡ Performance Optimization**: Uses Redis caching, database indexing, and other technologies to optimize system performance
 - **📦 Containerized Deployment**: Supports Docker containerized deployment, simplifying deployment and operations
+- **📨 Event Bus**: Built-in event bus mechanism, supporting asynchronous event processing and dead letter queue
+- **⏰ Task Scheduling**: Powerful task scheduling system, supporting cache tasks, database tasks, HTTP tasks, script tasks, and other task types
 
 ### Gateway Functions
 
@@ -106,9 +121,9 @@ ixpay-pro/
 
 | Component | Version Requirement | Usage |
 |-----------|-------------------|-------|
-| Go | 1.20+ | Backend development language, recommended version 1.24.6 |
-| Node.js | 16+ | Frontend development environment, recommended version 18.x |
-| npm | 8+ | Frontend dependency management, recommended version 9.x |
+| Go | 1.24.6 | Backend development language |
+| Node.js | 20.19+ or 22.12+ | Frontend development environment |
+| npm | 9+ | Frontend dependency management |
 | PostgreSQL | 13+ | Relational database, recommended version 14.x |
 | Redis | 6+ | Cache, session management, recommended version 7.x |
 | Docker | 20.10+ | Containerized deployment (optional) |
@@ -241,6 +256,26 @@ The system integrates Swagger/OpenAPI documentation, accessible after starting t
 | Delete User | DELETE | /api/admin/user/:id | Delete user |
 | Change Password | PUT | /api/admin/user/password | Change user password |
 | Reset Password | PUT | /api/admin/user/reset-password | Reset user password |
+
+#### Department Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Create Department | POST | /api/admin/departments | Create new department |
+| Get Department List | GET | /api/admin/departments | Get department list |
+| Get Department Details | GET | /api/admin/departments/detail | Get department details |
+| Update Department | PUT | /api/admin/departments | Update department info |
+| Delete Department | DELETE | /api/admin/departments | Delete department |
+
+#### Position Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Create Position | POST | /api/admin/positions | Create new position |
+| Get Position List | GET | /api/admin/positions | Get position list |
+| Get Position Details | GET | /api/admin/positions/detail | Get position details |
+| Update Position | PUT | /api/admin/positions | Update position info |
+| Delete Position | DELETE | /api/admin/positions | Delete position |
 
 #### Role Management APIs
 

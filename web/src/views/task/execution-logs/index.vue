@@ -1,41 +1,17 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md p-4 transition-colors duration-300">
     <div class="flex flex-col gap-3 mb-4 border-b pb-4">
       <div class="flex flex-wrap items-center gap-3">
-        <el-select
-          v-model="searchForm.taskId"
-          placeholder="选择任务"
-          clearable
-          filterable
-          style="width: 220px"
-        >
-          <el-option
-            v-for="task in taskOptions"
-            :key="task.id"
-            :label="task.taskId"
-            :value="task.taskId"
-          />
+        <el-select v-model="searchForm.taskId" placeholder="选择任务" clearable filterable style="width: 220px">
+          <el-option v-for="task in taskOptions" :key="task.id" :label="task.taskId" :value="task.taskId" />
         </el-select>
-        <el-select
-          v-model="searchForm.result"
-          placeholder="执行结果"
-          clearable
-          style="width: 150px"
-        >
+        <el-select v-model="searchForm.result" placeholder="执行结果" clearable style="width: 150px">
           <el-option label="全部" value="" />
           <el-option label="成功" value="success" />
           <el-option label="失败" value="failed" />
         </el-select>
-        <el-date-picker
-          v-model="searchForm.dateRange"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="YYYY-MM-DD"
-          style="width: 260px"
-        />
+        <el-date-picker v-model="searchForm.dateRange" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"
+          value-format="YYYY-MM-DD" style="width: 260px" />
         <el-button type="primary" @click="handleSearch">搜索</el-button>
         <el-button @click="handleReset">重置</el-button>
       </div>
@@ -68,15 +44,9 @@
     </el-table>
 
     <div class="flex justify-end mt-4">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next" :total="pagination.total"
+        @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>

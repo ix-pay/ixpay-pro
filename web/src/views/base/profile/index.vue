@@ -8,13 +8,7 @@
             <span>基本信息</span>
           </div>
         </template>
-        <el-form
-          ref="profileFormRef"
-          :model="profileForm"
-          :rules="formRules"
-          label-width="120px"
-          class="profile-form"
-        >
+        <el-form ref="profileFormRef" :model="profileForm" :rules="formRules" label-width="120px" class="profile-form">
           <el-form-item label="用户名" prop="userName">
             <el-input v-model="profileForm.userName" placeholder="请输入用户名" disabled />
           </el-form-item>
@@ -49,33 +43,16 @@
             <span>修改密码</span>
           </div>
         </template>
-        <el-form
-          ref="passwordFormRef"
-          :model="passwordForm"
-          :rules="passwordRules"
-          label-width="120px"
-          class="password-form"
-        >
+        <el-form ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-width="120px"
+          class="password-form">
           <el-form-item label="原密码" prop="oldPassword">
-            <el-input
-              type="password"
-              v-model="passwordForm.oldPassword"
-              placeholder="请输入原密码"
-            />
+            <el-input type="password" v-model="passwordForm.oldPassword" placeholder="请输入原密码" />
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword">
-            <el-input
-              type="password"
-              v-model="passwordForm.newPassword"
-              placeholder="请输入新密码"
-            />
+            <el-input type="password" v-model="passwordForm.newPassword" placeholder="请输入新密码" />
           </el-form-item>
           <el-form-item label="确认密码" prop="confirmPassword">
-            <el-input
-              type="password"
-              v-model="passwordForm.confirmPassword"
-              placeholder="请确认新密码"
-            />
+            <el-input type="password" v-model="passwordForm.confirmPassword" placeholder="请确认新密码" />
           </el-form-item>
         </el-form>
         <div class="form-actions">
@@ -243,7 +220,7 @@ onMounted(() => {
 
 <style scoped>
 .profile-page {
-  background-color: var(--bg-color);
+  background-color: var(--bg-secondary);
   padding: 20px;
   min-height: calc(100vh - 60px);
 }
@@ -286,7 +263,7 @@ html.dark :deep(.profile-page) {
     }
 
     .el-input__wrapper {
-      background-color: var(--bg-color);
+      background-color: var(--bg-secondary);
       border-color: var(--border-color);
 
       .el-input__inner {

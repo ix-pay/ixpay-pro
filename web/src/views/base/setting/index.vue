@@ -8,13 +8,7 @@
             <span>界面设置</span>
           </div>
         </template>
-        <el-form
-          ref="settingFormRef"
-          :model="settingForm"
-          :rules="formRules"
-          label-width="120px"
-          class="setting-form"
-        >
+        <el-form ref="settingFormRef" :model="settingForm" :rules="formRules" label-width="120px" class="setting-form">
           <el-form-item label="主题模式" prop="darkMode">
             <el-radio-group v-model="settingForm.darkMode">
               <el-radio-button label="light">浅色</el-radio-button>
@@ -23,27 +17,17 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="主题颜色" prop="primaryColor">
-            <el-color-picker
-              v-model="settingForm.primaryColor"
-              show-color-palette
-              :predefine="themeColorOptions"
-            />
+            <el-color-picker v-model="settingForm.primaryColor" show-color-palette :predefine="themeColorOptions" />
           </el-form-item>
           <el-form-item label="字体大小" prop="fontSize">
             <el-slider v-model="settingForm.fontSize" :min="12" :max="20" :step="1" />
           </el-form-item>
           <el-form-item label="侧边栏宽度" prop="layout_side_width">
-            <el-slider
-              v-model="settingForm.layout_side_width"
-              :min="180"
-              :max="300"
-              :step="10"
-              :marks="{
-                180: '窄',
-                240: '标准',
-                300: '宽',
-              }"
-            />
+            <el-slider v-model="settingForm.layout_side_width" :min="180" :max="300" :step="10" :marks="{
+              180: '窄',
+              240: '标准',
+              300: '宽',
+            }" />
           </el-form-item>
           <el-form-item label="显示标签栏">
             <el-switch v-model="settingForm.showTabs" />
@@ -274,7 +258,7 @@ onMounted(() => {
 
 <style scoped>
 .setting-page {
-  background-color: var(--bg-color);
+  background-color: var(--bg-secondary);
   padding: 20px;
   min-height: calc(100vh - 60px);
   color: var(--text-primary);

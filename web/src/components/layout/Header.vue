@@ -1,14 +1,9 @@
 <template>
-  <el-page-header
-    class="box-border relative z-[10] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-    @back="handleBack"
-  >
+  <el-page-header class="box-border relative z-[10] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+    @back="handleBack">
     <template #content>
-      <el-breadcrumb
-        separator=">"
-        v-if="breadcrumbList.length > 0"
-        class="h-full flex items-center px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]"
-      >
+      <el-breadcrumb separator=">" v-if="breadcrumbList.length > 0"
+        class="h-full flex items-center px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]">
         <el-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="index" :to="item.path">
           {{ item.name }}
         </el-breadcrumb-item>
@@ -18,8 +13,7 @@
       <!-- 角色切换 -->
       <el-dropdown v-if="userRoles.length > 1" :hide-on-click="true" trigger="click">
         <div
-          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)] text-[13px] text-[var(--text-secondary)]"
-        >
+          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)] text-[13px] text-[var(--text-secondary)]">
           <el-icon class="text-[14px]">
             <User />
           </el-icon>
@@ -30,21 +24,13 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="role in userRoles"
-              :key="role.id"
-              :class="{
-                'is-active': String(role.id) === String(currentRoleId),
-                'is-disabled': String(role.id) === String(currentRoleId),
-              }"
-              @click="handleSwitchRole(role.id)"
-            >
+            <el-dropdown-item v-for="role in userRoles" :key="role.id" :class="{
+              'is-active': String(role.id) === String(currentRoleId),
+              'is-disabled': String(role.id) === String(currentRoleId),
+            }" @click="handleSwitchRole(role.id)">
               <div class="flex items-center gap-2">
                 <span class="flex-1">{{ role.name }}</span>
-                <el-icon
-                  v-if="String(role.id) === String(currentRoleId)"
-                  class="text-[var(--success-color)]"
-                >
+                <el-icon v-if="String(role.id) === String(currentRoleId)" class="text-[var(--success-color)]">
                   <Check />
                 </el-icon>
               </div>
@@ -55,10 +41,8 @@
 
       <!-- 消息通知 -->
       <el-dropdown :hide-on-click="false" trigger="click">
-        <el-button
-          type="text"
-          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-secondary)] hover:text-[var(--primary-color)]"
-        >
+        <el-button type="text"
+          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-secondary)] hover:text-[var(--primary-color)]">
           <el-icon>
             <Bell />
           </el-icon>
@@ -97,27 +81,18 @@
 
       <!-- 主题切换 -->
       <div
-        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]"
-      >
-        <el-switch
-          v-model="appStore.isDark"
-          @change="handleThemeChange"
-          class="align-middle transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-          :active-action-icon="Moon"
-          :inactive-action-icon="Sunny"
-        />
+        class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]">
+        <el-switch v-model="appStore.isDark" @change="handleThemeChange"
+          class="align-middle transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]" :active-action-icon="Moon"
+          :inactive-action-icon="Sunny" />
       </div>
 
       <!-- 全屏切换 -->
       <div
         class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] cursor-pointer hover:bg-[var(--bg-secondary)]"
-        @click="toggleFullscreen"
-        :title="isFullscreen ? '退出全屏' : '全屏查看'"
-      >
-        <el-button
-          type="text"
-          class="text-lg text-[var(--text-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--primary-color)]"
-        >
+        @click="toggleFullscreen" :title="isFullscreen ? '退出全屏' : '全屏查看'">
+        <el-button type="text"
+          class="text-lg text-[var(--text-primary)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--primary-color)]">
           <el-icon :class="{ 'rotate-180': isFullscreen }">
             <FullScreen />
           </el-icon>
@@ -126,8 +101,7 @@
       <!-- 用户信息 -->
       <el-dropdown :hide-on-click="false" trigger="click">
         <div
-          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]"
-        >
+          class="flex items-center gap-2 cursor-pointer px-2 py-1.5 h-full rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]">
           <el-avatar :size="32" :src="userAvatar" />
           <div class="flex flex-col justify-center h-full overflow-hidden">
             <div class="text-[13px] leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -184,6 +158,7 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import type { RoleInfo } from '@/types'
+import defaultAvatar from '@/assets/images/default-avatar.svg'
 
 // 面包屑项接口
 interface BreadcrumbItem {
@@ -203,7 +178,7 @@ const props = defineProps<{
 
 // 用户信息
 const userName = computed(() => userStore.userInfo?.nickname || '管理员')
-const userAvatar = ref('')
+const userAvatar = ref(defaultAvatar)
 
 // 角色切换相关
 const userRoles = ref<RoleInfo[]>([])
@@ -493,7 +468,7 @@ watch(
     /* 4px */
   }
 
-  :deep(.el-dropdown:nth-last-child(1)) > div {
+  :deep(.el-dropdown:nth-last-child(1))>div {
     padding: 0 var(--space-xs);
     padding-top: var(--space-sm);
     padding-bottom: var(--space-sm);

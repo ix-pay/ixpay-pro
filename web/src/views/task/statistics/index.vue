@@ -1,27 +1,15 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md p-4 transition-colors duration-300">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">任务统计</h2>
       <div class="flex items-center gap-3">
         <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
-        <el-select
-          v-model="refreshInterval"
-          size="small"
-          class="interval-select"
-          @change="changeRefreshInterval"
-        >
+        <el-select v-model="refreshInterval" size="small" class="interval-select" @change="changeRefreshInterval">
           <el-option label="5 秒" :value="5000" />
           <el-option label="10 秒" :value="10000" />
           <el-option label="30 秒" :value="30000" />
         </el-select>
-        <el-switch
-          v-model="autoRefreshEnabled"
-          active-text="自动刷新"
-          class="refresh-switch"
-          @change="toggleAutoRefresh"
-        />
+        <el-switch v-model="autoRefreshEnabled" active-text="自动刷新" class="refresh-switch" @change="toggleAutoRefresh" />
         <el-button type="primary" @click="refreshData" :loading="loading" circle>
           <el-icon>
             <Refresh />
@@ -136,9 +124,7 @@
               </div>
             </div>
 
-            <div
-              class="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500"
-            >
+            <div class="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500">
               <div class="flex justify-between">
                 <span>最后执行</span>
                 <span class="text-gray-900 dark:text-white">{{ item.lastExecuteAt || '-' }}</span>
@@ -151,11 +137,7 @@
           </div>
         </el-card>
 
-        <el-empty
-          v-if="!loading && statisticsList.length === 0"
-          description="暂无任务统计数据"
-          :image-size="120"
-        />
+        <el-empty v-if="!loading && statisticsList.length === 0" description="暂无任务统计数据" :image-size="120" />
       </div>
     </div>
   </div>

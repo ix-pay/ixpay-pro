@@ -91,13 +91,14 @@ func (m *roleModel) toDomain() *entity.Role {
 		return nil
 	}
 	role := &entity.Role{
-		ID:        m.ID,
-		Name:      m.Name,
-		Code:      m.Code,
-		CreatedBy: m.CreatedBy,
-		CreatedAt: m.CreatedAt,
-		UpdatedBy: m.UpdatedBy,
-		UpdatedAt: m.UpdatedAt,
+		ID:          m.ID,
+		Name:        m.Name,
+		Code:        m.Code,
+		Description: m.Description,
+		CreatedBy:   m.CreatedBy,
+		CreatedAt:   m.CreatedAt,
+		UpdatedBy:   m.UpdatedBy,
+		UpdatedAt:   m.UpdatedAt,
 	}
 
 	// 安全解引用，提供默认值

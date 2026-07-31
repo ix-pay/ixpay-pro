@@ -1,33 +1,14 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md transition-colors duration-300">
     <!-- 顶部操作栏 -->
     <div class="flex flex-col gap-3 p-4 border-b">
       <!-- 第一行：搜索条件 -->
       <div class="flex flex-wrap items-center gap-3">
-        <el-date-picker
-          v-model="dateRange"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始"
-          end-placeholder="结束"
-          value-format="YYYY-MM-DD"
-          style="width: 192px"
-        />
-        <el-input
-          v-model="searchForm.userName"
-          placeholder="用户名"
-          clearable
-          style="width: 192px"
-        />
+        <el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始"
+          end-placeholder="结束" value-format="YYYY-MM-DD" style="width: 192px" />
+        <el-input v-model="searchForm.userName" placeholder="用户名" clearable style="width: 192px" />
         <el-input v-model="searchForm.module" placeholder="模块" clearable style="width: 192px" />
-        <el-select
-          v-model="searchForm.operationType"
-          placeholder="操作类型"
-          clearable
-          style="width: 192px"
-        >
+        <el-select v-model="searchForm.operationType" placeholder="操作类型" clearable style="width: 192px">
           <el-option label="创建" :value="1" />
           <el-option label="更新" :value="2" />
           <el-option label="删除" :value="3" />
@@ -51,12 +32,8 @@
 
       <!-- 第二行：功能按钮 -->
       <div class="flex flex-wrap items-center gap-2">
-        <el-button
-          v-auth-btn="'log:operation:batchDelete'"
-          type="danger"
-          @click="handleBatchDelete"
-          :disabled="selectedIds.length === 0"
-        >
+        <el-button v-auth-btn="'log:operation:batchDelete'" type="danger" @click="handleBatchDelete"
+          :disabled="selectedIds.length === 0">
           <el-icon>
             <Delete />
           </el-icon>
@@ -73,23 +50,12 @@
 
     <!-- 表格区域 - 占满剩余空间 -->
     <div class="flex-1 overflow-hidden">
-      <el-table
-        v-loading="loading"
-        :data="logList"
-        stripe
-        class="w-full h-full"
-        :height="'100%'"
-        @selection-change="handleSelectionChange"
-      >
+      <el-table v-loading="loading" :data="logList" stripe class="w-full h-full" :height="'100%'"
+        @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="45" />
         <el-table-column prop="userName" label="用户名" width="100" />
         <el-table-column prop="module" label="模块" width="120" />
-        <el-table-column
-          prop="description"
-          label="操作内容"
-          min-width="180"
-          show-overflow-tooltip
-        />
+        <el-table-column prop="description" label="操作内容" min-width="180" show-overflow-tooltip />
         <el-table-column label="类型" width="80">
           <template #default="scope">
             <el-tag :type="getOperationTypeTag(scope.row.operationType)" size="small">
@@ -107,13 +73,7 @@
         <el-table-column prop="clientIp" label="IP 地址" width="120" />
         <el-table-column label="入参" width="60" align="center">
           <template #default="scope">
-            <el-popover
-              v-if="scope.row.params"
-              placement="top-start"
-              :width="500"
-              trigger="hover"
-              :show-after="300"
-            >
+            <el-popover v-if="scope.row.params" placement="top-start" :width="500" trigger="hover" :show-after="300">
               <template #reference>
                 <el-icon :size="18" class="cursor-pointer text-blue-500 hover:text-blue-600">
                   <Document />
@@ -128,13 +88,7 @@
         </el-table-column>
         <el-table-column label="返回" width="60" align="center">
           <template #default="scope">
-            <el-popover
-              v-if="scope.row.result"
-              placement="top-start"
-              :width="500"
-              trigger="hover"
-              :show-after="300"
-            >
+            <el-popover v-if="scope.row.result" placement="top-start" :width="500" trigger="hover" :show-after="300">
               <template #reference>
                 <el-icon :size="18" class="cursor-pointer text-green-500 hover:text-green-600">
                   <View />
@@ -155,20 +109,12 @@
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="scope">
             <div class="flex flex-wrap gap-2">
-              <el-button
-                v-auth-btn="'log:operation:view'"
-                type="primary"
-                size="small"
-                @click="handleViewDetail(scope.row)"
-              >
+              <el-button v-auth-btn="'log:operation:view'" type="primary" size="small"
+                @click="handleViewDetail(scope.row)">
                 详情
               </el-button>
-              <el-button
-                v-auth-btn="'log:operation:delete'"
-                type="danger"
-                size="small"
-                @click="handleDeleteLog(scope.row.id)"
-              >
+              <el-button v-auth-btn="'log:operation:delete'" type="danger" size="small"
+                @click="handleDeleteLog(scope.row.id)">
                 删除
               </el-button>
             </div>
@@ -178,20 +124,11 @@
     </div>
 
     <!-- 分页区域 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="sizes, prev, pager, next"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        small
-      />
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
+        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
     </div>
 
     <!-- 日志详情对话框 -->
@@ -203,7 +140,7 @@
             <el-descriptions-item label="用户名">{{ currentLog.userName }}</el-descriptions-item>
             <el-descriptions-item label="用户昵称">{{
               currentLog.nickname || '-'
-            }}</el-descriptions-item>
+              }}</el-descriptions-item>
             <el-descriptions-item label="操作模块">{{ currentLog.module }}</el-descriptions-item>
             <el-descriptions-item label="操作类型">
               <el-tag :type="getOperationTypeTag(currentLog.operationType)">
@@ -217,20 +154,20 @@
             </el-descriptions-item>
             <el-descriptions-item label="请求方法">{{
               currentLog.method || '-'
-            }}</el-descriptions-item>
+              }}</el-descriptions-item>
             <el-descriptions-item label="请求路径">{{
               currentLog.path || '-'
-            }}</el-descriptions-item>
+              }}</el-descriptions-item>
             <el-descriptions-item label="IP 地址">{{ currentLog.clientIp }}</el-descriptions-item>
             <el-descriptions-item label="状态码">{{
               currentLog.statusCode || '-'
-            }}</el-descriptions-item>
+              }}</el-descriptions-item>
             <el-descriptions-item label="操作耗时">{{
               currentLog.duration ? currentLog.duration + 'ms' : '-'
-            }}</el-descriptions-item>
+              }}</el-descriptions-item>
             <el-descriptions-item label="操作时间">{{
               formatDate(currentLog.createdAt)
-            }}</el-descriptions-item>
+              }}</el-descriptions-item>
             <el-descriptions-item label="操作内容" :span="2">
               <div class="max-h-24 overflow-y-auto">{{ currentLog.description }}</div>
             </el-descriptions-item>
@@ -272,30 +209,15 @@
     <el-dialog v-model="clearDialogVisible" title="清空日志" width="500px">
       <el-form :model="clearForm" label-width="100px">
         <el-form-item label="开始日期" required>
-          <el-date-picker
-            v-model="clearForm.startTime"
-            type="date"
-            placeholder="选择开始日期"
-            value-format="YYYY-MM-DD"
-            class="w-full"
-          />
+          <el-date-picker v-model="clearForm.startTime" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
+            class="w-full" />
         </el-form-item>
         <el-form-item label="结束日期" required>
-          <el-date-picker
-            v-model="clearForm.endTime"
-            type="date"
-            placeholder="选择结束日期"
-            value-format="YYYY-MM-DD"
-            class="w-full"
-          />
+          <el-date-picker v-model="clearForm.endTime" type="date" placeholder="选择结束日期" value-format="YYYY-MM-DD"
+            class="w-full" />
         </el-form-item>
       </el-form>
-      <el-alert
-        title="此操作将清空指定时间范围内的所有操作日志，请谨慎操作！"
-        type="warning"
-        :closable="false"
-        class="mb-5"
-      />
+      <el-alert title="此操作将清空指定时间范围内的所有操作日志，请谨慎操作！" type="warning" :closable="false" class="mb-5" />
       <template #footer>
         <el-button @click="clearDialogVisible = false">取消</el-button>
         <el-button type="danger" @click="handleClearSubmit">确定清空</el-button>

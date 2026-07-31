@@ -1,19 +1,9 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md transition-colors duration-300">
     <!-- 顶部操作栏 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-2">
-        <el-input
-          v-model="searchForm.userName"
-          placeholder="请输入用户名"
-          clearable
-          size="small"
-          class="w-48"
-        />
+        <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable size="small" class="w-48" />
         <el-button type="primary" size="small" @click="loadOnlineUserList">
           <el-icon>
             <Search />
@@ -45,20 +35,11 @@
     </div>
 
     <!-- 分页区域 - 紧凑布局 -->
-    <div
-      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="sizes, prev, pager, next"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        small
-      />
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
+        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
     </div>
   </div>
 </template>

@@ -1,29 +1,19 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md p-4 transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md p-4 transition-colors duration-300">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">节点管理</h2>
       <div class="flex items-center gap-3">
         <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
-        <el-select
-          v-model="refreshInterval"
-          size="small"
-          class="interval-select"
-          @change="changeRefreshInterval"
-        >
+        <el-select v-model="refreshInterval" size="small" class="interval-select" @change="changeRefreshInterval">
           <el-option label="5 秒" :value="5000" />
           <el-option label="10 秒" :value="10000" />
           <el-option label="30 秒" :value="30000" />
         </el-select>
-        <el-switch
-          v-model="autoRefreshEnabled"
-          active-text="自动刷新"
-          class="refresh-switch"
-          @change="toggleAutoRefresh"
-        />
+        <el-switch v-model="autoRefreshEnabled" active-text="自动刷新" class="refresh-switch" @change="toggleAutoRefresh" />
         <el-button type="primary" @click="refreshData" :loading="loading" circle>
-          <el-icon><Refresh /></el-icon>
+          <el-icon>
+            <Refresh />
+          </el-icon>
         </el-button>
       </div>
     </div>
@@ -50,25 +40,13 @@
     </div>
 
     <div class="flex gap-4 mb-4">
-      <el-select
-        v-model="filterRole"
-        placeholder="按角色筛选"
-        clearable
-        class="w-40"
-        @change="handleFilter"
-      >
+      <el-select v-model="filterRole" placeholder="按角色筛选" clearable class="w-40" @change="handleFilter">
         <el-option label="全部" value="" />
         <el-option label="API节点" value="api" />
         <el-option label="任务节点" value="task" />
         <el-option label="全功能节点" value="all" />
       </el-select>
-      <el-select
-        v-model="filterStatus"
-        placeholder="按状态筛选"
-        clearable
-        class="w-40"
-        @change="handleFilter"
-      >
+      <el-select v-model="filterStatus" placeholder="按状态筛选" clearable class="w-40" @change="handleFilter">
         <el-option label="全部" value="" />
         <el-option label="在线" value="online" />
         <el-option label="离线" value="offline" />
@@ -76,11 +54,8 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <div
-        v-for="node in filteredNodes"
-        :key="node.nodeId"
-        class="flex flex-col p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300"
-      >
+      <div v-for="node in filteredNodes" :key="node.nodeId"
+        class="flex flex-col p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <el-tag :type="node.status === 'online' ? 'success' : 'danger'" size="small">
@@ -113,7 +88,7 @@
             <span class="text-gray-500 dark:text-gray-400">最大并发</span>
             <span class="text-gray-900 dark:text-white font-semibold">{{
               node.maxConcurrent
-            }}</span>
+              }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-500 dark:text-gray-400">最后心跳</span>
@@ -129,34 +104,23 @@
           <el-button type="primary" size="small" class="flex-1" @click="handleViewDetail(node)">
             详情
           </el-button>
-          <el-button
-            v-if="node.status === 'online'"
-            type="danger"
-            size="small"
-            class="flex-1"
-            @click="handleOfflineNode(node)"
-          >
+          <el-button v-if="node.status === 'online'" type="danger" size="small" class="flex-1"
+            @click="handleOfflineNode(node)">
             下线
           </el-button>
         </div>
       </div>
     </div>
 
-    <el-alert
-      v-if="filteredNodes.length === 0 && !loading"
-      title="暂无节点"
-      type="info"
-      description="当前没有活跃的节点，请检查服务是否正常运行。"
-      show-icon
-      class="mt-4"
-    />
+    <el-alert v-if="filteredNodes.length === 0 && !loading" title="暂无节点" type="info"
+      description="当前没有活跃的节点，请检查服务是否正常运行。" show-icon class="mt-4" />
 
     <el-dialog v-model="detailDialogVisible" title="节点详情" width="600px">
       <el-descriptions :column="2" border v-if="currentNode">
         <el-descriptions-item label="节点ID">{{ currentNode.nodeId }}</el-descriptions-item>
         <el-descriptions-item label="角色">{{
           getRoleLabel(currentNode.role)
-        }}</el-descriptions-item>
+          }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="currentNode.status === 'online' ? 'success' : 'danger'">
             {{ currentNode.status === 'online' ? '在线' : '离线' }}
@@ -166,19 +130,19 @@
         <el-descriptions-item label="端口">{{ currentNode.port }}</el-descriptions-item>
         <el-descriptions-item label="运行任务数">{{
           currentNode.runningTasks
-        }}</el-descriptions-item>
+          }}</el-descriptions-item>
         <el-descriptions-item label="最大并发">{{
           currentNode.maxConcurrent
-        }}</el-descriptions-item>
+          }}</el-descriptions-item>
         <el-descriptions-item label="最后心跳">{{
           currentNode.lastHeartbeat
-        }}</el-descriptions-item>
+          }}</el-descriptions-item>
         <el-descriptions-item label="注册时间" :span="2">{{
           currentNode.registeredAt
-        }}</el-descriptions-item>
+          }}</el-descriptions-item>
         <el-descriptions-item label="启动时间" :span="2">{{
           currentNode.startedAt
-        }}</el-descriptions-item>
+          }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -251,7 +215,7 @@ const filteredNodes = computed(() => {
 const detailDialogVisible = ref(false)
 const currentNode = ref<NodeInfo | null>(null)
 
-const handleFilter = () => {}
+const handleFilter = () => { }
 
 const handleViewDetail = (node: NodeInfo) => {
   currentNode.value = node

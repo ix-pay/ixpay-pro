@@ -480,40 +480,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 
- * 部门管理页面样式说明：
- * - 布局使用 Tailwind CSS
- * - Element Plus 组件使用原生样式 + 必要的 Tailwind 辅助类
- */
-
-/* 表格容器高度 */
-.flex-1 {
-  min-height: 0;
-  /* 允许 flex 子项滚动 */
-}
-
-/* 表格样式 */
-:deep(.el-table) {
-  font-size: 14px;
-}
-
-/* 表头样式 */
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-:deep(.el-table__fixed-header-wrapper th),
-:deep(.el-table__fixed-right-header-wrapper th) {
-  background-color: var(--bg-tertiary) !important;
-}
-
-:deep(.el-table__fixed-body-wrapper),
-:deep(.el-table__fixed-right-body-wrapper) {
-  background-color: var(--bg-primary);
-}
-
 /* 树形表格展开图标垂直居中 */
 :deep(.el-table__expand-icon) {
   display: inline-flex !important;
@@ -522,16 +488,5 @@ onMounted(() => {
   height: 100% !important;
   vertical-align: middle !important;
   margin-right: 4px !important;
-}
-
-/* 表格单元格内容 */
-:deep(.el-table .cell) {
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-/* 表格滚动条 */
-:deep(.el-table__body-wrapper) {
-  overflow: auto !important;
 }
 </style>

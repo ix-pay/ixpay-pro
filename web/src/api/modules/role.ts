@@ -104,8 +104,8 @@ export const deleteRole = (id: string): Promise<ApiResponse> => {
 
 // 分配用户到角色
 export const assignUserToRole = (data: {
-  roleId: number
-  userIds: number[]
+  roleId: string
+  userIds: string[]
 }): Promise<ApiResponse> => {
   return service({
     url: '/role/assign-users',
@@ -116,8 +116,8 @@ export const assignUserToRole = (data: {
 
 // 分配菜单到角色
 export const assignMenuToRole = (data: {
-  roleId: number
-  menuIds: number[]
+  roleId: string
+  menuIds: string[]
 }): Promise<ApiResponse> => {
   return service({
     url: '/role/assign-menus',
@@ -127,7 +127,7 @@ export const assignMenuToRole = (data: {
 }
 
 // 分配 API 路由到角色
-export const assignApiToRole = (data: { roleId: number; ids: number[] }): Promise<ApiResponse> => {
+export const assignApiToRole = (data: { roleId: string; ids: string[] }): Promise<ApiResponse> => {
   return service({
     url: '/role/assign-api-routes',
     method: 'post',
@@ -144,19 +144,15 @@ export const getRolesList = (): Promise<ApiResponse<RoleType[]>> => {
 }
 
 // 获取角色可授权的菜单树（包含按钮）
-// 注意：roleId 使用 string | number 类型，避免 Number() 转换导致精度丢失
-export const getRoleAvailableMenus = (
-  roleId: string | number,
-): Promise<ApiResponse<MenuItem[]>> => {
+export const getRoleAvailableMenus = (roleId: string): Promise<ApiResponse<MenuItem[]>> => {
   return service({
-    url: `/roles/${roleId}/available-menus`,
+    url: `/role/${roleId}/available-menus`,
     method: 'get',
   })
 }
 
 // 获取角色可授权的 API 列表（过滤已关联的 API）
-// 注意：roleId 使用 string | number 类型，避免 Number() 转换导致精度丢失
-export const getRoleAvailableApis = (roleId: string | number): Promise<ApiResponse<ApiRoute[]>> => {
+export const getRoleAvailableApis = (roleId: string): Promise<ApiResponse<ApiRoute[]>> => {
   return service({
     url: `/role/${roleId}/available-apis`,
     method: 'get',
@@ -164,9 +160,8 @@ export const getRoleAvailableApis = (roleId: string | number): Promise<ApiRespon
 }
 
 // 获取角色详情（包含所有权限）
-// 注意：roleId 使用 string | number 类型，避免 Number() 转换导致精度丢失
 export const getRolePermissionDetail = (
-  roleId: string | number,
+  roleId: string,
 ): Promise<ApiResponse<RolePermissionResponse>> => {
   return service({
     url: `/role/${roleId}/detail`,
@@ -175,23 +170,19 @@ export const getRolePermissionDetail = (
 }
 
 // 保存角色权限
-// 注意：roleId 使用 string | number 类型，避免 Number() 转换导致精度丢失
 export const saveRolePermissions = (
-  roleId: string | number,
+  roleId: string,
   data: RolePermissionRequest,
 ): Promise<ApiResponse> => {
   return service({
-    url: `/roles/${roleId}/permissions`,
+    url: `/role/${roleId}/permissions`,
     method: 'post',
     data,
   })
 }
 
 // 获取菜单删除影响评估
-// 注意：menuId 使用 string | number 类型，避免 Number() 转换导致精度丢失
-export const getMenuDeleteImpact = (
-  menuId: string | number,
-): Promise<ApiResponse<DeleteImpact>> => {
+export const getMenuDeleteImpact = (menuId: string): Promise<ApiResponse<DeleteImpact>> => {
   return service({
     url: `/menu/${menuId}/delete-impact`,
     method: 'get',

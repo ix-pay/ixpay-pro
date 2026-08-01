@@ -208,7 +208,7 @@ interface Role {
   description: string
   status: number
   createdAt: string
-  is_system?: boolean // 是否为系统角色
+  isSystem?: boolean // 是否为系统角色
   code?: string // 角色编码
 }
 
@@ -384,53 +384,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 
- * 角色管理页面样式说明：
- * - 布局和样式主要使用 Tailwind CSS
- * - 只需保留少量必要的自定义样式
- * - Element Plus 组件使用默认样式，通过 :deep() 进行暗黑模式适配
- */
-
-/* 现代化表格样式 */
-.modern-table :deep(.el-table) {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-/* 暗黑模式下表格样式适配 */
-html.dark :deep(.el-table) {
-  background-color: var(--bg-color);
-  color: var(--text-primary);
-
-  .el-table__header-wrapper {
-    th {
-      background-color: var(--bg-dark);
-      color: var(--text-primary);
-      border-bottom-color: var(--border-color);
-    }
-  }
-
-  .el-table__body-wrapper {
-    tr {
-      background-color: var(--bg-color);
-      color: var(--text-primary);
-
-      &:hover > td {
-        background-color: var(--bg-light);
-      }
-
-      &.el-table__row--striped {
-        background-color: var(--bg-dark);
-
-        &:hover > td {
-          background-color: var(--bg-light);
-        }
-      }
-
-      td {
-        border-bottom-color: var(--border-color);
-      }
-    }
-  }
-}
+/* 角色管理页面样式 */
 </style>

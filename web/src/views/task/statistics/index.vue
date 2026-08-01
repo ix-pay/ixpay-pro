@@ -1,15 +1,29 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md p-4 transition-colors duration-300">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold">任务统计</h2>
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 刷新控件 -->
       <div class="flex items-center gap-3">
-        <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
-        <el-select v-model="refreshInterval" size="small" class="interval-select" @change="changeRefreshInterval">
+        <span class="text-xs text-gray-500" v-if="lastUpdateTime"
+          >最后更新：{{ lastUpdateTime }}</span
+        >
+        <el-select
+          v-model="refreshInterval"
+          size="small"
+          style="width: 90px"
+          @change="changeRefreshInterval"
+        >
           <el-option label="5 秒" :value="5000" />
           <el-option label="10 秒" :value="10000" />
           <el-option label="30 秒" :value="30000" />
         </el-select>
-        <el-switch v-model="autoRefreshEnabled" active-text="自动刷新" class="refresh-switch" @change="toggleAutoRefresh" />
+        <el-switch
+          v-model="autoRefreshEnabled"
+          active-text="自动刷新"
+          @change="toggleAutoRefresh"
+        />
         <el-button type="primary" @click="refreshData" :loading="loading" circle>
           <el-icon>
             <Refresh />
@@ -18,65 +32,44 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <el-card shadow="hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-500 text-sm">总任务数</p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
-              {{ statistics.totalTasks }}
-            </p>
-          </div>
-          <el-icon class="text-blue-500 text-4xl">
+    <!-- 统计信息 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
             <List />
           </el-icon>
-        </div>
-      </el-card>
-
-      <el-card shadow="hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-500 text-sm">已启用</p>
-            <p class="text-2xl font-bold text-green-600">{{ statistics.enabledTasks }}</p>
-          </div>
-          <el-icon class="text-green-500 text-4xl">
+          总任务数：<span class="font-medium">{{ statistics.totalTasks }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-green-500">
             <CircleCheck />
           </el-icon>
-        </div>
-      </el-card>
-
-      <el-card shadow="hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-500 text-sm">运行中</p>
-            <p class="text-2xl font-bold text-blue-600">{{ statistics.runningTasks }}</p>
-          </div>
-          <el-icon class="text-blue-500 text-4xl">
+          已启用：<span class="font-medium">{{ statistics.enabledTasks }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
             <VideoPlay />
           </el-icon>
-        </div>
-      </el-card>
-
-      <el-card shadow="hover">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-500 text-sm">平均成功率</p>
-            <p class="text-2xl font-bold" :class="getSuccessRateColor(statistics.avgSuccessRate)">
-              {{ statistics.avgSuccessRate }}%
-            </p>
-          </div>
-          <el-icon class="text-yellow-500 text-4xl">
+          运行中：<span class="font-medium">{{ statistics.runningTasks }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-yellow-500">
             <TrendCharts />
           </el-icon>
-        </div>
-      </el-card>
+          平均成功率：<span
+            class="font-medium"
+            :class="getSuccessRateColor(statistics.avgSuccessRate)"
+            >{{ statistics.avgSuccessRate }}%</span
+          >
+        </span>
+      </div>
     </div>
 
-    <div>
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">任务执行统计</h3>
-      </div>
-
+    <!-- 任务统计卡片区域 -->
+    <div class="flex-1 overflow-auto p-4">
       <div v-loading="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <el-card v-for="item in statisticsList" :key="item.taskId" shadow="hover" class="task-card">
           <div class="flex flex-col gap-3">
@@ -124,7 +117,9 @@
               </div>
             </div>
 
-            <div class="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500">
+            <div
+              class="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500"
+            >
               <div class="flex justify-between">
                 <span>最后执行</span>
                 <span class="text-gray-900 dark:text-white">{{ item.lastExecuteAt || '-' }}</span>
@@ -137,7 +132,11 @@
           </div>
         </el-card>
 
-        <el-empty v-if="!loading && statisticsList.length === 0" description="暂无任务统计数据" :image-size="120" />
+        <el-empty
+          v-if="!loading && statisticsList.length === 0"
+          description="暂无任务统计数据"
+          :image-size="120"
+        />
       </div>
     </div>
   </div>
@@ -221,22 +220,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-:deep(.el-card) {
-  border-radius: 0.5rem;
-}
-
-.update-time {
-  font-size: 12px;
-  color: #909399;
-}
-
-.interval-select {
-  width: 90px;
-}
-
-.refresh-switch {
-  :deep(.el-switch__label) {
-    font-size: 12px;
-  }
-}
+/* 任务统计页面样式 */
 </style>

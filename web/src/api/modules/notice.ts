@@ -2,10 +2,10 @@ import service from '@/utils/request'
 import type { ApiResponse } from '@/types'
 
 export interface Notice {
-  id: number
+  id: string
   title: string
   content: string
-  type: string
+  type: number
   status: number
   publishTime: string
   createdAt: string
@@ -38,7 +38,7 @@ export const getNoticeList = (params?: {
 export const createNotice = (data: {
   title: string
   content: string
-  type: string
+  type: number
   status: number
   publishTime?: string
 }): Promise<ApiResponse<Notice>> => {
@@ -51,24 +51,24 @@ export const createNotice = (data: {
 
 // 更新公告
 export const updateNotice = (
-  id: number,
+  id: string,
   data: {
     title?: string
     content?: string
-    type?: string
+    type?: number
     status?: number
     publishTime?: string
   },
 ): Promise<ApiResponse<Notice>> => {
   return service({
-    url: `/notices/${id}`,
+    url: '/notices',
     method: 'put',
-    data,
+    data: { id, ...data },
   })
 }
 
 // 删除公告
-export const deleteNotice = (id: number): Promise<ApiResponse> => {
+export const deleteNotice = (id: string): Promise<ApiResponse> => {
   return service({
     url: `/notices/${id}`,
     method: 'delete',
@@ -76,7 +76,7 @@ export const deleteNotice = (id: number): Promise<ApiResponse> => {
 }
 
 // 发布/取消发布公告
-export const publishNotice = (id: number, publish: boolean): Promise<ApiResponse> => {
+export const publishNotice = (id: string, publish: boolean): Promise<ApiResponse> => {
   return service({
     url: `/notices/${id}/publish`,
     method: 'post',
@@ -85,7 +85,7 @@ export const publishNotice = (id: number, publish: boolean): Promise<ApiResponse
 }
 
 // 获取公告详情
-export const getNoticeById = (id: number): Promise<ApiResponse<Notice>> => {
+export const getNoticeById = (id: string): Promise<ApiResponse<Notice>> => {
   return service({
     url: `/notices/${id}`,
     method: 'get',
@@ -93,7 +93,7 @@ export const getNoticeById = (id: number): Promise<ApiResponse<Notice>> => {
 }
 
 // 标记公告已读
-export const markNoticeAsRead = (id: number): Promise<ApiResponse> => {
+export const markNoticeAsRead = (id: string): Promise<ApiResponse> => {
   return service({
     url: `/notices/${id}/read`,
     method: 'post',
@@ -101,7 +101,7 @@ export const markNoticeAsRead = (id: number): Promise<ApiResponse> => {
 }
 
 // 检查公告是否已读
-export const isNoticeRead = (id: number): Promise<ApiResponse<{ isRead: boolean }>> => {
+export const isNoticeRead = (id: string): Promise<ApiResponse<{ isRead: boolean }>> => {
   return service({
     url: `/notices/${id}/is-read`,
     method: 'get',

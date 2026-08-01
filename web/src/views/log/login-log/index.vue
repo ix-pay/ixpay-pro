@@ -1,11 +1,29 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md transition-colors duration-300">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
     <!-- 顶部操作栏 -->
     <div class="flex flex-col gap-3 p-4 border-b">
       <!-- 第一行：搜索条件 -->
       <div class="flex flex-wrap items-center gap-3">
-        <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable style="width: 192px" />
-        <el-select v-model="searchForm.result" placeholder="选择状态" clearable style="width: 192px">
+        <el-input
+          v-model="searchForm.userName"
+          placeholder="请输入用户名"
+          clearable
+          style="width: 192px"
+        >
+          <template #prefix>
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-select
+          v-model="searchForm.result"
+          placeholder="选择状态"
+          clearable
+          style="width: 192px"
+        >
           <el-option label="成功" :value="1" />
           <el-option label="失败" :value="0" />
         </el-select>
@@ -34,9 +52,45 @@
       </div>
     </div>
 
+    <!-- 统计信息 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
+            <Document />
+          </el-icon>
+          日志总数：<span class="font-medium">{{ pagination.total }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-green-500">
+            <SuccessFilled />
+          </el-icon>
+          成功：<span class="font-medium">{{
+            loginLogList.filter((l) => l.result === 1).length
+          }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-red-500">
+            <CircleClose />
+          </el-icon>
+          失败：<span class="font-medium">{{
+            loginLogList.filter((l) => l.result === 0).length
+          }}</span>
+        </span>
+      </div>
+    </div>
+
     <!-- 表格区域 - 占满剩余空间 -->
     <div class="flex-1 overflow-hidden">
-      <el-table v-loading="loading" :data="loginLogList" stripe class="w-full h-full" :height="'100%'">
+      <el-table
+        v-loading="loading"
+        :data="loginLogList"
+        stripe
+        class="w-full h-full"
+        :height="'100%'"
+      >
         <el-table-column prop="userName" label="用户名" width="120" />
         <el-table-column prop="ip" label="IP 地址" width="130" />
         <el-table-column prop="place" label="登录地点" min-width="150" />
@@ -55,7 +109,12 @@
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="scope">
             <div class="flex flex-wrap gap-2">
-              <el-button v-auth-btn="'log:login:view'" type="primary" size="small" @click="handleViewDetail(scope.row)">
+              <el-button
+                v-auth-btn="'log:login:view'"
+                type="primary"
+                size="small"
+                @click="handleViewDetail(scope.row)"
+              >
                 详情
               </el-button>
             </div>
@@ -65,11 +124,20 @@
     </div>
 
     <!-- 分页区域 - 紧凑布局 -->
-    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+    <div
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+    >
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
+      <el-pagination
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="sizes, prev, pager, next"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        small
+      />
     </div>
 
     <el-dialog v-model="detailVisible" title="登录日志详情" width="600px">
@@ -88,22 +156,37 @@
         </el-descriptions-item>
         <el-descriptions-item label="登录时间">{{
           formatDate(detailData.createdAt)
-          }}</el-descriptions-item>
+        }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
 
     <el-dialog v-model="clearDialogVisible" title="清空日志" width="500px">
       <el-form :model="clearForm" label-width="100px">
         <el-form-item label="开始日期" required>
-          <el-date-picker v-model="clearForm.startTime" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
-            class="w-full" />
+          <el-date-picker
+            v-model="clearForm.startTime"
+            type="date"
+            placeholder="选择开始日期"
+            value-format="YYYY-MM-DD"
+            class="w-full"
+          />
         </el-form-item>
         <el-form-item label="结束日期" required>
-          <el-date-picker v-model="clearForm.endTime" type="date" placeholder="选择结束日期" value-format="YYYY-MM-DD"
-            class="w-full" />
+          <el-date-picker
+            v-model="clearForm.endTime"
+            type="date"
+            placeholder="选择结束日期"
+            value-format="YYYY-MM-DD"
+            class="w-full"
+          />
         </el-form-item>
       </el-form>
-      <el-alert title="此操作将清空指定时间范围内的所有登录日志，请谨慎操作！" type="warning" :closable="false" class="mb-5" />
+      <el-alert
+        title="此操作将清空指定时间范围内的所有登录日志，请谨慎操作！"
+        type="warning"
+        :closable="false"
+        class="mb-5"
+      />
       <template #footer>
         <el-button @click="clearDialogVisible = false">取消</el-button>
         <el-button type="danger" @click="handleClearSubmit">确定清空</el-button>
@@ -115,7 +198,14 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Delete, Refresh } from '@element-plus/icons-vue'
+import {
+  Search,
+  Delete,
+  Refresh,
+  Document,
+  SuccessFilled,
+  CircleClose,
+} from '@element-plus/icons-vue'
 import {
   getLoginLogList,
   clearLoginLogs,

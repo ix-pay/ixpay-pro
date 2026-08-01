@@ -2,11 +2,10 @@ import service from '@/utils/request'
 import type { ApiResponse } from '@/types'
 
 export interface Config {
-  id: number
-  name: string
-  key: string
-  value: string
-  type: string
+  id: string
+  configKey: string
+  configValue: string
+  configType: string
   description: string
   status: number
   createdAt: string
@@ -37,10 +36,9 @@ export const getConfigList = (params?: {
 
 // 创建配置
 export const createConfig = (data: {
-  name: string
-  key: string
-  value: string
-  type: string
+  configKey: string
+  configValue: string
+  configType: string
   description?: string
   status: number
 }): Promise<ApiResponse<Config>> => {
@@ -53,25 +51,24 @@ export const createConfig = (data: {
 
 // 更新配置
 export const updateConfig = (
-  id: number,
+  id: string,
   data: {
-    name?: string
-    key?: string
-    value?: string
-    type?: string
+    configKey?: string
+    configValue?: string
+    configType?: string
     description?: string
     status?: number
   },
 ): Promise<ApiResponse<Config>> => {
   return service({
-    url: `/config/${id}`,
+    url: '/config',
     method: 'put',
-    data,
+    data: { id, ...data },
   })
 }
 
 // 删除配置
-export const deleteConfig = (id: number): Promise<ApiResponse> => {
+export const deleteConfig = (id: string): Promise<ApiResponse> => {
   return service({
     url: `/config/${id}`,
     method: 'delete',
@@ -87,7 +84,7 @@ export const getConfigByKey = (key: string): Promise<ApiResponse<Config>> => {
 }
 
 // 根据 ID 获取配置
-export const getConfigById = (id: number): Promise<ApiResponse<Config>> => {
+export const getConfigById = (id: string): Promise<ApiResponse<Config>> => {
   return service({
     url: `/config/${id}`,
     method: 'get',

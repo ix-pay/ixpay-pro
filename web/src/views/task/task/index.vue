@@ -1,18 +1,56 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md transition-colors duration-300">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-3">
-        <el-input v-model="searchForm.taskId" placeholder="任务 ID" style="width: 192px" />
-        <el-select v-model="searchForm.taskType" placeholder="任务类型" style="width: 192px">
+        <el-input
+          v-model="searchForm.taskId"
+          placeholder="请输入任务 ID"
+          clearable
+          style="width: 192px"
+          @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-select
+          v-model="searchForm.taskType"
+          placeholder="选择任务类型"
+          clearable
+          style="width: 192px"
+        >
           <el-option label="全部" value="" />
-          <el-option v-for="item in taskTypeOptions" :key="item.id" :label="item.itemValue" :value="item.itemKey" />
+          <el-option
+            v-for="item in taskTypeOptions"
+            :key="item.id"
+            :label="item.itemValue"
+            :value="item.itemKey"
+          />
         </el-select>
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
-        <el-button @click="handleReset">重置</el-button>
+        <el-button type="primary" @click="handleSearch">
+          <el-icon>
+            <Search />
+          </el-icon>
+          搜索
+        </el-button>
+        <el-button @click="handleReset">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <el-button type="info" v-auth-btn="'task:task:execute'" @click="(e) => handleRunTask(e as MouseEvent)">
+        <el-button
+          type="info"
+          v-auth-btn="'task:task:execute'"
+          @click="(e) => handleRunTask(e as MouseEvent)"
+        >
           <el-icon>
             <VideoPlay />
           </el-icon>
@@ -27,49 +65,67 @@
       </div>
     </div>
 
-    <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-6 text-sm">
-          <span class="text-gray-600 dark:text-gray-400">
-            任务总数：<strong class="text-gray-900 dark:text-white">{{
-              dashboard.totalTasks
-              }}</strong>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-blue-500">
+              <List />
+            </el-icon>
+            任务总数：<span class="font-medium">{{ dashboard.totalTasks }}</span>
           </span>
-          <span class="text-gray-600 dark:text-gray-400">
-            启用数：<strong class="text-gray-900 dark:text-white">{{
-              dashboard.enabledTasks
-              }}</strong>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-green-500">
+              <SuccessFilled />
+            </el-icon>
+            启用数：<span class="font-medium">{{ dashboard.enabledTasks }}</span>
           </span>
-          <span class="text-gray-600 dark:text-gray-400">
-            禁用数：<strong class="text-gray-900 dark:text-white">{{
-              dashboard.disabledTasks
-              }}</strong>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-orange-500">
+              <CircleClose />
+            </el-icon>
+            禁用数：<span class="font-medium">{{ dashboard.disabledTasks }}</span>
           </span>
-          <span class="text-gray-600 dark:text-gray-400">
-            今日执行数：<strong class="text-gray-900 dark:text-white">{{
-              dashboard.todayExecutions
-              }}</strong>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-purple-500">
+              <VideoPlay />
+            </el-icon>
+            今日执行数：<span class="font-medium">{{ dashboard.todayExecutions }}</span>
           </span>
-          <span class="text-gray-600 dark:text-gray-400">
-            列表任务总数：<strong class="text-gray-900 dark:text-white">{{
-              pagination.total
-              }}</strong>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-cyan-500">
+              <Document />
+            </el-icon>
+            列表总数：<span class="font-medium">{{ pagination.total }}</span>
           </span>
-          <span class="text-gray-600 dark:text-gray-400">
-            选中任务：<strong class="text-gray-900 dark:text-white">{{
-              selectedTasks.length
-              }}</strong>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-indigo-500">
+              <Check />
+            </el-icon>
+            已选中：<span class="font-medium">{{ selectedTasks.length }}</span>
           </span>
         </div>
         <div class="flex items-center gap-3">
-          <span class="update-time" v-if="lastUpdateTime">最后更新：{{ lastUpdateTime }}</span>
-          <el-select v-model="refreshInterval" size="small" class="interval-select" @change="changeRefreshInterval">
+          <span class="text-xs text-gray-500" v-if="lastUpdateTime"
+            >最后更新：{{ lastUpdateTime }}</span
+          >
+          <el-select
+            v-model="refreshInterval"
+            size="small"
+            style="width: 90px"
+            @change="changeRefreshInterval"
+          >
             <el-option label="5 秒" :value="5000" />
             <el-option label="10 秒" :value="10000" />
             <el-option label="30 秒" :value="30000" />
           </el-select>
-          <el-switch v-model="autoRefreshEnabled" active-text="自动刷新" class="refresh-switch"
-            @change="toggleAutoRefresh" />
+          <el-switch
+            v-model="autoRefreshEnabled"
+            active-text="自动刷新"
+            @change="toggleAutoRefresh"
+          />
           <el-button @click="refreshData" circle>
             <el-icon>
               <Refresh />
@@ -80,8 +136,14 @@
     </div>
 
     <div class="flex-1 overflow-hidden">
-      <el-table :data="taskList" stripe class="w-full h-full" :height="'100%'" v-loading="loading"
-        @selection-change="handleSelectionChange">
+      <el-table
+        :data="taskList"
+        stripe
+        class="w-full h-full"
+        :height="'100%'"
+        v-loading="loading"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="45" />
         <el-table-column prop="taskId" label="任务ID" width="150" />
         <el-table-column prop="taskType" label="任务类型" width="120">
@@ -119,16 +181,30 @@
         <el-table-column label="操作" width="280" fixed="right">
           <template #default="scope">
             <div class="flex flex-wrap gap-2">
-              <el-button v-auth-btn="'task:task:execute'" type="success" size="small"
-                @click="(e) => handleRunTask(e as MouseEvent, scope.row.id)">
+              <el-button
+                v-auth-btn="'task:task:execute'"
+                type="success"
+                size="small"
+                @click="(e) => handleRunTask(e as MouseEvent, scope.row.id)"
+              >
                 执行
               </el-button>
-              <el-button v-if="scope.row.status === 'disabled'" v-auth-btn="'task:task:enable'" type="success"
-                size="small" @click="handleEnableTask(scope.row)">
+              <el-button
+                v-if="scope.row.status === 'disabled'"
+                v-auth-btn="'task:task:enable'"
+                type="success"
+                size="small"
+                @click="handleEnableTask(scope.row)"
+              >
                 启用
               </el-button>
-              <el-button v-if="scope.row.status === 'enabled'" v-auth-btn="'task:task:disable'" type="warning"
-                size="small" @click="handleDisableTask(scope.row)">
+              <el-button
+                v-if="scope.row.status === 'enabled'"
+                v-auth-btn="'task:task:disable'"
+                type="warning"
+                size="small"
+                @click="handleDisableTask(scope.row)"
+              >
                 禁用
               </el-button>
               <el-button type="primary" size="small" @click="handleEditTask(scope.row)">
@@ -137,8 +213,12 @@
               <el-button type="info" size="small" @click="handleViewLog(scope.row)">
                 日志
               </el-button>
-              <el-button v-auth-btn="'task:task:delete'" type="danger" size="small"
-                @click="handleDeleteTask(scope.row.id)">
+              <el-button
+                v-auth-btn="'task:task:delete'"
+                type="danger"
+                size="small"
+                @click="handleDeleteTask(scope.row.id)"
+              >
                 删除
               </el-button>
             </div>
@@ -147,14 +227,28 @@
       </el-table>
     </div>
 
-    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+    <div
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+    >
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
+      <el-pagination
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="sizes, prev, pager, next"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        small
+      />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" @close="handleDialogClose">
+    <el-dialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      width="600px"
+      @close="handleDialogClose"
+    >
       <el-form :model="formData" :rules="formRules" ref="formRef" label-width="100px">
         <el-form-item label="任务ID" prop="taskId">
           <el-input v-model="formData.taskId" placeholder="请输入任务ID" :disabled="isEdit" />
@@ -164,8 +258,12 @@
           <el-col :span="12">
             <el-form-item label="任务类型" prop="taskType">
               <el-select v-model="formData.taskType" placeholder="请选择">
-                <el-option v-for="item in taskTypeOptions" :key="item.id" :label="item.itemValue"
-                  :value="item.itemKey" />
+                <el-option
+                  v-for="item in taskTypeOptions"
+                  :key="item.id"
+                  :label="item.itemValue"
+                  :value="item.itemKey"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -180,10 +278,14 @@
         </el-row>
 
         <el-form-item label="表达式" prop="expression">
-          <el-input v-model="formData.expression" :placeholder="formData.type === 'cron'
-              ? '请输入 Cron 表达式，如：0 0 2 * * ?'
-              : '请输入执行时间 (RFC3339)'
-            " />
+          <el-input
+            v-model="formData.expression"
+            :placeholder="
+              formData.type === 'cron'
+                ? '请输入 Cron 表达式，如：0 0 2 * * ?'
+                : '请输入执行时间 (RFC3339)'
+            "
+          />
         </el-form-item>
 
         <el-form-item label="描述" prop="description">
@@ -202,7 +304,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="超时(秒)" prop="timeout">
-              <el-input-number v-model="formData.timeout" :min="1" :max="3600" style="width: 100%" />
+              <el-input-number
+                v-model="formData.timeout"
+                :min="1"
+                :max="3600"
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -225,21 +332,40 @@
             </el-select>
           </el-form-item>
           <el-form-item label="请求头" prop="params.headers">
-            <el-input v-model="formData.params.headersJson" type="textarea"
-              placeholder='{"Content-Type": "application/json"}' :rows="2" />
+            <el-input
+              v-model="formData.params.headersJson"
+              type="textarea"
+              placeholder='{"Content-Type": "application/json"}'
+              :rows="2"
+            />
           </el-form-item>
           <el-form-item label="请求体" prop="params.body">
-            <el-input v-model="formData.params.body" type="textarea" placeholder="请求体内容" :rows="3" />
+            <el-input
+              v-model="formData.params.body"
+              type="textarea"
+              placeholder="请求体内容"
+              :rows="3"
+            />
           </el-form-item>
           <el-row :gutter="16">
             <el-col :span="12">
               <el-form-item label="超时(秒)" prop="params.timeout">
-                <el-input-number v-model="formData.params.timeout" :min="1" :max="300" style="width: 100%" />
+                <el-input-number
+                  v-model="formData.params.timeout"
+                  :min="1"
+                  :max="300"
+                  style="width: 100%"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="期望状态码" prop="params.expected_status">
-                <el-input-number v-model="formData.params.expected_status" :min="100" :max="599" style="width: 100%" />
+                <el-input-number
+                  v-model="formData.params.expected_status"
+                  :min="100"
+                  :max="599"
+                  style="width: 100%"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -254,8 +380,12 @@
             </el-select>
           </el-form-item>
           <el-form-item label="SQL 查询" prop="params.query">
-            <el-input v-model="formData.params.query" type="textarea" placeholder="SELECT * FROM table WHERE ..."
-              :rows="4" />
+            <el-input
+              v-model="formData.params.query"
+              type="textarea"
+              placeholder="SELECT * FROM table WHERE ..."
+              :rows="4"
+            />
           </el-form-item>
         </template>
 
@@ -268,13 +398,21 @@
             </el-select>
           </el-form-item>
           <el-form-item label="缓存键" prop="params.cache_keys">
-            <el-input v-model="formData.params.cache_keys_str" placeholder="多个键用逗号分隔，如：key1,key2" />
+            <el-input
+              v-model="formData.params.cache_keys_str"
+              placeholder="多个键用逗号分隔，如：key1,key2"
+            />
           </el-form-item>
           <el-form-item label="通配符模式" prop="params.pattern">
             <el-input v-model="formData.params.pattern" placeholder="如：user:*" />
           </el-form-item>
           <el-form-item label="TTL(秒)" prop="params.ttl">
-            <el-input-number v-model="formData.params.ttl" :min="0" :max="86400" style="width: 100%" />
+            <el-input-number
+              v-model="formData.params.ttl"
+              :min="0"
+              :max="86400"
+              style="width: 100%"
+            />
           </el-form-item>
         </template>
 
@@ -290,7 +428,12 @@
             <el-input v-model="formData.params.work_dir" placeholder="/opt/scripts" />
           </el-form-item>
           <el-form-item label="超时(秒)" prop="params.timeout">
-            <el-input-number v-model="formData.params.timeout" :min="1" :max="3600" style="width: 100%" />
+            <el-input-number
+              v-model="formData.params.timeout"
+              :min="1"
+              :max="3600"
+              style="width: 100%"
+            />
           </el-form-item>
         </template>
       </el-form>
@@ -319,9 +462,15 @@
         <el-table-column prop="executeAt" label="执行时间" width="180" />
       </el-table>
       <div class="flex justify-center mt-4">
-        <el-pagination v-model:current-page="logPagination.page" v-model:page-size="logPagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="logPagination.total"
-          @size-change="handleLogSizeChange" @current-change="handleLogCurrentChange" />
+        <el-pagination
+          v-model:current-page="logPagination.page"
+          v-model:page-size="logPagination.pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="logPagination.total"
+          @size-change="handleLogSizeChange"
+          @current-change="handleLogCurrentChange"
+        />
       </div>
     </el-dialog>
   </div>
@@ -331,7 +480,16 @@
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import { Plus, VideoPlay, Refresh } from '@element-plus/icons-vue'
+import {
+  Plus,
+  VideoPlay,
+  Refresh,
+  List,
+  SuccessFilled,
+  CircleClose,
+  Document,
+  Check,
+} from '@element-plus/icons-vue'
 import {
   getTaskList,
   deleteTask,
@@ -788,34 +946,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-:deep(.el-table) {
-  --el-table-bg-color: transparent;
-}
-
-:deep(.el-dialog) {
-  border-radius: 0.5rem;
-}
-
-:deep(.el-pagination) {
-  --el-pagination-text-color: theme('colors.gray.600');
-}
-
-:deep(.dark .el-pagination) {
-  --el-pagination-text-color: theme('colors.gray.400');
-}
-
-.update-time {
-  font-size: 12px;
-  color: #909399;
-}
-
-.interval-select {
-  width: 90px;
-}
-
-.refresh-switch {
-  :deep(.el-switch__label) {
-    font-size: 12px;
-  }
-}
+/* 任务管理页面样式 */
 </style>

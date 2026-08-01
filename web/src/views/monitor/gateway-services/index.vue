@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md transition-colors duration-300">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-2">
         <el-button type="primary" @click="handleRefresh">
@@ -11,7 +13,9 @@
       </div>
     </div>
 
-    <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
       <div class="flex items-center gap-6 text-sm">
         <span class="flex items-center gap-1">
           <el-icon class="text-blue-500">
@@ -25,13 +29,19 @@
           </el-icon>
           健康服务：<span class="font-medium">{{
             gatewayServiceList.filter((s) => s.status === 'healthy').length
-            }}</span>
+          }}</span>
         </span>
       </div>
     </div>
 
     <div class="flex-1 overflow-hidden">
-      <el-table v-loading="loading" :data="gatewayServiceList" stripe class="w-full h-full" :height="'100%'">
+      <el-table
+        v-loading="loading"
+        :data="gatewayServiceList"
+        stripe
+        class="w-full h-full"
+        :height="'100%'"
+      >
         <el-table-column prop="id" label="实例ID" min-width="180" />
         <el-table-column prop="name" label="服务名称" width="150" />
         <el-table-column prop="address" label="地址" width="150" />
@@ -100,8 +110,6 @@ onMounted(() => {
 })
 </script>
 
-<style scoped lang="scss">
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-}
+<style scoped>
+/* 网关服务页面样式 */
 </style>

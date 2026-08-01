@@ -93,28 +93,37 @@
           <template #default="scope">
             <el-tag
               :type="
-                scope.row.type === 'system'
+                scope.row.type === 1
                   ? 'primary'
-                  : scope.row.type === 'activity'
+                  : scope.row.type === 2
                     ? 'success'
-                    : 'warning'
+                    : scope.row.type === 3
+                      ? 'warning'
+                      : 'danger'
               "
               size="small"
             >
               {{
-                scope.row.type === 'system'
+                scope.row.type === 1
                   ? '系统公告'
-                  : scope.row.type === 'activity'
+                  : scope.row.type === 2
                     ? '活动公告'
-                    : '维护公告'
+                    : scope.row.type === 3
+                      ? '普通通知'
+                      : '紧急通知'
               }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
+            <el-tag
+              :type="
+                scope.row.status === 1 ? 'success' : scope.row.status === 2 ? 'info' : 'warning'
+              "
+              size="small"
+            >
+              {{ scope.row.status === 1 ? '已发布' : scope.row.status === 2 ? '已归档' : '草稿' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -235,10 +244,10 @@ defineOptions({
 })
 
 interface Notice {
-  id: number
+  id: string
   title: string
   content: string
-  type: string
+  type: number
   status: number
   publishTime: string
   createdAt: string
@@ -272,10 +281,10 @@ const dialogTitle = ref('')
 const noticeFormRef = ref<FormInstance>()
 
 const noticeForm = reactive({
-  id: 0,
+  id: '',
   title: '',
   content: '',
-  type: 'system',
+  type: 1,
   publishTime: '',
   status: 1,
 })
@@ -345,10 +354,10 @@ const handleCurrentChange = (val: number) => {
 const handleAddNotice = () => {
   dialogTitle.value = '添加公告'
   Object.assign(noticeForm, {
-    id: 0,
+    id: '',
     title: '',
     content: '',
-    type: 'system',
+    type: 1,
     publishTime: '',
     status: 1,
   })
@@ -390,7 +399,7 @@ const handleSubmit = async () => {
   }
 }
 
-const handleDeleteNotice = async (id: number) => {
+const handleDeleteNotice = async (id: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该公告吗？', '警告', {
       confirmButtonText: '确定',
@@ -414,38 +423,3 @@ onMounted(() => {
   loadNoticeList()
 })
 </script>
-
-<style scoped>
-.flex-1 {
-  min-height: 0;
-}
-
-:deep(.el-table) {
-  font-size: 14px;
-}
-
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-:deep(.el-table__fixed-header-wrapper th),
-:deep(.el-table__fixed-right-header-wrapper th) {
-  background-color: var(--bg-tertiary) !important;
-}
-
-:deep(.el-table__fixed-body-wrapper),
-:deep(.el-table__fixed-right-body-wrapper) {
-  background-color: var(--bg-primary);
-}
-
-:deep(.el-table .cell) {
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-:deep(.el-table__body-wrapper) {
-  overflow: auto !important;
-}
-</style>

@@ -1,21 +1,62 @@
 <template>
-  <div class="flex flex-col h-full bg-[var(--bg-secondary)] rounded-lg shadow-md transition-colors duration-300">
-    <!-- 顶部操作栏 - 紧凑布局 -->
-    <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-      <div class="flex items-center gap-2">
-        <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable size="small" class="w-48" />
-        <el-button type="primary" size="small" @click="loadOnlineUserList">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
+        <el-input
+          v-model="searchForm.userName"
+          placeholder="请输入用户名"
+          clearable
+          style="width: 192px"
+          @keyup.enter="loadOnlineUserList"
+        >
+          <template #prefix>
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-button type="primary" @click="loadOnlineUserList">
           <el-icon>
             <Search />
           </el-icon>
           搜索
         </el-button>
+        <el-button @click="resetSearch">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
+      </div>
+    </div>
+
+    <!-- 统计信息 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
+            <User />
+          </el-icon>
+          在线用户：<span class="font-medium">{{ pagination.total }}</span>
+        </span>
       </div>
     </div>
 
     <!-- 表格区域 - 占满剩余空间 -->
     <div class="flex-1 overflow-hidden">
-      <el-table :data="onlineUserList" stripe class="w-full h-full" :height="'100%'">
+      <el-table
+        v-loading="loading"
+        :data="onlineUserList"
+        stripe
+        class="w-full h-full"
+        :height="'100%'"
+      >
         <el-table-column prop="userName" label="用户名" width="120" />
         <el-table-column prop="nickname" label="昵称" width="120" />
         <el-table-column prop="loginIp" label="IP 地址" width="130" />
@@ -24,22 +65,33 @@
         <el-table-column prop="os" label="操作系统" width="120" show-overflow-tooltip />
         <el-table-column prop="loginTime" label="登录时间" width="160" />
         <el-table-column prop="lastActiveAt" label="最后活跃" width="160" />
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" width="120" fixed="right">
           <template #default="scope">
-            <el-button type="danger" @click="handleForceLogout(scope.row.userId)">
-              强制下线
-            </el-button>
+            <div class="flex flex-wrap gap-2">
+              <el-button type="danger" size="small" @click="handleForceLogout(scope.row.userId)">
+                强制下线
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
     </div>
 
-    <!-- 分页区域 - 紧凑布局 -->
-    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+    <!-- 分页区域 -->
+    <div
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+    >
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
+      <el-pagination
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="sizes, prev, pager, next"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        small
+      />
     </div>
   </div>
 </template>
@@ -47,7 +99,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Refresh, User } from '@element-plus/icons-vue'
 import { getOnlineUserList, forceLogout } from '@/api/modules/online-user'
 
 defineOptions({
@@ -107,6 +159,13 @@ const handleSizeChange = (val: number) => {
 
 const handleCurrentChange = (val: number) => {
   pagination.page = val
+  loadOnlineUserList()
+}
+
+// 重置搜索
+const resetSearch = () => {
+  searchForm.userName = ''
+  pagination.page = 1
   loadOnlineUserList()
 }
 

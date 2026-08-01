@@ -1,71 +1,97 @@
 <template>
-  <div class="flex flex-col h-full gap-4">
-    <!-- 统计面板 -->
-    <div class="grid grid-cols-5 gap-4">
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-          {{ dashboard.totalEvents }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">事件总数</div>
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
+    <!-- 顶部操作栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <!-- 第一行：搜索条件 -->
+      <div class="flex flex-wrap items-center gap-3">
+        <el-input v-model="searchForm.name" placeholder="事件名称" style="width: 192px" clearable>
+          <template #prefix>
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-select
+          v-model="searchForm.status"
+          placeholder="事件状态"
+          style="width: 192px"
+          clearable
+        >
+          <el-option label="全部" value="" />
+          <el-option label="待处理" value="pending" />
+          <el-option label="处理中" value="processing" />
+          <el-option label="成功" value="success" />
+          <el-option label="失败" value="failed" />
+          <el-option label="死信" value="dead" />
+        </el-select>
+        <el-input v-model="searchForm.source" placeholder="事件来源" style="width: 192px" clearable>
+          <template #prefix>
+            <el-icon>
+              <Connection />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-button type="primary" @click="handleSearch">
+          <el-icon>
+            <Search />
+          </el-icon>
+          搜索
+        </el-button>
+        <el-button @click="handleReset">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
       </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-          {{ dashboard.pendingEvents }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">待处理</div>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-          {{ dashboard.successEvents }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">成功数</div>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-          {{ dashboard.failedEvents }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">失败数</div>
-      </div>
-      <div
-        class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-      >
-        <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">
-          {{ dashboard.deadLetterCount }}
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">死信队列</div>
+    </div>
+
+    <!-- 统计信息 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
+            <List />
+          </el-icon>
+          事件总数：<span class="font-medium">{{ dashboard.totalEvents }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-yellow-500">
+            <Clock />
+          </el-icon>
+          待处理：<span class="font-medium">{{ dashboard.pendingEvents }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-green-500">
+            <CircleCheck />
+          </el-icon>
+          成功数：<span class="font-medium">{{ dashboard.successEvents }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-red-500">
+            <CircleClose />
+          </el-icon>
+          失败数：<span class="font-medium">{{ dashboard.failedEvents }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-gray-500">
+            <WarningFilled />
+          </el-icon>
+          死信队列：<span class="font-medium">{{ dashboard.deadLetterCount }}</span>
+        </span>
       </div>
     </div>
 
     <!-- Tab 切换 -->
-    <div class="flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="flex-1 overflow-hidden">
       <el-tabs v-model="activeTab" class="h-full" @tab-click="handleTabClick">
         <!-- 事件列表 -->
         <el-tab-pane label="事件列表" name="events">
           <div class="flex flex-col h-full p-4">
-            <!-- 搜索区域 -->
-            <div class="flex flex-wrap items-center gap-3 mb-4">
-              <el-input v-model="searchForm.name" placeholder="事件名称" style="width: 192px" />
-              <el-select v-model="searchForm.status" placeholder="事件状态" style="width: 192px">
-                <el-option label="全部" value="" />
-                <el-option label="待处理" value="pending" />
-                <el-option label="处理中" value="processing" />
-                <el-option label="成功" value="success" />
-                <el-option label="失败" value="failed" />
-                <el-option label="死信" value="dead" />
-              </el-select>
-              <el-input v-model="searchForm.source" placeholder="事件来源" style="width: 192px" />
-              <el-button type="primary" @click="handleSearch">搜索</el-button>
-              <el-button @click="handleReset">重置</el-button>
-            </div>
-
             <!-- 事件表格 -->
             <div class="flex-1 overflow-hidden">
               <el-table :data="eventList" stripe class="w-full h-full" v-loading="loading">
@@ -330,7 +356,17 @@
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import {
+  Plus,
+  Search,
+  Refresh,
+  List,
+  Clock,
+  CircleCheck,
+  CircleClose,
+  WarningFilled,
+  Connection,
+} from '@element-plus/icons-vue'
 import {
   getEventList,
   getEventById,
@@ -678,24 +714,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-:deep(.el-table) {
-  --el-table-bg-color: transparent;
-}
-
-:deep(.el-dialog) {
-  border-radius: 0.5rem;
-}
-
-:deep(.el-pagination) {
-  --el-pagination-text-color: theme('colors.gray.600');
-}
-
-:deep(.dark .el-pagination) {
-  --el-pagination-text-color: theme('colors.gray.400');
-}
-
-pre {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
+/* 事件监控页面样式 */
 </style>

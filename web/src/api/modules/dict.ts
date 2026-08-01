@@ -2,7 +2,7 @@ import service from '@/utils/request'
 import type { ApiResponse } from '@/types'
 
 export interface Dict {
-  id: number
+  id: string
   dictName: string
   dictCode: string
   description: string
@@ -14,8 +14,8 @@ export interface Dict {
 }
 
 export interface DictItem {
-  id: number
-  dictId: number
+  id: string
+  dictId: string
   itemKey: string
   itemValue: string
   sort: number
@@ -73,7 +73,7 @@ export const createDict = (data: {
  * 使用场景：字典管理页面编辑字典、切换字典状态
  */
 export const updateDict = (
-  id: number,
+  id: string,
   data: {
     dictName?: string
     dictCode?: string
@@ -82,9 +82,9 @@ export const updateDict = (
   },
 ): Promise<ApiResponse<Dict>> => {
   return service({
-    url: `/dict/${id}`,
+    url: '/dict',
     method: 'put',
-    data,
+    data: { id, ...data },
   })
 }
 
@@ -92,7 +92,7 @@ export const updateDict = (
  * 删除字典
  * 使用场景：字典管理页面删除字典（同时删除关联字典项）
  */
-export const deleteDict = (id: number): Promise<ApiResponse> => {
+export const deleteDict = (id: string): Promise<ApiResponse> => {
   return service({
     url: `/dict/${id}`,
     method: 'delete',
@@ -104,7 +104,7 @@ export const deleteDict = (id: number): Promise<ApiResponse> => {
  * 使用场景：字典管理页面添加明细项
  */
 export const createDictItem = (
-  dictId: number,
+  dictId: string,
   data: {
     itemKey: string
     itemValue: string
@@ -125,9 +125,9 @@ export const createDictItem = (
  * 使用场景：字典管理页面编辑明细项、切换明细状态
  */
 export const updateDictItem = (
-  id: number,
+  id: string,
   data: {
-    dictId?: number
+    dictId?: string
     itemKey?: string
     itemValue?: string
     sort?: number
@@ -146,7 +146,7 @@ export const updateDictItem = (
  * 删除字典项
  * 使用场景：字典管理页面删除明细项
  */
-export const deleteDictItem = (id: number): Promise<ApiResponse> => {
+export const deleteDictItem = (id: string): Promise<ApiResponse> => {
   return service({
     url: `/dict/item/${id}`,
     method: 'delete',
@@ -158,7 +158,7 @@ export const deleteDictItem = (id: number): Promise<ApiResponse> => {
  * 使用场景：字典管理页面打开明细抽屉时加载明细列表
  */
 export const getDictItemsByDictId = (
-  dictId: number,
+  dictId: string,
 ): Promise<ApiResponse<{ list: DictItem[]; total: number }>> => {
   return service({
     url: '/dict/items',

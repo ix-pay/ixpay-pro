@@ -2,7 +2,7 @@ import service from '@/utils/request'
 import type { ApiResponse } from '@/types'
 
 export interface Position {
-  id: number
+  id: string
   name: string
   code: string
   description: string
@@ -50,7 +50,7 @@ export const createPosition = (data: {
 
 // 更新职位
 export const updatePosition = (data: {
-  id: number
+  id: string
   name?: string
   code?: string
   description?: string
@@ -65,7 +65,7 @@ export const updatePosition = (data: {
 }
 
 // 删除职位
-export const deletePosition = (id: number): Promise<ApiResponse> => {
+export const deletePosition = (id: string): Promise<ApiResponse> => {
   return service({
     url: `/position/${id}`,
     method: 'delete',
@@ -81,7 +81,7 @@ export const getAllPositions = (): Promise<ApiResponse<Position[]>> => {
 }
 
 // 获取岗位详情
-export const getPositionById = (id: number): Promise<ApiResponse<Position>> => {
+export const getPositionById = (id: string): Promise<ApiResponse<Position>> => {
   return service({
     url: `/position/${id}`,
     method: 'get',

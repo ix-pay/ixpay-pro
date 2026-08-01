@@ -141,8 +141,8 @@ export const createUser = (data: {
   nickname?: string
   phone?: string
   avatar?: string
-  departmentId?: number
-  positionId?: number
+  departmentId?: string
+  positionId?: string
   status?: number
   roles?: string[]
 }): Promise<ApiResponse> => {
@@ -167,8 +167,8 @@ export const updateUserInfo = (data: {
   email?: string
   phone?: string
   avatar?: string
-  departmentId?: number
-  positionId?: number
+  departmentId?: string
+  positionId?: string
   status?: number
   roles?: string[]
 }): Promise<ApiResponse> => {

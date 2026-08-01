@@ -2,165 +2,150 @@
   <div
     class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
   >
-    <!-- 字典列表表格 -->
-    <div
-      class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
-    >
-      <!-- 搜索栏 -->
-      <div class="flex flex-col gap-3 p-4 border-b">
-        <div class="flex flex-wrap items-center gap-3">
-          <el-input
-            v-model="searchForm.keyword"
-            placeholder="请输入字典名称或编码"
-            clearable
-            style="width: 192px"
-            @keyup.enter="loadDictList"
-          >
-            <template #prefix>
-              <el-icon>
-                <Search />
-              </el-icon>
-            </template>
-          </el-input>
-          <el-select
-            v-model="searchForm.status"
-            placeholder="选择状态"
-            clearable
-            style="width: 192px"
-            @change="loadDictList"
-          >
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
-          </el-select>
-          <el-button type="primary" @click="loadDictList" :loading="loading">
+    <!-- 搜索栏 -->
+    <div class="flex flex-col gap-3 p-4 border-b">
+      <div class="flex flex-wrap items-center gap-3">
+        <el-input
+          v-model="searchForm.keyword"
+          placeholder="请输入字典名称或编码"
+          clearable
+          style="width: 192px"
+          @keyup.enter="loadDictList"
+        >
+          <template #prefix>
             <el-icon>
               <Search />
             </el-icon>
-            搜索
-          </el-button>
-          <el-button @click="resetSearch">
-            <el-icon>
-              <Refresh />
-            </el-icon>
-            重置
-          </el-button>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <el-button type="primary" v-auth-btn="'system:dict:add'" @click="handleAddDict">
-            <el-icon>
-              <Plus />
-            </el-icon>
-            添加字典
-          </el-button>
-        </div>
-      </div>
-
-      <!-- 统计信息 -->
-      <div
-        class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
-      >
-        <div class="flex items-center gap-6 text-sm">
-          <span class="flex items-center gap-1">
-            <el-icon class="text-blue-500">
-              <Document />
-            </el-icon>
-            字典总数：<span class="font-medium">{{ pagination.total }}</span>
-          </span>
-          <span class="flex items-center gap-1">
-            <el-icon class="text-green-500">
-              <SuccessFilled />
-            </el-icon>
-            启用：<span class="font-medium">{{
-              dictList.filter((d) => d.status === 1).length
-            }}</span>
-          </span>
-          <span class="flex items-center gap-1">
-            <el-icon class="text-orange-500">
-              <CircleClose />
-            </el-icon>
-            禁用：<span class="font-medium">{{
-              dictList.filter((d) => d.status === 0).length
-            }}</span>
-          </span>
-        </div>
-      </div>
-
-      <!-- 字典表格 -->
-      <div class="flex-1 overflow-hidden">
-        <el-table
-          v-loading="loading"
-          :data="dictList"
-          stripe
-          class="w-full h-full"
-          :height="'100%'"
+          </template>
+        </el-input>
+        <el-select
+          v-model="searchForm.status"
+          placeholder="选择状态"
+          clearable
+          style="width: 192px"
+          @change="loadDictList"
         >
-          <el-table-column prop="dictName" label="字典名称" min-width="150" sortable="custom" />
-          <el-table-column prop="dictCode" label="字典编码" min-width="150" sortable="custom" />
-          <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
-          <el-table-column prop="status" label="状态" width="100" align="center">
-            <template #default="scope">
-              <el-switch
-                v-model="scope.row.status"
-                :active-value="1"
-                :inactive-value="0"
-                @change="handleStatusChange(scope.row)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column prop="itemCount" label="明细数量" width="100" align="center" />
-          <el-table-column label="创建时间" width="180">
-            <template #default="scope">
-              {{ formatDate(scope.row.createdAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="240" fixed="right">
-            <template #default="scope">
-              <div class="flex flex-wrap gap-2">
-                <el-button type="primary" size="small" @click="openDictItems(scope.row)">
-                  <el-icon>
-                    <List />
-                  </el-icon>
-                  管理明细
-                </el-button>
-                <el-button
-                  v-auth-btn="'system:dict:edit'"
-                  type="primary"
-                  size="small"
-                  @click="handleEditDict(scope.row)"
-                >
-                  编辑
-                </el-button>
-                <el-button
-                  v-auth-btn="'system:dict:delete'"
-                  type="danger"
-                  size="small"
-                  @click="handleDeleteDict(scope.row.id)"
-                >
-                  删除
-                </el-button>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
+          <el-option label="启用" :value="1" />
+          <el-option label="禁用" :value="0" />
+        </el-select>
+        <el-button type="primary" @click="loadDictList" :loading="loading">
+          <el-icon>
+            <Search />
+          </el-icon>
+          搜索
+        </el-button>
+        <el-button @click="resetSearch">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          重置
+        </el-button>
       </div>
 
-      <!-- 分页 -->
-      <div
-        class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
-      >
-        <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="sizes, prev, pager, next"
-          :total="pagination.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          small
-        />
+      <div class="flex flex-wrap items-center gap-2">
+        <el-button type="primary" v-auth-btn="'system:dict:add'" @click="handleAddDict">
+          <el-icon>
+            <Plus />
+          </el-icon>
+          添加字典
+        </el-button>
       </div>
+    </div>
+
+    <!-- 统计信息 -->
+    <div
+      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div class="flex items-center gap-6 text-sm">
+        <span class="flex items-center gap-1">
+          <el-icon class="text-blue-500">
+            <Document />
+          </el-icon>
+          字典总数：<span class="font-medium">{{ pagination.total }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-green-500">
+            <SuccessFilled />
+          </el-icon>
+          启用：<span class="font-medium">{{ dictList.filter((d) => d.status === 1).length }}</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <el-icon class="text-orange-500">
+            <CircleClose />
+          </el-icon>
+          禁用：<span class="font-medium">{{ dictList.filter((d) => d.status === 0).length }}</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- 字典表格 -->
+    <div class="flex-1 overflow-hidden">
+      <el-table v-loading="loading" :data="dictList" stripe class="w-full h-full" :height="'100%'">
+        <el-table-column prop="dictName" label="字典名称" min-width="150" sortable="custom" />
+        <el-table-column prop="dictCode" label="字典编码" min-width="150" sortable="custom" />
+        <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="status" label="状态" width="100" align="center">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleStatusChange(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="itemCount" label="明细数量" width="100" align="center" />
+        <el-table-column label="创建时间" width="180">
+          <template #default="scope">
+            {{ formatDate(scope.row.createdAt) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="240" fixed="right">
+          <template #default="scope">
+            <div class="flex flex-wrap gap-2">
+              <el-button type="primary" size="small" @click="openDictItems(scope.row)">
+                <el-icon>
+                  <List />
+                </el-icon>
+                管理明细
+              </el-button>
+              <el-button
+                v-auth-btn="'system:dict:edit'"
+                type="primary"
+                size="small"
+                @click="handleEditDict(scope.row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                v-auth-btn="'system:dict:delete'"
+                type="danger"
+                size="small"
+                @click="handleDeleteDict(scope.row.id)"
+              >
+                删除
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+
+    <!-- 分页 -->
+    <div
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+    >
+      <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
+      <el-pagination
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="sizes, prev, pager, next"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        small
+      />
     </div>
 
     <!-- 右侧抽屉：字典明细管理 -->
@@ -213,20 +198,33 @@
       </div>
 
       <!-- 统计信息 -->
-      <div class="flex items-center gap-6 mb-4 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded">
-        <span class="text-sm">
-          明细总数：<span class="font-semibold text-blue-600">{{ itemPagination.total }}</span>
-        </span>
-        <span class="text-sm">
-          启用：<span class="font-semibold text-green-600">{{
-            dictItemList.filter((i) => i.status === 1).length
-          }}</span>
-        </span>
-        <span class="text-sm">
-          禁用：<span class="font-semibold text-red-600">{{
-            dictItemList.filter((i) => i.status === 0).length
-          }}</span>
-        </span>
+      <div
+        class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 mb-4"
+      >
+        <div class="flex items-center gap-6 text-sm">
+          <span class="flex items-center gap-1">
+            <el-icon class="text-blue-500">
+              <List />
+            </el-icon>
+            明细总数：<span class="font-medium">{{ itemPagination.total }}</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-green-500">
+              <SuccessFilled />
+            </el-icon>
+            启用：<span class="font-medium">{{
+              dictItemList.filter((i) => i.status === 1).length
+            }}</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <el-icon class="text-orange-500">
+              <CircleClose />
+            </el-icon>
+            禁用：<span class="font-medium">{{
+              dictItemList.filter((i) => i.status === 0).length
+            }}</span>
+          </span>
+        </div>
       </div>
 
       <!-- 明细表格 -->
@@ -411,7 +409,7 @@ defineOptions({
 })
 
 interface Dict {
-  id: number
+  id: string
   dictName: string
   dictCode: string
   description: string
@@ -422,8 +420,8 @@ interface Dict {
 }
 
 interface DictItem {
-  id: number
-  dictId: number
+  id: string
+  dictId: string
   itemKey: string
   itemValue: string
   sort: number
@@ -453,7 +451,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const dictFormRef = ref<FormInstance>()
 const dictForm = reactive({
-  id: 0,
+  id: '',
   dictName: '',
   dictCode: '',
   description: '',
@@ -486,8 +484,8 @@ const itemDialogVisible = ref(false)
 const itemDialogTitle = ref('')
 const itemFormRef = ref<FormInstance>()
 const itemForm = reactive({
-  id: 0,
-  dictId: 0,
+  id: '',
+  dictId: '',
   itemKey: '',
   itemValue: '',
   sort: 0,
@@ -538,7 +536,6 @@ const handleCurrentChange = (val: number) => {
   pagination.page = val
   loadDictList()
 }
-
 
 // 状态切换
 const handleStatusChange = async (dict: Dict) => {
@@ -624,7 +621,7 @@ const handleItemStatusChange = async (item: DictItem) => {
 // 字典 CRUD
 const handleAddDict = () => {
   dialogTitle.value = '添加字典'
-  Object.assign(dictForm, { id: 0, dictName: '', dictCode: '', description: '', status: 1 })
+  Object.assign(dictForm, { id: '', dictName: '', dictCode: '', description: '', status: 1 })
   dialogVisible.value = true
 }
 
@@ -661,7 +658,7 @@ const handleSubmit = async () => {
   }
 }
 
-const handleDeleteDict = async (id: number) => {
+const handleDeleteDict = async (id: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该字典吗？', '警告', {
       confirmButtonText: '确定',
@@ -689,7 +686,7 @@ const handleAddDictItem = () => {
   if (!selectedDict.value) return
   itemDialogTitle.value = '添加字典明细'
   Object.assign(itemForm, {
-    id: 0,
+    id: '',
     dictId: selectedDict.value.id,
     itemKey: '',
     itemValue: '',
@@ -736,7 +733,7 @@ const handleItemSubmit = async () => {
   }
 }
 
-const handleDeleteDictItem = async (id: number) => {
+const handleDeleteDictItem = async (id: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该字典明细吗？', '警告', {
       confirmButtonText: '确定',
@@ -761,31 +758,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-:deep(.el-table) {
-  font-size: 14px;
-}
-
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-:deep(.el-table__fixed-header-wrapper th),
-:deep(.el-table__fixed-right-header-wrapper th) {
-  background-color: var(--bg-tertiary) !important;
-}
-
-:deep(.el-table__fixed-body-wrapper),
-:deep(.el-table__fixed-right-body-wrapper) {
-  background-color: var(--bg-primary);
-}
-
-:deep(.el-table .cell) {
-  white-space: normal;
-  word-wrap: break-word;
-}
-
 :deep(.el-drawer__header) {
   margin-bottom: 0;
   padding-bottom: 16px;

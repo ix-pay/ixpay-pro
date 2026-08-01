@@ -1,14 +1,22 @@
 <template>
-  <div class="profile-page">
-    <h2>个人资料</h2>
-    <div class="profile-content">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300 p-6"
+  >
+    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">个人资料</h2>
+    <div class="max-w-3xl mx-auto w-full">
       <el-card shadow="hover">
         <template #header>
           <div class="card-header">
             <span>基本信息</span>
           </div>
         </template>
-        <el-form ref="profileFormRef" :model="profileForm" :rules="formRules" label-width="120px" class="profile-form">
+        <el-form
+          ref="profileFormRef"
+          :model="profileForm"
+          :rules="formRules"
+          label-width="120px"
+          class="profile-form"
+        >
           <el-form-item label="用户名" prop="userName">
             <el-input v-model="profileForm.userName" placeholder="请输入用户名" disabled />
           </el-form-item>
@@ -43,16 +51,33 @@
             <span>修改密码</span>
           </div>
         </template>
-        <el-form ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-width="120px"
-          class="password-form">
+        <el-form
+          ref="passwordFormRef"
+          :model="passwordForm"
+          :rules="passwordRules"
+          label-width="120px"
+          class="password-form"
+        >
           <el-form-item label="原密码" prop="oldPassword">
-            <el-input type="password" v-model="passwordForm.oldPassword" placeholder="请输入原密码" />
+            <el-input
+              type="password"
+              v-model="passwordForm.oldPassword"
+              placeholder="请输入原密码"
+            />
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword">
-            <el-input type="password" v-model="passwordForm.newPassword" placeholder="请输入新密码" />
+            <el-input
+              type="password"
+              v-model="passwordForm.newPassword"
+              placeholder="请输入新密码"
+            />
           </el-form-item>
           <el-form-item label="确认密码" prop="confirmPassword">
-            <el-input type="password" v-model="passwordForm.confirmPassword" placeholder="请确认新密码" />
+            <el-input
+              type="password"
+              v-model="passwordForm.confirmPassword"
+              placeholder="请确认新密码"
+            />
           </el-form-item>
         </el-form>
         <div class="form-actions">
@@ -219,17 +244,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.profile-page {
-  background-color: var(--bg-secondary);
-  padding: 20px;
-  min-height: calc(100vh - 60px);
-}
-
-.profile-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
 .card-header {
   font-weight: bold;
   font-size: 16px;
@@ -244,41 +258,5 @@ onMounted(() => {
 .form-actions {
   margin-top: 30px;
   text-align: right;
-}
-
-/* 暗黑模式适配 */
-html.dark :deep(.profile-page) {
-  .el-card {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
-
-    .el-card__header {
-      border-bottom-color: var(--border-color);
-    }
-  }
-
-  .el-form {
-    .el-form-item__label {
-      color: var(--text-primary);
-    }
-
-    .el-input__wrapper {
-      background-color: var(--bg-secondary);
-      border-color: var(--border-color);
-
-      .el-input__inner {
-        color: var(--text-primary);
-      }
-
-      &:hover {
-        border-color: var(--border-hover);
-      }
-
-      &.is-focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-      }
-    }
-  }
 }
 </style>

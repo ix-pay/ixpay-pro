@@ -1,6 +1,8 @@
 <template>
   <!-- Dashboard 首页 - 现代化数据可视化设计 -->
-  <div class="min-h-screen bg-bg-secondary">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
+  >
     <!-- 顶部欢迎区域 - 渐变背景设计 -->
     <div
       class="relative overflow-hidden"

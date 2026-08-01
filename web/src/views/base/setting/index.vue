@@ -1,14 +1,22 @@
 <template>
-  <div class="setting-page">
-    <h2>系统设置</h2>
-    <div class="setting-content">
+  <div
+    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300 p-6"
+  >
+    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">系统设置</h2>
+    <div class="max-w-3xl mx-auto w-full">
       <el-card shadow="hover">
         <template #header>
           <div class="card-header">
             <span>界面设置</span>
           </div>
         </template>
-        <el-form ref="settingFormRef" :model="settingForm" :rules="formRules" label-width="120px" class="setting-form">
+        <el-form
+          ref="settingFormRef"
+          :model="settingForm"
+          :rules="formRules"
+          label-width="120px"
+          class="setting-form"
+        >
           <el-form-item label="主题模式" prop="darkMode">
             <el-radio-group v-model="settingForm.darkMode">
               <el-radio-button label="light">浅色</el-radio-button>
@@ -17,17 +25,27 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="主题颜色" prop="primaryColor">
-            <el-color-picker v-model="settingForm.primaryColor" show-color-palette :predefine="themeColorOptions" />
+            <el-color-picker
+              v-model="settingForm.primaryColor"
+              show-color-palette
+              :predefine="themeColorOptions"
+            />
           </el-form-item>
           <el-form-item label="字体大小" prop="fontSize">
             <el-slider v-model="settingForm.fontSize" :min="12" :max="20" :step="1" />
           </el-form-item>
           <el-form-item label="侧边栏宽度" prop="layout_side_width">
-            <el-slider v-model="settingForm.layout_side_width" :min="180" :max="300" :step="10" :marks="{
-              180: '窄',
-              240: '标准',
-              300: '宽',
-            }" />
+            <el-slider
+              v-model="settingForm.layout_side_width"
+              :min="180"
+              :max="300"
+              :step="10"
+              :marks="{
+                180: '窄',
+                240: '标准',
+                300: '宽',
+              }"
+            />
           </el-form-item>
           <el-form-item label="显示标签栏">
             <el-switch v-model="settingForm.showTabs" />
@@ -257,21 +275,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.setting-page {
-  background-color: var(--bg-secondary);
-  padding: 20px;
-  min-height: calc(100vh - 60px);
-  color: var(--text-primary);
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-.setting-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
 .card-header {
   font-weight: bold;
   font-size: 16px;

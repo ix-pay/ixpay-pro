@@ -72,7 +72,7 @@ export const getDepartmentTree = (): Promise<ApiResponse<Department[]>> => {
 }
 
 // 获取部门详情
-export const getDepartmentById = (id: number): Promise<ApiResponse<Department>> => {
+export const getDepartmentById = (id: string): Promise<ApiResponse<Department>> => {
   return service({
     url: `/dept/${id}`,
     method: 'get',
@@ -81,9 +81,9 @@ export const getDepartmentById = (id: number): Promise<ApiResponse<Department>> 
 
 // 更新部门负责人
 export const updateDepartmentLeader = (
-  id: number,
+  id: string,
   data: {
-    leaderId: number
+    leaderId: string
   },
 ): Promise<ApiResponse> => {
   return service({

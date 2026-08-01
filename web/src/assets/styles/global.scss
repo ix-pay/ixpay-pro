@@ -564,14 +564,39 @@ html.dark {
 // 表格样式增强
 .el-table {
   --el-table-row-hover-bg-color: var(--bg-secondary) !important;
+  font-size: 14px;
 
   th.el-table__cell {
-    background-color: var(--bg-secondary) !important;
-    font-weight: 600;
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
   }
 
   .el-table__body tr:hover > td {
     background-color: var(--bg-secondary) !important;
+  }
+
+  // 固定列表头背景色
+  .el-table__fixed-header-wrapper th,
+  .el-table__fixed-right-header-wrapper th {
+    background-color: var(--bg-tertiary) !important;
+  }
+
+  // 固定列背景色
+  .el-table__fixed-body-wrapper,
+  .el-table__fixed-right-body-wrapper {
+    background-color: var(--bg-primary);
+  }
+
+  // 表格单元格内容自动换行
+  .cell {
+    white-space: normal;
+    word-wrap: break-word;
+  }
+
+  // 表格滚动条
+  .el-table__body-wrapper {
+    overflow: auto !important;
   }
 }
 

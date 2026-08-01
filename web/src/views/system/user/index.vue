@@ -78,14 +78,14 @@
         <el-table-column prop="nickname" label="昵称" min-width="100" />
         <el-table-column prop="email" label="邮箱" min-width="150" />
         <el-table-column prop="phone" label="电话" min-width="120" />
-        <el-table-column prop="departmentName" label="部门" width="120">
+        <el-table-column prop="departmentId" label="部门" width="120">
           <template #default="scope">
-            {{ scope.row.departmentName || '-' }}
+            {{ getDepartmentName(scope.row.departmentId) }}
           </template>
         </el-table-column>
-        <el-table-column prop="positionName" label="岗位" width="120">
+        <el-table-column prop="positionId" label="岗位" width="120">
           <template #default="scope">
-            {{ scope.row.positionName || '-' }}
+            {{ getPositionName(scope.row.positionId) }}
           </template>
         </el-table-column>
         <el-table-column label="角色" min-width="120">
@@ -102,7 +102,7 @@
         </el-table-column>
         <el-table-column label="创建时间" width="160">
           <template #default="scope">
-            {{ formatDate(scope.row.created_at) }}
+            {{ formatDate(scope.row.createdAt) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="220" fixed="right">
@@ -271,13 +271,11 @@ interface User {
   nickname: string
   email: string
   phone: string
-  departmentId?: number
-  departmentName?: string
-  positionId?: number
-  positionName?: string
+  departmentId?: string
+  positionId?: string
   roles: RoleType[]
   status: number
-  created_at?: string
+  createdAt?: string
 }
 
 // 判断用户是否为管理员
@@ -344,8 +342,8 @@ const userForm = reactive({
   userName: '',
   password: '',
   nickname: '',
-  departmentId: undefined as number | undefined,
-  positionId: undefined as number | undefined,
+  departmentId: undefined as string | undefined,
+  positionId: undefined as string | undefined,
   email: '',
   phone: '',
   roles: [] as string[],
@@ -393,6 +391,29 @@ const loadPositionList = async () => {
   } catch (error) {
     console.error('获取岗位列表失败:', error)
   }
+}
+
+// 根据部门 ID 获取部门名称
+const getDepartmentName = (departmentId?: string): string => {
+  if (!departmentId) return '-'
+  const findDepartment = (list: DepartmentType[]): string => {
+    for (const dept of list) {
+      if (dept.id === departmentId) return dept.name
+      if (dept.children && dept.children.length > 0) {
+        const found = findDepartment(dept.children)
+        if (found) return found
+      }
+    }
+    return ''
+  }
+  return findDepartment(departmentList.value) || '-'
+}
+
+// 根据岗位 ID 获取岗位名称
+const getPositionName = (positionId?: string): string => {
+  if (!positionId) return '-'
+  const position = positionList.value.find((p) => p.id === positionId)
+  return position?.name || '-'
 }
 
 // 获取用户列表
@@ -605,50 +626,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 
- * 用户管理页面样式说明：
- * - 布局使用 Tailwind CSS
- * - Element Plus 组件使用原生样式 + 必要的 Tailwind 辅助类
- */
-
-/* 表格容器高度 */
-.flex-1 {
-  min-height: 0;
-  /* 允许 flex 子项滚动 */
-}
-
-/* 表格样式修正 */
-:deep(.el-table) {
-  font-size: 14px;
-}
-
-/* 固定列背景色 - 使用项目主题变量 */
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-/* 修复固定列表头背景色 - 确保滚动时背景色一致 */
-:deep(.el-table__fixed-header-wrapper th),
-:deep(.el-table__fixed-right-header-wrapper th) {
-  background-color: var(--bg-tertiary) !important;
-}
-
-/* 确保固定列单元格的背景色 */
-:deep(.el-table__fixed-body-wrapper),
-:deep(.el-table__fixed-right-body-wrapper) {
-  background-color: var(--bg-primary);
-}
-
-/* 表格单元格内容 */
-:deep(.el-table .cell) {
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-/* 修复表格滚动条 */
-:deep(.el-table__body-wrapper) {
-  overflow: auto !important;
-}
+/* 用户管理页面样式 */
 </style>

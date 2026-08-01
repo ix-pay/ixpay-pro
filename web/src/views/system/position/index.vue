@@ -211,7 +211,7 @@ defineOptions({
 })
 
 interface Position {
-  id: number
+  id: string
   name: string
   code: string
   description: string
@@ -240,7 +240,7 @@ const dialogTitle = ref('')
 const positionFormRef = ref<FormInstance>()
 
 const positionForm = reactive({
-  id: 0,
+  id: '',
   name: '',
   code: '',
   description: '',
@@ -305,7 +305,7 @@ const handleCurrentChange = (val: number) => {
 const handleAddPosition = () => {
   dialogTitle.value = '添加职位'
   Object.assign(positionForm, {
-    id: 0,
+    id: '',
     name: '',
     code: '',
     description: '',
@@ -351,7 +351,7 @@ const handleSubmit = async () => {
   }
 }
 
-const handleDeletePosition = async (id: number) => {
+const handleDeletePosition = async (id: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该职位吗？', '警告', {
       confirmButtonText: '确定',
@@ -376,36 +376,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.flex-1 {
-  min-height: 0;
-}
-
-:deep(.el-table) {
-  font-size: 14px;
-}
-
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-:deep(.el-table__fixed-header-wrapper th),
-:deep(.el-table__fixed-right-header-wrapper th) {
-  background-color: var(--bg-tertiary) !important;
-}
-
-:deep(.el-table__fixed-body-wrapper),
-:deep(.el-table__fixed-right-body-wrapper) {
-  background-color: var(--bg-primary);
-}
-
-:deep(.el-table .cell) {
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-:deep(.el-table__body-wrapper) {
-  overflow: auto !important;
-}
+/* 职位管理页面样式 */
 </style>

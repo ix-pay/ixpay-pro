@@ -85,10 +85,9 @@
         class="w-full h-full"
         :height="'100%'"
       >
-        <el-table-column prop="name" label="配置名称" width="160" />
-        <el-table-column prop="key" label="配置键" width="180" />
-        <el-table-column prop="value" label="配置值" min-width="200" />
-        <el-table-column prop="type" label="类型" width="100" />
+        <el-table-column prop="configKey" label="配置键" width="180" />
+        <el-table-column prop="configValue" label="配置值" min-width="200" />
+        <el-table-column prop="configType" label="类型" width="100" />
         <el-table-column prop="status" label="状态" width="80">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
@@ -144,25 +143,22 @@
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
       <el-form ref="configFormRef" :model="configForm" :rules="formRules" label-width="100px">
-        <el-form-item label="配置名称" prop="name">
-          <el-input v-model="configForm.name" placeholder="请输入配置名称" />
-        </el-form-item>
-        <el-form-item label="配置键" prop="key">
+        <el-form-item label="配置键" prop="configKey">
           <el-input
-            v-model="configForm.key"
+            v-model="configForm.configKey"
             placeholder="请输入配置键"
             :disabled="!!configForm.id"
           />
         </el-form-item>
-        <el-form-item label="配置值" prop="value">
-          <el-input v-model="configForm.value" placeholder="请输入配置值" />
+        <el-form-item label="配置值" prop="configValue">
+          <el-input v-model="configForm.configValue" placeholder="请输入配置值" />
         </el-form-item>
-        <el-form-item label="类型" prop="type">
-          <el-select v-model="configForm.type" placeholder="请选择类型" class="w-full">
-            <el-option label="文本" value="string" />
-            <el-option label="数字" value="number" />
-            <el-option label="布尔" value="boolean" />
-            <el-option label="JSON" value="json" />
+        <el-form-item label="类型" prop="configType">
+          <el-select v-model="configForm.configType" placeholder="请选择类型" class="w-full">
+            <el-option label="文本" value="1" />
+            <el-option label="数字" value="2" />
+            <el-option label="布尔" value="3" />
+            <el-option label="JSON" value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="描述" prop="description">
@@ -205,11 +201,10 @@ defineOptions({
 })
 
 interface Config {
-  id: number
-  name: string
-  key: string
-  value: string
-  type: string
+  id: string
+  configKey: string
+  configValue: string
+  configType: string
   description: string
   status: number
   createdAt: string
@@ -235,20 +230,18 @@ const dialogTitle = ref('')
 const configFormRef = ref<FormInstance>()
 
 const configForm = reactive({
-  id: 0,
-  name: '',
-  key: '',
-  value: '',
-  type: 'string',
+  id: '',
+  configKey: '',
+  configValue: '',
+  configType: 'string',
   description: '',
   status: 1,
 })
 
 const formRules = reactive({
-  name: [{ required: true, message: '请输入配置名称', trigger: 'blur' }],
-  key: [{ required: true, message: '请输入配置键', trigger: 'blur' }],
-  value: [{ required: true, message: '请输入配置值', trigger: 'blur' }],
-  type: [{ required: true, message: '请选择类型', trigger: 'change' }],
+  configKey: [{ required: true, message: '请输入配置键', trigger: 'blur' }],
+  configValue: [{ required: true, message: '请输入配置值', trigger: 'blur' }],
+  configType: [{ required: true, message: '请选择类型', trigger: 'change' }],
 })
 
 const loadConfigList = async () => {
@@ -297,11 +290,10 @@ const handleCurrentChange = (val: number) => {
 const handleAddConfig = () => {
   dialogTitle.value = '添加配置'
   Object.assign(configForm, {
-    id: 0,
-    name: '',
-    key: '',
-    value: '',
-    type: 'string',
+    id: '',
+    configKey: '',
+    configValue: '',
+    configType: '1',
     description: '',
     status: 1,
   })
@@ -319,20 +311,18 @@ const handleSubmit = async () => {
     await configFormRef.value?.validate()
     if (configForm.id) {
       await updateConfig(configForm.id, {
-        name: configForm.name,
-        key: configForm.key,
-        value: configForm.value,
-        type: configForm.type,
+        configKey: configForm.configKey,
+        configValue: configForm.configValue,
+        configType: configForm.configType,
         description: configForm.description,
         status: configForm.status,
       })
       ElMessage.success('更新成功')
     } else {
       await createConfig({
-        name: configForm.name,
-        key: configForm.key,
-        value: configForm.value,
-        type: configForm.type,
+        configKey: configForm.configKey,
+        configValue: configForm.configValue,
+        configType: configForm.configType,
         description: configForm.description,
         status: configForm.status,
       })
@@ -345,7 +335,7 @@ const handleSubmit = async () => {
   }
 }
 
-const handleDeleteConfig = async (id: number) => {
+const handleDeleteConfig = async (id: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该配置吗？', '警告', {
       confirmButtonText: '确定',
@@ -372,34 +362,5 @@ onMounted(() => {
 <style scoped>
 .flex-1 {
   min-height: 0;
-}
-
-:deep(.el-table) {
-  font-size: 14px;
-}
-
-:deep(.el-table__header th) {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  font-weight: 600 !important;
-}
-
-:deep(.el-table__fixed-header-wrapper th),
-:deep(.el-table__fixed-right-header-wrapper th) {
-  background-color: var(--bg-tertiary) !important;
-}
-
-:deep(.el-table__fixed-body-wrapper),
-:deep(.el-table__fixed-right-body-wrapper) {
-  background-color: var(--bg-primary);
-}
-
-:deep(.el-table .cell) {
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-:deep(.el-table__body-wrapper) {
-  overflow: auto !important;
 }
 </style>

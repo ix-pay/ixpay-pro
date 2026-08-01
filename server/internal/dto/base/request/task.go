@@ -5,7 +5,7 @@ import "encoding/json"
 // AddTaskRequest 添加任务请求参数
 type AddTaskRequest struct {
 	TaskID      string          `json:"taskId" binding:"required"`
-	TaskType    string          `json:"taskType" binding:"required,oneof=http database cache script"`
+	TaskType    string          `json:"taskType" binding:"required,oneof=http database cache script stream_maintenance"`
 	Type        string          `json:"type" binding:"required,oneof=cron one_time"`
 	Expression  string          `json:"expression" binding:"required"`
 	Description string          `json:"description"`

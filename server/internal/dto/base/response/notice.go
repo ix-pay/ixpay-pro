@@ -8,7 +8,7 @@ type NoticeResponse struct {
 	ID          int64  `json:"id,string"`
 	Title       string `json:"title"`
 	Content     string `json:"content"`
-	Type        int    `json:"type"`
+	Type        string `json:"type"`
 	Status      int    `json:"status"`
 	PublisherID int64  `json:"publisherId,string"`
 	PublishTime string `json:"publishTime,omitempty"`

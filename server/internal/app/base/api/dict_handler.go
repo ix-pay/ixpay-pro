@@ -280,14 +280,25 @@ func (c *DictController) GetDictList(ctx *gin.Context) {
 
 	// 构建过滤条件
 	filters := make(map[string]interface{})
+
+	// 处理 keyword 参数（同时搜索字典名称和字典编码）
+	keyword := ctx.Query("keyword")
+	if keyword != "" {
+		filters["keyword"] = keyword
+	}
+
+	// 处理单独的 dict_code 参数
 	dictCode := ctx.Query("dict_code")
 	if dictCode != "" {
-		filters["dict_code LIKE ?"] = "%" + dictCode + "%"
+		filters["dict_code"] = dictCode
 	}
+
+	// 处理单独的 dict_name 参数
 	dictName := ctx.Query("dict_name")
 	if dictName != "" {
-		filters["dict_name LIKE ?"] = "%" + dictName + "%"
+		filters["dict_name"] = dictName
 	}
+
 	statusStr := ctx.Query("status")
 	if statusStr != "" {
 		status, _ := strconv.Atoi(statusStr)
@@ -350,7 +361,7 @@ func (c *DictController) GetDictList(ctx *gin.Context) {
 //	@Failure		500		{object}	map[string]string												"服务器内部错误"
 //	@Router			/api/admin/dict/items [get]
 func (c *DictController) GetDictItemsByDictID(ctx *gin.Context) {
-	dictIDStr := ctx.Query("dict_id")
+	dictIDStr := ctx.Query("dictId")
 	if dictIDStr == "" {
 		c.log.Error("字典 ID 不能为空")
 		baseRes.FailWithMessage("字典 ID 不能为空", ctx)
@@ -360,7 +371,7 @@ func (c *DictController) GetDictItemsByDictID(ctx *gin.Context) {
 	// 将字符串 ID 转换为 int64
 	dictID, err := strconv.ParseInt(dictIDStr, 10, 64)
 	if err != nil {
-		c.log.Error("无效的 ID 格式", "dict_id", dictIDStr, "error", err)
+		c.log.Error("无效的 ID 格式", "dictId", dictIDStr, "error", err)
 		baseRes.FailWithMessage("无效的 ID 格式", ctx)
 		return
 	}

@@ -40,6 +40,9 @@ definitions:
       method:
         description: HTTP 方法
         type: string
+      name:
+        description: 路由名称
+        type: string
       path:
         description: 路由路径
         type: string
@@ -870,18 +873,19 @@ definitions:
         items:
           type: integer
         type: array
-      retry_count:
+      retryCount:
         maximum: 10
         minimum: 0
         type: integer
-      task_id:
+      taskId:
         type: string
-      task_type:
+      taskType:
         enum:
         - http
         - database
         - cache
         - script
+        - stream_maintenance
         type: string
       type:
         enum:
@@ -891,8 +895,8 @@ definitions:
     required:
     - expression
     - params
-    - task_id
-    - task_type
+    - taskId
+    - taskType
     - type
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.AddUserRequest:
@@ -1014,9 +1018,9 @@ definitions:
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.BatchDeleteLoginLogsRequest:
     properties:
       ids:
-        description: 登录日志 ID 列表
+        description: 登录日志 ID 列表（字符串格式）
         items:
-          type: integer
+          type: string
         type: array
     required:
     - ids
@@ -1037,9 +1041,9 @@ definitions:
         description: 下线原因
         type: string
       userIds:
-        description: 用户 ID 列表
+        description: 用户 ID 列表（字符串格式）
         items:
-          type: integer
+          type: string
         type: array
     required:
     - userIds
@@ -1113,6 +1117,9 @@ definitions:
         - HEAD
         - OPTIONS
         type: string
+      name:
+        maxLength: 100
+        type: string
       path:
         maxLength: 255
         type: string
@@ -1126,7 +1133,9 @@ definitions:
         - 1
         type: integer
     required:
+    - group
     - method
+    - name
     - path
     type: object
   github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateBtnPermRequest:
@@ -1293,15 +1302,21 @@ definitions:
       isTop:
         description: 是否置顶
         type: boolean
+      publishTime:
+        description: 发布时间（格式：2006-01-02 15:04:05）
+        type: string
       sort:
         description: 排序
+        type: integer
+      status:
+        description: 公告状态：0-草稿，1-已发布，2-已归档
         type: integer
       title:
         description: 公告标题
         type: string
       type:
-        description: 公告类型：1-系统公告，2-活动公告，3-普通通知，4-紧急通知
-        type: integer
+        description: 公告类型：system-系统公告，activity-活动公告，notice-普通通知，emergency-紧急通知
+        type: string
     required:
     - content
     - title
@@ -1584,6 +1599,9 @@ definitions:
         - HEAD
         - OPTIONS
         type: string
+      name:
+        maxLength: 100
+        type: string
       path:
         maxLength: 255
         type: string
@@ -1792,8 +1810,8 @@ definitions:
         description: 公告标题
         type: string
       type:
-        description: 公告类型：1-系统公告，2-活动公告，3-普通通知，4-紧急通知
-        type: integer
+        description: 公告类型：system-系统公告，activity-活动公告，notice-普通通知，emergency-紧急通知
+        type: string
     required:
     - content
     - id
@@ -1908,6 +1926,8 @@ definitions:
           type: integer
         type: array
       method:
+        type: string
+      name:
         type: string
       path:
         type: string
@@ -2476,7 +2496,7 @@ definitions:
       title:
         type: string
       type:
-        type: integer
+        type: string
       updatedAt:
         type: string
       viewCount:
@@ -8080,6 +8100,34 @@ paths:
       summary: 更新角色
       tags:
       - 角色管理
+  /api/admin/role/:id:
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取角色详情
+      parameters:
+      - description: 角色 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 根据 ID 获取角色
+      tags:
+      - 角色管理
   /api/admin/role/:id/available-apis:
     get:
       consumes:
@@ -8291,34 +8339,6 @@ paths:
       security:
       - BearerAuth: []
       summary: 分配用户到角色
-      tags:
-      - 角色管理
-  /api/admin/role/detail:
-    get:
-      consumes:
-      - application/json
-      description: 根据 ID 获取角色详情
-      parameters:
-      - description: 角色 ID
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse'
-              type: object
-      security:
-      - BearerAuth: []
-      summary: 根据 ID 获取角色
       tags:
       - 角色管理
   /api/admin/roles/:roleId/permission-logs:

@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -177,7 +179,20 @@ func (r *departmentRepository) List(page, pageSize int, filters map[string]inter
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "name LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -185,7 +200,7 @@ func (r *departmentRepository) List(page, pageSize int, filters map[string]inter
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("sort ASC, name ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -200,7 +215,7 @@ func (r *departmentRepository) List(page, pageSize int, filters map[string]inter
 // GetAll 获取所有部门
 func (r *departmentRepository) GetAll() ([]*entity.Department, error) {
 	var dbModels []departmentModel
-	result := r.db.Order("parent_id ASC, sort ASC").Find(&dbModels)
+	result := r.db.Order("parent_id ASC, sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -216,7 +231,7 @@ func (r *departmentRepository) GetAll() ([]*entity.Department, error) {
 // GetChildrenByParentID 根据父部门 ID 获取子部门
 func (r *departmentRepository) GetChildrenByParentID(parentID int64) ([]*entity.Department, error) {
 	var dbModels []departmentModel
-	result := r.db.Where("parent_id = ?", parentID).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("parent_id = ?", parentID).Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -163,7 +165,22 @@ func (r *dictRepository) List(page, pageSize int, filters map[string]interface{}
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		// 如果 key 已经包含操作符（如 "LIKE ?"），直接使用；否则添加 "= ?"
+		if strings.Contains(key, "?") {
+			// 处理多参数的 OR 条件（如 "dict_name LIKE ? OR dict_code LIKE ?"）
+			if values, ok := value.([]string); ok {
+				// 将 []string 转换为 []interface{} 以符合 GORM 的参数要求
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -171,7 +188,7 @@ func (r *dictRepository) List(page, pageSize int, filters map[string]interface{}
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("dict_name ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -186,7 +203,7 @@ func (r *dictRepository) List(page, pageSize int, filters map[string]interface{}
 // GetAllActive 获取所有启用的字典
 func (r *dictRepository) GetAllActive() ([]*entity.Dict, error) {
 	var dbModels []dictModel
-	result := r.db.Where("status = ?", 1).Find(&dbModels)
+	result := r.db.Where("status = ?", 1).Order("dict_name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}

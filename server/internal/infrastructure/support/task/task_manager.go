@@ -294,6 +294,10 @@ func (tm *TaskManager) RemoveScheduledTask(taskName string) error {
 	delete(tm.taskInfoMap, taskName)
 	tm.taskInfoMux.Unlock()
 
+	tm.taskGroupMux.Lock()
+	delete(tm.taskGroupMap, taskName)
+	tm.taskGroupMux.Unlock()
+
 	tm.log.Info("Scheduled task removed", "task", taskName)
 	return nil
 }

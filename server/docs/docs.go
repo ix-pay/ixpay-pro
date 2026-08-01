@@ -7878,6 +7878,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/admin/role/:id": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据 ID 获取角色详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "根据 ID 获取角色",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "角色 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/role/:id/available-apis": {
             "get": {
                 "security": [
@@ -8232,55 +8281,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/role/detail": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "根据 ID 获取角色详情",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "角色管理"
-                ],
-                "summary": "根据 ID 获取角色",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "角色 ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_utils_common_baseRes.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/github_com_ix-pay_ixpay-pro_internal_dto_base_response.RoleDetailResponse"
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     }
                 }
@@ -10908,6 +10908,10 @@ const docTemplate = `{
                     "description": "HTTP 方法",
                     "type": "string"
                 },
+                "name": {
+                    "description": "路由名称",
+                    "type": "string"
+                },
                 "path": {
                     "description": "路由路径",
                     "type": "string"
@@ -12033,8 +12037,8 @@ const docTemplate = `{
             "required": [
                 "expression",
                 "params",
-                "task_id",
-                "task_type",
+                "taskId",
+                "taskType",
                 "type"
             ],
             "properties": {
@@ -12053,21 +12057,22 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
-                "retry_count": {
+                "retryCount": {
                     "type": "integer",
                     "maximum": 10,
                     "minimum": 0
                 },
-                "task_id": {
+                "taskId": {
                     "type": "string"
                 },
-                "task_type": {
+                "taskType": {
                     "type": "string",
                     "enum": [
                         "http",
                         "database",
                         "cache",
-                        "script"
+                        "script",
+                        "stream_maintenance"
                     ]
                 },
                 "type": {
@@ -12246,10 +12251,10 @@ const docTemplate = `{
             ],
             "properties": {
                 "ids": {
-                    "description": "登录日志 ID 列表",
+                    "description": "登录日志 ID 列表（字符串格式）",
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 }
             }
@@ -12280,10 +12285,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userIds": {
-                    "description": "用户 ID 列表",
+                    "description": "用户 ID 列表（字符串格式）",
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 }
             }
@@ -12342,7 +12347,9 @@ const docTemplate = `{
         "github_com_ix-pay_ixpay-pro_internal_dto_base_request.CreateAPIRequest": {
             "type": "object",
             "required": [
+                "group",
                 "method",
+                "name",
                 "path"
             ],
             "properties": {
@@ -12387,6 +12394,10 @@ const docTemplate = `{
                         "HEAD",
                         "OPTIONS"
                     ]
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "path": {
                     "type": "string",
@@ -12634,8 +12645,16 @@ const docTemplate = `{
                     "description": "是否置顶",
                     "type": "boolean"
                 },
+                "publishTime": {
+                    "description": "发布时间（格式：2006-01-02 15:04:05）",
+                    "type": "string"
+                },
                 "sort": {
                     "description": "排序",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "公告状态：0-草稿，1-已发布，2-已归档",
                     "type": "integer"
                 },
                 "title": {
@@ -12643,8 +12662,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "description": "公告类型：1-系统公告，2-活动公告，3-普通通知，4-紧急通知",
-                    "type": "integer"
+                    "description": "公告类型：system-系统公告，activity-活动公告，notice-普通通知，emergency-紧急通知",
+                    "type": "string"
                 }
             }
         },
@@ -13047,6 +13066,10 @@ const docTemplate = `{
                         "OPTIONS"
                     ]
                 },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
                 "path": {
                     "type": "string",
                     "maxLength": 255
@@ -13324,8 +13347,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "description": "公告类型：1-系统公告，2-活动公告，3-普通通知，4-紧急通知",
-                    "type": "integer"
+                    "description": "公告类型：system-系统公告，activity-活动公告，notice-普通通知，emergency-紧急通知",
+                    "type": "string"
                 }
             }
         },
@@ -13479,6 +13502,9 @@ const docTemplate = `{
                     }
                 },
                 "method": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "path": {
@@ -14300,7 +14326,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"

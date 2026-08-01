@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -115,7 +117,7 @@ func (r *apiRepository) GetByID(id int64) (*entity.API, error) {
 // GetAllRoutes 获取所有 API 路由
 func (r *apiRepository) GetAllRoutes() ([]*entity.API, error) {
 	var dbModels []apiModel
-	result := r.db.Find(&dbModels)
+	result := r.db.Order(`"group" ASC, id ASC`).Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -181,7 +183,20 @@ func (r *apiRepository) List(page, pageSize int, filters map[string]interface{})
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "path LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -189,7 +204,7 @@ func (r *apiRepository) List(page, pageSize int, filters map[string]interface{})
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order(`"group" ASC, id ASC`).Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

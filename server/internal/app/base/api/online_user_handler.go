@@ -2,6 +2,7 @@ package baseapi
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -62,6 +63,17 @@ func (c *OnlineUserController) GetOnlineUserList(ctx *gin.Context) {
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
+	}
+
+	// 按用户名过滤
+	if req.Username != "" {
+		var filtered []*entity.OnlineUser
+		for _, u := range users {
+			if strings.Contains(strings.ToLower(u.Username), strings.ToLower(req.Username)) {
+				filtered = append(filtered, u)
+			}
+		}
+		users = filtered
 	}
 
 	// 计算分页
@@ -331,10 +343,7 @@ func (c *OnlineUserController) BatchForceOffline(ctx *gin.Context) {
 		return
 	}
 
-	var req struct {
-		UserIDs []string `json:"user_ids" binding:"required"`
-		Reason  string   `json:"reason"`
-	}
+	var req request.BatchForceOfflineRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		c.log.Error("请求参数错误", "error", err)
@@ -348,12 +357,16 @@ func (c *OnlineUserController) BatchForceOffline(ctx *gin.Context) {
 		return
 	}
 
-	// 将字符串 ID 数组转换为 int64 数组
-	userIDs, err := convertStringSliceToInt64Slice(req.UserIDs)
-	if err != nil {
-		c.log.Error("用户 ID 格式错误", "error", err)
-		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
-		return
+	// 将字符串 ID 转换为 int64
+	userIDInts := make([]int64, len(req.UserIDs))
+	for i, idStr := range req.UserIDs {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			c.log.Error("无效的用户 ID 格式", "userId", idStr, "error", err)
+			baseRes.FailWithMessage("无效的用户 ID 格式", ctx)
+			return
+		}
+		userIDInts[i] = id
 	}
 
 	// 将 operatorID 转换为 int64
@@ -368,11 +381,11 @@ func (c *OnlineUserController) BatchForceOffline(ctx *gin.Context) {
 	}
 
 	// 批量强制用户下线
-	if err := c.service.BatchKickoutUsers(userIDs, req.Reason, strconv.FormatInt(operatorIDInt, 10)); err != nil {
+	if err := c.service.BatchKickoutUsers(userIDInts, req.Reason, strconv.FormatInt(operatorIDInt, 10)); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}
 
-	c.log.Info("批量强制用户下线成功", "count", len(userIDs), "operator_id", operatorIDInt)
+	c.log.Info("批量强制用户下线成功", "count", len(userIDInts), "operator_id", operatorIDInt)
 	baseRes.OkWithMessage("批量强制下线成功", ctx)
 }

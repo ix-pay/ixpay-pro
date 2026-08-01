@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -264,7 +266,20 @@ func (r *userRepository) List(page, pageSize int, filters map[string]interface{}
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "name LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -273,7 +288,7 @@ func (r *userRepository) List(page, pageSize int, filters map[string]interface{}
 
 	offset := (page - 1) * pageSize
 	// 预加载角色关联数据，以便在列表中显示角色信息
-	if err := query.Preload("Roles").Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Preload("Roles").Offset(offset).Limit(pageSize).Order("username ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

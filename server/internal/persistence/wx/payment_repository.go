@@ -195,7 +195,7 @@ func (r *paymentRepository) ListByUser(userID int64, page, pageSize int) ([]*ent
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -220,7 +220,7 @@ func (r *paymentRepository) ListByStatus(status entity.PaymentStatus, page, page
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -250,7 +250,7 @@ func (r *paymentRepository) List(page, pageSize int, filters map[string]interfac
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

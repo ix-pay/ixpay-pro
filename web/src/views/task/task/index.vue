@@ -436,6 +436,35 @@
             />
           </el-form-item>
         </template>
+
+        <template v-if="formData.taskType === 'stream_maintenance'">
+          <el-divider content-position="left">Stream 维护参数</el-divider>
+          <el-form-item label="Stream 键" prop="params.stream_key">
+            <el-input v-model="formData.params.stream_key" placeholder="stream:event_bus" />
+          </el-form-item>
+          <el-form-item label="最大长度" prop="params.max_length">
+            <el-input-number
+              v-model="formData.params.max_length"
+              :min="1"
+              :max="1000000"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item label="裁剪类型" prop="params.trim_type">
+            <el-select v-model="formData.params.trim_type" style="width: 100%">
+              <el-option label="近似裁剪" value="approx" />
+              <el-option label="精确裁剪" value="exact" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="超时(秒)" prop="params.timeout">
+            <el-input-number
+              v-model="formData.params.timeout"
+              :min="1"
+              :max="300"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <div class="flex justify-end gap-3">
@@ -608,6 +637,9 @@ const formData = reactive({
     command: '',
     args_str: '',
     work_dir: '',
+    stream_key: '',
+    max_length: 5000,
+    trim_type: 'approx',
   },
 })
 
@@ -889,6 +921,11 @@ const buildTaskParams = () => {
       ? formData.params.args_str.split(',').map((a: string) => a.trim())
       : []
     baseParams.work_dir = formData.params.work_dir
+    baseParams.timeout = formData.params.timeout
+  } else if (formData.taskType === 'stream_maintenance') {
+    baseParams.stream_key = formData.params.stream_key
+    baseParams.max_length = formData.params.max_length
+    baseParams.trim_type = formData.params.trim_type
     baseParams.timeout = formData.params.timeout
   }
 

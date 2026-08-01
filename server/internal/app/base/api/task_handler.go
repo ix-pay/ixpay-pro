@@ -330,38 +330,24 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 	taskId := ctx.Query("taskId")
 	taskType := ctx.Query("taskType")
 
+	// 构建筛选条件
+	filters := make(map[string]interface{})
+	if taskId != "" {
+		filters["task_id LIKE ?"] = "%" + taskId + "%"
+	}
+	if taskType != "" {
+		filters["task_type"] = taskType
+	}
+
 	// 从数据库查询任务
 	var tasks []*entity.Task
 	var total int64
 	var err error
 
-	if taskId != "" {
-		task, err := c.taskService.GetTaskByTaskID(taskId)
-		if err != nil {
-			pageResult := baseRes.PageResult{
-				List:     []response.TaskResponse{},
-				Total:    0,
-				Page:     page,
-				PageSize: pageSize,
-			}
-			baseRes.OkWithDetailed(pageResult, "获取任务列表成功", ctx)
-			return
-		}
-		tasks = []*entity.Task{task}
-		total = 1
-	} else if taskType != "" {
-		tasks, err = c.taskService.ListTasksByType(taskType, nil)
-		if err != nil {
-			baseRes.FailWithMessage("查询任务失败", ctx)
-			return
-		}
-		total = int64(len(tasks))
-	} else {
-		tasks, total, err = c.taskService.ListTasks(nil, page, pageSize)
-		if err != nil {
-			baseRes.FailWithMessage("查询任务失败", ctx)
-			return
-		}
+	tasks, total, err = c.taskService.ListTasks(filters, page, pageSize)
+	if err != nil {
+		baseRes.FailWithMessage("查询任务失败", ctx)
+		return
 	}
 
 	// 转换为响应格式
@@ -743,44 +729,6 @@ func (c *TaskController) UpdateTask(ctx *gin.Context) {
 		c.log.Debug("移除旧任务（可能不存在）", "task_id", oldTask.TaskID, "error", err)
 	}
 
-	// 使用任务工厂创建新的任务实例
-	taskInst, err := c.factory.CreateTask(req.TaskID, task.TaskType(req.TaskType), req.Params)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "创建任务失败：" + err.Error()})
-		return
-	}
-
-	// 根据调度类型添加任务
-	if req.Type == "cron" {
-		scheduledTask := &task.ScheduledTask{
-			Task:     taskInst,
-			CronExpr: req.Expression,
-			Group:    req.Group,
-		}
-
-		if err := c.manager.AddScheduledTask(scheduledTask); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
-			return
-		}
-	} else if req.Type == "one_time" {
-		executeTime, err := time.Parse(time.RFC3339, req.Expression)
-		if err != nil {
-			c.log.Error("无效的时间表达式", "error", err)
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的时间表达式"})
-			return
-		}
-
-		delay := time.Until(executeTime)
-		if delay < 0 {
-			delay = 0
-		}
-
-		c.manager.AddOneTimeTask(taskInst, delay)
-	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的任务类型"})
-		return
-	}
-
 	// 更新数据库中的任务记录
 	oldTask.TaskID = req.TaskID
 	oldTask.TaskType = req.TaskType
@@ -795,6 +743,47 @@ func (c *TaskController) UpdateTask(ctx *gin.Context) {
 		c.log.Error("更新数据库任务失败", "task_id", id, "error", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "更新任务失败：" + err.Error()})
 		return
+	}
+
+	// 只有当任务处于启用状态时，才添加到调度器
+	if oldTask.Status == 1 {
+		// 使用任务工厂创建新的任务实例
+		taskInst, err := c.factory.CreateTask(req.TaskID, task.TaskType(req.TaskType), req.Params)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "创建任务失败：" + err.Error()})
+			return
+		}
+
+		// 根据调度类型添加任务
+		if req.Type == "cron" {
+			scheduledTask := &task.ScheduledTask{
+				Task:     taskInst,
+				CronExpr: req.Expression,
+				Group:    req.Group,
+			}
+
+			if err := c.manager.AddScheduledTask(scheduledTask); err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误：" + err.Error()})
+				return
+			}
+		} else if req.Type == "one_time" {
+			executeTime, err := time.Parse(time.RFC3339, req.Expression)
+			if err != nil {
+				c.log.Error("无效的时间表达式", "error", err)
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的时间表达式"})
+				return
+			}
+
+			delay := time.Until(executeTime)
+			if delay < 0 {
+				delay = 0
+			}
+
+			c.manager.AddOneTimeTask(taskInst, delay)
+		} else {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "无效的任务类型"})
+			return
+		}
 	}
 
 	// 获取更新后的任务

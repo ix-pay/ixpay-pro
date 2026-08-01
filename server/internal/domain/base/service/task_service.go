@@ -54,8 +54,8 @@ func (s *TaskService) GetTaskByTaskID(taskID string) (*entity.Task, error) {
 }
 
 // ListTasks 分页获取任务列表
-func (s *TaskService) ListTasks(status *int, page, pageSize int) ([]*entity.Task, int64, error) {
-	tasks, total, err := s.repo.List(status, page, pageSize)
+func (s *TaskService) ListTasks(filters map[string]interface{}, page, pageSize int) ([]*entity.Task, int64, error) {
+	tasks, total, err := s.repo.List(filters, page, pageSize)
 	if err != nil {
 		s.log.Error("获取任务列表失败", "error", err)
 		return nil, 0, errors.New("获取任务列表失败")

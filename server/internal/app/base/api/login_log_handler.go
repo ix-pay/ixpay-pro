@@ -71,10 +71,10 @@ func (c *LoginLogController) GetLoginLogList(ctx *gin.Context) {
 		filters["user_id"] = *req.UserID
 	}
 	if req.Username != "" {
-		filters["userName"] = req.Username
+		filters["username LIKE ?"] = "%" + req.Username + "%"
 	}
 	if req.LoginIP != "" {
-		filters["login_ip"] = req.LoginIP
+		filters["login_ip LIKE ?"] = "%" + req.LoginIP + "%"
 	}
 	if req.Result != nil {
 		filters["result"] = *req.Result
@@ -384,7 +384,19 @@ func (c *LoginLogController) BatchDeleteLoginLogs(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.service.BatchDeleteLoginLogs(req.IDs); err != nil {
+	// 将字符串 ID 转换为 int64
+	idInts := make([]int64, len(req.IDs))
+	for i, idStr := range req.IDs {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			c.log.Error("无效的 ID 格式", "id", idStr, "error", err)
+			baseRes.FailWithMessage("无效的 ID 格式", ctx)
+			return
+		}
+		idInts[i] = id
+	}
+
+	if err := c.service.BatchDeleteLoginLogs(idInts); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

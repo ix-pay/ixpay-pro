@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"strings"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -139,7 +140,20 @@ func (r *loginLogRepository) List(page, pageSize int, filters map[string]interfa
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "username LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -147,7 +161,7 @@ func (r *loginLogRepository) List(page, pageSize int, filters map[string]interfa
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -171,7 +185,7 @@ func (r *loginLogRepository) GetByUserID(userID int64, page, pageSize int) ([]*e
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -195,7 +209,7 @@ func (r *loginLogRepository) GetByIP(ip string, page, pageSize int) ([]*entity.L
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -240,7 +254,7 @@ func (r *loginLogRepository) GetByTimeRange(startTime, endTime time.Time, page, 
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("login_time DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

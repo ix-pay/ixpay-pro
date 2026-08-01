@@ -112,7 +112,7 @@ func (r *permissionLogRepository) FindByUserID(userID int64, page, pageSize int)
 		return nil, 0, err
 	}
 
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&models).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC, id DESC").Find(&models).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -136,7 +136,7 @@ func (r *permissionLogRepository) FindByRoleID(roleID int64, page, pageSize int)
 		return nil, 0, err
 	}
 
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&models).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC, id DESC").Find(&models).Error; err != nil {
 		return nil, 0, err
 	}
 

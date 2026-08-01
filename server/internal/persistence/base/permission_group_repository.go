@@ -150,7 +150,7 @@ func (r *permissionGroupRepository) List(page, pageSize int, filters map[string]
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("sort ASC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("sort ASC, name ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -165,7 +165,7 @@ func (r *permissionGroupRepository) List(page, pageSize int, filters map[string]
 // GetAllGroups 获取所有权限组
 func (r *permissionGroupRepository) GetAllGroups() ([]*entity.PermissionGroup, error) {
 	var dbModels []permissionGroupModel
-	result := r.db.Order("sort ASC").Find(&dbModels)
+	result := r.db.Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}

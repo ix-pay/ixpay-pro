@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -102,13 +104,23 @@ func (r *taskRepository) GetByTaskID(taskID string) (*entity.Task, error) {
 	return dbModel.toDomain(), nil
 }
 
-func (r *taskRepository) List(status *int, page, pageSize int) ([]*entity.Task, int64, error) {
+func (r *taskRepository) List(filters map[string]interface{}, page, pageSize int) ([]*entity.Task, int64, error) {
 	var total int64
 	var dbModels []taskModel
 
 	query := r.db.Model(&taskModel{})
-	if status != nil {
-		query = query.Where("status = ?", *status)
+
+	// 应用筛选条件
+	for key, value := range filters {
+		if value == nil {
+			continue
+		}
+		// 支持 LIKE 查询
+		if str, ok := value.(string); ok && strings.Contains(key, "LIKE") {
+			query = query.Where(key, str)
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -116,7 +128,7 @@ func (r *taskRepository) List(status *int, page, pageSize int) ([]*entity.Task, 
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order(`"group" ASC, id ASC`).Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -136,7 +148,7 @@ func (r *taskRepository) ListByType(taskType string, status *int) ([]*entity.Tas
 		query = query.Where("status = ?", *status)
 	}
 
-	if err := query.Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Order(`"group" ASC, id ASC`).Find(&dbModels).Error; err != nil {
 		return nil, err
 	}
 
@@ -150,7 +162,7 @@ func (r *taskRepository) ListByType(taskType string, status *int) ([]*entity.Tas
 
 func (r *taskRepository) ListAll() ([]*entity.Task, error) {
 	var dbModels []taskModel
-	if err := r.db.Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := r.db.Order(`"group" ASC, id ASC`).Find(&dbModels).Error; err != nil {
 		return nil, err
 	}
 
@@ -172,7 +184,7 @@ func (r *taskRepository) Delete(taskID string) error {
 
 func (r *taskRepository) GetEnabledTasks() ([]*entity.Task, error) {
 	var dbModels []taskModel
-	if err := r.db.Where("status = ?", 1).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := r.db.Where("status = ?", 1).Order(`"group" ASC, id ASC`).Find(&dbModels).Error; err != nil {
 		return nil, err
 	}
 

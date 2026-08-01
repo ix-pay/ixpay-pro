@@ -142,7 +142,7 @@ func (r *taskExecutionLogRepository) List(page, pageSize int, filters map[string
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -166,7 +166,7 @@ func (r *taskExecutionLogRepository) GetByTaskID(taskID int64, page, pageSize in
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -190,7 +190,7 @@ func (r *taskExecutionLogRepository) GetByTaskName(taskName string, page, pageSi
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -365,7 +365,7 @@ func (r *taskExecutionLogRepository) Search(page, pageSize int, taskID *int64, r
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("execute_at DESC, id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

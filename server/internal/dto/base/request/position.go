@@ -23,9 +23,10 @@ type UpdatePositionRequest struct {
 
 // GetPositionListRequest 获取岗位列表请求
 type GetPositionListRequest struct {
-	Page     int  `form:"page" binding:"required"`     // 页码
-	PageSize int  `form:"pageSize" binding:"required"` // 每页数量
-	Status   *int `form:"status"`                      // 状态（可选筛选条件）
+	Page     int    `form:"page" binding:"required"`     // 页码
+	PageSize int    `form:"pageSize" binding:"required"` // 每页数量
+	Name     string `form:"name"`                        // 岗位名称（模糊查询）
+	Status   *int   `form:"status"`                      // 状态（可选筛选条件）
 }
 
 // GetPositionByIDRequest 获取岗位详情请求

@@ -379,8 +379,8 @@
               v-model="menuForm.status"
               active-color="#13ce66"
               inactive-color="#ff4949"
-              active-value="1"
-              inactive-value="0"
+              :active-value="1"
+              :inactive-value="0"
             />
           </el-form-item>
 
@@ -763,7 +763,7 @@ const handleEditMenu = (menu: MenuItem) => {
     permission: menu.permission,
     sort: menu.sort,
     parentId: menu.parentId === '0' ? '' : String(menu.parentId || ''),
-    status: String(menu.status),
+    status: menu.status,
     keepAlive: menu.keepAlive,
     type: menu.type,
     apiIds: menu.apiIds?.map((id) => String(id)) || [],

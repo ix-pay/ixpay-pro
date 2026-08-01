@@ -26,11 +26,17 @@ func NewNoticeService(repo repo.NoticeRepository, recordRepo repo.NoticeReadReco
 }
 
 // CreateNotice 创建公告
-func (s *NoticeService) CreateNotice(title, content, description string, noticeType entity.NoticeType, publisherID int64, isTop bool, sort int) (*entity.Notice, error) {
+func (s *NoticeService) CreateNotice(title, content, description string, noticeType entity.NoticeType, status entity.NoticeStatus, publishTime string, publisherID int64, isTop bool, sort int) (*entity.Notice, error) {
 	// 验证公告类型
-	if noticeType < entity.NoticeTypeSystem || noticeType > entity.NoticeTypeEmergency {
+	if noticeType != entity.NoticeTypeSystem && noticeType != entity.NoticeTypeActivity &&
+		noticeType != entity.NoticeTypeNotice && noticeType != entity.NoticeTypeEmergency {
 		s.log.Error("无效的公告类型", "type", noticeType)
 		return nil, errors.New("无效的公告类型")
+	}
+
+	// 验证公告状态
+	if status < entity.NoticeStatusDraft || status > entity.NoticeStatusArchived {
+		status = entity.NoticeStatusDraft // 默认草稿状态
 	}
 
 	// 创建公告
@@ -38,13 +44,22 @@ func (s *NoticeService) CreateNotice(title, content, description string, noticeT
 		Title:       title,
 		Content:     content,
 		Type:        noticeType,
-		Status:      entity.NoticeStatusDraft, // 默认为草稿状态
+		Status:      status,
 		PublisherID: publisherID,
 		IsTop:       isTop,
 		Sort:        sort,
 		Description: description,
 		CreatedBy:   publisherID,
 		UpdatedBy:   publisherID,
+	}
+
+	// 解析发布时间
+	if publishTime != "" {
+		if pt, err := time.Parse("2006-01-02 15:04:05", publishTime); err == nil {
+			notice.PublishTime = &pt
+		} else {
+			s.log.Error("发布时间格式错误", "publishTime", publishTime, "error", err)
+		}
 	}
 
 	if err := s.repo.Create(notice); err != nil {
@@ -72,7 +87,8 @@ func (s *NoticeService) UpdateNotice(id int64, title, content, description strin
 	}
 
 	// 验证公告类型
-	if noticeType < entity.NoticeTypeSystem || noticeType > entity.NoticeTypeEmergency {
+	if noticeType != entity.NoticeTypeSystem && noticeType != entity.NoticeTypeActivity &&
+		noticeType != entity.NoticeTypeNotice && noticeType != entity.NoticeTypeEmergency {
 		s.log.Error("无效的公告类型", "type", noticeType)
 		return nil, errors.New("无效的公告类型")
 	}

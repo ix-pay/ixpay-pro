@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"strings"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -14,7 +15,7 @@ type noticeModel struct {
 	database.SnowflakeBaseModel
 	Title       string     `gorm:"size:200;not null"`
 	Content     string     `gorm:"type:text;not null"`
-	Type        *int       `gorm:"not null;default:1"`
+	Type        *string    `gorm:"size:50;not null;default:'system'"`
 	Status      *int       `gorm:"not null;default:0"`
 	PublisherID *int64     `gorm:"not null;default:0;index"`
 	PublishTime *time.Time `gorm:"index"`
@@ -55,6 +56,7 @@ func (m *noticeModel) toDomain() *entity.Notice {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainNotice(notice *entity.Notice) (*noticeModel, error) {
+	typeStr := string(notice.Type)
 	return &noticeModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
 			ID:        notice.ID,
@@ -63,7 +65,7 @@ func fromDomainNotice(notice *entity.Notice) (*noticeModel, error) {
 		},
 		Title:       notice.Title,
 		Content:     notice.Content,
-		Type:        common.IntPtr(int(notice.Type)),
+		Type:        common.StringPtr(typeStr),
 		Status:      common.IntPtr(int(notice.Status)),
 		PublisherID: common.Int64Ptr(notice.PublisherID),
 		PublishTime: notice.PublishTime,
@@ -176,7 +178,20 @@ func (r *noticeRepository) List(page, pageSize int, filters map[string]interface
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "name LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -184,7 +199,7 @@ func (r *noticeRepository) List(page, pageSize int, filters map[string]interface
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("is_top DESC, sort ASC, publish_time DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("is_top DESC, sort ASC, title ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -213,7 +228,7 @@ func (r *noticeRepository) GetPublishedList(page, pageSize int, filters map[stri
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("is_top DESC, sort ASC, publish_time DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("is_top DESC, sort ASC, title ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

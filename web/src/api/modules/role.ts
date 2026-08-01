@@ -29,21 +29,6 @@ export interface UpdateRoleRequest {
   status: number
 }
 
-// 创建角色请求参数
-export interface CreateRoleRequest {
-  name: string
-  description: string
-  status: number
-}
-
-// 更新角色请求参数
-export interface UpdateRoleRequest {
-  id: string
-  name: string
-  description: string
-  status: number
-}
-
 // 获取角色列表
 export const getRoleList = (params?: {
   page: number
@@ -70,9 +55,8 @@ export const createRole = (data: CreateRoleRequest): Promise<ApiResponse<RoleTyp
 // 获取角色详情 (包含关联权限)
 export const getRoleDetail = (id: string): Promise<ApiResponse<RoleType>> => {
   return service({
-    url: '/role/detail',
+    url: `/role/${id}/detail`,
     method: 'get',
-    params: { id }, // 直接传递字符串，避免 Number 精度丢失
   })
 }
 
@@ -204,13 +188,13 @@ export const getPermissionLogs = (
 
 // 获取角色权限日志
 export const getRolePermissionLogs = (
-  roleId: number,
+  roleId: string,
   params?: { page?: number; pageSize?: number },
 ): Promise<
   ApiResponse<{ list: PermissionLog[]; total: number; page: number; pageSize: number }>
 > => {
   return service({
-    url: `/roles/${roleId}/permission-logs`,
+    url: `/permission-logs/roles/${roleId}`,
     method: 'get',
     params,
   })

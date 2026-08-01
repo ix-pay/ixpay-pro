@@ -66,6 +66,12 @@ func (ds *DictSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 				return err
 			}
 			logger.Info("更新字典成功", "id", existing.ID, "dict_code", dict.DictCode)
+			// 将数据库中的实际 ID 赋值给 dict，确保后续字典项操作使用正确的 ID
+			dict.ID = existing.ID
+			// 同时更新字典项中的 DictID
+			for i := range dict.DictItems {
+				dict.DictItems[i].DictID = existing.ID
+			}
 		}
 
 		// 处理字典项的增量保存
@@ -99,12 +105,13 @@ func (ds *DictSeed) syncDictItems(dict *entity.Dict, logger logger.Logger) error
 	for _, newItem := range dict.DictItems {
 		existingItem, exists := existingMap[newItem.ItemKey]
 		if !exists {
-			// 不存在则创建
+			// 不存在则创建，将ID设置为0让雪花算法生成新ID
+			newItem.ID = 0
 			if err := ds.dictItemRepo.Create(&newItem); err != nil {
 				logger.Error("创建字典项失败", "dict_id", dict.ID, "item_key", newItem.ItemKey, "error", err)
 				return err
 			}
-			logger.Info("创建字典项成功", "dict_id", dict.ID, "item_key", newItem.ItemKey)
+			logger.Info("创建字典项成功", "dict_id", dict.ID, "item_key", newItem.ItemKey, "new_id", newItem.ID)
 		} else {
 			// 存在则更新
 			existingItem.ItemValue = newItem.ItemValue
@@ -264,7 +271,7 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 				{
 					ID:          3001,
 					DictID:      3000,
-					ItemKey:     "system",
+					ItemKey:     "1",
 					ItemValue:   "系统公告",
 					Sort:        1,
 					Description: "系统维护、升级等通知",
@@ -277,7 +284,7 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 				{
 					ID:          3002,
 					DictID:      3000,
-					ItemKey:     "activity",
+					ItemKey:     "2",
 					ItemValue:   "活动公告",
 					Sort:        2,
 					Description: "活动推广、优惠等通知",
@@ -290,10 +297,23 @@ func (ds *DictSeed) getDictionaries() []*entity.Dict {
 				{
 					ID:          3003,
 					DictID:      3000,
-					ItemKey:     "notice",
+					ItemKey:     "3",
 					ItemValue:   "通知",
 					Sort:        3,
 					Description: "一般通知",
+					Status:      1,
+					CreatedBy:   systemUserID,
+					CreatedAt:   now,
+					UpdatedBy:   systemUserID,
+					UpdatedAt:   now,
+				},
+				{
+					ID:          3004,
+					DictID:      3000,
+					ItemKey:     "4",
+					ItemValue:   "紧急通知",
+					Sort:        4,
+					Description: "紧急通知",
 					Status:      1,
 					CreatedBy:   systemUserID,
 					CreatedAt:   now,

@@ -3,13 +3,13 @@ package entity
 import "time"
 
 // NoticeType 公告类型
-type NoticeType int
+type NoticeType string
 
 const (
-	NoticeTypeSystem    NoticeType = 1 // 系统公告
-	NoticeTypeActivity  NoticeType = 2 // 活动公告
-	NoticeTypeNotice    NoticeType = 3 // 普通通知
-	NoticeTypeEmergency NoticeType = 4 // 紧急通知
+	NoticeTypeSystem    NoticeType = "system"    // 系统公告
+	NoticeTypeActivity  NoticeType = "activity"  // 活动公告
+	NoticeTypeNotice    NoticeType = "notice"    // 普通通知
+	NoticeTypeEmergency NoticeType = "emergency" // 紧急通知
 )
 
 // NoticeStatus 公告状态

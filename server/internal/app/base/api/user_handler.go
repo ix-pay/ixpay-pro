@@ -277,10 +277,10 @@ func (c *UserController) GetUserList(ctx *gin.Context) {
 	// 构建筛选条件
 	filters := make(map[string]interface{})
 	if req.Username != "" {
-		filters["userName"] = req.Username
+		filters["username LIKE ?"] = "%" + req.Username + "%"
 	}
 	if req.Email != "" {
-		filters["email"] = req.Email
+		filters["email LIKE ?"] = "%" + req.Email + "%"
 	}
 	if req.Role != "" {
 		filters["role"] = req.Role

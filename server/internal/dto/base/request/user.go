@@ -11,7 +11,7 @@ type RegisterRequest struct {
 type UpdateUserRequest struct {
 	ID           string   `json:"id" binding:"required"`
 	Nickname     string   `json:"nickname" binding:"max=50"`
-	Email        string   `json:"email" binding:"email"`
+	Email        string   `json:"email" binding:"omitempty,email"`
 	Phone        string   `json:"phone" binding:"max=20"`
 	Avatar       string   `json:"avatar" binding:"max=255"`
 	DepartmentID int64    `json:"departmentId,string" binding:"omitempty"`

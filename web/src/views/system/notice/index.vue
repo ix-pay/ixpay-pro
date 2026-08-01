@@ -45,7 +45,9 @@
 
       <div class="flex flex-wrap items-center gap-2">
         <el-button type="primary" v-auth-btn="'system:notice:add'" @click="handleAddNotice">
-          <el-icon><Plus /></el-icon>
+          <el-icon>
+            <Plus />
+          </el-icon>
           添加公告
         </el-button>
       </div>
@@ -88,34 +90,34 @@
         class="w-full h-full"
         :height="'100%'"
       >
-        <el-table-column prop="title" label="公告标题" width="250" />
+        <el-table-column prop="title" label="公告标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="120">
           <template #default="scope">
             <el-tag
               :type="
-                scope.row.type === 1
+                scope.row.type === 'system'
                   ? 'primary'
-                  : scope.row.type === 2
+                  : scope.row.type === 'activity'
                     ? 'success'
-                    : scope.row.type === 3
+                    : scope.row.type === 'notice'
                       ? 'warning'
                       : 'danger'
               "
               size="small"
             >
               {{
-                scope.row.type === 1
+                scope.row.type === 'system'
                   ? '系统公告'
-                  : scope.row.type === 2
+                  : scope.row.type === 'activity'
                     ? '活动公告'
-                    : scope.row.type === 3
+                    : scope.row.type === 'notice'
                       ? '普通通知'
                       : '紧急通知'
               }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="scope">
             <el-tag
               :type="
@@ -137,9 +139,12 @@
             {{ formatDate(scope.row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="260" fixed="right">
           <template #default="scope">
             <div class="flex flex-wrap gap-2">
+              <el-button type="info" size="small" @click="handleViewNotice(scope.row)">
+                查看
+              </el-button>
               <el-button
                 v-auth-btn="'system:notice:edit'"
                 type="primary"
@@ -228,6 +233,13 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="detailDialogVisible" title="公告内容" width="600px">
+      <div class="whitespace-pre-wrap">{{ currentNotice.content }}</div>
+      <template #footer>
+        <el-button @click="detailDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -247,7 +259,7 @@ interface Notice {
   id: string
   title: string
   content: string
-  type: number
+  type: string
   status: number
   publishTime: string
   createdAt: string
@@ -279,12 +291,22 @@ const pagination = reactive({
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const noticeFormRef = ref<FormInstance>()
+const detailDialogVisible = ref(false)
+const currentNotice = ref<Notice>({
+  id: '',
+  title: '',
+  content: '',
+  type: '',
+  status: 0,
+  publishTime: '',
+  createdAt: '',
+})
 
 const noticeForm = reactive({
   id: '',
   title: '',
   content: '',
-  type: 1,
+  type: '' as string,
   publishTime: '',
   status: 1,
 })
@@ -357,11 +379,16 @@ const handleAddNotice = () => {
     id: '',
     title: '',
     content: '',
-    type: 1,
+    type: 'system',
     publishTime: '',
     status: 1,
   })
   dialogVisible.value = true
+}
+
+const handleViewNotice = (notice: Notice) => {
+  currentNotice.value = notice
+  detailDialogVisible.value = true
 }
 
 const handleEditNotice = (notice: Notice) => {
@@ -423,3 +450,38 @@ onMounted(() => {
   loadNoticeList()
 })
 </script>
+
+<style scoped>
+.flex-1 {
+  min-height: 0;
+}
+
+:deep(.el-table) {
+  font-size: 14px;
+}
+
+:deep(.el-table__header th) {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+:deep(.el-table__fixed-header-wrapper th),
+:deep(.el-table__fixed-right-header-wrapper th) {
+  background-color: var(--bg-tertiary) !important;
+}
+
+:deep(.el-table__fixed-body-wrapper),
+:deep(.el-table__fixed-right-body-wrapper) {
+  background-color: var(--bg-primary);
+}
+
+:deep(.el-table .cell) {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+:deep(.el-table__body-wrapper) {
+  overflow: auto !important;
+}
+</style>

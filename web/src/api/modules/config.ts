@@ -78,7 +78,7 @@ export const deleteConfig = (id: string): Promise<ApiResponse> => {
 // 根据 key 获取配置
 export const getConfigByKey = (key: string): Promise<ApiResponse<Config>> => {
   return service({
-    url: `/config/key?config_key=${key}`,
+    url: `/config/key?configKey=${key}`,
     method: 'get',
   })
 }

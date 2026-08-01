@@ -28,8 +28,9 @@ type GetAbnormalLoginsRequest struct {
 
 // GetOnlineUserListRequest 获取在线用户列表请求
 type GetOnlineUserListRequest struct {
-	Page     int `form:"page" binding:"required"`     // 页码（预留分页支持）
-	PageSize int `form:"pageSize" binding:"required"` // 每页数量（预留分页支持）
+	Page     int    `form:"page" binding:"required"`     // 页码（预留分页支持）
+	PageSize int    `form:"pageSize" binding:"required"` // 每页数量（预留分页支持）
+	Username string `form:"userName"`                    // 用户名（模糊查询）
 }
 
 // GetOnlineUserByIDRequest 获取在线用户详情请求
@@ -45,8 +46,8 @@ type ForceOfflineRequest struct {
 
 // BatchForceOfflineRequest 批量强制下线请求
 type BatchForceOfflineRequest struct {
-	UserIDs []int64 `json:"userIds" binding:"required"` // 用户 ID 列表
-	Reason  string  `json:"reason"`                     // 下线原因
+	UserIDs []string `json:"userIds" binding:"required"` // 用户 ID 列表（字符串格式）
+	Reason  string   `json:"reason"`                     // 下线原因
 }
 
 // RecordLoginRequest 记录登录日志请求（内部调用）
@@ -65,7 +66,7 @@ type RecordLoginRequest struct {
 
 // BatchDeleteLoginLogsRequest 批量删除登录日志请求
 type BatchDeleteLoginLogsRequest struct {
-	IDs []int64 `json:"ids" binding:"required"` // 登录日志 ID 列表
+	IDs []string `json:"ids" binding:"required"` // 登录日志 ID 列表（字符串格式）
 }
 
 // ClearLoginLogsRequest 清空登录日志请求

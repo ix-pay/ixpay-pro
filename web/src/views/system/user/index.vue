@@ -93,11 +93,15 @@
             {{ scope.row.roles?.map((role: RoleType) => role.name).join(', ') || '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              size="small"
+              @change="handleStatusChange(scope.row)"
+            />
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="160">
@@ -450,6 +454,22 @@ const resetSearch = () => {
   searchForm.userName = ''
   pagination.page = 1
   loadUserList()
+}
+
+// 状态变更
+const handleStatusChange = async (user: User) => {
+  try {
+    await updateUserInfo({
+      id: user.id,
+      status: user.status,
+    })
+    ElMessage.success('状态更新成功')
+  } catch (error) {
+    ElMessage.error('状态更新失败')
+    console.error('状态更新失败:', error)
+    // 恢复原状态
+    user.status = user.status === 1 ? 0 : 1
+  }
 }
 
 // 分页处理

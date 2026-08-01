@@ -103,19 +103,24 @@ func (c *RoleController) CreateRole(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id	query		string	true	"角色 ID"
+//	@Param			id	path		string	true	"角色 ID"
 //	@Success	200	{object}	baseRes.Response{data=response.RoleDetailResponse}
-//	@Router			/api/admin/role/detail [get]
+//	@Router			/api/admin/role/:id [get]
 func (c *RoleController) GetRoleByID(ctx *gin.Context) {
-	var req request.GetRoleByIDRequest
-	if err := ctx.ShouldBindQuery(&req); err != nil {
-		c.log.Error("获取角色详情参数验证失败", "error", err.Error())
-		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "参数验证失败", ctx)
+	// 从路径参数获取 ID
+	roleIDStr := ctx.Param("id")
+	if roleIDStr == "" {
+		c.log.Error("角色 ID 不能为空")
+		baseRes.FailWithMessage("角色 ID 不能为空", ctx)
 		return
 	}
 
-	// 直接使用 string 类型的 ID
-	roleID := req.ID
+	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的角色 ID 格式", "id", roleIDStr, "error", err)
+		baseRes.FailWithMessage("无效的角色 ID 格式", ctx)
+		return
+	}
 
 	roleDetail, err := c.roleService.GetRoleByID(roleID)
 	if err != nil {
@@ -237,7 +242,7 @@ func (c *RoleController) GetRoleList(ctx *gin.Context) {
 	// 构建过滤条件
 	filters := make(map[string]interface{})
 	if req.Name != "" {
-		filters["name"] = req.Name
+		filters["name LIKE ?"] = "%" + req.Name + "%"
 	}
 	if req.Status != nil && *req.Status != -1 {
 		filters["status"] = *req.Status

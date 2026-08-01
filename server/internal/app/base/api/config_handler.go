@@ -62,9 +62,9 @@ func convertToConfigResponse(config *entity.Config) response.ConfigResponse {
 //	@Failure		500			{object}	map[string]string											"服务器内部错误"
 //	@Router			/api/admin/config/key [get]
 func (c *ConfigController) GetConfigByKey(ctx *gin.Context) {
-	configKey := ctx.Query("config_key")
+	configKey := ctx.Query("configKey")
 	if configKey == "" {
-		c.log.Error("请求参数错误", "config_key", configKey)
+		c.log.Error("请求参数错误", "configKey", configKey)
 		baseRes.FailWithMessage("配置键不能为空", ctx)
 		return
 	}
@@ -336,9 +336,9 @@ func (c *ConfigController) GetConfigList(ctx *gin.Context) {
 
 	// 构建过滤条件
 	filters := make(map[string]interface{})
-	configKey := ctx.Query("config_key")
-	if configKey != "" {
-		filters["config_key LIKE ?"] = "%" + configKey + "%"
+	keyword := ctx.Query("keyword")
+	if keyword != "" {
+		filters["config_key LIKE ?"] = "%" + keyword + "%"
 	}
 	statusStr := ctx.Query("status")
 	if statusStr != "" {

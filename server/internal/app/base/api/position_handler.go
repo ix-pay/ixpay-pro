@@ -88,6 +88,9 @@ func (c *PositionController) GetPositionList(ctx *gin.Context) {
 
 	// 构建筛选条件
 	filters := make(map[string]interface{})
+	if req.Name != "" {
+		filters["name LIKE ?"] = "%" + req.Name + "%"
+	}
 	if req.Status != nil {
 		filters["status"] = *req.Status
 	}

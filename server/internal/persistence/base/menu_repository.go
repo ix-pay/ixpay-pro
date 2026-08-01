@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -223,7 +225,7 @@ func (r *menuRepository) GetByCode(code string) (*entity.Menu, error) {
 // GetAll 获取所有菜单
 func (r *menuRepository) GetAll() ([]*entity.Menu, error) {
 	var dbModels []menuModel
-	result := r.db.Find(&dbModels)
+	result := r.db.Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -266,7 +268,7 @@ func (r *menuRepository) GetMenusByUserID(userID int64) ([]*entity.Menu, error) 
 // GetMenusByType 根据类型获取菜单
 func (r *menuRepository) GetMenusByType(menuType entity.MenuType) ([]*entity.Menu, error) {
 	var dbModels []menuModel
-	result := r.db.Where("type = ?", int(menuType)).Find(&dbModels)
+	result := r.db.Where("type = ?", int(menuType)).Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -288,7 +290,7 @@ func (r *menuRepository) GetDefaultRouter(roleID int64) (string, error) {
 // GetMenuTree 获取菜单树
 func (r *menuRepository) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 	var dbModels []menuModel
-	result := r.db.Where("parent_id = ?", parentID).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("parent_id = ?", parentID).Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -304,7 +306,7 @@ func (r *menuRepository) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 // GetAllMenuTree 获取所有菜单树
 func (r *menuRepository) GetAllMenuTree() ([]*entity.Menu, error) {
 	var dbModels []menuModel
-	result := r.db.Order("parent_id ASC, sort ASC").Find(&dbModels)
+	result := r.db.Order("parent_id ASC, sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -363,7 +365,20 @@ func (r *menuRepository) List(page, pageSize int, filters map[string]interface{}
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "name LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -371,7 +386,7 @@ func (r *menuRepository) List(page, pageSize int, filters map[string]interface{}
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("sort ASC, name ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

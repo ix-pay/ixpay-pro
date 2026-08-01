@@ -190,7 +190,7 @@ func (r *wxUserRepository) List(page, pageSize int, filters map[string]interface
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

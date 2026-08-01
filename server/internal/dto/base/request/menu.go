@@ -37,15 +37,15 @@ type AddMenuRequest struct {
 // UpdateMenuRequest 更新菜单请求
 // 用于接收更新菜单的参数
 type UpdateMenuRequest struct {
-	ID           int64    `json:"id,string" binding:"required"`       // 菜单 ID
-	ParentID     int64    `json:"parentId,string" binding:"required"` // 父菜单 ID
+	ID           int64    `json:"id,string" binding:"required"` // 菜单 ID
+	ParentID     int64    `json:"parentId,string"`              // 父菜单 ID，0 表示顶级菜单
 	Title        string   `json:"title" binding:"required,min=1,max=50"`
 	Name         string   `json:"name" binding:"required,min=1,max=50"`
 	Path         string   `json:"path" binding:"max=100"` // 按钮类型可以为空
 	Component    string   `json:"component" binding:"max=255"`
 	Icon         string   `json:"icon" binding:"max=50"`
 	Sort         int      `json:"sort" binding:"min=0,max=9999"`
-	Status       int      `json:"status" binding:"required,oneof=0 1"`   // 菜单状态
+	Status       int      `json:"status" binding:"oneof=0 1"`            // 菜单状态
 	Type         int      `json:"type" binding:"required,oneof=1 2 3 4"` // 菜单类型：1 目录，2 菜单，3 按钮，4 iframe
 	Hidden       bool     `json:"hidden"`
 	IsExt        bool     `json:"isExt"`

@@ -6,9 +6,10 @@ import (
 )
 
 // Ptr 辅助函数
-func IntPtr(v int) *int       { return &v }
-func BoolPtr(v bool) *bool    { return &v }
-func Int64Ptr(v int64) *int64 { return &v }
+func IntPtr(v int) *int          { return &v }
+func BoolPtr(v bool) *bool       { return &v }
+func Int64Ptr(v int64) *int64    { return &v }
+func StringPtr(v string) *string { return &v }
 
 // TryParseInt64 可选的 string 到 int64 转换，空字符串返回 0
 func TryParseInt64(s string) int64 {

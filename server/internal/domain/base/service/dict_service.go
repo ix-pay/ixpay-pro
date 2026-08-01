@@ -76,7 +76,7 @@ func (s *DictService) CreateDict(dictName, dictCode, description string, status 
 }
 
 // UpdateDict 更新字典
-func (s *DictService) UpdateDict(id int64, dictName, dictCode, description string, status int, updatedBy int64) error {
+func (s *DictService) UpdateDict(id int64, dictCode, dictName, description string, status int, updatedBy int64) error {
 	// 获取字典
 	dict, err := s.repo.GetByID(id)
 	if err != nil {
@@ -131,6 +131,14 @@ func (s *DictService) DeleteDict(id int64) error {
 
 // GetDictList 获取字典列表
 func (s *DictService) GetDictList(page, pageSize int64, filters map[string]interface{}) ([]*entity.Dict, int64, error) {
+	// 处理 keyword 参数：同时搜索字典名称和字典编码
+	if keyword, ok := filters["keyword"]; ok && keyword != "" {
+		// 移除 keyword，改用 dict_name 和 dict_code 的 OR 条件
+		delete(filters, "keyword")
+		keywordStr := "%" + keyword.(string) + "%"
+		filters["dict_name LIKE ? OR dict_code LIKE ?"] = []string{keywordStr, keywordStr}
+	}
+
 	dicts, total, err := s.repo.List(int(page), int(pageSize), filters)
 	if err != nil {
 		s.log.Error("获取字典列表失败", "error", err)

@@ -64,10 +64,10 @@ func (c *OperationLogController) GetLogList(ctx *gin.Context) {
 		filters["end_time"] = req.EndTime
 	}
 	if req.Username != "" {
-		filters["userName"] = req.Username
+		filters["username LIKE ?"] = "%" + req.Username + "%"
 	}
 	if req.Module != "" {
-		filters["module"] = req.Module
+		filters["module LIKE ?"] = "%" + req.Module + "%"
 	}
 	if req.OperationType != 0 {
 		filters["operation_type"] = req.OperationType

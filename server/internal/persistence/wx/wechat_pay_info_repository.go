@@ -180,7 +180,7 @@ func (r *wechatPayInfoRepository) ListByUser(userID int64, page, pageSize int) (
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -205,7 +205,7 @@ func (r *wechatPayInfoRepository) ListByStatus(page, pageSize int) ([]*entity.We
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -235,7 +235,7 @@ func (r *wechatPayInfoRepository) List(page, pageSize int, filters map[string]in
 	total := int(total64)
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("id DESC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

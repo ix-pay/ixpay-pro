@@ -63,7 +63,7 @@ export const deleteLoginLog = (id: number): Promise<ApiResponse> => {
 }
 
 // 批量删除登录日志
-export const batchDeleteLoginLogs = (data: { ids: number[] }): Promise<ApiResponse> => {
+export const batchDeleteLoginLogs = (data: { ids: string[] }): Promise<ApiResponse> => {
   return service({
     url: '/login-log/batch-delete',
     method: 'post',

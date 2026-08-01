@@ -32,9 +32,9 @@ func (us *UserSeed) Name() string {
 	return "user_seed"
 }
 
-// Order 返回初始化顺序（第三个执行）
+// Order 返回初始化顺序（第四个执行）
 func (us *UserSeed) Order() int {
-	return 3
+	return 4
 }
 
 // Init 初始化用户种子数据

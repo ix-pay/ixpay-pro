@@ -79,6 +79,9 @@ func (c *NoticeController) GetNoticeList(ctx *gin.Context) {
 
 	// 构建筛选条件
 	filters := make(map[string]interface{})
+	if req.Title != "" {
+		filters["title LIKE ?"] = "%" + req.Title + "%"
+	}
 	if req.Type != nil {
 		filters["type"] = *req.Type
 	}
@@ -102,7 +105,7 @@ func (c *NoticeController) GetNoticeList(ctx *gin.Context) {
 			ID:          notice.ID,
 			Title:       notice.Title,
 			Content:     notice.Content,
-			Type:        int(notice.Type),
+			Type:        string(notice.Type),
 			Status:      int(notice.Status),
 			PublisherID: notice.PublisherID,
 			ViewCount:   notice.ViewCount,
@@ -179,7 +182,7 @@ func (c *NoticeController) GetNoticeByID(ctx *gin.Context) {
 		ID:          notice.ID,
 		Title:       notice.Title,
 		Content:     notice.Content,
-		Type:        int(notice.Type),
+		Type:        string(notice.Type),
 		Status:      int(notice.Status),
 		PublisherID: notice.PublisherID,
 		ViewCount:   notice.ViewCount,
@@ -254,6 +257,8 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		req.Content,
 		req.Description,
 		entity.NoticeType(req.Type),
+		entity.NoticeStatus(req.Status),
+		req.PublishTime,
 		publisherIDInt,
 		req.IsTop,
 		sort,
@@ -268,7 +273,7 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		ID:          notice.ID,
 		Title:       notice.Title,
 		Content:     notice.Content,
-		Type:        int(notice.Type),
+		Type:        string(notice.Type),
 		Status:      int(notice.Status),
 		PublisherID: notice.PublisherID,
 		ViewCount:   notice.ViewCount,
@@ -357,7 +362,7 @@ func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 		ID:          notice.ID,
 		Title:       notice.Title,
 		Content:     notice.Content,
-		Type:        int(notice.Type),
+		Type:        string(notice.Type),
 		Status:      int(notice.Status),
 		PublisherID: notice.PublisherID,
 		ViewCount:   notice.ViewCount,

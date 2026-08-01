@@ -188,7 +188,7 @@ func (r *permissionRuleRepository) List(page, pageSize int, filters map[string]i
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Order("sort ASC").Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("sort ASC, name ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -203,7 +203,7 @@ func (r *permissionRuleRepository) List(page, pageSize int, filters map[string]i
 // GetAllRules 获取所有权限规则
 func (r *permissionRuleRepository) GetAllRules() ([]*entity.PermissionRule, error) {
 	var dbModels []permissionRuleModel
-	result := r.db.Order("sort ASC").Find(&dbModels)
+	result := r.db.Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -219,7 +219,7 @@ func (r *permissionRuleRepository) GetAllRules() ([]*entity.PermissionRule, erro
 // GetRulesByStatus 根据状态获取权限规则
 func (r *permissionRuleRepository) GetRulesByStatus(status int) ([]*entity.PermissionRule, error) {
 	var dbModels []permissionRuleModel
-	result := r.db.Where("status = ?", status).Order("sort ASC").Find(&dbModels)
+	result := r.db.Where("status = ?", status).Order("sort ASC, name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}

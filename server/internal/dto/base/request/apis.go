@@ -12,7 +12,7 @@ type GetAPIPageRequest struct {
 type CreateAPIRequest struct {
 	Path         string   `json:"path" binding:"required,max=255"`
 	Method       string   `json:"method" binding:"required,oneof=GET POST PUT DELETE PATCH HEAD OPTIONS"`
-	Group        string   `json:"group" binding:"max=100"`
+	Group        string   `json:"group" binding:"required,max=100"`
 	AuthRequired bool     `json:"authRequired"`
 	AuthType     int      `json:"authType" binding:"oneof=0 1"`
 	Description  string   `json:"description" binding:"max=500"`

@@ -5,7 +5,7 @@ export interface Notice {
   id: string
   title: string
   content: string
-  type: number
+  type: string
   status: number
   publishTime: string
   createdAt: string
@@ -38,7 +38,7 @@ export const getNoticeList = (params?: {
 export const createNotice = (data: {
   title: string
   content: string
-  type: number
+  type: string
   status: number
   publishTime?: string
 }): Promise<ApiResponse<Notice>> => {
@@ -55,7 +55,7 @@ export const updateNotice = (
   data: {
     title?: string
     content?: string
-    type?: number
+    type?: string
     status?: number
     publishTime?: string
   },

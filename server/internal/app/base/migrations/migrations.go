@@ -758,7 +758,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		id BIGINT PRIMARY KEY,
 		title VARCHAR(200) NOT NULL,
 		content TEXT NOT NULL,
-		type INTEGER NOT NULL DEFAULT 1,
+		type VARCHAR(50) NOT NULL DEFAULT 'system',
 		status INTEGER NOT NULL DEFAULT 0,
 		publisher_id BIGINT NOT NULL DEFAULT 0,
 		publish_time TIMESTAMP,
@@ -782,6 +782,35 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Error("创建 base_notices 表失败", "error", err)
 	} else {
 		log.Info("base_notices 表创建成功")
+	}
+
+	// 迁移：将 type 字段从 INTEGER 改为 VARCHAR(50)
+	// 使用 PostgreSQL 的 ALTER COLUMN ... USING 语法，如果已经是 VARCHAR 则 USING 子句会安全转换
+	alterNoticeTypeSQL := `
+	DO $$
+	BEGIN
+		-- 检查字段是否存在且是 integer 类型
+		IF EXISTS (
+			SELECT 1 FROM information_schema.columns 
+			WHERE table_name = 'base_notices' 
+			AND column_name = 'type' 
+			AND data_type = 'integer'
+		) THEN
+			ALTER TABLE base_notices 
+			ALTER COLUMN type TYPE VARCHAR(50) USING CASE 
+				WHEN type = 1 THEN 'system'
+				WHEN type = 2 THEN 'activity'
+				WHEN type = 3 THEN 'notice'
+				WHEN type = 4 THEN 'emergency'
+				ELSE 'system'
+			END;
+		END IF;
+	END $$;
+	`
+	if err := db.Exec(alterNoticeTypeSQL).Error; err != nil {
+		log.Debug("base_notices type 字段迁移跳过或失败", "error", err)
+	} else {
+		log.Debug("base_notices type 字段迁移检查完成了")
 	}
 
 	// 创建公告阅读记录表

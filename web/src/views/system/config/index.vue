@@ -42,7 +42,9 @@
 
       <div class="flex flex-wrap items-center gap-2">
         <el-button type="primary" v-auth-btn="'system:config:add'" @click="handleAddConfig">
-          <el-icon><Plus /></el-icon>
+          <el-icon>
+            <Plus />
+          </el-icon>
           添加配置
         </el-button>
       </div>
@@ -87,12 +89,21 @@
       >
         <el-table-column prop="configKey" label="配置键" width="180" />
         <el-table-column prop="configValue" label="配置值" min-width="200" />
-        <el-table-column prop="configType" label="类型" width="100" />
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="configType" label="类型" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
-            </el-tag>
+            {{ configTypeMap[scope.row.configType] || scope.row.configType }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="status" label="状态" width="80" align="center">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              size="small"
+              @change="handleStatusChange(scope.row)"
+            />
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="160">
@@ -200,6 +211,14 @@ defineOptions({
   name: 'ConfigManagement',
 })
 
+// 配置类型映射
+const configTypeMap: Record<string, string> = {
+  '1': '文本',
+  '2': '数字',
+  '3': '布尔',
+  '4': 'JSON',
+}
+
 interface Config {
   id: string
   configKey: string
@@ -274,6 +293,25 @@ const resetSearch = () => {
   searchForm.status = undefined
   pagination.page = 1
   loadConfigList()
+}
+
+// 状态变更
+const handleStatusChange = async (config: Config) => {
+  try {
+    await updateConfig(config.id, {
+      configKey: config.configKey,
+      configValue: config.configValue,
+      configType: config.configType,
+      description: config.description,
+      status: config.status,
+    })
+    ElMessage.success('状态更新成功')
+  } catch (error) {
+    ElMessage.error('状态更新失败')
+    console.error('状态更新失败:', error)
+    // 恢复原状态
+    config.status = config.status === 1 ? 0 : 1
+  }
 }
 
 const handleSizeChange = (val: number) => {
@@ -358,9 +396,3 @@ onMounted(() => {
   loadConfigList()
 })
 </script>
-
-<style scoped>
-.flex-1 {
-  min-height: 0;
-}
-</style>

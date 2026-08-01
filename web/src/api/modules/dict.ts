@@ -163,7 +163,7 @@ export const getDictItemsByDictId = (
   return service({
     url: '/dict/items',
     method: 'get',
-    params: { dict_id: dictId },
+    params: { dictId: dictId },
   })
 }
 

@@ -125,7 +125,9 @@ func (c *APIController) GetAPIs(ctx *gin.Context) {
 
 	filters := make(map[string]interface{})
 	if req.Keyword != "" {
-		filters["keyword"] = req.Keyword
+		// 使用 OR 条件同时搜索 path、description 字段
+		keywordStr := "%" + req.Keyword + "%"
+		filters["path LIKE ? OR description LIKE ?"] = []string{keywordStr, keywordStr}
 	}
 	if req.Group != "" {
 		filters["group"] = req.Group
@@ -307,12 +309,24 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 		return
 	}
 
+	// 从 URL 路径参数获取 ID
+	idStr := ctx.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的 API 路由 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的 API 路由 ID 格式", ctx)
+		return
+	}
+
 	var req request.UpdateAPIRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		c.log.Error("请求参数无效", "error", err)
 		baseRes.FailWithMessage("参数验证失败", ctx)
 		return
 	}
+
+	// 设置 ID 为 URL 参数中的值
+	req.ID = id
 
 	// 将字符串数组转换为 int64 数组
 	roleIds, err := convertStringSliceToInt64Slice(req.RoleIds)

@@ -103,10 +103,19 @@ func (rs *RoleSeed) initUserRole(logger logger.Logger) (*entity.Role, error) {
 		return role, nil
 	}
 
-	// 2. 检查 name 是否存在
+	// 2. 检查 name 是否存在但 code 不匹配
 	role, err = rs.roleRepo.GetByName("普通用户")
 	if err == nil {
-		logger.Info("角色名'普通用户'已存在，跳过创建", "id", role.ID, "name", role.Name, "code", role.Code)
+		// name 存在但 code 不是 "user"，需要更新 code
+		if role.Code != "user" {
+			logger.Warn("角色名'普通用户'存在但 code 不匹配，更新 code", "id", role.ID, "old_code", role.Code, "new_code", "user")
+			role.Code = "user"
+			if err := rs.roleRepo.Update(role); err != nil {
+				logger.Error("更新角色 code 失败", "error", err)
+				return nil, err
+			}
+		}
+		logger.Info("普通用户角色已存在，跳过创建", "id", role.ID, "name", role.Name, "code", role.Code)
 		return role, nil
 	}
 

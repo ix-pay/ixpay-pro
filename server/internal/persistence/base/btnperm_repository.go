@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"strings"
+
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/repo"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
@@ -137,7 +139,7 @@ func (r *btnPermRepository) GetByCode(code string) (*entity.BtnPerm, error) {
 // GetBtnPermsByMenu 根据菜单获取按钮权限
 func (r *btnPermRepository) GetBtnPermsByMenu(menuID int64) ([]*entity.BtnPerm, error) {
 	var dbModels []btnPermModel
-	result := r.db.Where("menu_id = ?", menuID).Find(&dbModels)
+	result := r.db.Where("menu_id = ?", menuID).Order("name ASC, id ASC").Find(&dbModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -190,7 +192,20 @@ func (r *btnPermRepository) List(page, pageSize int, filters map[string]interfac
 
 	// 应用过滤条件
 	for key, value := range filters {
-		query = query.Where(key+" = ?", value)
+		if strings.Contains(key, "?") {
+			// key 已包含操作符（如 "name LIKE ?"），直接使用
+			if values, ok := value.([]string); ok {
+				args := make([]interface{}, len(values))
+				for i, v := range values {
+					args[i] = v
+				}
+				query = query.Where(key, args...)
+			} else {
+				query = query.Where(key, value)
+			}
+		} else {
+			query = query.Where(key+" = ?", value)
+		}
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -198,7 +213,7 @@ func (r *btnPermRepository) List(page, pageSize int, filters map[string]interfac
 	}
 
 	offset := (page - 1) * pageSize
-	if err := query.Offset(offset).Limit(pageSize).Find(&dbModels).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Order("name ASC, id ASC").Find(&dbModels).Error; err != nil {
 		return nil, 0, err
 	}
 

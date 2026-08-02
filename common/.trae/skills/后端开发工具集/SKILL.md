@@ -164,7 +164,7 @@ docker run -p 8081:8081 ixpay-pro
 
 **Dockerfile 说明**：
 - 使用多阶段构建减少镜像大小
-- 构建阶段：`golang:1.24.6-alpine`
+- 构建阶段：`golang:1.26.5-alpine`
 - 运行阶段：`alpine:3.19`
 - 使用非 root 用户运行应用
 - 包含健康检查配置

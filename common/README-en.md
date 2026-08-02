@@ -27,7 +27,7 @@ ixpay-pro/
 
 | Category | Technology/Framework | Version | Description |
 |----------|---------------------|---------|-------------|
-| **Language** | Go | 1.24.6 | Core development language, providing high performance and concurrency capabilities |
+| **Language** | Go | 1.26.5 | Core development language, providing high performance and concurrency capabilities |
 | **Web Framework** | Gin | v1.11.0 | Lightweight HTTP service framework, providing routing, middleware, etc. |
 | **Dependency Injection** | Wire | v0.7.0 | Compile-time dependency injection tool, improving code maintainability |
 | **Database** | PostgreSQL | 13+ | Powerful open-source relational database, supporting complex queries and transactions |
@@ -121,7 +121,7 @@ ixpay-pro/
 
 | Component | Version Requirement | Usage |
 |-----------|-------------------|-------|
-| Go | 1.24.6 | Backend development language |
+| Go | 1.26.5 | Backend development language |
 | Node.js | 20.19+ or 22.12+ | Frontend development environment |
 | npm | 9+ | Frontend dependency management |
 | PostgreSQL | 13+ | Relational database, recommended version 14.x |

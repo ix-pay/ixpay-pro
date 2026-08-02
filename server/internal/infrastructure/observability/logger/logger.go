@@ -43,8 +43,8 @@ type contextKey string
 const traceIDKey contextKey = "trace_id"
 
 type zapLogger struct {
-	logger      *zap.Logger
-	errorLogger *zap.Logger
+	logger        *zap.Logger
+	errorLogger   *zap.Logger
 }
 
 type MultiLogger struct {
@@ -97,9 +97,18 @@ func SetupLogger(cfg *config.Config) Logger {
 }
 
 func SetupMultiLogger(cfg *config.Config) *MultiLogger {
+	defaultLogger := setupLoggerWithType(cfg, DefaultLogger)
+	errorLogger := setupLoggerWithType(cfg, ErrorLogger)
+
+	if defaultZapLogger, ok := defaultLogger.(*zapLogger); ok {
+		if errorZapLogger, ok := errorLogger.(*zapLogger); ok {
+			defaultZapLogger.errorLogger = errorZapLogger.logger
+		}
+	}
+
 	return &MultiLogger{
-		defaultLogger: setupLoggerWithType(cfg, DefaultLogger),
-		errorLogger:   setupLoggerWithType(cfg, ErrorLogger),
+		defaultLogger: defaultLogger,
+		errorLogger:   errorLogger,
 		taskLogger:    setupLoggerWithType(cfg, TaskLogger),
 		requestLogger: setupLoggerWithType(cfg, RequestLogger),
 		auditLogger:   setupLoggerWithType(cfg, AuditLogger),
@@ -176,10 +185,12 @@ func setupLoggerWithType(cfg *config.Config, loggerType LoggerType) Logger {
 		)
 	}
 
-	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zap.ErrorLevel))
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	errorLogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
 
 	return &zapLogger{
 		logger: logger,
+		errorLogger: errorLogger,
 	}
 }
 

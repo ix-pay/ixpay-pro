@@ -33,4 +33,6 @@ type MenuRepository interface {
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.Menu, int64, error)
 	BatchDelete(ids []int64) error
 	CheckMenuChildren(menuID int64) (bool, error)
+	// SaveMenuAPIRoutes 保存菜单的 API 关联
+	SaveMenuAPIRoutes(menuID int64, apiRouteIDs []int64) error
 }

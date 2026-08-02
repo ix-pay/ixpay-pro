@@ -197,8 +197,8 @@ func (c *MenuController) CreateMenu(ctx *gin.Context) {
 		FrameLoading: req.FrameLoading,
 	}
 
-	// 调用服务层创建菜单
-	if err := c.service.CreateMenu(&menu, createdByInt); err != nil {
+	// 调用服务层创建菜单（包含 API 关联）
+	if err := c.service.CreateMenu(&menu, createdByInt, req.ApiIds); err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
 	}

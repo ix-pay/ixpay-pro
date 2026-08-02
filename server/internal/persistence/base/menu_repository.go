@@ -413,3 +413,25 @@ func (r *menuRepository) CheckMenuChildren(menuID int64) (bool, error) {
 
 	return count > 0, nil
 }
+
+// SaveMenuAPIRoutes 保存菜单的 API 关联（通过中间表 base_menu_api_routes）
+func (r *menuRepository) SaveMenuAPIRoutes(menuID int64, apiIDs []int64) error {
+	// 查询菜单对象（必须包含主键才能操作关联）
+	var menu menuModel
+	if err := r.db.First(&menu, menuID).Error; err != nil {
+		return err
+	}
+
+	// 构建 API 路由实例列表，只需包含 ID 即可
+	var apis []apiModel
+	for _, id := range apiIDs {
+		apis = append(apis, apiModel{
+			SnowflakeBaseModel: database.SnowflakeBaseModel{
+				ID: id,
+			},
+		})
+	}
+
+	// 使用 Association.Replace 替换该菜单的所有现有关联（全量更新语义）
+	return r.db.Model(&menu).Association("APIRoutes").Replace(apis)
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/dictconst"
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -232,14 +233,14 @@ func (s *MenuService) GetDefaultRouter(roleID int64) (string, error) {
 }
 
 // CreateMenu 创建菜单
-func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy int64) error {
+func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy int64, apiRouteIDs []string) error {
 	// 验证菜单参数
 	if menu == nil {
 		s.log.Error("菜单参数不能为空")
 		return errors.New("菜单参数不能为空")
 	}
 
-	s.log.Info("创建菜单", "name", menu.Name, "path", menu.Path)
+	s.log.Info("创建菜单", "name", menu.Name, "path", menu.Path, "api_count", len(apiRouteIDs))
 
 	// 检查菜单名称是否已存在
 	existingMenus, _, err := s.repo.List(1, 1, map[string]interface{}{"name = ?": menu.Name})
@@ -260,6 +261,25 @@ func (s *MenuService) CreateMenu(menu *entity.Menu, createdBy int64) error {
 	if err := s.repo.Create(menu); err != nil {
 		s.log.Error("创建菜单失败", "error", err)
 		return err
+	}
+
+	// 保存菜单的 API 关联
+	var apiIDs []int64
+	for _, idStr := range apiRouteIDs {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			s.log.Error("API ID 转换失败", "error", err, "id", idStr)
+			return errors.New("API ID 格式错误")
+		}
+		apiIDs = append(apiIDs, id)
+	}
+
+	if len(apiIDs) > 0 {
+		if err := s.repo.SaveMenuAPIRoutes(menu.ID, apiIDs); err != nil {
+			s.log.Error("保存菜单 API 关联失败", "error", err, "menuID", menu.ID, "api_count", len(apiIDs))
+			return errors.New("保存菜单 API 关联失败")
+		}
+		s.log.Info("保存菜单 API 关联成功", "menuID", menu.ID, "api_count", len(apiIDs))
 	}
 
 	s.log.Info("创建菜单成功", "id", menu.ID)
@@ -314,11 +334,24 @@ func (s *MenuService) UpdateMenuWithAPIs(menu *entity.Menu, apiRouteIDs []string
 		return err
 	}
 
-	// 2. 处理 API 关联 - 这里应该通过仓库接口来处理，而不是直接访问数据库
-	// 需要在 repo 包中添加相应的接口方法
-	// TODO: 实现 API 关联的保存逻辑
+	// 2. 将 apiRouteIDs 从 string 转为 int64
+	var apiIDs []int64
+	for _, idStr := range apiRouteIDs {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			s.log.Error("API ID 转换失败", "error", err, "id", idStr)
+			return errors.New("API ID 格式错误")
+		}
+		apiIDs = append(apiIDs, id)
+	}
 
-	s.log.Info("更新菜单并处理 API 关联成功", "id", menu.ID, "api_count", len(apiRouteIDs))
+	// 3. 保存菜单的 API 关联（通过仓库接口）
+	if err := s.repo.SaveMenuAPIRoutes(menu.ID, apiIDs); err != nil {
+		s.log.Error("保存菜单 API 关联失败", "error", err, "menuID", menu.ID, "api_count", len(apiIDs))
+		return errors.New("保存菜单 API 关联失败")
+	}
+
+	s.log.Info("更新菜单并处理 API 关联成功", "id", menu.ID, "api_count", len(apiIDs))
 	return nil
 }
 

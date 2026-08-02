@@ -65,10 +65,9 @@ func (roleMenuModel) TableName() string {
 
 // roleAPIRouteModel 角色 API 路由关联模型
 type roleAPIRouteModel struct {
-	RoleID  int64  `gorm:"not null;index"`
-	RouteID int64  `gorm:"not null;index"`
-	Source  *int   `gorm:"not null;default:1"`
-	Note    string `gorm:"size:255"`
+	RoleID  int64 `gorm:"not null;index"`
+	RouteID int64 `gorm:"not null;index"`
+	Source  *int  `gorm:"not null;default:1"`
 }
 
 // TableName 指定表名

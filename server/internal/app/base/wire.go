@@ -22,11 +22,9 @@ var ProviderSetBaseRepo = wire.NewSet(
 	// 仓库层
 	repository.NewAPIRepository,
 	repository.NewMenuRepository,
-	repository.NewBtnPermRepository,
 	repository.NewLoginLogRepository,
 	repository.NewRoleRepository,
 	repository.NewUserRepository,
-	repository.NewPermissionGroupRepository,
 	repository.NewUserSettingRepository,
 	repository.NewConfigRepository,
 	repository.NewDictRepository,
@@ -49,7 +47,6 @@ var ProviderSetBaseService = wire.NewSet(
 	service.NewLoginLogService,
 	service.NewAPIService,
 	service.NewMenuService,
-	service.NewBtnPermService,
 	service.NewRoleService,
 	service.NewRolePermissionService,
 	service.NewUserService,
@@ -78,7 +75,6 @@ var ProviderSetBaseController = wire.NewSet(
 	// 控制器层
 	baseapi.NewAPIController,
 	baseapi.NewMenuController,
-	baseapi.NewBtnPermController,
 	baseapi.NewLoginLogController,
 	baseapi.NewRoleController,
 	baseapi.NewUserController,
@@ -95,7 +91,6 @@ var ProviderSetBaseController = wire.NewSet(
 	baseapi.NewMonitorController,
 	baseapi.NewPermissionLogController,
 	baseapi.NewNodeController,
-	baseapi.NewEventController,
 	baseapi.NewGatewayServiceHandler,
 )
 var ProviderSetBaseApp = wire.NewSet(

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -15,14 +16,18 @@ import (
 )
 
 // RolePermissionService 角色权限服务实现
+// RBAC + ABAC 混合权限模型
+// 菜单表有三种类型：一级目录（type=1）、二级菜单（type=2）、三级按钮（type=3）
+// 二级菜单和三级按钮都可以关联一个或多个 API（通过 base_menu_api_routes 表）
+// 给角色授权菜单或按钮时，自动拥有关联的 API 权限
+// 授权角色 API 时，无需重复写入菜单/按钮已关联的 API
 type RolePermissionService struct {
-	db          *database.PostgresDB
-	roleRepo    repo.RoleRepository
-	menuRepo    repo.MenuRepository
-	btnPermRepo repo.BtnPermRepository
-	apiRepo     repo.APIRepository
-	cache       cache.Cache
-	log         logger.Logger
+	db       *database.PostgresDB
+	roleRepo repo.RoleRepository
+	menuRepo repo.MenuRepository
+	apiRepo  repo.APIRepository
+	cache    cache.Cache
+	log      logger.Logger
 }
 
 // NewRolePermissionService 创建角色权限服务实例
@@ -30,24 +35,24 @@ func NewRolePermissionService(
 	db *database.PostgresDB,
 	roleRepo repo.RoleRepository,
 	menuRepo repo.MenuRepository,
-	btnPermRepo repo.BtnPermRepository,
 	apiRepo repo.APIRepository,
 	cache cache.Cache,
 	log logger.Logger,
 ) *RolePermissionService {
 	return &RolePermissionService{
-		db:          db,
-		roleRepo:    roleRepo,
-		menuRepo:    menuRepo,
-		btnPermRepo: btnPermRepo,
-		apiRepo:     apiRepo,
-		cache:       cache,
-		log:         log,
+		db:       db,
+		roleRepo: roleRepo,
+		menuRepo: menuRepo,
+		apiRepo:  apiRepo,
+		cache:    cache,
+		log:      log,
 	}
 }
 
 // SaveRolePermissions 保存角色权限（菜单、按钮、API）
-func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, btnPermIds, apiIds []int64, operatorID string) error {
+// 菜单 IDs 包含 type=2（菜单）和 type=3（按钮）的菜单项
+// 按钮也作为菜单项存储在 base_menus 表中，type=3 表示按钮
+func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, apiIds []int64, operatorID string) error {
 	// 1. 尝试获取分布式锁
 	lockKey := fmt.Sprintf("lock:role:%d", roleID)
 	lockAcquired := false
@@ -67,37 +72,76 @@ func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, btnPe
 
 	// 2. 开始事务
 	return s.db.Transaction(func(tx *gorm.DB) error {
-		// 3. 获取角色已关联的菜单、按钮、API
+		// 3. 获取角色已关联的菜单、API（用于审计日志）
 		oldMenus, _ := s.roleRepo.GetMenusByRole(roleID)
-		oldBtnPerms, _ := s.roleRepo.GetBtnPermsByRole(roleID)
 		oldAPIs, _ := s.roleRepo.GetsByRole(roleID)
 
-		// 4. 获取菜单关联的 API
+		// 4. 获取菜单关联的 API（base_menu_api_routes 表）
+		// 菜单（type=2）和按钮（type=3）都通过此表关联 API
 		menuAPIs := make(map[int64]bool)
 		for _, menuID := range menuIds {
 			menu, err := s.menuRepo.GetByID(menuID)
 			if err != nil {
 				continue
 			}
-			// 获取菜单关联的 API
 			for _, apiID := range menu.APIRouteIds {
 				menuAPIs[apiID] = true
 			}
 		}
 
-		// 5. 获取按钮关联的 API
-		// TODO: 获取按钮关联的 API - 需要实现按钮权限与 API 的关联逻辑
-		btnAPIs := make(map[int64]bool)
-		_ = btnAPIs // 暂时使用，避免编译错误
+		// 5. 清理角色现有关联
+		if err := tx.Table("base_role_menus").Where("role_id = ?", roleID).Delete(nil).Error; err != nil {
+			return err
+		}
+		if err := tx.Table("base_role_api_routes").Where("role_id = ?", roleID).Delete(nil).Error; err != nil {
+			return err
+		}
 
-		// 6-10. TODO: 清理和保存角色关联（需要创建关联实体）
-		// 这部分代码需要等关联实体定义完成后再实现
-		// 目前暂时跳过，只保留基本的菜单和按钮权限分配
+		// 6. 插入新的菜单关联（包括菜单和按钮）
+		for _, menuID := range menuIds {
+			if err := tx.Table("base_role_menus").Create(map[string]interface{}{
+				"role_id": roleID,
+				"menu_id": menuID,
+			}).Error; err != nil {
+				return err
+			}
+		}
 
-		// 11. 记录审计日志
-		s.logPermissionChange(tx, roleID, operatorID, oldMenus, oldBtnPerms, oldAPIs, menuIds, btnPermIds, apiIds)
+		// 7. 插入新的 API 直接授权
+		for _, apiID := range apiIds {
+			if err := tx.Table("base_role_api_routes").Create(map[string]interface{}{
+				"role_id":  roleID,
+				"route_id": apiID,
+				"source":   1, // 1-直接授权
+			}).Error; err != nil {
+				return err
+			}
+		}
 
-		// 12. 清除权限缓存
+		// 8. 处理菜单/按钮关联的 API 自动授权
+		// 将菜单和按钮关联的 API 自动授权给角色，使用 source=2 或 source=3 区分来源
+		for apiID := range menuAPIs {
+			// 检查是否已存在关联（避免与直接授权的 API 重复）
+			var count int64
+			if err := tx.Table("base_role_api_routes").Where("role_id = ? AND route_id = ?", roleID, apiID).Count(&count).Error; err != nil {
+				return err
+			}
+			if count > 0 {
+				continue
+			}
+			if err := tx.Table("base_role_api_routes").Create(map[string]interface{}{
+				"role_id":  roleID,
+				"route_id": apiID,
+				"source":   2, // 2-菜单/按钮自动授权
+			}).Error; err != nil {
+				return err
+			}
+		}
+
+		// 9. 记录审计日志
+		s.logPermissionChange(tx, roleID, operatorID, oldMenus, oldAPIs, menuIds, apiIds)
+
+		// 10. 清除权限缓存
 		s.cache.Delete(fmt.Sprintf("role:perms:%d", roleID))
 
 		return nil
@@ -105,20 +149,15 @@ func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, btnPe
 }
 
 // GetRolePermissions 获取角色权限详情
-func (s *RolePermissionService) GetRolePermissions(roleID int64) (menuIds []int64, btnPermIds []int64, apiIds []int64, err error) {
+func (s *RolePermissionService) GetRolePermissions(roleID int64) (menuIds []int64, apiIds []int64, err error) {
 	menus, err := s.roleRepo.GetMenusByRole(roleID)
 	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	btnPerms, err := s.roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	apis, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	menuIds = make([]int64, len(menus))
@@ -126,17 +165,12 @@ func (s *RolePermissionService) GetRolePermissions(roleID int64) (menuIds []int6
 		menuIds[i] = m.ID
 	}
 
-	btnPermIds = make([]int64, len(btnPerms))
-	for i, b := range btnPerms {
-		btnPermIds[i] = b.ID
-	}
-
 	apiIds = make([]int64, len(apis))
 	for i, a := range apis {
 		apiIds[i] = a.ID
 	}
 
-	return menuIds, btnPermIds, apiIds, nil
+	return menuIds, apiIds, nil
 }
 
 // GetAvailableApisForRole 获取角色可授权的 API 列表（过滤已关联的 API）
@@ -147,13 +181,13 @@ func (s *RolePermissionService) GetAvailableApisForRole(roleID int64) ([]*entity
 		return nil, err
 	}
 
-	// 获取角色已授权的 API
+	// 获取角色已直接授权的 API
 	roleAPIs, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
 		return nil, err
 	}
 
-	// 获取菜单关联的 API
+	// 获取角色关联的菜单（包括 type=2 的菜单和 type=3 的按钮）
 	menus, err := s.roleRepo.GetMenusByRole(roleID)
 	if err != nil {
 		return nil, err
@@ -165,27 +199,12 @@ func (s *RolePermissionService) GetAvailableApisForRole(roleID int64) ([]*entity
 		}
 	}
 
-	// 获取按钮关联的 API
-	btnPerms, err := s.roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		return nil, err
-	}
-	btnAPIMap := make(map[int64]bool)
-	for _, btn := range btnPerms {
-		// TODO: 获取按钮关联的 API
-		// 假设 BtnPerm 有 APIRouteIds 字段
-		_ = btn // 暂时使用，避免编译错误
-	}
-
 	// 构建角色已关联的 API 集合（包括直接授权、菜单关联、按钮关联）
 	roleAPIMap := make(map[int64]bool)
 	for _, api := range roleAPIs {
 		roleAPIMap[api.ID] = true
 	}
 	for apiID := range menuAPIMap {
-		roleAPIMap[apiID] = true
-	}
-	for apiID := range btnAPIMap {
 		roleAPIMap[apiID] = true
 	}
 
@@ -205,49 +224,105 @@ func (s *RolePermissionService) GetAvailableApisForRole(roleID int64) ([]*entity
 
 // logPermissionChange 记录权限变更审计日志
 func (s *RolePermissionService) logPermissionChange(tx *gorm.DB, roleID int64, operatorID string,
-	oldMenus []*entity.Menu, oldBtnPerms []*entity.BtnPerm, oldAPIs []*entity.API,
-	newMenuIds []int64, newBtnPermIds []int64, newAPIIds []int64) {
-
-	// 获取操作人信息（这里简化处理，实际应该从用户服务获取）
-	_ = "system" // operatorName 暂时不使用
+	oldMenus []*entity.Menu, oldAPIs []*entity.API,
+	newMenuIds []int64, newAPIIds []int64) {
 
 	// 构建变更数据
 	beforeData, _ := json.Marshal(map[string]interface{}{
-		"menus":     oldMenus,
-		"btn_perms": oldBtnPerms,
-		"apis":      oldAPIs,
+		"menus": oldMenus,
+		"apis":  oldAPIs,
 	})
 
 	afterData, _ := json.Marshal(map[string]interface{}{
-		"menus":     newMenuIds,
-		"btn_perms": newBtnPermIds,
-		"apis":      newAPIIds,
+		"menus": newMenuIds,
+		"apis":  newAPIIds,
 	})
 
-	// TODO: 实现权限变更日志记录逻辑
-	// 需要定义 repo.PermissionLog 实体
-	_ = beforeData
-	_ = afterData
+	// 创建权限变更日志记录
+	log := &entity.PermissionLog{
+		UserID:     0, // 简化处理，实际应从用户服务获取
+		Username:   operatorID,
+		Operation:  "SAVE_ROLE_PERMISSIONS",
+		Module:     "角色权限",
+		TargetType: "role",
+		TargetID:   roleID,
+		OldValue:   string(beforeData),
+		NewValue:   string(afterData),
+	}
 
-	// 异步记录日志，不阻塞主流程
-	// TODO: 实现日志记录逻辑
+	// 记录日志不阻塞主流程，失败只记录警告
+	if err := tx.Create(log).Error; err != nil {
+		s.log.Warn("记录权限变更日志失败", "error", err, "roleID", roleID)
+	}
 }
 
 // LoadRolePermissionsToRedis 从数据库加载角色权限到 Redis 缓存
-// TODO: 需要实现完整的权限缓存逻辑
 func (s *RolePermissionService) LoadRolePermissionsToRedis(roleID string) error {
-	// 暂时注释，等待实现完整的权限缓存逻辑
-	// 需要定义 repo.RolePermissions 实体
-	// 需要实现菜单和按钮权限与 API 的关联逻辑
-	s.log.Info("加载角色权限到 Redis 缓存（暂未实现）", "roleID", roleID)
+	id, err := strconv.ParseInt(roleID, 10, 64)
+	if err != nil {
+		return fmt.Errorf("无效的角色 ID：%s", roleID)
+	}
+
+	s.log.Info("加载角色权限到 Redis 缓存", "roleID", id)
+
+	// 从数据库加载角色权限
+	menus, err := s.roleRepo.GetMenusByRole(id)
+	if err != nil {
+		return fmt.Errorf("加载角色菜单权限失败：%w", err)
+	}
+
+	apiRoutes, err := s.roleRepo.GetsByRole(id)
+	if err != nil {
+		return fmt.Errorf("加载角色 API 权限失败：%w", err)
+	}
+
+	// 构建 apiSet（用于快速查找）
+	apiSet := make(map[string]bool)
+	for _, api := range apiRoutes {
+		key := api.Method + ":" + api.Path
+		apiSet[key] = true
+	}
+
+	// 构建缓存数据
+	perms := entity.RolePermissions{
+		Menus:  menus,
+		APIs:   apiRoutes,
+		ApiSet: apiSet,
+	}
+
+	// 序列化并缓存
+	jsonData, err := json.Marshal(perms)
+	if err != nil {
+		return fmt.Errorf("序列化角色权限失败：%w", err)
+	}
+
+	cacheKey := fmt.Sprintf("role:perms:%d", id)
+	if err := s.cache.Set(cacheKey, string(jsonData), 24*time.Hour); err != nil {
+		return fmt.Errorf("缓存角色权限失败：%w", err)
+	}
+
+	s.log.Info("角色权限缓存加载成功", "roleID", id, "menuCount", len(menus), "apiCount", len(apiRoutes))
 	return nil
 }
 
 // GetRolePermissionsFromRedis 从 Redis 获取角色权限缓存
-// TODO: 需要实现完整的权限缓存逻辑
 func (s *RolePermissionService) GetRolePermissionsFromRedis(roleID string) (*entity.RolePermissions, error) {
-	// 暂时注释，等待实现完整的权限缓存逻辑
-	return nil, nil
+	cacheKey := fmt.Sprintf("role:perms:%s", roleID)
+
+	data, err := s.cache.Get(cacheKey)
+	if err != nil {
+		return nil, nil // 缓存未命中不返回错误
+	}
+	if data == "" {
+		return nil, nil
+	}
+
+	var perms entity.RolePermissions
+	if err := json.Unmarshal([]byte(data), &perms); err != nil {
+		return nil, fmt.Errorf("解析角色权限缓存失败：%w", err)
+	}
+
+	return &perms, nil
 }
 
 // ClearRolePermissionsCache 清除角色权限缓存
@@ -265,31 +340,11 @@ func (s *RolePermissionService) ClearRolePermissionsCache(roleID int64) error {
 
 // ClearRoleCacheByMenuID 清除包含该菜单的所有角色缓存
 func (s *RolePermissionService) ClearRoleCacheByMenuID(menuID int64) error {
-	// 获取所有有该菜单权限的角色
 	roles, err := s.roleRepo.GetRolesByMenu(menuID)
 	if err != nil {
 		return err
 	}
 
-	// 清除所有相关角色的缓存
-	for _, role := range roles {
-		if err := s.ClearRolePermissionsCache(role.ID); err != nil {
-			s.log.Error("清除角色缓存失败", "roleID", role.ID, "error", err)
-		}
-	}
-
-	return nil
-}
-
-// ClearRoleCacheByBtnPermID 清除包含该按钮的所有角色缓存
-func (s *RolePermissionService) ClearRoleCacheByBtnPermID(btnPermID int64) error {
-	// 获取所有有该按钮权限的角色
-	roles, err := s.roleRepo.GetRolesByBtnPerm(btnPermID)
-	if err != nil {
-		return err
-	}
-
-	// 清除所有相关角色的缓存
 	for _, role := range roles {
 		if err := s.ClearRolePermissionsCache(role.ID); err != nil {
 			s.log.Error("清除角色缓存失败", "roleID", role.ID, "error", err)
@@ -301,13 +356,11 @@ func (s *RolePermissionService) ClearRoleCacheByBtnPermID(btnPermID int64) error
 
 // ClearRoleCacheByAPIID 清除包含该 API 的所有角色缓存
 func (s *RolePermissionService) ClearRoleCacheByAPIID(apiID int64) error {
-	// 获取所有有该 API 权限的角色
 	roles, err := s.roleRepo.GetRolesBy(apiID)
 	if err != nil {
 		return err
 	}
 
-	// 清除所有相关角色的缓存
 	for _, role := range roles {
 		if err := s.ClearRolePermissionsCache(role.ID); err != nil {
 			s.log.Error("清除角色缓存失败", "roleID", role.ID, "error", err)

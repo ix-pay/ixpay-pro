@@ -179,14 +179,21 @@ func (c *PositionController) GetPositionByID(ctx *gin.Context) {
 		return
 	}
 
-	var req request.GetPositionByIDRequest
-	if err := ctx.ShouldBindQuery(&req); err != nil {
-		c.log.Error("请求参数错误", "error", err)
-		baseRes.FailWithMessage("请求参数错误", ctx)
+	idStr := ctx.Param("id")
+	if idStr == "" {
+		c.log.Error("岗位 ID 不能为空")
+		baseRes.FailWithMessage("岗位 ID 不能为空", ctx)
 		return
 	}
 
-	position, err := c.service.GetPositionByID(req.ID)
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.log.Error("无效的岗位 ID 格式", "id", idStr, "error", err)
+		baseRes.FailWithMessage("无效的岗位 ID 格式", ctx)
+		return
+	}
+
+	position, err := c.service.GetPositionByID(id)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return

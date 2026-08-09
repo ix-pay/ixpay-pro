@@ -16,21 +16,17 @@ type RoleService struct {
 	userRepo            repo.UserRepository
 	menuRepo            repo.MenuRepository
 	apiRepo             repo.APIRepository
-	btnPermRepo         repo.BtnPermRepository
-	permissionGroupRepo repo.PermissionGroupRepository
 	log                 logger.Logger
 }
 
 // NewRoleService 创建角色服务实例
-func NewRoleService(roleRepo repo.RoleRepository, userRepo repo.UserRepository, menuRepo repo.MenuRepository, apiRepo repo.APIRepository, btnPermRepo repo.BtnPermRepository, permissionGroupRepo repo.PermissionGroupRepository, log logger.Logger) *RoleService {
+func NewRoleService(roleRepo repo.RoleRepository, userRepo repo.UserRepository, menuRepo repo.MenuRepository, apiRepo repo.APIRepository, log logger.Logger) *RoleService {
 	return &RoleService{
-		roleRepo:            roleRepo,
-		userRepo:            userRepo,
-		menuRepo:            menuRepo,
-		apiRepo:             apiRepo,
-		btnPermRepo:         btnPermRepo,
-		permissionGroupRepo: permissionGroupRepo,
-		log:                 log,
+		roleRepo: roleRepo,
+		userRepo: userRepo,
+		menuRepo: menuRepo,
+		apiRepo:  apiRepo,
+		log:      log,
 	}
 }
 
@@ -373,9 +369,9 @@ func (s *RoleService) AssignMenuToRole(roleID int64, menuID int64) error {
 			// 排除 Swagger 和认证相关的公开 API
 			if route.AuthType != 0 && // 排除 auth_type = 0 的基础 API
 				!strings.HasPrefix(route.Path, "/swagger") &&
-				!strings.HasPrefix(route.Path, "/api//auth") &&
-				!strings.HasPrefix(route.Path, "/api//health") &&
-				!strings.HasPrefix(route.Path, "/api//pay/notify") &&
+				!strings.HasPrefix(route.Path, "/api/auth") &&
+				!strings.HasPrefix(route.Path, "/api/health") &&
+				!strings.HasPrefix(route.Path, "/api/pay/notify") &&
 				strings.Contains(route.Path, menuPath) {
 				// 检查路由是否已经分配给角色
 				roleRoutes, err := s.roleRepo.GetsByRole(roleID)
@@ -685,16 +681,6 @@ func (s *RoleService) GetRolesForMenu(menuID int64) ([]*entity.Role, error) {
 	return roles, nil
 }
 
-// GetRolesForBtnPerm 获取按钮权限的所有角色
-func (s *RoleService) GetRolesForBtnPerm(btnPermID int64) ([]*entity.Role, error) {
-	roles, err := s.roleRepo.GetRolesByBtnPerm(btnPermID)
-	if err != nil {
-		s.log.Error("获取按钮权限关联角色失败", "error", err, "btn_perm_id", btnPermID)
-		return nil, err
-	}
-	return roles, nil
-}
-
 // AssignToRole 分配接口路由到角色
 func (s *RoleService) AssignToRole(roleID, routeID int64) error {
 	// 检查角色是否存在
@@ -765,73 +751,6 @@ func (s *RoleService) RevokeFromRole(roleID, routeID int64) error {
 	return nil
 }
 
-// BatchAssignBtnPermsToRole 批量分配按钮权限给角色
-func (s *RoleService) BatchAssignBtnPermsToRole(roleID int64, btnPermIDs []int64) error {
-	// 检查角色是否存在
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return errors.New("角色不存在")
-	}
-
-	// 获取角色已有的按钮权限
-	existingBtnPerms, err := s.roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		s.log.Error("获取角色关联按钮权限失败", "error", err, "role_id", roleID)
-		return err
-	}
-
-	// 创建已存在按钮权限 ID 的映射，用于快速检查
-	existingBtnPermMap := make(map[int64]bool)
-	for _, btnPerm := range existingBtnPerms {
-		existingBtnPermMap[btnPerm.ID] = true
-	}
-
-	// 批量添加按钮权限关联（不清除现有权限）
-	for _, btnPermID := range btnPermIDs {
-		// 跳过已存在的按钮权限
-		if existingBtnPermMap[btnPermID] {
-			continue
-		}
-
-		// 检查按钮权限是否存在
-		_, err := s.btnPermRepo.GetByID(btnPermID)
-		if err != nil {
-			s.log.Error("按钮权限不存在", "btn_perm_id", btnPermID)
-			return fmt.Errorf("按钮权限 %d 不存在", btnPermID)
-		}
-
-		if err := s.roleRepo.AddBtnPermToRole(roleID, btnPermID); err != nil {
-			s.log.Error("分配按钮权限给角色失败", "error", err, "role_id", roleID, "btn_perm_id", btnPermID)
-			return err
-		}
-	}
-
-	s.log.Info("批量分配按钮权限给角色成功", "role_id", roleID, "role_name", role.Name, "btn_perm_count", len(btnPermIDs))
-	return nil
-}
-
-// BatchRevokeBtnPermsFromRole 批量从角色中撤销按钮权限
-func (s *RoleService) BatchRevokeBtnPermsFromRole(roleID int64, btnPermIDs []int64) error {
-	// 检查角色是否存在
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return errors.New("角色不存在")
-	}
-
-	// 批量移除按钮权限关联
-	for _, btnPermID := range btnPermIDs {
-		if err := s.roleRepo.RemoveBtnPermFromRole(roleID, btnPermID); err != nil {
-			s.log.Error("从角色撤销按钮权限失败", "error", err, "role_id", roleID, "btn_perm_id", btnPermID)
-			return err
-		}
-	}
-
-	s.log.Info("批量从角色撤销按钮权限成功", "role_id", roleID, "role_name", role.Name, "btn_perm_count", len(btnPermIDs))
-	return nil
-}
-
 // BatchAssignUsersToRole 批量分配用户到角色
 func (s *RoleService) BatchAssignUsersToRole(roleID int64, userIDs []int64) error {
 	// 检查角色是否存在
@@ -889,93 +808,6 @@ func (s *RoleService) GetsForRole(roleID int64) ([]*entity.API, error) {
 	return routes, nil
 }
 
-// AssignBtnPermToRole 分配按钮权限给角色
-func (s *RoleService) AssignBtnPermToRole(roleID, buttonID int64) error {
-	// 检查角色是否存在
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return errors.New("角色不存在")
-	}
-
-	// 检查按钮权限是否存在
-	button, err := s.btnPermRepo.GetByID(buttonID)
-	if err != nil {
-		s.log.Error("获取按钮权限失败", "error", err, "button_id", buttonID)
-		return err
-	}
-
-	// 检查按钮权限是否已在角色中
-	buttons, err := s.roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		s.log.Error("获取角色关联按钮权限失败", "error", err, "role_id", roleID)
-		return err
-	}
-
-	for _, b := range buttons {
-		if b.ID == buttonID {
-			s.log.Error("按钮权限已在角色中", "role_id", roleID, "button_id", buttonID)
-			return errors.New("按钮权限已在角色中")
-		}
-	}
-
-	if err := s.roleRepo.AddBtnPermToRole(roleID, buttonID); err != nil {
-		s.log.Error("分配按钮权限给角色失败", "error", err, "role_id", roleID, "button_id", buttonID)
-		return err
-	}
-
-	s.log.Info("分配按钮权限给角色成功", "role_id", roleID, "role_name", role.Name, "button_id", buttonID, "button_name", button.Name)
-	return nil
-}
-
-// RevokeBtnPermFromRole 从角色中撤销按钮权限
-func (s *RoleService) RevokeBtnPermFromRole(roleID, buttonID int64) error {
-	// 检查角色是否存在
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return errors.New("角色不存在")
-	}
-
-	// 检查按钮权限是否在角色中
-	buttons, err := s.roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		s.log.Error("获取角色关联按钮权限失败", "error", err, "role_id", roleID)
-		return err
-	}
-
-	buttonExists := false
-	for _, b := range buttons {
-		if b.ID == buttonID {
-			buttonExists = true
-			break
-		}
-	}
-
-	if !buttonExists {
-		s.log.Error("按钮权限不在角色中", "role_id", roleID, "button_id", buttonID)
-		return errors.New("按钮权限不在角色中")
-	}
-
-	if err := s.roleRepo.RemoveBtnPermFromRole(roleID, buttonID); err != nil {
-		s.log.Error("从角色中撤销按钮权限失败", "error", err, "role_id", roleID, "button_id", buttonID)
-		return err
-	}
-
-	s.log.Info("从角色中撤销按钮权限成功", "role_id", roleID, "role_name", role.Name, "button_id", buttonID)
-	return nil
-}
-
-// GetBtnPermsForRole 获取角色的所有按钮权限
-func (s *RoleService) GetBtnPermsForRole(roleID int64) ([]*entity.BtnPerm, error) {
-	buttons, err := s.roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		s.log.Error("获取角色关联按钮权限失败", "error", err, "role_id", roleID)
-		return nil, err
-	}
-	return buttons, nil
-}
-
 // GetRolesFor 获取接口路由的所有角色
 func (s *RoleService) GetRolesFor(routeID int64) ([]*entity.Role, error) {
 	roles, err := s.roleRepo.GetRolesBy(routeID)
@@ -1022,101 +854,6 @@ func (s *RoleService) BatchRevokeUsersFromRole(roleID int64, userIDs []int64) er
 
 	s.log.Info("批量从角色中撤销用户成功", "role_id", roleID, "role_name", role.Name, "user_count", len(userIDs))
 	return nil
-}
-
-// AssignPermissionGroupToRole 分配权限组到角色
-func (s *RoleService) AssignPermissionGroupToRole(roleID, groupID int64) error {
-	// 检查角色是否存在
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return errors.New("角色不存在")
-	}
-
-	// 检查权限组是否存在
-	_, err = s.permissionGroupRepo.GetByID(groupID)
-	if err != nil {
-		s.log.Error("权限组不存在", "group_id", groupID)
-		return errors.New("权限组不存在")
-	}
-
-	// 检查权限组是否已分配给角色
-	groups, err := s.permissionGroupRepo.GetGroupsByRole(roleID)
-	if err != nil {
-		s.log.Error("获取角色权限组失败", "error", err, "role_id", roleID)
-		return err
-	}
-
-	for _, g := range groups {
-		if g.ID == groupID {
-			s.log.Error("权限组已分配给角色", "role_id", roleID, "group_id", groupID)
-			return errors.New("权限组已分配给角色")
-		}
-	}
-
-	// 添加权限组 ID 到角色
-	role.PermissionGroupIds = append(role.PermissionGroupIds, groupID)
-
-	// 更新角色
-	if err := s.roleRepo.Update(role); err != nil {
-		s.log.Error("分配权限组失败", "error", err, "role_id", roleID, "group_id", groupID)
-		return err
-	}
-
-	s.log.Info("分配权限组成功", "role_id", roleID, "group_id", groupID)
-	return nil
-}
-
-// RevokePermissionGroupFromRole 从角色中撤销权限组
-func (s *RoleService) RevokePermissionGroupFromRole(roleID, groupID int64) error {
-	// 检查角色是否存在
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return errors.New("角色不存在")
-	}
-
-	// 检查权限组是否存在
-	_, err = s.permissionGroupRepo.GetByID(groupID)
-	if err != nil {
-		s.log.Error("权限组不存在", "group_id", groupID)
-		return errors.New("权限组不存在")
-	}
-
-	// 移除权限组 ID
-	for i, id := range role.PermissionGroupIds {
-		if id == groupID {
-			role.PermissionGroupIds = append(role.PermissionGroupIds[:i], role.PermissionGroupIds[i+1:]...)
-			break
-		}
-	}
-
-	// 更新角色
-	if err := s.roleRepo.Update(role); err != nil {
-		s.log.Error("撤销权限组失败", "error", err, "role_id", roleID, "group_id", groupID)
-		return err
-	}
-
-	s.log.Info("撤销权限组成功", "role_id", roleID, "group_id", groupID)
-	return nil
-}
-
-// GetPermissionGroupsForRole 获取角色的所有权限组
-func (s *RoleService) GetPermissionGroupsForRole(roleID int64) ([]*entity.PermissionGroup, error) {
-	// 检查角色是否存在
-	_, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("角色不存在", "role_id", roleID)
-		return nil, errors.New("角色不存在")
-	}
-
-	groups, err := s.permissionGroupRepo.GetGroupsByRole(roleID)
-	if err != nil {
-		s.log.Error("获取角色权限组失败", "error", err, "role_id", roleID)
-		return nil, err
-	}
-
-	return groups, nil
 }
 
 // GetRoleTree 获取角色树
@@ -1181,70 +918,6 @@ func (s *RoleService) GetRolePath(id int64) ([]*entity.Role, error) {
 	}
 
 	return path, nil
-}
-
-// GetRolesForPermissionGroup 获取权限组的所有角色
-func (s *RoleService) GetRolesForPermissionGroup(groupID int64) ([]*entity.Role, error) {
-	// 检查权限组是否存在
-	_, err := s.permissionGroupRepo.GetByID(groupID)
-	if err != nil {
-		s.log.Error("权限组不存在", "group_id", groupID)
-		return nil, errors.New("权限组不存在")
-	}
-
-	roles, err := s.permissionGroupRepo.GetRolesByGroup(groupID)
-	if err != nil {
-		s.log.Error("获取权限组角色失败", "error", err, "group_id", groupID)
-		return nil, err
-	}
-
-	return roles, nil
-}
-
-// GetAllInheritedBtnPerms 获取角色及其所有父角色的按钮权限
-func (s *RoleService) GetAllInheritedBtnPerms(roleID int64) ([]*entity.BtnPerm, error) {
-	// 获取所有父角色（包括当前角色）
-	role, err := s.roleRepo.GetByID(roleID)
-	if err != nil {
-		s.log.Error("获取角色失败", "error", err, "role_id", roleID)
-		return nil, errors.New("角色不存在")
-	}
-
-	// 获取所有父角色 ID（包括当前角色）
-	var roleIDs []int64
-	currentRole := role
-	for currentRole != nil {
-		roleIDs = append(roleIDs, currentRole.ID)
-		if currentRole.ParentID == 0 {
-			break
-		}
-		currentRole, err = s.roleRepo.GetByID(currentRole.ParentID)
-		if err != nil {
-			s.log.Error("获取父角色失败", "error", err, "parent_id", currentRole.ParentID)
-			break
-		}
-	}
-
-	// 收集所有角色的按钮权限
-	allBtnPerms := make(map[int64]*entity.BtnPerm)
-	for _, id := range roleIDs {
-		btnPerms, err := s.roleRepo.GetBtnPermsByRole(id)
-		if err != nil {
-			s.log.Error("获取角色按钮权限失败", "error", err, "role_id", id)
-			continue
-		}
-		for _, btnPerm := range btnPerms {
-			allBtnPerms[btnPerm.ID] = btnPerm
-		}
-	}
-
-	// 转换为切片返回
-	result := make([]*entity.BtnPerm, 0, len(allBtnPerms))
-	for _, btnPerm := range allBtnPerms {
-		result = append(result, btnPerm)
-	}
-
-	return result, nil
 }
 
 // GetAllInheritedPermissions 获取角色及其所有父角色的 API 权限

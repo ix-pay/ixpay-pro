@@ -15,14 +15,6 @@ type SimpleMenu struct {
 	Name string `json:"name"`
 }
 
-// SimpleBtnPerm 简化按钮权限结构（用于测试）
-type SimpleBtnPerm struct {
-	ID     int64  `json:"id"`
-	MenuID int64  `json:"menu_id"`
-	Name   string `json:"name"`
-	Code   string `json:"code"`
-}
-
 // SimpleAPI 简化 API 结构（用于测试）
 type SimpleAPI struct {
 	ID     int64  `json:"id"`
@@ -34,18 +26,13 @@ type SimpleAPI struct {
 func TestRolePermissionService_CacheStructure(t *testing.T) {
 
 	perms := struct {
-		Menus       []*SimpleMenu    `json:"menus"`
-		BtnPerms    []*SimpleBtnPerm `json:"btn_perms"`
-		GeneralApis []*SimpleAPI     `json:"general_apis"`
-		ApiSet      map[string]bool  `json:"api_set"`
+		Menus       []*SimpleMenu   `json:"menus"`
+		GeneralApis []*SimpleAPI    `json:"general_apis"`
+		ApiSet      map[string]bool `json:"api_set"`
 	}{
 		Menus: []*SimpleMenu{
 			{ID: 1, Path: "/user", Name: "UserManagement"},
 			{ID: 2, Path: "/role", Name: "RoleManagement"},
-		},
-		BtnPerms: []*SimpleBtnPerm{
-			{ID: 1, MenuID: 1, Name: "创建用户", Code: "user:create"},
-			{ID: 2, MenuID: 1, Name: "删除用户", Code: "user:delete"},
 		},
 		GeneralApis: []*SimpleAPI{
 			{ID: 1, Path: "/api//user", Method: "GET"},
@@ -57,8 +44,6 @@ func TestRolePermissionService_CacheStructure(t *testing.T) {
 	apiSet := make(map[string]bool)
 	// 模拟菜单关联的 API
 	apiSet["GET:/api//menu/1"] = true
-	// 模拟按钮关联的 API
-	apiSet["POST:/api//btn/1"] = true
 	// 添加通用 API
 	for _, api := range perms.GeneralApis {
 		key := api.Method + ":" + api.Path
@@ -68,12 +53,11 @@ func TestRolePermissionService_CacheStructure(t *testing.T) {
 
 	// 验证数据结构
 	assert.NotNil(t, perms.Menus, "菜单不应为空")
-	assert.NotNil(t, perms.BtnPerms, "按钮权限不应为空")
 	assert.NotNil(t, perms.GeneralApis, "通用 API 不应为空")
 	assert.NotNil(t, perms.ApiSet, "API 集合不应为空")
 
 	// 验证 ApiSet 包含所有 API
-	expectedApiCount := 2 + len(perms.GeneralApis) // 2 个模拟 API + 通用 API
+	expectedApiCount := 1 + len(perms.GeneralApis) // 1 个模拟 API + 通用 API
 	assert.Equal(t, expectedApiCount, len(perms.ApiSet), "ApiSet 应包含所有 API")
 
 	// 测试序列化
@@ -83,10 +67,9 @@ func TestRolePermissionService_CacheStructure(t *testing.T) {
 
 	// 测试反序列化
 	var loadedPerms struct {
-		Menus       []*SimpleMenu    `json:"menus"`
-		BtnPerms    []*SimpleBtnPerm `json:"btn_perms"`
-		GeneralApis []*SimpleAPI     `json:"general_apis"`
-		ApiSet      map[string]bool  `json:"api_set"`
+		Menus       []*SimpleMenu   `json:"menus"`
+		GeneralApis []*SimpleAPI    `json:"general_apis"`
+		ApiSet      map[string]bool `json:"api_set"`
 	}
 	err = json.Unmarshal(jsonData, &loadedPerms)
 	assert.NoError(t, err, "反序列化不应出错")
@@ -167,13 +150,11 @@ func TestRolePermissionService_CacheKeyFormat(t *testing.T) {
 // TestRolePermissionService_EmptyPermissions 测试空权限场景
 func TestRolePermissionService_EmptyPermissions(t *testing.T) {
 	perms := struct {
-		Menus       []*SimpleMenu    `json:"menus"`
-		BtnPerms    []*SimpleBtnPerm `json:"btn_perms"`
-		GeneralApis []*SimpleAPI     `json:"general_apis"`
-		ApiSet      map[string]bool  `json:"api_set"`
+		Menus       []*SimpleMenu   `json:"menus"`
+		GeneralApis []*SimpleAPI    `json:"general_apis"`
+		ApiSet      map[string]bool `json:"api_set"`
 	}{
 		Menus:       []*SimpleMenu{},
-		BtnPerms:    []*SimpleBtnPerm{},
 		GeneralApis: []*SimpleAPI{},
 		ApiSet:      make(map[string]bool),
 	}
@@ -181,7 +162,6 @@ func TestRolePermissionService_EmptyPermissions(t *testing.T) {
 	// 验证空权限结构
 	assert.NotNil(t, perms, "权限对象不应为空")
 	assert.Empty(t, perms.Menus, "菜单应为空")
-	assert.Empty(t, perms.BtnPerms, "按钮权限应为空")
 	assert.Empty(t, perms.GeneralApis, "通用 API 应为空")
 	assert.Empty(t, perms.ApiSet, "API 集合应为空")
 
@@ -258,10 +238,6 @@ func TestRolePermissionService_PermissionMerge(t *testing.T) {
 		"GET:/api//menu": true,
 	}
 
-	btnAPIs := map[string]bool{
-		"POST:/api//btn": true,
-	}
-
 	generalAPIs := map[string]bool{
 		"GET:/api//general": true,
 	}
@@ -271,17 +247,13 @@ func TestRolePermissionService_PermissionMerge(t *testing.T) {
 	for k, v := range menuAPIs {
 		mergedAPIs[k] = v
 	}
-	for k, v := range btnAPIs {
-		mergedAPIs[k] = v
-	}
 	for k, v := range generalAPIs {
 		mergedAPIs[k] = v
 	}
 
 	// 验证合并结果
-	assert.Equal(t, 3, len(mergedAPIs), "合并后应有 3 个 API")
+	assert.Equal(t, 2, len(mergedAPIs), "合并后应有 2 个 API")
 	assert.True(t, mergedAPIs["GET:/api//menu"], "应包含菜单 API")
-	assert.True(t, mergedAPIs["POST:/api//btn"], "应包含按钮 API")
 	assert.True(t, mergedAPIs["GET:/api//general"], "应包含通用 API")
 }
 

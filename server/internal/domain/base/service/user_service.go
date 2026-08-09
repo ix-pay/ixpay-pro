@@ -259,7 +259,7 @@ func (s *UserService) Login(userName, password, captchaId, captchaVal, ip, userA
 		nickname = user.Username
 	}
 	// 【修改 1】生成 JWT 时 role 参数传空字符串
-	accessToken, refreshToken, accessExpire, refreshExpire, err := s.jwtAuth.GenerateToken(fmt.Sprintf("%d", user.ID), user.Username, nickname, "", "password")
+	accessToken, refreshToken, accessExpire, refreshExpire, err := s.jwtAuth.GenerateToken(fmt.Sprintf("%d", user.ID), user.Username, nickname, "", "password", "")
 	if err != nil {
 		s.log.Error("生成令牌失败", "error", err)
 		// 记录失败的登录日志（令牌生成失败）
@@ -385,7 +385,7 @@ func (s *UserService) SetUserAuthority(userID, roleID int64) error {
 
 	// 调用 SaveRolePermissions 方法为用户分配角色（空权限列表）
 	operatorID := fmt.Sprintf("%d", userID)
-	if err := s.rolePermissionService.SaveRolePermissions(roleID, []int64{}, []int64{}, []int64{}, operatorID); err != nil {
+	if err := s.rolePermissionService.SaveRolePermissions(roleID, []int64{}, []int64{}, operatorID); err != nil {
 		s.log.Error("保存角色权限失败", "error", err, "user_id", userID, "role_id", roleID)
 		return err
 	}
@@ -421,7 +421,7 @@ func (s *UserService) SetUserAuthorities(userID int64, roleIDs []int64) error {
 	// 为每个角色分配权限
 	operatorID := fmt.Sprintf("%d", userID)
 	for _, roleID := range roleIDs {
-		if err := s.rolePermissionService.SaveRolePermissions(roleID, []int64{}, []int64{}, []int64{}, operatorID); err != nil {
+		if err := s.rolePermissionService.SaveRolePermissions(roleID, []int64{}, []int64{}, operatorID); err != nil {
 			s.log.Error("保存角色权限失败", "error", err, "user_id", userID, "role_id", roleID)
 			return err
 		}
@@ -574,7 +574,7 @@ func (s *UserService) Logout(userID string) error {
 
 // GenerateToken 生成访问令牌和刷新令牌
 func (s *UserService) GenerateToken(userID string, userName string, nickname string, role string, loginType string) (string, string, time.Time, time.Time, error) {
-	return s.jwtAuth.GenerateToken(userID, userName, nickname, role, loginType)
+	return s.jwtAuth.GenerateToken(userID, userName, nickname, role, loginType, "")
 }
 
 // GetUserList 获取用户列表
@@ -838,16 +838,6 @@ func (s *UserService) SetUserSpecialPermissions(userID int64, apiIDs []int64) er
 	return nil
 }
 
-// SetUserSpecialBtnPermissions 设置用户特殊按钮权限
-func (s *UserService) SetUserSpecialBtnPermissions(userID int64, btnPermIDs []int64) error {
-	if err := s.repo.SetUserSpecialBtnPermissions(userID, btnPermIDs); err != nil {
-		s.log.Error("设置用户特殊按钮权限失败", "userID", userID, "error", err)
-		return err
-	}
-	s.log.Info("设置用户特殊按钮权限成功", "userID", userID, "btnPermCount", len(btnPermIDs))
-	return nil
-}
-
 // GetUserSpecialPermissions 获取用户特殊 API 权限
 func (s *UserService) GetUserSpecialPermissions(userID int64) ([]*entity.API, error) {
 	apis, err := s.repo.GetUserSpecialPermissions(userID)
@@ -967,87 +957,6 @@ func (s *UserService) GetUserPermissions(userID int64) ([]*entity.API, error) {
 
 	s.log.Info("获取用户API权限成功", "userID", userID, "count", len(apis))
 	return apis, nil
-}
-
-// GetUserBtnPermissions 获取用户所有按钮权限
-// 包括：
-// 1. 用户关联的所有角色的按钮权限（包含权限继承）
-// 2. 用户特殊的按钮权限
-// 返回去重后的按钮权限列表
-func (s *UserService) GetUserBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
-	// 1. 获取用户信息
-	_, err := s.repo.GetByID(userID)
-	if err != nil {
-		s.log.Error("获取用户信息失败", "userID", userID, "error", err)
-		return nil, errors.New("用户不存在")
-	}
-
-	// 使用 map 存储按钮权限，键为按钮权限 ID，用于去重
-	btnPermMap := make(map[int64]*entity.BtnPerm)
-
-	// 2. 获取用户关联的所有角色的按钮权限
-	roles, err := s.roleService.GetRolesForUser(userID)
-	if err != nil {
-		s.log.Error("获取用户角色失败", "userID", userID, "error", err)
-		return nil, err
-	}
-
-	// 遍历所有角色，获取按钮权限
-	for _, role := range roles {
-		// 检查角色状态，只获取启用的角色权限
-		if role.Status != 1 {
-			continue
-		}
-
-		// 获取角色及其所有父角色的按钮权限（实现权限继承）
-		roleBtnPerms, err := s.roleService.GetAllInheritedBtnPerms(role.ID)
-		if err != nil {
-			s.log.Error("获取角色按钮权限失败", "roleID", role.ID, "error", err)
-			continue
-		}
-
-		// 将角色按钮权限添加到 map 中去重
-		for _, btnPerm := range roleBtnPerms {
-			// 检查按钮权限状态，只获取启用的权限
-			if btnPerm.Status == 1 {
-				btnPermMap[btnPerm.ID] = btnPerm
-			}
-		}
-	}
-
-	// 3. 获取用户特殊的按钮权限
-	userSpecialBtnPerms, err := s.GetUserSpecialBtnPermissions(userID)
-	if err != nil {
-		s.log.Error("获取用户特殊按钮权限失败", "userID", userID, "error", err)
-		// 继续执行，不返回错误
-	} else {
-		// 将用户特殊按钮权限添加到map中去重
-		for _, btnPerm := range userSpecialBtnPerms {
-			// 检查按钮权限状态，只获取启用的权限
-			if btnPerm.Status == 1 {
-				btnPermMap[btnPerm.ID] = btnPerm
-			}
-		}
-	}
-
-	// 4. 将map转换为切片
-	btnPerms := make([]*entity.BtnPerm, 0, len(btnPermMap))
-	for _, btnPerm := range btnPermMap {
-		btnPerms = append(btnPerms, btnPerm)
-	}
-
-	s.log.Info("获取用户按钮权限成功", "userID", userID, "count", len(btnPerms))
-	return btnPerms, nil
-}
-
-// GetUserSpecialBtnPermissions 获取用户特殊按钮权限
-func (s *UserService) GetUserSpecialBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
-	btnPerms, err := s.repo.GetUserSpecialBtnPermissions(userID)
-	if err != nil {
-		s.log.Error("获取用户特殊按钮权限失败", "userID", userID, "error", err)
-		return nil, err
-	}
-	return btnPerms, nil
 }
 
 // UpdateUserRoles 更新用户角色

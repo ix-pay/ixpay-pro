@@ -1,3 +1,7 @@
+// Package middleware 提供通用权限中间件
+// 注意：此中间件为通用中间件，当前未被路由直接使用。
+// 实际使用的权限中间件在 app/base/middleware/permission_middleware.go
+// 如需启用，需在路由中注册并配置合适的依赖注入
 package middleware
 
 import (

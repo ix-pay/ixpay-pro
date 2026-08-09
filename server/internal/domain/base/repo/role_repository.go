@@ -9,8 +9,6 @@ const (
 	RoleRelationUsers            RoleRelation = "Users"            // 用户
 	RoleRelationMenus            RoleRelation = "Menus"            // 菜单
 	RoleRelationAPIRoutes        RoleRelation = "APIRoutes"        // API 路由
-	RoleRelationBtnPerms         RoleRelation = "BtnPerms"         // 按钮权限
-	RoleRelationPermissionGroups RoleRelation = "PermissionGroups" // 权限组
 	RoleRelationChildren         RoleRelation = "Children"         // 子角色
 	RoleRelationParent           RoleRelation = "Parent"           // 父角色
 )
@@ -47,10 +45,4 @@ type RoleRepository interface {
 	GetsByRole(roleID int64) ([]*entity.API, error)
 	GetRolesBy(routeID int64) ([]*entity.Role, error)
 	GetAPIByPathAndMethod(path, method string) (*entity.API, error)
-
-	// 角色关联按钮权限操作
-	AddBtnPermToRole(roleID, btnPermID int64) error
-	RemoveBtnPermFromRole(roleID, btnPermID int64) error
-	GetBtnPermsByRole(roleID int64) ([]*entity.BtnPerm, error)
-	GetRolesByBtnPerm(btnPermID int64) ([]*entity.Role, error)
 }

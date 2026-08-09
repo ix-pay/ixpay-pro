@@ -31,9 +31,9 @@ func (ms *MenuSeed) Name() string {
 	return "menu_seed"
 }
 
-// Order 返回初始化顺序（第五个执行）
+// Order 返回初始化顺序（第七个执行，菜单需要在API路由之后）
 func (ms *MenuSeed) Order() int {
-	return 5
+	return 7
 }
 
 // Init 初始化菜单种子数据

@@ -55,10 +55,12 @@ export const getLoginLogById = (id: number): Promise<ApiResponse<LoginLogDetail>
 }
 
 // 删除登录日志
+// 后端路由为 POST /login-log/batch-delete，单个删除也通过批量接口实现
 export const deleteLoginLog = (id: number): Promise<ApiResponse> => {
   return service({
-    url: `/login-log/${id}`,
-    method: 'delete',
+    url: '/login-log/batch-delete',
+    method: 'post',
+    data: { ids: [String(id)] },
   })
 }
 

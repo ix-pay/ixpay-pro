@@ -313,23 +313,9 @@ func (r *userRepository) SetUserSpecialPermissions(userID int64, apiIDs []int64)
 	return nil
 }
 
-// SetUserSpecialBtnPermissions 设置用户特殊按钮权限
-// TODO: 需要创建用户 - 按钮权限关联表，目前暂时不实现
-func (r *userRepository) SetUserSpecialBtnPermissions(userID int64, btnPermIDs []int64) error {
-	// TODO: 实现用户特殊按钮权限设置
-	// 需要创建中间表 base_user_btn_perms
-	return nil
-}
-
 // GetUserSpecialPermissions 获取用户特殊 API 权限
 // TODO: 需要创建用户-API 关联表，目前暂时不实现
 func (r *userRepository) GetUserSpecialPermissions(userID int64) ([]*entity.API, error) {
 	// TODO: 实现用户特殊 API 权限获取
 	return []*entity.API{}, nil
-}
-
-// GetUserSpecialBtnPermissions 获取用户特殊按钮权限
-func (r *userRepository) GetUserSpecialBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
-	// TODO: 实现用户特殊按钮权限获取
-	return []*entity.BtnPerm{}, nil
 }

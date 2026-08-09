@@ -71,100 +71,6 @@ func TestPermissionService_CheckAPIAccess(t *testing.T) {
 	}
 }
 
-// TestPermissionService_CheckBtnPermission 测试按钮权限检查
-func TestPermissionService_CheckBtnPermission(t *testing.T) {
-	testCases := []struct {
-		name        string
-		code        string
-		expectError bool
-	}{
-		{"有效权限代码", "user:add", false},
-		{"有效权限代码", "user:edit", false},
-		{"有效权限代码", "user:delete", false},
-		{"无效权限代码 - 空字符串", "", true},
-		{"无效权限代码 - 无冒号", "useradd", true},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.code == "" {
-				assert.True(t, tc.expectError, "空权限代码应该报错")
-				return
-			}
-
-			if tc.code == "useradd" {
-				assert.True(t, tc.expectError, "权限代码应该包含冒号分隔符")
-			}
-
-			if tc.code == "user:add" {
-				assert.False(t, tc.expectError, "正确的权限代码格式不应该报错")
-			}
-		})
-	}
-}
-
-// TestPermissionService_AssignBtnPermToRole 测试为角色分配按钮权限
-func TestPermissionService_AssignBtnPermToRole(t *testing.T) {
-	testCases := []struct {
-		name        string
-		roleId      int64
-		btnPermIds  []int64
-		expectError bool
-	}{
-		{"有效分配", 1, []int64{1, 2, 3}, false},
-		{"无效角色 ID", 0, []int64{1, 2, 3}, true},
-		{"空权限列表", 1, []int64{}, true},
-		{"包含无效权限 ID", 1, []int64{1, 0, -1}, true},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.roleId <= 0 {
-				assert.True(t, tc.expectError, "无效角色 ID 应该报错")
-				return
-			}
-
-			if len(tc.btnPermIds) == 0 {
-				assert.True(t, tc.expectError, "空权限列表应该报错")
-				return
-			}
-
-			for _, id := range tc.btnPermIds {
-				if id <= 0 {
-					assert.True(t, tc.expectError, "无效权限 ID 应该报错")
-					return
-				}
-			}
-		})
-	}
-}
-
-// TestPermissionService_RevokeBtnPermFromRole 测试从角色撤销按钮权限
-func TestPermissionService_RevokeBtnPermFromRole(t *testing.T) {
-	testCases := []struct {
-		name        string
-		roleId      int64
-		btnPermId   int64
-		expectError bool
-	}{
-		{"有效撤销", 1, 1, false},
-		{"无效角色 ID", 0, 1, true},
-		{"无效权限 ID", 1, 0, true},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.roleId <= 0 {
-				assert.True(t, tc.expectError, "无效角色 ID 应该报错")
-			}
-
-			if tc.btnPermId <= 0 {
-				assert.True(t, tc.expectError, "无效权限 ID 应该报错")
-			}
-		})
-	}
-}
-
 // TestPermissionService_RefreshPermissionCache 测试刷新权限缓存
 func TestPermissionService_RefreshPermissionCache(t *testing.T) {
 	testCases := []struct {
@@ -201,24 +107,6 @@ func TestPermissionService_GetUserAPIPermissions(t *testing.T) {
 	for _, api := range apiPermissions {
 		assert.NotEmpty(t, api.Path, "API 路径不能为空")
 		assert.NotEmpty(t, api.Method, "HTTP 方法不能为空")
-	}
-}
-
-// TestPermissionService_GetUserBtnPermissions 测试获取用户按钮权限
-func TestPermissionService_GetUserBtnPermissions(t *testing.T) {
-	userId := int64(1)
-	assert.Positive(t, userId, "用户 ID 必须大于 0")
-
-	btnPermissions := []*entity.BtnPerm{
-		{Code: "user:add", Name: "添加用户"},
-		{Code: "user:edit", Name: "编辑用户"},
-		{Code: "user:delete", Name: "删除用户"},
-	}
-
-	assert.NotEmpty(t, btnPermissions, "按钮权限列表不应该为空")
-	for _, btn := range btnPermissions {
-		assert.NotEmpty(t, btn.Code, "按钮权限代码不能为空")
-		assert.NotEmpty(t, btn.Name, "按钮权限名称不能为空")
 	}
 }
 

@@ -22,7 +22,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/redis"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/captcha"
-	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/eventbus"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/snowflake"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/task"
 	"github.com/ix-pay/ixpay-pro/internal/persistence/base"
@@ -70,10 +69,8 @@ func InitializeApp() (*Application, error) {
 	roleRepository := persistence.NewRoleRepository(postgresDB)
 	menuRepository := persistence.NewMenuRepository(postgresDB)
 	apiRepository := persistence.NewAPIRepository(postgresDB)
-	btnPermRepository := persistence.NewBtnPermRepository(postgresDB)
-	permissionGroupRepository := persistence.NewPermissionGroupRepository(postgresDB)
-	roleService := service.NewRoleService(roleRepository, userRepository, menuRepository, apiRepository, btnPermRepository, permissionGroupRepository, loggerLogger)
-	rolePermissionService := service.NewRolePermissionService(postgresDB, roleRepository, menuRepository, btnPermRepository, apiRepository, cacheCache, loggerLogger)
+	roleService := service.NewRoleService(roleRepository, userRepository, menuRepository, apiRepository, loggerLogger)
+	rolePermissionService := service.NewRolePermissionService(postgresDB, roleRepository, menuRepository, apiRepository, cacheCache, loggerLogger)
 	captchaCaptcha, err := captcha.SetupCaptcha(configConfig, redisClient)
 	if err != nil {
 		return nil, err
@@ -94,13 +91,11 @@ func InitializeApp() (*Application, error) {
 	taskController := baseapi.NewTaskController(taskManager, loggerLogger, taskExecutionLogService, taskService, taskFactory)
 	apiService := service.NewAPIService(apiRepository, loggerLogger)
 	apiController := baseapi.NewAPIController(apiService, loggerLogger)
-	menuService := service.NewMenuService(menuRepository, btnPermRepository, roleRepository, apiRepository, loggerLogger)
+	menuService := service.NewMenuService(menuRepository, roleRepository, apiRepository, loggerLogger)
 	menuController := baseapi.NewMenuController(menuService, loggerLogger)
 	roleController := baseapi.NewRoleController(roleService, rolePermissionService, apiService, menuService, loggerLogger)
-	btnPermService := service.NewBtnPermService(btnPermRepository, loggerLogger)
 	permissionRuleRepository := persistence.NewPermissionRuleRepository(postgresDB)
-	permissionService := service.NewPermissionService(roleService, userService, roleRepository, btnPermRepository, apiRepository, permissionRuleRepository, permissionGroupRepository, loggerLogger)
-	btnPermController := baseapi.NewBtnPermController(btnPermService, permissionService, roleService, loggerLogger)
+	permissionService := service.NewPermissionService(roleService, userService, roleRepository, apiRepository, permissionRuleRepository, loggerLogger)
 	configRepository := persistence.NewConfigRepository(postgresDB)
 	configService := service.NewConfigService(configRepository, loggerLogger)
 	configController := baseapi.NewConfigController(configService, loggerLogger)
@@ -137,19 +132,18 @@ func InitializeApp() (*Application, error) {
 	nodeRepository := persistence.NewNodeRepository(nodeRegistry)
 	nodeService := service.NewNodeService(nodeRepository, loggerLogger)
 	nodeController := baseapi.NewNodeController(nodeService, loggerLogger)
-	eventBus := SetupEventBus(postgresDB, client)
-	eventController := baseapi.NewEventController(eventBus, loggerLogger)
 	gatewayServiceController := baseapi.NewGatewayServiceHandler(loggerLogger, configConfig)
-	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, btnPermController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, permissionLogController, nodeController, eventController, gatewayServiceController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, dictRepository, dictItemRepository, departmentRepository, positionRepository, operationLogService, onlineUserService, taskExecutionLogRepository, taskRepository, cacheCache, eventBus)
+	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, permissionLogController, nodeController, gatewayServiceController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, permissionRuleRepository, dictRepository, dictItemRepository, departmentRepository, positionRepository, operationLogService, onlineUserService, taskExecutionLogRepository, taskRepository, cacheCache, permissionService)
 	if err != nil {
 		return nil, err
 	}
 	wxUserRepository := persistence2.NewWXUserRepository(postgresDB)
 	wxAuthSessionRepository := persistence2.NewWXAuthSessionRepository(postgresDB)
-	wxAuthService := service2.NewWXAuthService(jwtAuth, loggerLogger, wxUserRepository, wxAuthSessionRepository, configRepository)
-	wxapiAuthController := wxapi.NewAuthController(wxAuthService, loggerLogger)
 	paymentRepository := persistence2.NewPaymentRepository(postgresDB)
-	paymentService := service2.NewPaymentService(paymentRepository, taskManager, configRepository, loggerLogger)
+	wechatPayService := service2.NewWechatPayService(configConfig, configRepository, loggerLogger)
+	wxAuthService := service2.NewWXAuthService(jwtAuth, loggerLogger, wxUserRepository, wxAuthSessionRepository, configRepository, cacheCache, wechatPayService)
+	wxapiAuthController := wxapi.NewAuthController(wxAuthService, loggerLogger)
+	paymentService := service2.NewPaymentService(paymentRepository, taskManager, configRepository, loggerLogger, wechatPayService)
 	paymentController := wxapi.NewPaymentController(paymentService, loggerLogger)
 	appWX, err := wx.NewAppWX(loggerLogger, postgresDB, jwtAuth, permissionManager, wxapiAuthController, paymentController)
 	if err != nil {
@@ -165,19 +159,12 @@ func InitializeApp() (*Application, error) {
 // wire.go:
 
 // 定义全局服务提供者集合
-var GlobalServiceSet = wire.NewSet(config.LoadConfig, logger.SetupMultiLogger, logger.SetupLogger, database.SetupPostgresDB, redis.SetupRedisClient, cache.SetupCache, snowflake.SetupSnowflake, captcha.SetupCaptcha, auth.SetupJWTAuth, auth.SetupPermissionManager, task.SetupTaskManager, task.SetupNodeRegistry, SetupEventBus,
+var GlobalServiceSet = wire.NewSet(config.LoadConfig, logger.SetupMultiLogger, logger.SetupLogger, database.SetupPostgresDB, redis.SetupRedisClient, cache.SetupCache, snowflake.SetupSnowflake, captcha.SetupCaptcha, auth.SetupJWTAuth, auth.SetupPermissionManager, task.SetupTaskManager, task.SetupNodeRegistry,
 
 	ProvideRedisClient,
 
 	SetupApplication,
 )
-
-// SetupEventBus 创建事件总线
-func SetupEventBus(db *database.PostgresDB, redisClient *redis2.Client) *eventbus.EventBus {
-	config2 := eventbus.DefaultConfig()
-	eb := eventbus.NewEventBus(db.DB, redisClient, config2)
-	return eb
-}
 
 // ProvideRedisClient 提供 Redis 客户端
 func ProvideRedisClient(redisClient *redis.RedisClient) *redis2.Client {

@@ -12,7 +12,6 @@ type APIResponse struct {
 	Status       int     `json:"status"`
 	RoleIds      []int64 `json:"roleIds"`
 	MenuIds      []int64 `json:"menuIds"`
-	BtnPermIds   []int64 `json:"btnPermIds"`
 	CreatedBy    int64   `json:"createdBy,string"`
 	CreatedAt    string  `json:"createdAt"`
 	UpdatedBy    int64   `json:"updatedBy,string"`

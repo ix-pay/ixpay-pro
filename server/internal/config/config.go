@@ -22,6 +22,7 @@ type Config struct {
 	Swagger  SwaggerConfig  `mapstructure:"swagger"`
 	DBPool   DBPoolConfig   `mapstructure:"db_pool"`
 	Gateway  GatewayConfig  `mapstructure:"gateway"`
+	CORS     CORSConfig     `mapstructure:"cors"`
 }
 
 // GatewayConfig 网关配置
@@ -31,6 +32,15 @@ type GatewayConfig struct {
 	AuthKey           string `mapstructure:"auth_key"`           // 网关注册认证密钥
 	ServiceName       string `mapstructure:"service_name"`       // 服务名称，如 ixpay-server
 	HeartbeatInterval int    `mapstructure:"heartbeat_interval"` // 心跳间隔(秒)
+}
+
+// CORSConfig CORS配置
+type CORSConfig struct {
+	AllowedOrigins   []string `mapstructure:"allowed_origins"`
+	AllowedMethods   []string `mapstructure:"allowed_methods"`
+	AllowedHeaders   []string `mapstructure:"allowed_headers"`
+	AllowCredentials bool     `mapstructure:"allow_credentials"`
+	MaxAge           int      `mapstructure:"max_age"`
 }
 
 // DBPoolConfig 数据库连接池配置
@@ -57,6 +67,7 @@ type ServerConfig struct {
 	NodeRole            string `mapstructure:"node_role"`           // 节点角色：api / task / all
 	NodeID              string `mapstructure:"node_id"`             // 节点唯一标识
 	TaskMaxConcurrent   int    `mapstructure:"task_max_concurrent"` // 任务最大并发数
+	Environment         string `mapstructure:"environment"`          // 运行环境: development / staging / production
 }
 
 // PostgresConfig PostgreSQL配置
@@ -108,11 +119,14 @@ type LoggingConfig struct {
 
 // WechatConfig 微信配置
 type WechatConfig struct {
-	AppID     string `mapstructure:"app_id"`
-	AppSecret string `mapstructure:"app_secret"`
-	MCHID     string `mapstructure:"mch_id"`
-	APIKey    string `mapstructure:"api_key"`
-	NotifyURL string `mapstructure:"notify_url"`
+	AppID            string `mapstructure:"app_id"`
+	AppSecret        string `mapstructure:"app_secret"`
+	MCHID            string `mapstructure:"mch_id"`
+	APIKey           string `mapstructure:"api_key"`
+	NotifyURL        string `mapstructure:"notify_url"`
+	RedirectURL      string `mapstructure:"redirect_url"`
+	OAuthCallbackURL string `mapstructure:"oauth_callback_url"` // 微信 OAuth 回调地址（后端接口），如 https://api.ixpay.com/api/wx/auth/callback
+	FrontendURL      string `mapstructure:"frontend_url"`       // 前端页面地址，如 http://localhost:5173
 }
 
 // SwaggerConfig Swagger配置

@@ -46,8 +46,7 @@ export * from './modules/online-user'
 // 系统监控
 export * from './modules/monitor'
 
-// 按钮权限管理
-export * from './modules/btn-perm'
+
 
 // 节点管理
 export * from './modules/node'

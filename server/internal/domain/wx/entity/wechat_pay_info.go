@@ -6,27 +6,33 @@ import "time"
 // 存储微信支付的详细信息，包括预支付、签名、回调等
 // 纯业务模型，无 GORM 标签
 type WechatPayInfo struct {
-	ID         int64     // 微信支付信息 ID
-	PaymentID  int64     // 关联的支付 ID
-	AppID      string    // 微信公众号/小程序 AppID
-	MCHID      string    // 商户号
-	NonceStr   string    // 随机字符串
-	PrepayID   string    // 预支付交易会话标识
-	CodeURL    string    // 二维码链接（Native 支付）
-	Sign       string    // 签名
-	Timestamp  string    // 时间戳
-	Package    string    // 包信息
-	PaySign    string    // 支付签名
-	ReturnCode string    // 返回码
-	ReturnMsg  string    // 返回信息
-	ResultCode string    // 业务结果
-	ErrCode    string    // 错误码
-	ErrCodeDes string    // 错误描述
-	NotifyData string    // 回调原始数据
-	CreatedBy  int64     // 创建人 ID
-	CreatedAt  time.Time // 创建时间
-	UpdatedBy  int64     // 更新人 ID
-	UpdatedAt  time.Time // 更新时间
+	ID            int64     // 微信支付信息 ID
+	PaymentID     int64     // 关联的支付 ID
+	AppID         string    // 微信公众号/小程序 AppID
+	MCHID         string    // 商户号
+	NonceStr      string    // 随机字符串
+	PrepayID      string    // 预支付交易会话标识
+	CodeURL       string    // 二维码链接（Native 支付）
+	Sign          string    // 签名
+	Timestamp     string    // 时间戳
+	Package       string    // 包信息
+	PaySign       string    // 支付签名
+	ReturnCode    string    // 返回码
+	ReturnMsg     string    // 返回信息
+	ResultCode    string    // 业务结果
+	ErrCode       string    // 错误码
+	ErrCodeDes    string    // 错误描述
+	TransactionID string    // 微信支付交易号
+	OpenID        string    // 用户 OpenID
+	BankType      string    // 付款银行
+	TotalFee      int64     // 订单金额（分）
+	CashFee       int64     // 现金支付金额（分）
+	FeeType       string    // 货币类型
+	NotifyData    string    // 回调原始数据
+	CreatedBy     int64     // 创建人 ID
+	CreatedAt     time.Time // 创建时间
+	UpdatedBy     int64     // 更新人 ID
+	UpdatedAt     time.Time // 更新时间
 }
 
 // IsSuccess 检查微信支付是否成功

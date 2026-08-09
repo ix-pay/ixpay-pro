@@ -61,20 +61,9 @@ export interface ApiMenuItem {
   children?: ApiMenuItem[]
 }
 
-// 按钮权限数据结构
-export interface ButtonPermission {
-  id: string
-  name: string // 按钮名称，如 "UserAdd"
-  title: string // 按钮标题，如 "新增用户"
-  permission: string // 权限标识，如 "system:user:add"
-  icon: string // 按钮图标
-  parentId: string // 所属页面菜单的 ID
-}
-
 // 菜单删除影响评估
 export interface MenuDeleteImpact {
   childMenusCount: number
-  btnPermsCount: number
   affectedRolesCount: number
   affectedApisCount: number
   level: 'LOW' | 'MEDIUM' | 'HIGH'

@@ -7,10 +7,11 @@ import type { ApiResponse } from '@/types'
 // @accept application/json
 // @Produce application/json
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"拉黑成功"}"
-// @Router /jwt/jsonInBlacklist [post]
+// @Router /auth/jwt/jsonInBlacklist [post]
+// 后端路由为 POST /api/admin/auth/jwt/jsonInBlacklist
 export const jsonInBlacklist = (): Promise<ApiResponse> => {
   return service({
-    url: '/jwt/jsonInBlacklist',
+    url: '/auth/jwt/jsonInBlacklist',
     method: 'post',
   })
 }

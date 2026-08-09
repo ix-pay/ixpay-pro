@@ -24,7 +24,5 @@ type UserRepository interface {
 	List(page, pageSize int, filters map[string]interface{}) ([]*entity.User, int64, error)
 	UpdateFields(id int64, updates map[string]interface{}) error
 	SetUserSpecialPermissions(userID int64, apiIDs []int64) error
-	SetUserSpecialBtnPermissions(userID int64, btnPermIDs []int64) error
 	GetUserSpecialPermissions(userID int64) ([]*entity.API, error)
-	GetUserSpecialBtnPermissions(userID int64) ([]*entity.BtnPerm, error)
 }

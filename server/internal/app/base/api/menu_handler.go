@@ -52,6 +52,15 @@ func convertToMenuResponse(menu *entity.Menu) *response.MenuResponse {
 		children = []response.MenuResponse{}
 	}
 
+	// 转换关联 API ID 列表（int64 转字符串，保证前端精度）
+	var apiIds []string
+	if len(menu.APIRouteIds) > 0 {
+		apiIds = make([]string, len(menu.APIRouteIds))
+		for i, id := range menu.APIRouteIds {
+			apiIds[i] = strconv.FormatInt(id, 10)
+		}
+	}
+
 	return &response.MenuResponse{
 		ID:           menu.ID,
 		ParentID:     menu.ParentID,
@@ -84,6 +93,7 @@ func convertToMenuResponse(menu *entity.Menu) *response.MenuResponse {
 			FrameLoading: menu.Meta.FrameLoading,
 		},
 		Children: children,
+		ApiIds:   apiIds,
 	}
 }
 

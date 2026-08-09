@@ -472,12 +472,6 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
 		return
 	}
-	btnPermIds, err := convertStringSliceToInt64Slice(req.BtnPermIds)
-	if err != nil {
-		c.log.Error("按钮权限 ID 格式错误", "error", err)
-		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
-		return
-	}
 	apiRouteIds, err := convertStringSliceToInt64Slice(req.ApiRouteIds)
 	if err != nil {
 		c.log.Error("API 路由 ID 格式错误", "error", err)
@@ -489,7 +483,6 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 	err = c.rolePermissionService.SaveRolePermissions(
 		roleID,
 		menuIds,
-		btnPermIds,
 		apiRouteIds,
 		strconv.FormatInt(operatorIDInt, 10),
 	)
@@ -498,7 +491,7 @@ func (c *RoleController) SaveRolePermissions(ctx *gin.Context) {
 		return
 	}
 
-	c.log.Info("保存角色权限成功", "roleID", roleID, "menuCount", len(menuIds), "btnPermCount", len(btnPermIds), "apiCount", len(apiRouteIds))
+	c.log.Info("保存角色权限成功", "roleID", roleID, "menuCount", len(menuIds), "apiCount", len(apiRouteIds))
 	baseRes.OkWithMessage("保存角色权限成功", ctx)
 }
 

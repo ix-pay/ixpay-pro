@@ -1,23 +1,13 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="角色权限设置"
-    width="900px"
-    :close-on-click-modal="false"
-    @close="handleClose"
-  >
+  <el-drawer v-model="dialogVisible" title="角色权限设置" direction="rtl" size="900px" :close-on-click-modal="false"
+    @close="handleClose">
     <el-tabs v-model="activeTab">
       <!-- 菜单权限标签页 -->
       <el-tab-pane label="菜单权限" name="menu">
-        <el-tree
-          ref="menuTreeRef"
-          :data="menuTree"
-          :props="menuTreeProps"
-          show-checkbox
-          node-key="id"
-          :default-checked-keys="checkedMenuIds"
-          @check="handleMenuCheck"
-        />
+        <div class="tab-scroll-area">
+          <el-tree ref="menuTreeRef" :data="menuTree" :props="menuTreeProps" show-checkbox node-key="id"
+            :default-checked-keys="checkedMenuIds" @check="handleMenuCheck" />
+        </div>
       </el-tab-pane>
 
       <!-- API 权限标签页 -->
@@ -31,34 +21,26 @@
               </el-button>
             </div>
           </template>
-          <el-checkbox-group v-model="checkedApiIds">
+          <div class="tab-scroll-area">
             <div v-for="group in groupedApis" :key="group.name" class="api-group">
               <div class="group-title">
-                <el-checkbox
-                  :indeterminate="isGroupIndeterminate(group)"
-                  :checked="isGroupChecked(group)"
-                  :disabled="group.allDisabled"
-                  @change="handleGroupCheck(group, $event)"
-                >
+                <el-checkbox :indeterminate="isGroupIndeterminate(group)" :model-value="isGroupChecked(group)"
+                  :disabled="group.allDisabled" @change="handleGroupCheck(group, $event)">
                   {{ group.name }} ({{ group.apis.length }})
                 </el-checkbox>
               </div>
-              <div class="group-apis">
-                <el-checkbox
-                  v-for="api in group.apis"
-                  :key="api.id"
-                  :label="api.id"
-                  :disabled="api.disabled"
-                >
+              <el-checkbox-group v-model="checkedApiIds" class="group-apis">
+                <el-checkbox v-for="api in group.apis" :key="`${api.id}-${api._index}`" :value="api.id"
+                  :disabled="api.disabled">
                   <span class="method-tag" :class="`method-${api.method.toLowerCase()}`">{{
                     api.method
                   }}</span>
                   <span class="api-path">{{ api.path }}</span>
                   <span v-if="api.description" class="api-desc">- {{ api.description }}</span>
                 </el-checkbox>
-              </div>
+              </el-checkbox-group>
             </div>
-          </el-checkbox-group>
+          </div>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -68,20 +50,20 @@
         <el-button type="primary" :loading="saving" @click="handleSave">保存</el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { TreeInstance, TreeNodeData, CheckboxValueType } from 'element-plus'
-import { getMenuList } from '@/api/modules/menu'
+import { getMenuTree } from '@/api/modules/menu'
 import {
   getRoleAvailableApis,
   getRolePermissionDetail,
   saveRolePermissions,
 } from '@/api/modules/role'
-import type { Role as RoleType, BtnPerm } from '@/types/role'
+import type { Role as RoleType } from '@/types/role'
 import type { ApiRoute as ApiRouteType } from '@/api/modules/api-route'
 
 interface Props {
@@ -109,22 +91,22 @@ const loading = ref(false)
 const menuTreeRef = ref<TreeInstance>()
 const menuTree = ref<MenuItem[]>([])
 const allMenus = ref<MenuItem[]>([])
-const checkedMenuIds = ref<(string | number)[]>([])
-const checkedBtnPermIds = ref<(string | number)[]>([])
-
+const checkedMenuIds = ref<(string | number)[]>([]) // 仅叶子节点
+const halfCheckedMenuIds = ref<(string | number)[]>([]) // 半选的父节点
 const allApis = ref<ApiRouteWithDisabled[]>([])
 const checkedApiIds = ref<string[]>([])
 
-// API 路由类型（带 disabled 字段）
+// API 路由类型（带 disabled 和调试字段）
 interface ApiRouteWithDisabled extends ApiRouteType {
   disabled?: boolean
+  _index?: number // 用于调试和唯一标识
 }
 
-// 菜单树节点类型
+// 菜单树节点类型（与后端 getMenuTree 返回结构对齐）
 interface MenuItem {
   id: string | number
-  parentId?: number
-  menuName: string
+  parentId?: string | number
+  title?: string
   name?: string
   path?: string
   component?: string
@@ -138,7 +120,7 @@ const menuTreeProps = {
   label: (data: TreeNodeData) => {
     const menuItem = data as MenuItem
     const typeLabel = menuItem.type === 3 ? '[按钮]' : menuItem.type === 1 ? '[目录]' : '[菜单]'
-    return `${typeLabel} ${menuItem.menuName || menuItem.name}`
+    return `${typeLabel} ${menuItem.title || menuItem.name}`
   },
 }
 
@@ -178,26 +160,54 @@ const loadData = async () => {
     // 并行加载菜单树、API 列表和角色详情
     // 注意：roleId 保持字符串类型，避免 Number() 转换导致精度丢失
     const [menuRes, apiRes, roleRes] = await Promise.all([
-      getMenuList(),
+      getMenuTree(),
       getRoleAvailableApis(props.roleId),
       getRolePermissionDetail(props.roleId),
     ])
 
     // 处理菜单数据
     allMenus.value = (menuRes.data as MenuItem[]) || []
-    menuTree.value = buildMenuTreeWithBtnPerms(allMenus.value, roleRes.data?.btnPerms || [])
+    menuTree.value = buildMenuTree(allMenus.value)
 
-    // 设置已勾选的菜单 ID（包含按钮的上级菜单）
+    // 设置已勾选的菜单 ID（仅叶子节点，父节点状态由 el-tree 自动计算半选）
     const role = roleRes.data as unknown as RoleType
-    checkedMenuIds.value = (role.menus || []).map((m) => m.id)
+    const leafIds = getLeafNodeIds(menuTree.value)
+    const allRoleMenuIds = (role.menus || []).map((m) => m.id)
+    checkedMenuIds.value = allRoleMenuIds.filter((id) => leafIds.has(id))
+    // 非叶子节点的菜单 ID 作为半选父节点初始值
+    halfCheckedMenuIds.value = allRoleMenuIds.filter((id) => !leafIds.has(id))
 
     // 处理 API 数据（带 disabled 标记）
-    let apiData: ApiRouteWithDisabled[] = []
+    // 后端返回 PascalCase 字段（ID, Path, Method, Group 等），需转换为前端 camelCase
+    let rawApiData: unknown[] = []
     if (Array.isArray(apiRes.data)) {
-      apiData = apiRes.data
+      rawApiData = apiRes.data
     } else if (apiRes.data && typeof apiRes.data === 'object' && 'list' in apiRes.data) {
-      apiData = (apiRes.data as { list?: ApiRouteWithDisabled[] }).list || []
+      rawApiData = (apiRes.data as { list?: unknown[] }).list || []
     }
+    const apiData: ApiRouteWithDisabled[] = rawApiData
+      .map((item: unknown, index: number) => {
+        const raw = item as Record<string, unknown>
+        // 优先使用 PascalCase 字段，兼容 camelCase
+        const id = String(raw.ID || raw.id || '')
+        return {
+          id,
+          path: (raw.Path || raw.path || '') as string,
+          method: (raw.Method || raw.method || '') as string,
+          name: (raw.Name || raw.name || '') as string,
+          group: (raw.Group || raw.group || '') as string,
+          description: (raw.Description || raw.description || '') as string,
+          authRequired: (raw.AuthRequired ?? raw.authRequired ?? false) as boolean,
+          status: (raw.Status ?? raw.status ?? 1) as number,
+          createdAt: (raw.CreatedAt || raw.createdAt || '') as string,
+          updatedAt: (raw.UpdatedAt || raw.updatedAt || '') as string,
+          disabled: false,
+          _index: index, // 用于调试和唯一标识
+        }
+      })
+      // 过滤掉没有有效 id 的数据
+      .filter((api) => api.id && api.id !== '')
+    console.log('API 数据映射完成:', apiData.length, '条，分组:', [...new Set(apiData.map((a) => a.group))])
     allApis.value = apiData
 
     // 设置已勾选的 API ID
@@ -210,60 +220,38 @@ const loadData = async () => {
   }
 }
 
-// 构建菜单树（包含按钮权限）
-const buildMenuTreeWithBtnPerms = (menus: MenuItem[], btnPerms: BtnPerm[]): MenuItem[] => {
-  const map: Record<string, MenuItem & { children: MenuItem[] }> = {}
-  const roots: MenuItem[] = []
-
-  // 创建菜单节点
-  menus.forEach((menu) => {
-    map[menu.id] = { ...menu, children: [] }
-  })
-
-  // 添加按钮权限作为菜单的子节点
-  btnPerms.forEach((btn) => {
-    const btnNode: MenuItem = {
-      id: `btn-${btn.id}`,
-      parentId: Number(btn.menuId),
-      menuName: btn.name,
-      name: btn.code,
-      type: 3, // 按钮类型
-      children: [],
-    }
-
-    // 将按钮添加到父菜单的 children
-    if (map[btn.menuId]) {
-      map[btn.menuId].children.push(btnNode)
-    }
-  })
-
-  // 构建树形结构
-  menus.forEach((menu) => {
-    if (menu.parentId && map[menu.parentId]) {
-      map[menu.parentId].children.push(map[menu.id])
-    } else {
-      roots.push(map[menu.id])
-    }
-  })
-
-  return roots
+// 获取树中所有叶子节点 ID（无 children 的节点）
+const getLeafNodeIds = (nodes: MenuItem[]): Set<string | number> => {
+  const leafIds = new Set<string | number>()
+  const traverse = (items: MenuItem[]) => {
+    items.forEach((item) => {
+      if (item.children && item.children.length > 0) {
+        traverse(item.children)
+      } else {
+        leafIds.add(item.id)
+      }
+    })
+  }
+  traverse(nodes)
+  return leafIds
 }
 
-// 处理菜单树勾选
+// 构建菜单树（后端数据已包含嵌套 children 和按钮节点（type=3））
+const buildMenuTree = (menus: MenuItem[]): MenuItem[] => {
+  // 后端返回的数据已包含完整的树结构和按钮节点
+  // 直接返回即可，el-tree 会自动处理嵌套 children
+  return menus
+}
+
+// 处理菜单树勾选（叶子节点存 checkedMenuIds，半选父节点存 halfCheckedMenuIds）
+// 按钮（type=3）已作为菜单项存储在 base_menus 表中，统一通过 menuIds 授权
 const handleMenuCheck = () => {
   const checkedKeys = menuTreeRef.value?.getCheckedKeys(false) as (string | number)[]
   const halfCheckedKeys = menuTreeRef.value?.getHalfCheckedKeys() as (string | number)[]
 
-  // 过滤出菜单 ID（排除按钮）
-  const menuIds = [...checkedKeys, ...halfCheckedKeys].filter(
-    (id) => typeof id === 'number' || !String(id).startsWith('btn-'),
-  )
-
-  // 过滤出按钮 ID
-  const btnIds = checkedKeys.filter((id) => String(id).startsWith('btn-'))
-
-  checkedMenuIds.value = menuIds
-  checkedBtnPermIds.value = btnIds
+  // 所有叶子节点（包括按钮）都作为菜单 ID 保存
+  checkedMenuIds.value = checkedKeys
+  halfCheckedMenuIds.value = halfCheckedKeys
 }
 
 // 检查组是否全选
@@ -323,11 +311,11 @@ const handleSave = async () => {
   if (!props.roleId) return
   saving.value = true
   try {
-    // 使用统一的保存接口
-    // 注意：roleId 保持字符串类型，避免精度丢失
+    // 合并叶子节点和半选父节点，作为完整的菜单权限保存
+    // 按钮（type=3）已作为菜单项存储，通过 menuIds 统一授权
+    const allMenuIds = [...checkedMenuIds.value, ...halfCheckedMenuIds.value]
     await saveRolePermissions(props.roleId, {
-      menuIds: checkedMenuIds.value.map((id) => String(id)),
-      btnPermIds: checkedBtnPermIds.value.map((id) => String(id).replace('btn-', '')),
+      menuIds: allMenuIds.map((id) => String(id)),
       apiRouteIds: checkedApiIds.value,
     })
 
@@ -362,9 +350,60 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.api-card {
-  max-height: 500px;
+/* drawer 主体 flex 布局，使 tabs 填满剩余高度 */
+:deep(.el-drawer__body) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:deep(.el-tabs) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+:deep(.el-tabs__content) {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 仅对活动状态的 tab-pane 设置 flex 布局，不影响隐藏的非活动 tab */
+:deep(.el-tab-pane[style*="display: none"]) {
+  /* 保持隐藏 */
+}
+
+:deep(.el-tab-pane) {
+  height: 100%;
+}
+
+:deep(.el-tab-pane > .tab-scroll-area),
+:deep(.el-tab-pane > .api-card) {
+  height: 100%;
+}
+
+/* 可滚动内容区域 */
+.tab-scroll-area {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding: 4px 0;
+}
+
+.api-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  :deep(.el-card__body) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 
 .card-header {

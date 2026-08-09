@@ -8,13 +8,12 @@ import type { ApiMenuItem } from '@/types/menu'
  * @returns 是否有权限
  */
 export const hasPermission = (permission: string): boolean => {
-  const userStore = useUserStore()
-  const userInfo = userStore.userInfo
+  const routerStore = useRouterStore()
 
-  // 获取用户的权限列表
-  const permissions = (userInfo?.authority?.permissions as string[]) || []
+  // 从路由 store 中获取按钮权限列表
+  const permissions = routerStore.buttonPermissions
 
-  // 如果用户没有权限列表，默认没有权限
+  // 如果没有权限列表，默认没有权限
   if (!permissions || !Array.isArray(permissions) || permissions.length === 0) {
     return false
   }
@@ -68,10 +67,9 @@ export const hasMenuPermission = (menu: ApiMenuItem): boolean => {
  * @returns 权限列表
  */
 export const getPermissions = (): string[] => {
-  const userStore = useUserStore()
-  const userInfo = userStore.userInfo
+  const routerStore = useRouterStore()
 
-  return (userInfo?.authority?.permissions as string[]) || []
+  return routerStore.buttonPermissions
 }
 
 /**
@@ -83,8 +81,8 @@ export const hasRole = (role: string): boolean => {
   const userStore = useUserStore()
   const userInfo = userStore.userInfo
 
-  // 获取用户的角色列表
-  const roles = (userInfo?.authority?.roles as string[]) || []
+  // 获取用户的角色编码列表
+  const roles = userInfo?.roles?.map((r) => r.code) || []
 
   // 如果用户没有角色列表，默认没有角色
   if (!roles || !Array.isArray(roles) || roles.length === 0) {
@@ -129,7 +127,7 @@ export const getRoles = (): string[] => {
   const userStore = useUserStore()
   const userInfo = userStore.userInfo
 
-  return (userInfo?.authority?.roles as string[]) || []
+  return userInfo?.roles?.map((r) => r.code) || []
 }
 
 /**

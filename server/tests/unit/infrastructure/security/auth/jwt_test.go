@@ -88,7 +88,7 @@ func TestGenerateToken(t *testing.T) {
 	jwtAuth := newTestJWTAuth(t)
 
 	accessToken, refreshToken, accessExpire, refreshExpire, err := jwtAuth.GenerateToken(
-		"123", "testuser", "测试用户", "user", "password",
+		"123", "testuser", "测试用户", "user", "password", "",
 	)
 
 	assert.NoError(t, err)
@@ -103,7 +103,7 @@ func TestParseToken_Valid(t *testing.T) {
 	jwtAuth := newTestJWTAuth(t)
 
 	accessToken, _, _, _, err := jwtAuth.GenerateToken(
-		"123", "testuser", "测试用户", "admin", "password",
+		"123", "testuser", "测试用户", "admin", "password", "",
 	)
 	assert.NoError(t, err)
 
@@ -129,7 +129,7 @@ func TestParseToken_InvalidSignature(t *testing.T) {
 	}, log)
 
 	accessToken, _, _, _, err := jwtAuth1.GenerateToken(
-		"123", "testuser", "测试用户", "user", "password",
+		"123", "testuser", "测试用户", "user", "password", "",
 	)
 	assert.NoError(t, err)
 
@@ -170,7 +170,7 @@ func TestRefreshToken(t *testing.T) {
 	jwtAuth := newTestJWTAuth(t)
 
 	_, refreshToken, _, _, err := jwtAuth.GenerateToken(
-		"123", "testuser", "测试用户", "user", "password",
+		"123", "testuser", "测试用户", "user", "password", "",
 	)
 	assert.NoError(t, err)
 

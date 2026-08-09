@@ -9,7 +9,6 @@ const (
 	MenuRelationChildren  MenuRelation = "Children"  // 子菜单
 	MenuRelationParent    MenuRelation = "Parent"    // 父菜单
 	MenuRelationAPIRoutes MenuRelation = "APIRoutes" // API 路由
-	MenuRelationBtnPerms  MenuRelation = "BtnPerms"  // 按钮权限
 )
 
 // MenuRepository 菜单仓库接口

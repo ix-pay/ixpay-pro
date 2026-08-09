@@ -15,9 +15,6 @@ export interface UserInfo {
   roles: Role[] // 角色列表
   currentRoleId: string // 当前角色 ID，string 格式（原 currentRoleId）
   role: string // 当前角色名称
-  authority: {
-    defaultRouter: string // 默认路由
-  }
 }
 
 // 用户信息响应（用于登录等场景）

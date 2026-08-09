@@ -21,6 +21,7 @@ var ProviderSetWXService = wire.NewSet(
 	service.NewPaymentService,
 	service.NewWechatPayInfoService,
 	service.NewWXAuthService,
+	service.NewWechatPayService,
 )
 
 var ProviderSetWXController = wire.NewSet(

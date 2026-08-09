@@ -47,7 +47,7 @@ IXPay Pro 采用前后端分离的模块化架构设计，具有清晰的层次�
 
 - **🔐 用户认证**：支持注册、登录、微信登录和令牌刷新，使用JWT进行身份验证
 - **👮 权限管理**：基于RBAC+ABAC混合模型的权限管理，支持菜单、API路由和按钮级权限控制
-- **👥 角色管理**：角色的增删改查、权限分配、角色继承和权限组管理
+- **👥 角色管理**：角色的增删改查、权限分配、角色继承和权限管理
 - **📋 菜单管理**：菜单的增删改查、树形结构管理，支持动态菜单生成
 - **⚙️ 配置管理**：系统配置的增删改查，支持多环境配置
 - **📚 字典管理**：字典表和字典项的管理，支持数据分类和标准化
@@ -79,20 +79,20 @@ IXPay Pro 采用前后端分离的模块化架构设计，具有清晰的层次�
 | 类别 | 技术/框架 | 版本 | 说明 |
 |------|-----------|------|------|
 | **开发语言** | Go | 1.26.5 | 核心开发语言，提供高性能和并发处理能力 |
-| **Web框架** | Gin | v1.10.1 | 轻量级HTTP服务框架，提供路由、中间件等功能 |
+| **Web框架** | Gin | v1.11.0 | 轻量级HTTP服务框架，提供路由、中间件等功能 |
 | **依赖注入** | Wire | v0.7.0 | 编译时依赖注入工具，提高代码可维护性 |
 | **数据库** | PostgreSQL | 13+ | 强大的开源关系型数据库，支持复杂查询和事务 |
-| | GORM | v1.30.3 | 功能丰富的ORM库，简化数据库操作 |
+| | GORM | v1.31.1 | 功能丰富的ORM库，简化数据库操作 |
 | **缓存** | Redis | 6+ | 高性能键值存储，用于缓存和会话管理 |
 | **认证** | JWT | v5.3.0 | 无状态身份认证令牌，支持跨服务认证 |
-| **配置管理** | Viper | v1.20.1 | 灵活的配置文件管理工具，支持多种配置格式 |
-| **日志** | Zap | v1.27.0 | 高性能结构化日志库，支持多级别日志 |
+| **配置管理** | Viper | v1.21.0 | 灵活的配置文件管理工具，支持多种配置格式 |
+| **日志** | Zap | v1.27.1 | 高性能结构化日志库，支持多级别日志 |
 | **任务调度** | Cron | v3.0.1 | 定时任务调度库，用于执行周期性任务 |
 | **API文档** | Swagger | - | 自动API文档生成工具，方便接口调试和对接 |
 | **监控** | Prometheus | - | 开源监控系统，用于系统性能监控 |
 | **限流** | golang.org/x/time/rate | - | API速率限制库，防止系统过载 |
 | **雪花算法** | Snowflake | - | 分布式ID生成算法，确保数据唯一性 |
-| **验证码** | captcha | - | 验证码生成和验证库，提高系统安全性 |
+| **验证码** | base64Captcha | v1.3.8 | 验证码生成和验证库，提高系统安全性 |
 
 ### 前端
 
@@ -118,18 +118,24 @@ IXPay Pro 系统由多个功能模块组成，每个模块负责特定的业务�
 |------------------|------------------------------------------------|----------|
 | 用户管理         | 注册、登录、信息管理、密码修改、用户设置等      | ✅ 已实现 |
 | 角色管理         | 角色的增删改查、权限分配、角色继承等            | ✅ 已实现 |
-| 权限管理         | 基于角色的访问控制，支持菜单、API路由和按钮级权限 | ✅ 已实现 |
+| 权限管理         | 基于RBAC+ABAC混合模型的权限管理，支持菜单、API路由和按钮级权限 | ✅ 已实现 |
 | 菜单管理         | 菜单的增删改查、树形结构管理、动态菜单生成      | ✅ 已实现 |
 | API路由管理      | API路由的定义、权限控制、路由分组              | ✅ 已实现 |
-| 按钮权限管理     | 按钮级权限的定义、分配和管理                  | ✅ 已实现 |
 | 配置管理         | 系统配置的增删改查、多环境配置支持            | ✅ 已实现 |
 | 字典管理         | 字典表和字典项的管理、数据分类和标准化        | ✅ 已实现 |
+| 部门管理         | 组织架构的部门管理，支持树形结构和层级关系      | ✅ 已实现 |
+| 岗位管理         | 岗位信息的增删改查，支持用户岗位关联           | ✅ 已实现 |
+| 通知公告         | 系统通知公告的发布和管理，支持阅读记录追踪     | ✅ 已实现 |
 | 种子数据管理     | 系统初始化数据的管理、快速部署和配置          | ✅ 已实现 |
 | 操作日志         | 用户操作日志记录、查询和分析                  | ✅ 已实现 |
-| 权限组管理       | 将相关权限分组管理、权限批量分配              | ✅ 已实现 |
+| 登录日志         | 用户登录日志记录、查询和分析                  | ✅ 已实现 |
+| 在线用户         | 实时在线用户监控和管理                        | ✅ 已实现 |
+| 系统监控         | 实时监控系统CPU、内存、磁盘等资源使用情况      | ✅ 已实现 |
 | 权限规则管理     | 基于ABAC的权限规则管理、细粒度权限控制        | ✅ 已实现 |
-| 组织架构管理     | 部门、岗位等组织架构的管理                    | ⏳ 待实现 |
-| 双因素认证       | 短信验证码、TOTP等双因素认证                 | ⏳ 待实现 |
+| 权限审计日志     | 权限变更日志记录、查询和分析                  | ✅ 已实现 |
+| 节点管理         | 服务节点注册、状态监控、下线管理              | ✅ 已实现 |
+| 网关服务管理     | 网关注册服务列表查询                          | ✅ 已实现 |
+| 定时任务         | 定时任务的创建、调度、执行和监控              | ✅ 已实现 |
 
 #### 微信支付模块 (`server/internal/app/wx`)
 
@@ -161,6 +167,8 @@ IXPay Pro 采用现代化的系统架构设计，具有以下特点：
 IXPay Pro 采用标准的 Go 项目结构，遵循清晰的目录组织和职责划分：
 
 ```
+├── build/               # 构建产物目录
+│   └── ixpay-pro.exe    # 编译后的可执行文件
 ├── cmd/                 # 命令行入口
 │   └── ixpay-pro/       # 主应用程序入口
 │       └── main.go      # 主程序入口文件
@@ -182,40 +190,45 @@ IXPay Pro 采用标准的 Go 项目结构，遵循清晰的目录组织和职责
 │   │   ├── wire_gen.go  # 自动生成的依赖注入代码
 │   │   ├── base/        # 基础管理模块
 │   │   │   ├── api/     # API层，处理HTTP请求
-│   │   │   │   └── v1/  # API版本
 │   │   │   ├── domain/  # 领域层，实现核心业务逻辑
-│   │   │   │   ├── model/       # 数据模型
-│   │   │   │   │   ├── request/   # 请求模型
-│   │   │   │   │   └── response/  # 响应模型
-│   │   │   │   ├── repository/  # 数据访问层
-│   │   │   │   └── service/     # 服务层
-│   │   │   ├── middleware/      # 中间件
-│   │   │   ├── migrations/      # 数据库迁移
-│   │   │   └── seed/            # 种子数据
+│   │   │   │   ├── entity/    # 实体模型
+│   │   │   │   ├── event/     # 领域事件
+│   │   │   │   ├── repo/      # 仓库接口
+│   │   │   │   ├── service/   # 服务层
+│   │   │   │   └── seed/      # 种子数据
+│   │   │   ├── middleware/    # 中间件
+│   │   │   ├── migrations/   # 数据库迁移
+│   │   │   └── seed/         # 种子数据(已废弃，移至domain/seed)
 │   │   └── wx/          # 微信支付模块
 │   │       ├── api/     # API层
 │   │       ├── domain/  # 领域层
-│   │       ├── middleware/      # 中间件
-│   │       └── migrations/      # 数据库迁移
+│   │       ├── middleware/  # 中间件
+│   │       └── migrations/  # 数据库迁移
 │   ├── config/          # 配置管理
+│   ├── domain/          # 领域层(跨模块共享)
+│   │   └── base/        # 基础领域
+│   │       └── seed/    # 种子数据
 │   ├── infrastructure/  # 基础设施层
 │   │   ├── api/         # API相关工具
 │   │   ├── auth/        # 认证相关
 │   │   ├── cache/       # 缓存相关
 │   │   ├── captcha/     # 验证码相关
+│   │   ├── config/      # 配置加载
 │   │   ├── database/    # 数据库相关
 │   │   ├── error/       # 错误处理
 │   │   ├── logger/      # 日志相关
 │   │   ├── middleware/  # 全局中间件
+│   │   ├── observability/ # 可观测性
 │   │   ├── redis/       # Redis相关
 │   │   ├── snowflake/   # 分布式ID生成
 │   │   └── task/        # 任务管理
 │   └── utils/           # 工具函数
 │       ├── common/      # 通用工具
 │       └── encryption/  # 加密相关
-├── API文档.md           # API文档
+├── tests/               # 测试目录
+│   ├── integration/     # 集成测试
+│   └── unit/            # 单元测试
 ├── README.md            # 项目说明文档
-├── 部署说明.md           # 部署说明
 └── 项目设计文档.md        # 项目设计文档
 ```
 
@@ -240,7 +253,7 @@ IXPay Pro 采用标准的 Go 项目结构，遵循清晰的目录组织和职责
 
 | 组件 | 版本要求 | 用途 |
 | --- | --- | --- |
-| Go | 1.20+ | 后端开发语言，推荐使用 1.26.5 版本 |
+| Go | 1.26.5 | 后端开发语言 |
 | Node.js | 16+ | 前端开发环境，推荐使用 18.x 版本 |
 | npm | 8+ | 前端依赖管理，推荐使用 9.x 版本 |
 | PostgreSQL | 13+ | 关系型数据库，推荐使用 14.x 版本 |
@@ -399,6 +412,7 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 | 验证码 | POST | /api/admin/auth/captcha | 获取验证码 |
 | 刷新令牌 | POST | /api/admin/auth/refresh-token | 刷新访问令牌 |
 | 退出登录 | POST | /api/admin/auth/logout | 用户退出登录 |
+| JWT 拉黑 | POST | /api/admin/auth/jwt/jsonInBlacklist | JWT 加入黑名单 |
 
 #### 用户管理 API
 
@@ -411,48 +425,207 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 | 删除用户 | DELETE | /api/admin/user/:id | 删除用户 |
 | 修改密码 | PUT | /api/admin/user/password | 修改用户密码 |
 | 重置密码 | PUT | /api/admin/user/reset-password | 重置用户密码 |
-| 获取用户设置 | GET | /api/admin/user/getSelfSetting | 获取用户设置 |
-| 设置用户设置 | PUT | /api/admin/user/setSelfSetting | 设置用户设置 |
+| 切换角色 | POST | /api/admin/user/switch-role | 切换用户角色 |
+| 获取用户设置 | GET | /api/admin/user/get-user-settings | 获取用户个人设置 |
+| 更新用户设置 | PUT | /api/admin/user/update-user-settings | 更新用户个人设置 |
+| 设置用户权限 | POST | /api/admin/user/setUserAuthority | 设置用户权限（单角色） |
+| 设置用户权限 | POST | /api/admin/user/setUserAuthorities | 设置用户权限（多角色） |
 
 #### 角色管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 创建角色 | POST | /api/admin/roles | 创建新角色 |
-| 获取角色详情 | GET | /api/admin/roles/detail | 获取角色详情 |
-| 更新角色 | PUT | /api/admin/roles | 更新角色信息 |
-| 删除角色 | DELETE | /api/admin/roles | 删除角色 |
-| 获取角色列表 | GET | /api/admin/roles | 获取角色列表 |
-| 分配用户到角色 | POST | /api/admin/roles/assign-users | 分配用户到角色 |
-| 分配菜单到角色 | POST | /api/admin/roles/assign-menus | 分配菜单到角色 |
-| 分配API路由到角色 | POST | /api/admin/roles/assign-api-routes | 分配API路由到角色 |
+| 创建角色 | POST | /api/admin/role | 创建新角色 |
+| 获取角色列表 | GET | /api/admin/role | 获取角色列表 |
+| 获取角色详情 | GET | /api/admin/role/:id/detail | 获取角色详情 |
+| 获取角色可授权API | GET | /api/admin/role/:id/available-apis | 获取角色可授权的API列表 |
+| 获取角色可授权菜单 | GET | /api/admin/role/:id/available-menus | 获取角色可授权的菜单树 |
+| 保存角色权限 | POST | /api/admin/role/:id/permissions | 保存角色权限 |
+| 更新角色 | PUT | /api/admin/role | 更新角色信息 |
+| 删除角色 | DELETE | /api/admin/role | 删除角色 |
+| 获取所有角色 | GET | /api/admin/role/all | 获取所有角色 |
+| 分配用户到角色 | POST | /api/admin/role/assign-users | 分配用户到角色 |
+| 分配菜单到角色 | POST | /api/admin/role/assign-menus | 分配菜单到角色 |
+| 分配API路由到角色 | POST | /api/admin/role/assign-api-routes | 分配API路由到角色 |
 
-#### 按钮权限管理 API
+#### 菜单管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 创建按钮权限 | POST | /api/admin/btn-perms | 创建按钮权限 |
-| 获取按钮权限详情 | GET | /api/admin/btn-perms/detail | 获取按钮权限详情 |
-| 更新按钮权限 | PUT | /api/admin/btn-perms | 更新按钮权限 |
-| 删除按钮权限 | DELETE | /api/admin/btn-perms | 删除按钮权限 |
-| 获取按钮权限列表 | GET | /api/admin/btn-perms | 获取按钮权限列表 |
-| 分配API路由到按钮权限 | POST | /api/admin/btn-perms/assign-api-routes | 分配API路由到按钮权限 |
-| 从按钮权限中撤销API路由 | POST | /api/admin/btn-perms/revoke-api-route | 从按钮权限中撤销API路由 |
-| 分配按钮权限到角色 | POST | /api/admin/btn-perms/assign-to-role | 分配按钮权限到角色 |
-| 从角色中撤销按钮权限 | POST | /api/admin/btn-perms/revoke-from-role | 从角色中撤销按钮权限 |
-| 获取按钮权限下的API路由 | GET | /api/admin/btn-perms/api-routes | 获取按钮权限下的API路由 |
-| 获取API路由下的按钮权限 | GET | /api/admin/btn-perms/for-route | 获取API路由下的按钮权限 |
-| 获取角色下的按钮权限 | GET | /api/admin/btn-perms/by-role | 获取角色下的按钮权限 |
-| 获取菜单下的按钮权限 | GET | /api/admin/btn-perms/by-menu | 获取菜单下的按钮权限 |
+| 获取用户菜单树 | GET | /api/admin/menu | 获取用户菜单树 |
+| 创建菜单 | POST | /api/admin/menu | 创建新菜单 |
+| 更新菜单 | PUT | /api/admin/menu | 更新菜单信息 |
+| 删除菜单 | DELETE | /api/admin/menu/:id | 删除菜单 |
+| 获取菜单分页列表 | GET | /api/admin/menu/page | 获取菜单分页列表 |
+| 获取完整菜单树 | GET | /api/admin/menu/tree | 获取完整菜单树 |
+| 获取菜单删除影响 | GET | /api/admin/menu/:id/delete-impact | 获取菜单删除影响评估 |
+
+#### API 管理
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取API列表 | GET | /api/admin/apis | 获取API路由列表 |
+| 获取API详情 | GET | /api/admin/apis/:id | 获取API路由详情 |
+| 创建API | POST | /api/admin/apis | 创建API路由 |
+| 更新API | PUT | /api/admin/apis/:id | 更新API路由 |
+| 删除API | DELETE | /api/admin/apis/:id | 删除API路由 |
+
+#### 部门管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 创建部门 | POST | /api/admin/dept | 创建新部门 |
+| 获取部门列表 | GET | /api/admin/dept | 获取部门列表 |
+| 获取部门详情 | GET | /api/admin/dept/:id | 获取部门详情 |
+| 更新部门 | PUT | /api/admin/dept | 更新部门信息 |
+| 删除部门 | DELETE | /api/admin/dept/:id | 删除部门 |
+| 获取部门树 | GET | /api/admin/dept/tree | 获取部门树形结构 |
+| 更新部门负责人 | PUT | /api/admin/dept/:id/leader | 更新部门负责人 |
+
+#### 岗位管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 创建岗位 | POST | /api/admin/position | 创建新岗位 |
+| 获取岗位列表 | GET | /api/admin/position | 获取岗位列表 |
+| 获取岗位详情 | GET | /api/admin/position/:id | 获取岗位详情 |
+| 更新岗位 | PUT | /api/admin/position | 更新岗位信息 |
+| 删除岗位 | DELETE | /api/admin/position/:id | 删除岗位 |
+| 获取所有岗位 | GET | /api/admin/position/all | 获取所有岗位 |
+
+#### 配置管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取配置列表 | GET | /api/admin/config | 获取系统配置列表 |
+| 创建配置 | POST | /api/admin/config | 创建系统配置 |
+| 获取配置详情 | GET | /api/admin/config/:id | 获取系统配置详情 |
+| 更新配置 | PUT | /api/admin/config | 更新系统配置 |
+| 删除配置 | DELETE | /api/admin/config/:id | 删除系统配置 |
+| 根据键获取配置 | GET | /api/admin/config/key | 根据键获取系统配置 |
+| 获取所有启用配置 | GET | /api/admin/config/active | 获取所有启用的配置 |
+
+#### 字典管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取字典列表 | GET | /api/admin/dict | 获取字典列表 |
+| 创建字典 | POST | /api/admin/dict | 创建字典 |
+| 获取字典详情 | GET | /api/admin/dict/:id | 获取字典详情 |
+| 更新字典 | PUT | /api/admin/dict | 更新字典 |
+| 删除字典 | DELETE | /api/admin/dict/:id | 删除字典 |
+| 获取字典项列表 | GET | /api/admin/dict/items | 根据字典ID获取字典项列表 |
+| 创建字典项 | POST | /api/admin/dict/item | 创建字典项 |
+| 获取启用的字典项 | GET | /api/admin/dict/code/:code/active-items | 根据code获取启用的字典项 |
+
+#### 通知公告 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取公告列表 | GET | /api/admin/notices | 获取公告列表 |
+| 创建公告 | POST | /api/admin/notices | 创建公告 |
+| 获取公告详情 | GET | /api/admin/notices/:id | 获取公告详情 |
+| 更新公告 | PUT | /api/admin/notices | 更新公告 |
+| 删除公告 | DELETE | /api/admin/notices/:id | 删除公告 |
+| 发布公告 | POST | /api/admin/notices/:id/publish | 发布公告 |
+| 标记已读 | POST | /api/admin/notices/:id/read | 标记公告已读 |
+| 检查是否已读 | GET | /api/admin/notices/:id/is-read | 检查公告是否已读 |
+| 获取公告统计 | GET | /api/admin/notices/statistics | 获取公告统计 |
+
+#### 操作日志 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取操作日志列表 | GET | /api/admin/logs | 获取操作日志列表 |
+| 获取操作日志详情 | GET | /api/admin/logs/:id | 获取操作日志详情 |
+| 删除操作日志 | DELETE | /api/admin/logs/:id | 删除操作日志 |
+| 批量删除操作日志 | POST | /api/admin/logs/batch-delete | 批量删除操作日志 |
+| 获取操作日志统计 | GET | /api/admin/logs/statistics | 获取操作日志统计 |
+| 清空操作日志 | POST | /api/admin/logs/clear | 按时间范围清空操作日志 |
+
+#### 登录日志 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取登录日志列表 | GET | /api/admin/login-log | 获取登录日志列表 |
+| 获取登录日志详情 | GET | /api/admin/login-log/:id | 获取登录日志详情 |
+| 获取登录统计 | GET | /api/admin/login-log/statistics | 获取登录统计 |
+| 查询异常登录 | GET | /api/admin/login-log/abnormal | 查询异常登录记录 |
+| 记录登录日志 | POST | /api/admin/login-log | 记录登录日志 |
+| 批量删除登录日志 | POST | /api/admin/login-log/batch-delete | 批量删除登录日志 |
+| 清空登录日志 | POST | /api/admin/login-log/clear | 清空登录日志 |
+
+#### 在线用户 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取在线用户列表 | GET | /api/admin/online-user | 获取在线用户列表 |
+| 获取在线用户详情 | GET | /api/admin/online-user/:user_id | 获取在线用户详情 |
+| 获取在线用户数量 | GET | /api/admin/online-user/count | 获取在线用户数量 |
+| 检查用户是否在线 | GET | /api/admin/online-user/online | 检查用户是否在线 |
+| 强制用户下线 | DELETE | /api/admin/online-user/:user_id | 强制用户下线 |
+| 批量强制下线 | POST | /api/admin/online-user/batch | 批量强制用户下线 |
+
+#### 系统监控 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取系统监控 | GET | /api/admin/monitor/system | 获取系统资源监控信息 |
+| 获取缓存监控 | GET | /api/admin/monitor/cache | 获取缓存监控信息 |
+| 获取数据库监控 | GET | /api/admin/monitor/database | 获取数据库监控信息 |
+| 查询 Redis 键 | GET | /api/admin/monitor/redis-keys | 查询 Redis 中的键 |
+| 查询慢查询日志 | GET | /api/admin/monitor/slow-queries | 查询数据库慢查询日志 |
+
+#### 定时任务 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取任务列表 | GET | /api/admin/task | 获取定时任务列表 |
+| 创建任务 | POST | /api/admin/task | 创建定时任务 |
+| 获取任务详情 | GET | /api/admin/task/:id | 获取定时任务详情 |
+| 更新任务 | PUT | /api/admin/task/:id | 更新定时任务 |
+| 删除任务 | DELETE | /api/admin/task/:id | 删除定时任务 |
+| 启动任务 | POST | /api/admin/task/:id/start | 启动定时任务 |
+| 停止任务 | POST | /api/admin/task/:id/stop | 停止定时任务 |
+| 重试任务 | POST | /api/admin/task/:id/retry | 重试失败的任务 |
+| 启用任务 | POST | /api/admin/task/:id/enable | 启用定时任务 |
+| 禁用任务 | POST | /api/admin/task/:id/disable | 禁用定时任务 |
+| 获取任务执行日志 | GET | /api/admin/task/:id/execution-logs | 获取任务执行日志 |
+| 搜索执行日志 | GET | /api/admin/task/execution-logs | 搜索任务执行日志 |
+| 获取任务统计 | GET | /api/admin/task/statistics | 获取任务统计 |
+| 获取任务仪表盘 | GET | /api/admin/task/dashboard | 获取任务仪表盘数据 |
+| 设置任务分组 | POST | /api/admin/task/:id/group | 设置任务分组 |
+
+#### 权限审计日志 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取权限日志列表 | GET | /api/admin/permission-logs | 获取权限日志列表 |
+| 获取角色权限日志 | GET | /api/admin/permission-logs/roles/:roleId | 获取角色权限日志 |
+
+#### 节点管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取节点列表 | GET | /api/admin/nodes | 获取节点列表 |
+| 获取节点详情 | GET | /api/admin/nodes/:id | 获取节点详情 |
+| 下线节点 | POST | /api/admin/nodes/:id/offline | 下线节点 |
+| 获取节点统计 | GET | /api/admin/nodes/statistics | 获取节点统计 |
+
+#### 网关服务管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+| --- | --- | --- | --- |
+| 获取服务列表 | GET | /api/admin/gateway/services | 获取网关注册服务列表 |
 
 #### 支付管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 | --- | --- | --- | --- |
-| 创建支付 | POST | /api//payment | 创建支付订单 |
-| 查询支付 | GET | /api//payment/{id} | 查询支付详情 |
-| 获取用户支付列表 | GET | /api//payment | 获取用户支付列表 |
-| 取消支付 | PUT | /api//payment/{id}/cancel | 取消支付订单 |
+| 创建支付 | POST | /api/payment | 创建支付订单 |
+| 查询支付 | GET | /api/payment/:id | 查询支付详情 |
+| 获取用户支付列表 | GET | /api/payment | 获取用户支付列表 |
+| 取消支付 | PUT | /api/payment/:id/cancel | 取消支付订单 |
 
 ### API文档说明
 
@@ -497,40 +670,44 @@ IXPay Pro 支持通过环境变量来配置系统，环境变量会覆盖配置�
 ```yaml
 # 服务器配置
 server:
-  port: 8081            # 服务端口
-  mode: "debug"         # 运行模式：debug, release, test
+  host: "0.0.0.0"        # 监听地址
+  port: "8081"            # 服务端口
+  mode: "debug"           # 运行模式：debug, release, test
+  init_seed_data: true    # 是否初始化种子数据
+  node_role: "all"        # 节点角色：api / task / all
 
 # 数据库配置
-database:
-  type: "postgres"      # 数据库类型
-  host: "localhost"     # 数据库主机
-  port: 5432            # 数据库端口
-  user: "ixpay"         # 数据库用户
-  password: "ixpay123"   # 数据库密码
-  dbname: "ixpay_pro"   # 数据库名称
-  sslmode: "disable"    # SSL 模式
+postgres:
+  host: "127.0.0.1"      # 数据库主机
+  port: "5432"            # 数据库端口
+  user: "ixpay"           # 数据库用户
+  password: "ixpay123"    # 数据库密码
+  dbname: "ixpay_pro"     # 数据库名称
+  sslmode: "disable"      # SSL 模式
 
 # Redis配置
 redis:
-  host: "localhost"     # Redis 主机
-  port: 6379            # Redis 端口
-  password: ""          # Redis 密码
-  db: 0                 # Redis 数据库编号
+  address: "127.0.0.1:6379"  # Redis 地址
+  password: ""               # Redis 密码
+  db: 0                      # Redis 数据库编号
 
 # JWT配置
 jwt:
-  secret: "your-secret-key"  # JWT 密钥
-  expire: 3600            # 过期时间（秒）
+  secret_key: "your-secret-key"  # JWT 密钥
+  access_token_expire: 30m       # 访问令牌过期时间
+  refresh_token_expire: 720h     # 刷新令牌过期时间
 
 # 日志配置
 logging:
-  level: "info"          # 日志级别
-  file: "logs/"          # 日志文件目录
+  level: "info"           # 日志级别
+  format: "json"          # 日志格式
+  file_path: "logs/app.log"  # 日志文件路径
 
-# 上传配置
-upload:
-  path: "uploads/"       # 上传文件目录
-  max_size: 10485760     # 最大文件大小（10MB）
+# 网关配置
+gateway:
+  enabled: false          # 是否启用网关注册
+  gateway_url: "http://127.0.0.1:8085"  # 网关地址
+  auth_key: ""            # 网关注册密钥
 ```
 
 ### 多环境配置

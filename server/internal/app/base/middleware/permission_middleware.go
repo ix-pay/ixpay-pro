@@ -17,7 +17,13 @@ import (
 	httpresponse "github.com/ix-pay/ixpay-pro/internal/infrastructure/transport/http"
 )
 
-// PermissionMiddleware 权限中间件 - 支持多角色、基于菜单/API 的权限验证和按钮级权限
+// PermissionMiddleware 权限中间件 - 支持 RBAC+ABAC 混合权限验证
+// 权限检查流程：
+// 1. 管理员直接放行
+// 2. 检查 API 授权类型（auth_type=0 跳过）
+// 3. RBAC 检查：角色是否有该 API 权限（从缓存读取）
+// 4. ABAC 拒绝规则检查：如果 RBAC 通过，检查是否有 ABAC 拒绝规则匹配
+// 5. ABAC 允许规则检查：如果 RBAC 未通过，检查 ABAC 允许规则是否匹配
 func PermissionMiddleware(permissionService *service.PermissionService, roleRepo repo.RoleRepository, log logger.Logger, cacheClient cache.Cache) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取请求路径和方法
@@ -51,15 +57,14 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 
 		log.Info("✓ 权限检查开始", "userID", userID, "role", role, "roleType", fmt.Sprintf("%T", role), "path", path, "method", method)
 
-		// 【新增】检查是否为管理员
+		// 1. 检查是否为管理员
 		if role == dictconst.UserTypeAdmin {
-			// 管理员角色拥有所有权限，直接放行
 			log.Debug("✓ 管理员角色，跳过权限验证", "path", path, "method", method)
 			c.Next()
 			return
 		}
 
-		// 【新增】检查 API 的授权类型
+		// 2. 检查 API 的授权类型
 		authType, err := getAPIAuthType(roleRepo, path, method, log, cacheClient)
 		if err != nil {
 			log.Error("获取 API 授权类型失败", "error", err, "path", path, "method", method)
@@ -75,7 +80,18 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 			return
 		}
 
-		// 从缓存获取角色权限（auth_type = 1 需要验证角色权限）
+		// 将 userID 转换为 int64
+		var uid int64
+		switch v := userID.(type) {
+		case string:
+			uid, _ = strconv.ParseInt(v, 10, 64)
+		case int:
+			uid = int64(v)
+		case int64:
+			uid = v
+		}
+
+		// 3. RBAC 检查：从缓存获取角色权限
 		hasPermission, err := checkPermissionFromCache(roleRepo, role, method, path, log, cacheClient)
 		if err != nil {
 			log.Error("从缓存检查权限失败", "error", err, "role", role, "path", path, "method", method)
@@ -84,36 +100,131 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 			return
 		}
 
-		// 权限验证失败
-		if !hasPermission {
+		// 4. ABAC 拒绝规则检查：如果 RBAC 通过，检查是否有 ABAC 拒绝规则匹配
+		// 拒绝规则优先于允许规则，即使 RBAC 允许，如果 ABAC 拒绝规则匹配，也拒绝访问
+		if hasPermission {
+			denied, err := checkABACDenyRules(permissionService, uid, path, method, log)
+			if err != nil {
+				log.Error("ABAC 拒绝规则检查失败", "error", err, "userID", uid, "path", path, "method", method)
+				httpresponse.InternalServerErrorResponse(c, "ABAC 拒绝规则检查失败")
+				c.Abort()
+				return
+			}
+			if denied {
+				log.Debug("✗ ABAC 拒绝规则阻止访问", "path", path, "method", method, "userID", userID)
+				httpresponse.ForbiddenResponse(c, "禁止访问")
+				c.Abort()
+				return
+			}
+			log.Debug("✓ RBAC 权限验证通过，ABAC 无拒绝规则", "path", path, "method", method)
+			c.Next()
+			return
+		}
+
+		// 5. ABAC 允许规则检查：如果 RBAC 未通过，检查 ABAC 允许规则
+		allowed, err := checkABACAllowRules(permissionService, uid, path, method, log)
+		if err != nil {
+			log.Error("ABAC 允许规则检查失败", "error", err, "userID", uid, "path", path, "method", method)
+			httpresponse.InternalServerErrorResponse(c, "ABAC 允许规则检查失败")
+			c.Abort()
+			return
+		}
+
+		if !allowed {
+			log.Debug("✗ 权限验证失败（RBAC 和 ABAC 均未通过）", "path", path, "method", method, "userID", userID)
 			httpresponse.ForbiddenResponse(c, "禁止访问")
 			c.Abort()
 			return
 		}
 
-		// 获取用户的按钮权限（用于按钮级权限控制）
-		var userIDInt int64
-		switch v := userID.(type) {
-		case string:
-			userIDInt, _ = strconv.ParseInt(v, 10, 64)
-		case int:
-			userIDInt = int64(v)
-		case int64:
-			userIDInt = v
-		default:
-			userIDInt = 0
-		}
-
-		userButtons, err := getBtnPermsByUserId(userIDInt, permissionService, log)
-		if err != nil {
-			log.Error("获取用户按钮权限失败", "error", err, "userID", userIDInt)
-		}
-
-		// 将按钮权限存储在上下文中
-		c.Set("userButtons", userButtons)
-
+		log.Debug("✓ ABAC 允许规则通过", "path", path, "method", method, "userID", userID)
 		c.Next()
 	}
+}
+
+// checkABACDenyRules 检查 ABAC 拒绝规则
+// 遍历用户的 ABAC 规则，检查是否有拒绝规则匹配当前请求
+func checkABACDenyRules(permissionService *service.PermissionService, uid int64, path, method string, log logger.Logger) (bool, error) {
+	rules, err := permissionService.GetPermissionRules(uid)
+	if err != nil {
+		log.Error("获取 ABAC 拒绝规则失败", "error", err, "userID", uid)
+		return false, err
+	}
+
+	for _, rule := range rules {
+		if rule.Effect == "deny" && rule.IsActive() {
+			// 使用路径匹配检查规则是否适用于当前请求
+			if matchAPIPath(rule.APIPath, path) && (rule.Method == "*" || rule.Method == method) {
+				log.Debug("ABAC 拒绝规则匹配", "ruleId", rule.ID, "ruleName", rule.Name,
+					"rulePath", rule.APIPath, "ruleMethod", rule.Method)
+				// 如果有条件表达式，需要进一步检查条件是否满足
+				// 当前简化处理：只要路径和方法匹配就拒绝
+				return true, nil
+			}
+		}
+	}
+	return false, nil
+}
+
+// checkABACAllowRules 检查 ABAC 允许规则
+// 遍历用户的 ABAC 规则，检查是否有允许规则匹配当前请求
+func checkABACAllowRules(permissionService *service.PermissionService, uid int64, path, method string, log logger.Logger) (bool, error) {
+	rules, err := permissionService.GetPermissionRules(uid)
+	if err != nil {
+		log.Error("获取 ABAC 允许规则失败", "error", err, "userID", uid)
+		return false, err
+	}
+
+	for _, rule := range rules {
+		if rule.Effect == "allow" && rule.IsActive() {
+			// 使用路径匹配检查规则是否适用于当前请求
+			if matchAPIPath(rule.APIPath, path) && (rule.Method == "*" || rule.Method == method) {
+				log.Debug("ABAC 允许规则匹配", "ruleId", rule.ID, "ruleName", rule.Name,
+					"rulePath", rule.APIPath, "ruleMethod", rule.Method)
+				// 如果有条件表达式，需要进一步检查条件是否满足
+				// 当前简化处理：只要路径和方法匹配就允许
+				return true, nil
+			}
+		}
+	}
+	return false, nil
+}
+
+// matchAPIPath 检查请求路径是否匹配规则路径模式
+// 支持：
+//   - 精确匹配：/api/admin/user == /api/admin/user
+//   - 通配符：/api/admin/** 匹配 /api/admin/user/123
+//   - 参数匹配：/api/admin/user/:id 匹配 /api/admin/user/123
+func matchAPIPath(pattern, requestPath string) bool {
+	// 通配符匹配：pattern 以 ** 结尾
+	if strings.HasSuffix(pattern, "/**") {
+		prefix := strings.TrimSuffix(pattern, "/**")
+		return strings.HasPrefix(requestPath, prefix)
+	}
+
+	// 精确匹配
+	if pattern == requestPath {
+		return true
+	}
+
+	// 参数匹配：将 :param 替换为通配符再匹配
+	patternParts := strings.Split(pattern, "/")
+	requestParts := strings.Split(requestPath, "/")
+
+	if len(patternParts) != len(requestParts) {
+		return false
+	}
+
+	for i, part := range patternParts {
+		if strings.HasPrefix(part, ":") {
+			// :id, :key 等参数部分，匹配任意值
+			continue
+		}
+		if part != requestParts[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // getAPIAuthType 获取 API 的授权类型
@@ -162,10 +273,9 @@ func getAPIAuthType(roleRepo repo.RoleRepository, path, method string, log logge
 
 // RolePermissions Redis 缓存的角色权限结构
 type RolePermissions struct {
-	Menus     []*entity.Menu    `json:"menus"`
-	BtnPerms  []*entity.BtnPerm `json:"btnPerms"`
-	ApiRoutes []*entity.API     `json:"apiRoutes"`
-	ApiSet    map[string]bool   `json:"apiSet"` // 快速查找的 API 权限集合
+	Menus     []*entity.Menu  `json:"menus"`
+	ApiRoutes []*entity.API   `json:"apiRoutes"`
+	ApiSet    map[string]bool `json:"apiSet"` // 快速查找的 API 权限集合
 }
 
 // checkPermissionFromCache 从缓存检查角色权限
@@ -222,11 +332,6 @@ func loadAndCacheRolePermissions(roleID int64, roleRepo repo.RoleRepository, log
 		return false, fmt.Errorf("加载角色菜单权限失败：%w", err)
 	}
 
-	btnPerms, err := roleRepo.GetBtnPermsByRole(roleID)
-	if err != nil {
-		return false, fmt.Errorf("加载角色按钮权限失败：%w", err)
-	}
-
 	apiRoutes, err := roleRepo.GetsByRole(roleID)
 	if err != nil {
 		return false, fmt.Errorf("加载角色 API 权限失败：%w", err)
@@ -244,7 +349,6 @@ func loadAndCacheRolePermissions(roleID int64, roleRepo repo.RoleRepository, log
 	// 构建缓存数据
 	perms := RolePermissions{
 		Menus:     menus,
-		BtnPerms:  btnPerms,
 		ApiRoutes: apiRoutes,
 		ApiSet:    apiSet,
 	}
@@ -267,49 +371,6 @@ func loadAndCacheRolePermissions(roleID int64, roleRepo repo.RoleRepository, log
 	// 验证权限
 	apiKey := method + ":" + path
 	return apiSet[apiKey], nil
-}
-
-// getBtnPermsByUserId 根据用户 ID 获取按钮权限
-func getBtnPermsByUserId(userId int64, permissionService *service.PermissionService, log logger.Logger) ([]string, error) {
-	// 通过用户 ID 获取角色
-	roles, err := permissionService.GetRolesByUserId(userId)
-	if err != nil {
-		log.Error("通过用户 ID 获取角色失败", "error", err, "userId", userId)
-		return nil, err
-	}
-
-	// 如果角色列表为空，返回空的按钮权限列表
-	if len(roles) == 0 {
-		log.Info("用户没有角色", "userId", userId)
-		return []string{}, nil
-	}
-
-	// 存储用户所有的按钮权限编码
-	btnPerms := make(map[string]bool)
-
-	// 获取每个角色的按钮权限
-	for _, role := range roles {
-		buttons, err := permissionService.GetBtnPermsByRole(role.ID)
-		if err != nil {
-			log.Error("通过角色获取按钮权限失败", "error", err, "roleID", role.ID)
-			continue
-		}
-
-		// 添加到结果集
-		for _, button := range buttons {
-			if button != nil && button.Status == 1 { // 只添加启用状态的按钮权限
-				btnPerms[button.Code] = true
-			}
-		}
-	}
-
-	// 转换为切片返回
-	result := make([]string, 0, len(btnPerms))
-	for code := range btnPerms {
-		result = append(result, code)
-	}
-
-	return result, nil
 }
 
 // RolePermissionMiddleware 基于角色的权限中间件

@@ -77,7 +77,6 @@ func convertToAPIResponse(route *entity.API) *response.APIResponse {
 		Status:       route.Status,
 		RoleIds:      route.RoleIds,
 		MenuIds:      route.MenuIds,
-		BtnPermIds:   route.BtnPermIds,
 		CreatedBy:    route.CreatedBy,
 		CreatedAt:    route.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedBy:    route.UpdatedBy,
@@ -247,12 +246,6 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
 		return
 	}
-	btnPermIds, err := convertStringSliceToInt64Slice(req.BtnPermIds)
-	if err != nil {
-		c.log.Error("按钮权限 ID 格式错误", "error", err)
-		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
-		return
-	}
 
 	// 将 operatorID 转换为 int64
 	operatorIDInt, err := strconv.ParseInt(operatorID, 10, 64)
@@ -272,7 +265,6 @@ func (c *APIController) CreateAPI(ctx *gin.Context) {
 		Status:       req.Status,
 		RoleIds:      roleIds,
 		MenuIds:      menuIds,
-		BtnPermIds:   btnPermIds,
 	}
 
 	if err := c.apisService.CreateAPIRoute(route, operatorIDInt); err != nil {
@@ -341,12 +333,6 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 		baseRes.FailWithMessage("菜单 ID 格式错误", ctx)
 		return
 	}
-	btnPermIds, err := convertStringSliceToInt64Slice(req.BtnPermIds)
-	if err != nil {
-		c.log.Error("按钮权限 ID 格式错误", "error", err)
-		baseRes.FailWithMessage("按钮权限 ID 格式错误", ctx)
-		return
-	}
 
 	// 将 operatorID 转换为 int64
 	operatorIDInt, err := strconv.ParseInt(operatorID, 10, 64)
@@ -367,7 +353,6 @@ func (c *APIController) UpdateAPI(ctx *gin.Context) {
 		Status:       req.Status,
 		RoleIds:      roleIds,
 		MenuIds:      menuIds,
-		BtnPermIds:   btnPermIds,
 	}
 
 	if err := c.apisService.UpdateAPIRoute(route, operatorIDInt); err != nil {

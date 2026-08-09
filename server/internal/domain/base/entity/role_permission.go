@@ -2,29 +2,17 @@ package entity
 
 // RolePermissions 角色权限缓存结构
 type RolePermissions struct {
-	MenuIds     []int64         // 角色菜单权限 ID 列表
-	BtnPermIds  []int64         // 角色按钮权限 ID 列表
-	APIRouteIds []int64         // 角色通用 API 权限 ID 列表
-	APIs        []*API          // 角色通用 API 权限
-	Menus       []*Menu         // 角色菜单权限
-	BtnPerms    []*BtnPerm      // 角色按钮权限
-	ApiSet      map[string]bool // API 权限集合（method:path -> true）
+	MenuIds     []int64         `json:"menuIds"`     // 角色菜单权限 ID 列表
+	APIRouteIds []int64         `json:"apiRouteIds"` // 角色通用 API 权限 ID 列表
+	APIs        []*API          `json:"apiRoutes"`   // 角色通用 API 权限
+	Menus       []*Menu         `json:"menus"`       // 角色菜单权限
+	ApiSet      map[string]bool `json:"apiSet"`      // API 权限集合（method:path -> true）
 }
 
 // HasMenu 检查角色是否有指定菜单权限
 func (r *RolePermissions) HasMenu(menuID int64) bool {
 	for _, mid := range r.MenuIds {
 		if mid == menuID {
-			return true
-		}
-	}
-	return false
-}
-
-// HasBtnPerm 检查角色是否有指定按钮权限
-func (r *RolePermissions) HasBtnPerm(btnPermID int64) bool {
-	for _, bid := range r.BtnPermIds {
-		if bid == btnPermID {
 			return true
 		}
 	}
@@ -50,7 +38,6 @@ func (r *RolePermissions) HasAPIAccess(method, path string) bool {
 // DeleteImpact 删除影响评估结果
 type DeleteImpact struct {
 	ChildMenusCount    int64  // 子菜单数量
-	BtnPermsCount      int64  // 按钮权限数量
 	AffectedRolesCount int64  // 受影响的角色数量
 	AffectedApisCount  int64  // 影响的 API 数量
 	Level              string // 影响等级：LOW, MEDIUM, HIGH

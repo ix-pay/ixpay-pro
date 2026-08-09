@@ -1,4 +1,5 @@
 # ixpay-pro 配置示例
+# 复制此文件为 config.yaml 并根据实际环境修改配置
 
 server:
   host: 127.0.0.1
@@ -6,18 +7,27 @@ server:
   read_timeout: 10
   write_timeout: 10
   idle_timeout: 60
-  node_role: "all"           # api / task / all
-  node_id: ""                # 留空自动生成
-  task_max_concurrent: 10
+  captcha_time_out: 300          # 验证码过期时间（秒）
+  captcha_len: 4                 # 验证码长度
+  open_captcha: true             # 是否开启验证码
+  machine_id: "1"                # 机器ID（用于雪花ID生成）
+  update_routes_on_start: true   # 启动时是否更新路由注册
+  init_seed_data: true           # 启动时是否初始化种子数据
+  slow_query_threshold: 200      # 慢查询阈值（毫秒）
+  node_role: "all"               # 节点角色: api / task / all
+  node_id: ""                    # 节点ID（留空自动生成）
+  task_max_concurrent: 10        # 任务最大并发数
+  environment: "development"     # 运行环境: development / staging / production
 
 # 网关注册配置
 gateway:
-  enabled: false              # 是否启用网关注册
+  enabled: false                 # 是否启用网关注册
   gateway_url: "http://127.0.0.1:8085"  # 网关地址
-  auth_key: "ihvke@2025"     # 网关注册认证密钥（需与网关配置一致）
+  auth_key: "ihvke@2025"        # 网关注册认证密钥（需与网关配置一致）
   service_name: "ixpay-server"  # 服务名称
-  heartbeat_interval: 10      # 心跳间隔（秒）
+  heartbeat_interval: 10         # 心跳间隔（秒）
 
+# 数据库配置
 postgres:
   host: 127.0.0.1
   port: "5432"
@@ -26,12 +36,53 @@ postgres:
   dbname: ixpay_pro
   sslmode: disable
 
+# 连接池配置
+db_pool:
+  max_open_conns: 100
+  max_idle_conns: 10
+  conn_max_lifetime: 60          # 分钟
+
+# Redis 缓存配置
 redis:
   address: 127.0.0.1:6379
   password: ""
   db: 0
+  dial_timeout: 5                # 连接超时（秒）
+  read_timeout: 3                # 读取超时（秒）
+  write_timeout: 3               # 写入超时（秒）
 
+# JWT 认证配置
 jwt:
-  secret_key: ""
-  access_token_expire: 2h
-  refresh_token_expire: 168h
+  secret_key: ""                 # JWT 签名密钥（必须修改为随机字符串）
+  access_token_expire: 2h        # 访问令牌过期时间
+  refresh_token_expire: 168h     # 刷新令牌过期时间（7天）
+
+# 日志配置
+logging:
+  level: "info"                  # 日志级别: debug / info / warn / error
+  format: "json"                 # 日志格式: json / text
+  file_path: "./logs/app.log"    # 应用日志文件路径
+  error_file: "./logs/error.log" # 错误日志文件路径
+  task_file: "./logs/task.log"   # 任务日志文件路径
+  request_file: "./logs/request.log"  # 请求日志文件路径
+  audit_file: "./logs/audit.log" # 审计日志文件路径
+  max_size: 100                  # 单个日志文件最大大小（MB）
+  max_backups: 30                # 保留的日志文件数量
+  max_age: 30                    # 日志保留天数
+  separate_log: true             # 是否分离日志文件
+
+# 微信支付配置
+wechat:
+  app_id: ""                     # 微信应用ID（AppID）
+  app_secret: ""                 # 微信应用密钥（AppSecret）
+  mch_id: ""                     # 微信商户号ID
+  api_key: ""                    # 微信支付API密钥
+  notify_url: ""                 # 支付通知回调URL
+  redirect_url: ""               # 微信OAuth重定向URL
+  oauth_callback_url: ""         # 微信OAuth授权回调地址（后端接口），如 https://api.ixpay.com/api/wx/auth/callback
+  frontend_url: ""               # 前端页面地址，如 http://localhost:5173
+
+# Swagger 文档配置
+swagger:
+  enabled: true                  # 是否启用Swagger文档
+  path: "/swagger"               # Swagger文档访问路径

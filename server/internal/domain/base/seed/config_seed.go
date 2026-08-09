@@ -76,6 +76,20 @@ func (cs *ConfigSeed) Init(db *database.PostgresDB, logger logger.Logger) error 
 			Description: "微信支付回调通知地址",
 			Status:      1,
 		},
+		{
+			ConfigKey:   "wechat_oauth_callback_url",
+			ConfigValue: "http://your-server.com/api/wx/auth/callback",
+			ConfigType:  1,
+			Description: "微信 OAuth 授权回调地址（后端接口，微信授权后回调到此地址）",
+			Status:      1,
+		},
+		{
+			ConfigKey:   "wechat_frontend_url",
+			ConfigValue: "http://localhost:5173",
+			ConfigType:  1,
+			Description: "前端页面地址（微信 OAuth 回调后重定向的前端域名）",
+			Status:      1,
+		},
 	}
 
 	// 批量插入或更新配置（增量写入）

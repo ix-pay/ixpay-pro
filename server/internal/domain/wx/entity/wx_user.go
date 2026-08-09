@@ -21,6 +21,7 @@ type WXUser struct {
 	Remark        string     // 备注
 	GroupID       int64      // 分组 ID
 	UserID        int64      // 关联系统用户 ID
+	LastLoginAt   time.Time  // 最近登录时间
 	CreatedAt     time.Time  // 创建时间
 	UpdatedAt     time.Time  // 更新时间
 }

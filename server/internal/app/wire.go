@@ -14,11 +14,8 @@ import (
 	redisClient "github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/redis"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/captcha"
-	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/eventbus"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/snowflake"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/task"
-
-	"github.com/redis/go-redis/v9"
 )
 
 // 定义全局服务提供者集合
@@ -44,22 +41,12 @@ var GlobalServiceSet = wire.NewSet(
 	task.SetupTaskManager,
 	// 节点注册
 	task.SetupNodeRegistry,
-	// 事件总线
-	SetupEventBus,
-
 	// 提供 Redis 客户端
 	ProvideRedisClient,
 
 	// 创建应用程序实例
 	SetupApplication,
 )
-
-// SetupEventBus 创建事件总线
-func SetupEventBus(db *database.PostgresDB, redisClient *redis.Client) *eventbus.EventBus {
-	config := eventbus.DefaultConfig()
-	eb := eventbus.NewEventBus(db.DB, redisClient, config)
-	return eb
-}
 
 // ProvideRedisClient 提供 Redis 客户端
 func ProvideRedisClient(redisClient *redisClient.RedisClient) *redis.Client {

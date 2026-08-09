@@ -18,11 +18,16 @@ func (a *AppWX) setupRoutes() {
 			{
 				auth.POST("/login", a.authController.LoginByCode)
 				auth.POST("/refresh-token", a.authController.RefreshToken)
+				auth.GET("/oauth-url", a.authController.GetOAuthURL)
+				auth.GET("/callback", a.authController.OAuthCallback)
+				auth.GET("/authorize", a.authController.Authorize)
 			}
 			// 支付通知路由（不需要认证）
 			pay := public.Group("/pay")
 			{
 				pay.POST("/notify/wechat", a.paymentController.HandleWechatPayNotify)
+				// JS-SDK 配置接口（不需要认证，用于前端初始化 wx.config()）
+				pay.GET("/jsapi-config", a.paymentController.GetJSAPIConfig)
 			}
 		}
 
@@ -35,6 +40,7 @@ func (a *AppWX) setupRoutes() {
 			payment := authenticated.Group("/payment")
 			{
 				payment.POST("", a.paymentController.CreatePayment)
+				payment.POST("/unified-order", a.paymentController.CreateUnifiedOrder)
 				payment.GET("/:id", a.paymentController.GetPayment)
 				payment.GET("", a.paymentController.GetUserPayments)
 				payment.PUT("/:id/cancel", a.paymentController.CancelPayment)

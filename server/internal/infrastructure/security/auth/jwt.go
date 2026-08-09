@@ -39,6 +39,7 @@ type Claims struct {
 	Nickname  string `json:"nickname"`
 	Role      string `json:"role"`
 	LoginType string `json:"login_type"`
+	OpenID    string `json:"open_id"`
 	jwt.RegisteredClaims
 }
 
@@ -65,15 +66,15 @@ func SetupJWTAuth(cfg *config.Config, log logger.Logger) (*JWTAuth, error) {
 }
 
 // GenerateToken 生成访问令牌和刷新令牌
-func (j *JWTAuth) GenerateToken(userID string, userName string, nickname string, role string, loginType string) (string, string, time.Time, time.Time, error) {
+func (j *JWTAuth) GenerateToken(userID string, userName string, nickname string, role string, loginType string, openID string) (string, string, time.Time, time.Time, error) {
 	// 生成访问令牌
-	accessToken, accessExpire, err := j.generateAccessToken(userID, userName, nickname, role, loginType)
+	accessToken, accessExpire, err := j.generateAccessToken(userID, userName, nickname, role, loginType, openID)
 	if err != nil {
 		return "", "", time.Time{}, time.Time{}, err
 	}
 
 	// 生成刷新令牌
-	refreshToken, refreshExpire, err := j.generateRefreshToken(userID, userName, nickname, role, loginType)
+	refreshToken, refreshExpire, err := j.generateRefreshToken(userID, userName, nickname, role, loginType, openID)
 	if err != nil {
 		return "", "", time.Time{}, time.Time{}, err
 	}
@@ -82,7 +83,7 @@ func (j *JWTAuth) GenerateToken(userID string, userName string, nickname string,
 }
 
 // generateAccessToken 生成访问令牌
-func (j *JWTAuth) generateAccessToken(userID string, userName string, nickname string, role string, loginType string) (string, time.Time, error) {
+func (j *JWTAuth) generateAccessToken(userID string, userName string, nickname string, role string, loginType string, openID string) (string, time.Time, error) {
 	expirationTime := time.Now().Add(j.accessTokenExpire)
 
 	claims := &Claims{
@@ -91,6 +92,7 @@ func (j *JWTAuth) generateAccessToken(userID string, userName string, nickname s
 		Nickname:  nickname,
 		Role:      role,
 		LoginType: loginType,
+		OpenID:    openID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -109,7 +111,7 @@ func (j *JWTAuth) generateAccessToken(userID string, userName string, nickname s
 }
 
 // generateRefreshToken 生成刷新令牌
-func (j *JWTAuth) generateRefreshToken(userID string, userName string, nickname string, role string, loginType string) (string, time.Time, error) {
+func (j *JWTAuth) generateRefreshToken(userID string, userName string, nickname string, role string, loginType string, openID string) (string, time.Time, error) {
 	expirationTime := time.Now().Add(j.refreshTokenExpire)
 
 	claims := &Claims{
@@ -118,6 +120,7 @@ func (j *JWTAuth) generateRefreshToken(userID string, userName string, nickname 
 		Nickname:  nickname,
 		Role:      role,
 		LoginType: loginType,
+		OpenID:    openID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -169,7 +172,7 @@ func (j *JWTAuth) RefreshToken(refreshToken string) (string, string, time.Time, 
 	// 检查令牌是否接近过期
 	if time.Until(claims.ExpiresAt.Time) > j.accessTokenExpire {
 		// 令牌还有很长时间才会过期，只生成新的访问令牌
-		accessToken, accessExpire, err := j.generateAccessToken(claims.UserID, claims.Username, claims.Nickname, claims.Role, claims.LoginType)
+		accessToken, accessExpire, err := j.generateAccessToken(claims.UserID, claims.Username, claims.Nickname, claims.Role, claims.LoginType, claims.OpenID)
 		if err != nil {
 			return "", "", time.Time{}, time.Time{}, err
 		}
@@ -177,7 +180,7 @@ func (j *JWTAuth) RefreshToken(refreshToken string) (string, string, time.Time, 
 	}
 
 	// 令牌即将过期，生成新的访问令牌和刷新令牌
-	return j.GenerateToken(claims.UserID, claims.Username, claims.Nickname, claims.Role, claims.LoginType)
+	return j.GenerateToken(claims.UserID, claims.Username, claims.Nickname, claims.Role, claims.LoginType, claims.OpenID)
 }
 
 // GetContextWithUserID 将用户ID添加到上下文

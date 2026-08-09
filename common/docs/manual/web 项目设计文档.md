@@ -224,14 +224,14 @@ class LoadingManager {
 
 1. **路由级权限**：通过动态路由实现
 2. **菜单级权限**：通过 `hasMenuPermission()` 过滤菜单
-3. **按钮级权限**：通过自定义指令 `v-auth` 实现
+3. **按钮级权限**：通过自定义指令 `v-auth-btn` 实现（旧指令 `v-auth` 已废弃，仅保留兼容性占位）
 
 #### 3.4.2 权限工具函数
 
 [`src/utils/permission.ts`](file:///d:/g/ixpay-pro/web/src/utils/permission.ts) 提供：
 
 ```typescript
-// 检查单个权限
+// 检查单个权限（从路由 store 的 buttonPermissions 中查找）
 hasPermission(permission: string)
 
 // 检查任意一个权限
@@ -245,6 +245,12 @@ hasMenuPermission(menu: ApiMenuItem)
 
 // 获取用户权限列表
 getPermissions()
+
+// 按钮权限相关
+hasButtonPermission(permission: string)       // 检查单个按钮权限
+hasAnyButtonPermission(permissions: string[])  // 检查任意按钮权限
+hasAllButtonPermissions(permissions: string[]) // 检查所有按钮权限
+getButtonPermissions()                        // 获取按钮权限列表
 
 // 角色相关
 hasRole(role: string)
@@ -355,15 +361,15 @@ asyncRouterHandle(asyncRouter: ExtendedRouteRecordRaw[])
 
 #### 4.3.1 权限指令
 
-[`src/directive/auth.ts`](file:///d:/g/ixpay-pro/web/src/directive/auth.ts) 提供 `v-auth` 指令：
+[`src/directive/auth-btn.ts`](file:///d:/g/ixpay-pro/web/src/directive/auth-btn.ts) 提供 `v-auth-btn` 指令（旧指令 `v-auth` 已废弃，仅保留兼容性占位）：
 
 ```typescript
 // 使用方式
-<button v-auth="'user:add'">添加用户</button>
+<button v-auth-btn="'user:add'">添加用户</button>
 
 // 实现原理
-// 1. 获取指令参数（权限标识）
-// 2. 检查用户是否有该权限
+// 1. 获取指令参数（按钮权限标识）
+// 2. 调用 hasButtonPermission() 检查用户是否有该权限
 // 3. 无权限则移除元素
 ```
 
@@ -387,6 +393,9 @@ asyncRouterHandle(asyncRouter: ExtendedRouteRecordRaw[])
 - `login-log.ts` - 登录日志
 - `online-user.ts` - 在线用户
 - `jwt.ts` - JWT Token 管理
+- `monitor.ts` - 系统监控
+- `node.ts` - 节点管理
+- `gateway.ts` - 网关管理
 
 ### 5.2 接口格式
 
@@ -418,6 +427,15 @@ export const getUserInfo = (): Promise<ApiResponse<{ userInfo: UserInfo }>> => {
     method: 'get',
   })
 }
+
+// 获取用户列表
+export const getUserList = (params: PageParams): Promise<ApiResponse> => {
+  return service({
+    url: '/user',
+    method: 'get',
+    params,
+  })
+}
 ```
 
 ## 6. 类型系统
@@ -439,7 +457,7 @@ interface UserInfo {
   uuid: string
   nickName: string
   headerImg: string
-  authority: Record<string, unknown>
+  roles: { code: string; name: string }[]
   // ... 其他字段
 }
 

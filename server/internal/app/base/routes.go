@@ -116,24 +116,6 @@ func (a *AppBase) setupRoutes() {
 				menu.GET("/:id/delete-impact", a.menuController.GetMenuDeleteImpact)
 			}
 
-			// 按钮权限管理路由
-			btnPerm := authenticated.Group("/btn-perms")
-			{
-				btnPerm.POST("", a.btnPermController.CreateBtnPerm)
-				btnPerm.GET("/:id", a.btnPermController.GetBtnPermByID)
-				btnPerm.PUT("", a.btnPermController.UpdateBtnPerm)
-				btnPerm.DELETE("", a.btnPermController.DeleteBtnPerm)
-				btnPerm.GET("", a.btnPermController.GetBtnPermList)
-				btnPerm.POST("/assign-api-routes", a.btnPermController.AssignToBtnPerm)
-				btnPerm.POST("/revoke-api-route", a.btnPermController.RevokeFromBtnPerm)
-				btnPerm.POST("/assign-to-role", a.btnPermController.AssignBtnPermToRole)
-				btnPerm.POST("/revoke-from-role", a.btnPermController.RevokeBtnPermFromRole)
-				btnPerm.GET("/api-routes", a.btnPermController.GetAPIRoutesByBtnPerm)
-				btnPerm.GET("/for-route", a.btnPermController.GetBtnPermsByAPIRoute)
-				btnPerm.GET("/by-role", a.btnPermController.GetBtnPermsByRole)
-				btnPerm.GET("/by-menu", a.btnPermController.GetBtnPermsByMenu)
-			}
-
 			// 配置管理路由
 			config := authenticated.Group("/config")
 			{
@@ -307,25 +289,6 @@ func (a *AppBase) setupRoutes() {
 				node.GET("/:id", a.nodeController.GetNodeById)
 				node.POST("/:id/offline", a.nodeController.OfflineNode)
 				node.GET("/statistics", a.nodeController.GetNodeStatistics)
-			}
-
-			// 事件管理路由
-			event := authenticated.Group("/event")
-			{
-				event.POST("", a.eventController.CreateEvent)
-				event.GET("/:id", a.eventController.GetEvent)
-				event.GET("", a.eventController.ListEvents)
-				event.POST("/:id/retry", a.eventController.RetryEvent)
-				event.GET("/dead-letters", a.eventController.ListDeadLetters)
-				event.POST("/dead-letters/:id/retry", a.eventController.RetryDeadLetter)
-			}
-
-			// 订阅者管理路由
-			subscriber := authenticated.Group("/subscriber")
-			{
-				subscriber.POST("", a.eventController.CreateSubscriber)
-				subscriber.GET("", a.eventController.ListSubscribers)
-				subscriber.DELETE("/:id", a.eventController.DeleteSubscriber)
 			}
 
 			// 网关服务管理路由

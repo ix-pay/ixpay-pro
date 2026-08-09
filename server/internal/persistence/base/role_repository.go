@@ -12,22 +12,22 @@ import (
 // roleModel 角色数据库模型
 type roleModel struct {
 	database.SnowflakeBaseModel
-	Name        string `gorm:"size:50;not null;unique"`
-	Code        string `gorm:"size:50;not null;unique"`
-	Description string `gorm:"size:255"`
-	Type        *int   `gorm:"not null;default:1"`
-	ParentID    *int64 `gorm:"not null;default:0"`
-	Status      *int   `gorm:"not null;default:1"`
-	IsSystem    *bool  `gorm:"not null;default:false"`
-	Sort        *int   `gorm:"not null;default:0"`
+	Name        string      `gorm:"size:50;not null;unique"`
+	Code        string      `gorm:"size:50;not null;unique"`
+	Description string      `gorm:"size:255"`
+	Type        *int        `gorm:"not null;default:1"`
+	ParentID    *int64      `gorm:"not null;default:0"`
+	Status      *int        `gorm:"not null;default:1"`
+	IsSystem    *bool       `gorm:"not null;default:false"`
+	Sort        *int        `gorm:"not null;default:0"`
+	DataScope   *entity.DataScope `gorm:"not null;default:4"`
 
 	// GORM 关联关系 - 多对多（通过中间表）
 	Users []*userModel `gorm:"many2many:base_role_users;joinForeignKey:role_id;joinReferences:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	Menus []*menuModel `gorm:"many2many:base_role_menus;joinForeignKey:role_id;joinReferences:menu_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
 	// GORM 关联关系 - 多对多（通过中间表）
-	APIRoutes []*apiModel     `gorm:"many2many:base_role_api_routes;joinForeignKey:role_id;joinReferences:route_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	BtnPerms  []*btnPermModel `gorm:"many2many:base_role_btn_perms;joinForeignKey:role_id;joinReferences:button_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	APIRoutes []*apiModel `gorm:"many2many:base_role_api_routes;joinForeignKey:role_id;joinReferences:route_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
 	// GORM 关联关系 - 一对多（子角色）
 	Children []*roleModel `gorm:"foreignKey:parent_id;references:id"`
@@ -73,17 +73,6 @@ type roleAPIRouteModel struct {
 // TableName 指定表名
 func (roleAPIRouteModel) TableName() string {
 	return "base_role_api_routes"
-}
-
-// roleBtnPermModel 角色按钮权限关联模型
-type roleBtnPermModel struct {
-	RoleID    int64 `gorm:"not null;index"`
-	BtnPermID int64 `gorm:"not null;index"`
-}
-
-// TableName 指定表名
-func (roleBtnPermModel) TableName() string {
-	return "base_role_btn_perms"
 }
 
 // toDomain 将数据库模型转换为领域实体
@@ -133,6 +122,12 @@ func (m *roleModel) toDomain() *entity.Role {
 		role.Sort = 0
 	}
 
+	if m.DataScope != nil {
+		role.DataScope = *m.DataScope
+	} else {
+		role.DataScope = entity.DataScopeSelf
+	}
+
 	// ⭐ 处理关联数据 - 用户（同时填充 UserIds 和 Users）
 	if len(m.Users) > 0 {
 		users := make([]*entity.User, len(m.Users))
@@ -169,18 +164,6 @@ func (m *roleModel) toDomain() *entity.Role {
 		role.APIRouteIds = apiRouteIDs
 	}
 
-	// ⭐ 处理关联数据 - 按钮权限（同时填充 BtnPermIds 和 BtnPerms）
-	if len(m.BtnPerms) > 0 {
-		btnPerms := make([]*entity.BtnPerm, len(m.BtnPerms))
-		btnPermIDs := make([]int64, len(m.BtnPerms))
-		for i, btnPerm := range m.BtnPerms {
-			btnPerms[i] = btnPerm.toDomain()
-			btnPermIDs[i] = btnPerm.ID
-		}
-		role.BtnPerms = btnPerms
-		role.BtnPermIds = btnPermIDs
-	}
-
 	// ⭐ 处理关联数据 - 父角色
 	if m.Parent != nil {
 		role.Parent = m.Parent.toDomain()
@@ -200,6 +183,10 @@ func (m *roleModel) toDomain() *entity.Role {
 
 // fromDomain 将领域实体转换为数据库模型
 func fromDomainRole(role *entity.Role) (*roleModel, error) {
+	dataScope := role.DataScope
+	if dataScope == 0 {
+		dataScope = entity.DataScopeSelf
+	}
 	return &roleModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
 			ID:        role.ID,
@@ -214,6 +201,7 @@ func fromDomainRole(role *entity.Role) (*roleModel, error) {
 		Status:      common.IntPtr(role.Status),
 		IsSystem:    common.BoolPtr(role.IsSystem),
 		Sort:        common.IntPtr(role.Sort),
+		DataScope:   &dataScope,
 	}, nil
 }
 
@@ -571,84 +559,4 @@ func (r *roleRepository) GetAPIByPathAndMethod(path, method string) (*entity.API
 	return apiModel.toDomain(), nil
 }
 
-// AddBtnPermToRole 添加按钮权限到角色
-func (r *roleRepository) AddBtnPermToRole(roleID, btnPermID int64) error {
-	// 先检查是否已存在关联，避免重复创建
-	var count int64
-	err := r.db.Model(&roleBtnPermModel{}).Where("role_id = ? AND btn_perm_id = ?", roleID, btnPermID).Count(&count).Error
-	if err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil // 已存在关联则直接返回成功
-	}
 
-	model := &roleBtnPermModel{
-		RoleID:    roleID,
-		BtnPermID: btnPermID,
-	}
-
-	return r.db.Create(model).Error
-}
-
-// RemoveBtnPermFromRole 从角色移除按钮权限
-func (r *roleRepository) RemoveBtnPermFromRole(roleID, btnPermID int64) error {
-	return r.db.Where("role_id = ? AND btn_perm_id = ?", roleID, btnPermID).Delete(&roleBtnPermModel{}).Error
-}
-
-// GetBtnPermsByRole 获取角色下的所有按钮权限
-func (r *roleRepository) GetBtnPermsByRole(roleID int64) ([]*entity.BtnPerm, error) {
-	var btnPermModels []btnPermModel
-	err := r.db.Table("base_btn_perms").
-		Joins("JOIN base_role_btn_perms ON base_role_btn_perms.btn_perm_id = base_btn_perms.id").
-		Where("base_role_btn_perms.role_id = ?", roleID).
-		Find(&btnPermModels).Error
-	if err != nil {
-		return nil, err
-	}
-
-	btnPerms := make([]*entity.BtnPerm, len(btnPermModels))
-	for i, model := range btnPermModels {
-		btnPerms[i] = model.toDomain()
-	}
-
-	return btnPerms, nil
-}
-
-// GetRolesByBtnPerm 获取按钮权限的所有角色
-func (r *roleRepository) GetRolesByBtnPerm(btnPermID int64) ([]*entity.Role, error) {
-	var roleModels []roleModel
-	err := r.db.Table("base_roles").
-		Joins("JOIN base_role_btn_perms ON base_role_btn_perms.role_id = base_roles.id").
-		Where("base_role_btn_perms.btn_perm_id = ?", btnPermID).
-		Find(&roleModels).Error
-	if err != nil {
-		return nil, err
-	}
-
-	roles := make([]*entity.Role, len(roleModels))
-	for i, model := range roleModels {
-		roles[i] = model.toDomain()
-	}
-
-	return roles, nil
-}
-
-// GetUserSpecialBtnPermissions 获取用户的特殊按钮权限
-func (r *roleRepository) GetUserSpecialBtnPermissions(userID int64) ([]*entity.BtnPerm, error) {
-	var btnPermModels []btnPermModel
-	err := r.db.Table("base_btn_perms").
-		Joins("JOIN base_user_btn_perms ON base_user_btn_perms.btn_perm_id = base_btn_perms.id").
-		Where("base_user_btn_perms.user_id = ?", userID).
-		Find(&btnPermModels).Error
-	if err != nil {
-		return nil, err
-	}
-
-	btnPerms := make([]*entity.BtnPerm, len(btnPermModels))
-	for i, model := range btnPermModels {
-		btnPerms[i] = model.toDomain()
-	}
-
-	return btnPerms, nil
-}

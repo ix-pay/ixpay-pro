@@ -15,7 +15,6 @@ type API struct {
 	Status       int       // 状态：1-启用，0-禁用
 	RoleIds      []int64   // 关联的角色 ID 列表
 	MenuIds      []int64   // 关联的菜单 ID 列表
-	BtnPermIds   []int64   // 关联的按钮权限 ID 列表
 	CreatedBy    int64     // 创建人 ID
 	CreatedAt    time.Time // 创建时间
 	UpdatedBy    int64     // 更新人 ID

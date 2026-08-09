@@ -35,9 +35,6 @@ type menuModel struct {
 
 	// GORM 关联关系 - 多对多（通过中间表 base_menu_api_routes）
 	APIRoutes []apiModel `gorm:"many2many:base_menu_api_routes;joinForeignKey:menu_id;joinReferences:route_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-
-	// GORM 关联关系 - 一对多（按钮权限）
-	BtnPerms []btnPermModel `gorm:"foreignKey:menu_id;references:id"`
 }
 
 // TableName 指定表名
@@ -129,18 +126,6 @@ func (m *menuModel) toDomain() *entity.Menu {
 		menu.APIRouteIds = apiRouteIDs
 	}
 
-	// ⭐ 处理关联数据 - 按钮权限（同时填充 BtnPermIds 和 BtnPerms）
-	if len(m.BtnPerms) > 0 {
-		btnPerms := make([]*entity.BtnPerm, len(m.BtnPerms))
-		btnPermIDs := make([]int64, len(m.BtnPerms))
-		for i, btnPerm := range m.BtnPerms {
-			btnPerms[i] = btnPerm.toDomain()
-			btnPermIDs[i] = btnPerm.ID
-		}
-		menu.BtnPerms = btnPerms
-		menu.BtnPermIds = btnPermIDs
-	}
-
 	return menu
 }
 
@@ -185,7 +170,7 @@ func NewMenuRepository(db *database.PostgresDB) repo.MenuRepository {
 // GetByID 根据 ID 查询菜单并支持加载关联数据
 func (r *menuRepository) GetByID(id int64, relations ...repo.MenuRelation) (*entity.Menu, error) {
 	var dbModel menuModel
-	query := r.db.Where("id = ?", id)
+	query := r.db.Model(&menuModel{}).Where("id = ?", id)
 
 	// 根据指定的关联关系进行 Preload
 	for _, relation := range relations {
@@ -361,7 +346,7 @@ func (r *menuRepository) List(page, pageSize int, filters map[string]interface{}
 	var total int64
 	var dbModels []menuModel
 
-	query := r.db.Model(&menuModel{})
+	query := r.db.Model(&menuModel{}).Preload("APIRoutes")
 
 	// 应用过滤条件
 	for key, value := range filters {

@@ -46,7 +46,7 @@ export const forceLogout = (userId: string): Promise<ApiResponse> => {
 // 批量强制下线
 export const batchForceLogout = (data: { userIds: string[] }): Promise<ApiResponse> => {
   return service({
-    url: '/online-user/batch-logout',
+    url: '/online-user/batch',
     method: 'post',
     data,
   })

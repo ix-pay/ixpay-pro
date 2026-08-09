@@ -73,7 +73,7 @@ ixpay-pro/
 
 - **🔐 User Authentication**: Supports registration, login, WeChat login, and token refresh, using JWT for identity verification
 - **👮 Permission Management**: RBAC+ABAC hybrid model-based permission management, supporting menu, API route, and button-level permission control
-- **👥 Role Management**: Role CRUD, permission assignment, role inheritance, and permission group management
+- **👥 Role Management**: Role CRUD, permission assignment, role inheritance, and permission management
 - **📋 Menu Management**: Menu CRUD, tree structure management, supporting dynamic menu generation
 - **⚙️ Configuration Management**: System configuration CRUD, supporting multi-environment configurations
 - **📚 Dictionary Management**: Dictionary table and dictionary item management, supporting data classification and standardization
@@ -104,7 +104,6 @@ ixpay-pro/
 - **🔒 Security Protection**: Built-in input validation, SQL injection prevention, XSS attack prevention, and other security measures
 - **⚡ Performance Optimization**: Uses Redis caching, database indexing, and other technologies to optimize system performance
 - **📦 Containerized Deployment**: Supports Docker containerized deployment, simplifying deployment and operations
-- **📨 Event Bus**: Built-in event bus mechanism, supporting asynchronous event processing and dead letter queue
 - **⏰ Task Scheduling**: Powerful task scheduling system, supporting cache tasks, database tasks, HTTP tasks, script tasks, and other task types
 
 ### Gateway Functions
@@ -244,6 +243,7 @@ The system integrates Swagger/OpenAPI documentation, accessible after starting t
 | Captcha | POST | /api/admin/auth/captcha | Get captcha |
 | Refresh Token | POST | /api/admin/auth/refresh-token | Refresh access token |
 | Logout | POST | /api/admin/auth/logout | User logout |
+| JWT Blacklist | POST | /api/admin/auth/jwt/jsonInBlacklist | Add JWT to blacklist |
 
 #### User Management APIs
 
@@ -256,47 +256,207 @@ The system integrates Swagger/OpenAPI documentation, accessible after starting t
 | Delete User | DELETE | /api/admin/user/:id | Delete user |
 | Change Password | PUT | /api/admin/user/password | Change user password |
 | Reset Password | PUT | /api/admin/user/reset-password | Reset user password |
-
-#### Department Management APIs
-
-| Interface Name | Method | Path | Description |
-|---------------|--------|------|-------------|
-| Create Department | POST | /api/admin/departments | Create new department |
-| Get Department List | GET | /api/admin/departments | Get department list |
-| Get Department Details | GET | /api/admin/departments/detail | Get department details |
-| Update Department | PUT | /api/admin/departments | Update department info |
-| Delete Department | DELETE | /api/admin/departments | Delete department |
-
-#### Position Management APIs
-
-| Interface Name | Method | Path | Description |
-|---------------|--------|------|-------------|
-| Create Position | POST | /api/admin/positions | Create new position |
-| Get Position List | GET | /api/admin/positions | Get position list |
-| Get Position Details | GET | /api/admin/positions/detail | Get position details |
-| Update Position | PUT | /api/admin/positions | Update position info |
-| Delete Position | DELETE | /api/admin/positions | Delete position |
+| Switch Role | POST | /api/admin/user/switch-role | Switch user role |
+| Get User Settings | GET | /api/admin/user/get-user-settings | Get user personal settings |
+| Update User Settings | PUT | /api/admin/user/update-user-settings | Update user personal settings |
+| Set User Authority | POST | /api/admin/user/setUserAuthority | Set user authority (single role) |
+| Set User Authorities | POST | /api/admin/user/setUserAuthorities | Set user authorities (multiple roles) |
 
 #### Role Management APIs
 
 | Interface Name | Method | Path | Description |
 |---------------|--------|------|-------------|
-| Create Role | POST | /api/admin/roles | Create new role |
-| Get Role Details | GET | /api/admin/roles/detail | Get role details |
-| Update Role | PUT | /api/admin/roles | Update role info |
-| Delete Role | DELETE | /api/admin/roles | Delete role |
-| Get Role List | GET | /api/admin/roles | Get role list |
-| Assign Users to Role | POST | /api/admin/roles/assign-users | Assign users to role |
-| Assign Menus to Role | POST | /api/admin/roles/assign-menus | Assign menus to role |
+| Create Role | POST | /api/admin/role | Create new role |
+| Get Role List | GET | /api/admin/role | Get role list |
+| Get Role Detail | GET | /api/admin/role/:id/detail | Get role detail |
+| Get Available APIs | GET | /api/admin/role/:id/available-apis | Get available APIs for role |
+| Get Available Menus | GET | /api/admin/role/:id/available-menus | Get available menus for role |
+| Save Role Permissions | POST | /api/admin/role/:id/permissions | Save role permissions |
+| Update Role | PUT | /api/admin/role | Update role info (ID from request body) |
+| Delete Role | DELETE | /api/admin/role | Delete role (ID from request body) |
+| Get All Roles | GET | /api/admin/role/all | Get all roles |
+| Assign Users to Role | POST | /api/admin/role/assign-users | Assign users to role |
+| Assign Menus to Role | POST | /api/admin/role/assign-menus | Assign menus to role |
+| Assign APIs to Role | POST | /api/admin/role/assign-api-routes | Assign API routes to role |
+
+#### Menu Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get User Menu Tree | GET | /api/admin/menu | Get user menu tree |
+| Create Menu | POST | /api/admin/menu | Create new menu |
+| Update Menu | PUT | /api/admin/menu | Update menu info |
+| Delete Menu | DELETE | /api/admin/menu/:id | Delete menu |
+| Get Menu Page | GET | /api/admin/menu/page | Get menu paginated list |
+| Get Menu Tree | GET | /api/admin/menu/tree | Get full menu tree |
+| Get Delete Impact | GET | /api/admin/menu/:id/delete-impact | Get menu delete impact assessment |
+
+#### API Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get API List | GET | /api/admin/apis | Get API route list |
+| Get API Detail | GET | /api/admin/apis/:id | Get API route detail |
+| Create API | POST | /api/admin/apis | Create API route |
+| Update API | PUT | /api/admin/apis/:id | Update API route |
+| Delete API | DELETE | /api/admin/apis/:id | Delete API route |
+
+#### Department Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Create Department | POST | /api/admin/dept | Create new department |
+| Get Department List | GET | /api/admin/dept | Get department list |
+| Get Department Detail | GET | /api/admin/dept/:id | Get department detail |
+| Update Department | PUT | /api/admin/dept | Update department info (ID from request body) |
+| Delete Department | DELETE | /api/admin/dept/:id | Delete department |
+| Get Department Tree | GET | /api/admin/dept/tree | Get department tree |
+| Update Department Leader | PUT | /api/admin/dept/:id/leader | Update department leader |
+
+#### Position Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Create Position | POST | /api/admin/position | Create new position |
+| Get Position List | GET | /api/admin/position | Get position list |
+| Get Position Detail | GET | /api/admin/position/:id | Get position detail |
+| Update Position | PUT | /api/admin/position | Update position info (ID from request body) |
+| Delete Position | DELETE | /api/admin/position/:id | Delete position |
+| Get All Positions | GET | /api/admin/position/all | Get all positions |
+
+#### Dictionary Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Dict List | GET | /api/admin/dict | Get dictionary list |
+| Create Dict | POST | /api/admin/dict | Create dictionary |
+| Get Dict Detail | GET | /api/admin/dict/:id | Get dictionary detail |
+| Update Dict | PUT | /api/admin/dict | Update dictionary (ID from request body) |
+| Delete Dict | DELETE | /api/admin/dict/:id | Delete dictionary |
+| Get Dict Items | GET | /api/admin/dict/items | Get dict items by dict ID |
+| Create Dict Item | POST | /api/admin/dict/item | Create dict item |
+| Get Active Items | GET | /api/admin/dict/code/:code/active-items | Get active items by code |
+
+#### Configuration Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Config List | GET | /api/admin/config | Get config list |
+| Create Config | POST | /api/admin/config | Create config |
+| Get Config Detail | GET | /api/admin/config/:id | Get config detail |
+| Update Config | PUT | /api/admin/config | Update config |
+| Delete Config | DELETE | /api/admin/config/:id | Delete config |
+| Get Config By Key | GET | /api/admin/config/key | Get config by key |
+| Get Active Configs | GET | /api/admin/config/active | Get all active configs |
+
+#### Notice Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Notice List | GET | /api/admin/notices | Get notice list |
+| Create Notice | POST | /api/admin/notices | Create notice |
+| Get Notice Detail | GET | /api/admin/notices/:id | Get notice detail |
+| Update Notice | PUT | /api/admin/notices | Update notice (ID from request body) |
+| Delete Notice | DELETE | /api/admin/notices/:id | Delete notice |
+| Publish Notice | POST | /api/admin/notices/:id/publish | Publish notice |
+| Mark as Read | POST | /api/admin/notices/:id/read | Mark notice as read |
+| Check Is Read | GET | /api/admin/notices/:id/is-read | Check if notice is read |
+| Get Statistics | GET | /api/admin/notices/statistics | Get notice statistics |
+
+#### Operation Log APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Log List | GET | /api/admin/logs | Get operation log list |
+| Get Log Detail | GET | /api/admin/logs/:id | Get operation log detail |
+| Delete Log | DELETE | /api/admin/logs/:id | Delete operation log |
+| Batch Delete Logs | POST | /api/admin/logs/batch-delete | Batch delete operation logs |
+| Get Log Statistics | GET | /api/admin/logs/statistics | Get operation log statistics |
+| Clear Logs | POST | /api/admin/logs/clear | Clear operation logs by time range |
+
+#### Login Log APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Login Log List | GET | /api/admin/login-log | Get login log list |
+| Get Login Log Detail | GET | /api/admin/login-log/:id | Get login log detail |
+| Get Statistics | GET | /api/admin/login-log/statistics | Get login statistics |
+| Get Abnormal Logins | GET | /api/admin/login-log/abnormal | Get abnormal login records |
+| Record Login | POST | /api/admin/login-log | Record login log |
+| Batch Delete | POST | /api/admin/login-log/batch-delete | Batch delete login logs |
+| Clear Login Logs | POST | /api/admin/login-log/clear | Clear login logs |
+
+#### Online User APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Online User List | GET | /api/admin/online-user | Get online user list |
+| Get Online User Detail | GET | /api/admin/online-user/:user_id | Get online user detail |
+| Get Online Count | GET | /api/admin/online-user/count | Get online user count |
+| Check Is Online | GET | /api/admin/online-user/online | Check if user is online |
+| Force Offline | DELETE | /api/admin/online-user/:user_id | Force user offline |
+| Batch Force Offline | POST | /api/admin/online-user/batch | Batch force users offline |
+
+#### System Monitor APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get System Monitor | GET | /api/admin/monitor/system | Get system resource monitor |
+| Get Cache Monitor | GET | /api/admin/monitor/cache | Get cache monitor |
+| Get Database Monitor | GET | /api/admin/monitor/database | Get database monitor |
+| Get Redis Keys | GET | /api/admin/monitor/redis-keys | Query Redis keys |
+| Get Slow Queries | GET | /api/admin/monitor/slow-queries | Query slow query logs |
+
+#### Task Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Task List | GET | /api/admin/task | Get task list |
+| Create Task | POST | /api/admin/task | Create task |
+| Get Task Detail | GET | /api/admin/task/:id | Get task detail |
+| Update Task | PUT | /api/admin/task/:id | Update task |
+| Delete Task | DELETE | /api/admin/task/:id | Delete task |
+| Start Task | POST | /api/admin/task/:id/start | Start task |
+| Stop Task | POST | /api/admin/task/:id/stop | Stop task |
+| Retry Task | POST | /api/admin/task/:id/retry | Retry failed task |
+| Enable Task | POST | /api/admin/task/:id/enable | Enable task |
+| Disable Task | POST | /api/admin/task/:id/disable | Disable task |
+| Get Execution Logs | GET | /api/admin/task/:id/execution-logs | Get task execution logs |
+| Search Execution Logs | GET | /api/admin/task/execution-logs | Search execution logs |
+| Get Statistics | GET | /api/admin/task/statistics | Get task statistics |
+| Get Dashboard | GET | /api/admin/task/dashboard | Get task dashboard |
+| Set Task Group | POST | /api/admin/task/:id/group | Set task group |
+
+#### Permission Audit Log APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Permission Log List | GET | /api/admin/permission-logs | Get permission log list |
+| Get Role Permission Logs | GET | /api/admin/permission-logs/roles/:roleId | Get role permission logs |
+
+#### Node Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Node List | GET | /api/admin/nodes | Get node list |
+| Get Node Detail | GET | /api/admin/nodes/:id | Get node detail |
+| Offline Node | POST | /api/admin/nodes/:id/offline | Offline node |
+| Get Node Statistics | GET | /api/admin/nodes/statistics | Get node statistics |
+
+#### Gateway Service Management APIs
+
+| Interface Name | Method | Path | Description |
+|---------------|--------|------|-------------|
+| Get Service List | GET | /api/admin/gateway/services | Get gateway service list |
 
 #### Payment Management APIs
 
 | Interface Name | Method | Path | Description |
 |---------------|--------|------|-------------|
 | Create Payment | POST | /api/payment | Create payment order |
-| Query Payment | GET | /api/payment/{id} | Query payment details |
+| Query Payment | GET | /api/payment/:id | Query payment details |
 | Get User Payment List | GET | /api/payment | Get user payment list |
-| Cancel Payment | PUT | /api/payment/{id}/cancel | Cancel payment order |
+| Cancel Payment | PUT | /api/payment/:id/cancel | Cancel payment order |
 
 ### API Documentation Notes
 

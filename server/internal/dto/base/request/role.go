@@ -54,6 +54,5 @@ type AssignToRoleRequest struct {
 // SaveRolePermissionsRequest 保存角色权限请求模型
 type SaveRolePermissionsRequest struct {
 	MenuIds     []string `json:"menuIds" binding:"required"`
-	BtnPermIds  []string `json:"btnPermIds" binding:"required"`
 	ApiRouteIds []string `json:"apiRouteIds" binding:"required"`
 }

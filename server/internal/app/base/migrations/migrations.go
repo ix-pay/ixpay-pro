@@ -129,6 +129,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		status INTEGER NOT NULL DEFAULT 1,
 		is_system BOOLEAN NOT NULL DEFAULT false,
 		sort INTEGER NOT NULL DEFAULT 0,
+		data_scope INTEGER NOT NULL DEFAULT 4,
 		created_by BIGINT NOT NULL DEFAULT 0,
 		updated_by BIGINT NOT NULL DEFAULT 0,
 		deleted_by BIGINT NOT NULL DEFAULT 0,
@@ -242,31 +243,6 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_apis 表创建成功")
 	}
 
-	// 创建按钮权限表
-	createBtnPermsTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_btn_perms (
-		id BIGINT PRIMARY KEY,
-		menu_id BIGINT NOT NULL DEFAULT 0,
-		code VARCHAR(100) NOT NULL UNIQUE,
-		name VARCHAR(50) NOT NULL,
-		description VARCHAR(255),
-		status INTEGER NOT NULL DEFAULT 1,
-		created_by BIGINT NOT NULL DEFAULT 0,
-		updated_by BIGINT NOT NULL DEFAULT 0,
-		deleted_by BIGINT NOT NULL DEFAULT 0,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		deleted_at TIMESTAMP,
-		CONSTRAINT fk_button_menu FOREIGN KEY (menu_id) REFERENCES base_menus(id)
-	);
-	`
-
-	if err := db.Exec(createBtnPermsTableSQL).Error; err != nil {
-		log.Error("创建 base_btn_perms 表失败", "error", err)
-	} else {
-		log.Info("base_btn_perms 表创建成功")
-	}
-
 	// 创建角色 - 菜单关联表
 	createRoleMenusTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_role_menus (
@@ -336,39 +312,6 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_role_api_routes 表索引添加成功")
 	}
 
-	// 创建按钮权限-API 路由关联表
-	createBtnPermAPIRoutesTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_btn_perm_api_routes (
-		btn_perm_id BIGINT NOT NULL,
-		route_id BIGINT NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		PRIMARY KEY (btn_perm_id, route_id),
-		FOREIGN KEY (btn_perm_id) REFERENCES base_btn_perms(id) ON DELETE CASCADE,
-		FOREIGN KEY (route_id) REFERENCES base_apis(id) ON DELETE CASCADE
-	);
-	
-	-- 添加唯一索引避免重复授权
-	`
-
-	if err := db.Exec(createBtnPermAPIRoutesTableSQL).Error; err != nil {
-		log.Error("创建 base_btn_perm_api_routes 表失败", "error", err)
-	} else {
-		log.Info("base_btn_perm_api_routes 表创建成功")
-	}
-
-	// 添加按钮权限-API 路由关联表索引
-	addBtnPermAPIRoutesIndexSQL := `
-	CREATE UNIQUE INDEX IF NOT EXISTS uk_btn_perm_route ON base_btn_perm_api_routes(btn_perm_id, route_id);
-	CREATE INDEX IF NOT EXISTS idx_btn_perm_api_routes_btn_perm_id ON base_btn_perm_api_routes(btn_perm_id);
-	CREATE INDEX IF NOT EXISTS idx_btn_perm_api_routes_source ON base_btn_perm_api_routes(btn_perm_id);
-	`
-
-	if err := db.Exec(addBtnPermAPIRoutesIndexSQL).Error; err != nil {
-		log.Error("添加 base_btn_perm_api_routes 表索引失败", "error", err)
-	} else {
-		log.Info("base_btn_perm_api_routes 表索引添加成功")
-	}
-
 	// 创建菜单-API 路由关联表
 	createMenuAPIRoutesTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_menu_api_routes (
@@ -398,38 +341,6 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Error("添加 base_menu_api_routes 表索引失败", "error", err)
 	} else {
 		log.Info("base_menu_api_routes 表索引添加成功")
-	}
-
-	// 创建角色 - 按钮权限关联表
-	createRoleButtonPermissionsTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_role_btn_perms (
-		role_id BIGINT NOT NULL,
-		btn_perm_id BIGINT NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		PRIMARY KEY (role_id, btn_perm_id),
-		FOREIGN KEY (role_id) REFERENCES base_roles(id) ON DELETE CASCADE,
-		FOREIGN KEY (btn_perm_id) REFERENCES base_btn_perms(id) ON DELETE CASCADE
-	);
-
-	-- 添加唯一索引避免重复授权
-	`
-
-	if err := db.Exec(createRoleButtonPermissionsTableSQL).Error; err != nil {
-		log.Error("创建 base_role_btn_perms 表失败", "error", err)
-	} else {
-		log.Info("base_role_btn_perms 表创建成功")
-	}
-
-	// 添加角色 - 按钮权限关联表索引
-	addRoleButtonPermissionsIndexSQL := `
-	CREATE UNIQUE INDEX IF NOT EXISTS uk_role_btn_perm ON base_role_btn_perms(role_id, btn_perm_id);
-	CREATE INDEX IF NOT EXISTS idx_role_btn_perms_btn_perm_id ON base_role_btn_perms(btn_perm_id);
-	`
-
-	if err := db.Exec(addRoleButtonPermissionsIndexSQL).Error; err != nil {
-		log.Error("添加 base_role_btn_perms 表索引失败", "error", err)
-	} else {
-		log.Info("base_role_btn_perms 表索引添加成功")
 	}
 
 	// 创建字典表
@@ -837,6 +748,66 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_user_settings 表索引添加成功")
 	}
 
+	// 创建权限规则-角色关联表
+	createPermissionRuleRolesTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_permission_rule_roles (
+		rule_id BIGINT NOT NULL,
+		role_id BIGINT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		PRIMARY KEY (rule_id, role_id),
+		FOREIGN KEY (rule_id) REFERENCES base_permission_rules(id) ON DELETE CASCADE,
+		FOREIGN KEY (role_id) REFERENCES base_roles(id) ON DELETE CASCADE
+	);
+	`
+
+	if err := db.Exec(createPermissionRuleRolesTableSQL).Error; err != nil {
+		log.Error("创建 base_permission_rule_roles 表失败", "error", err)
+	} else {
+		log.Info("base_permission_rule_roles 表创建成功")
+	}
+
+	// 添加权限规则-角色关联表索引
+	addPermissionRuleRolesIndexSQL := `
+	CREATE UNIQUE INDEX IF NOT EXISTS uk_rule_role ON base_permission_rule_roles(rule_id, role_id);
+	CREATE INDEX IF NOT EXISTS idx_rule_roles_role_id ON base_permission_rule_roles(role_id);
+	`
+
+	if err := db.Exec(addPermissionRuleRolesIndexSQL).Error; err != nil {
+		log.Error("添加 base_permission_rule_roles 表索引失败", "error", err)
+	} else {
+		log.Info("base_permission_rule_roles 表索引添加成功")
+	}
+
+	// 创建权限规则-用户关联表
+	createPermissionRuleUsersTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_permission_rule_users (
+		rule_id BIGINT NOT NULL,
+		user_id BIGINT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		PRIMARY KEY (rule_id, user_id),
+		FOREIGN KEY (rule_id) REFERENCES base_permission_rules(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id) REFERENCES base_users(id) ON DELETE CASCADE
+	);
+	`
+
+	if err := db.Exec(createPermissionRuleUsersTableSQL).Error; err != nil {
+		log.Error("创建 base_permission_rule_users 表失败", "error", err)
+	} else {
+		log.Info("base_permission_rule_users 表创建成功")
+	}
+
+	// 添加权限规则-用户关联表索引
+	addPermissionRuleUsersIndexSQL := `
+	CREATE UNIQUE INDEX IF NOT EXISTS uk_rule_user ON base_permission_rule_users(rule_id, user_id);
+	CREATE INDEX IF NOT EXISTS idx_rule_users_user_id ON base_permission_rule_users(user_id);
+	`
+
+	if err := db.Exec(addPermissionRuleUsersIndexSQL).Error; err != nil {
+		log.Error("添加 base_permission_rule_users 表索引失败", "error", err)
+	} else {
+		log.Info("base_permission_rule_users 表索引添加成功")
+	}
+
 	// 创建权限规则表
 	createPermissionRulesTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_permission_rules (
@@ -875,41 +846,6 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Error("添加 base_permission_rules 表索引失败", "error", err)
 	} else {
 		log.Info("base_permission_rules 表索引添加成功")
-	}
-
-	// 创建权限组表
-	createPermissionGroupsTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_permission_groups (
-		id BIGINT PRIMARY KEY,
-		name VARCHAR(100) UNIQUE NOT NULL,
-		description VARCHAR(500),
-		status INTEGER NOT NULL DEFAULT 1,
-		sort INTEGER NOT NULL DEFAULT 0,
-		created_by BIGINT NOT NULL DEFAULT 0,
-		updated_by BIGINT NOT NULL DEFAULT 0,
-		deleted_by BIGINT NOT NULL DEFAULT 0,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		deleted_at TIMESTAMP
-	);
-	`
-
-	if err := db.Exec(createPermissionGroupsTableSQL).Error; err != nil {
-		log.Error("创建 base_permission_groups 表失败", "error", err)
-	} else {
-		log.Info("base_permission_groups 表创建成功")
-	}
-
-	// 添加权限组表索引
-	addPermissionGroupsIndexSQL := `
-	-- 添加唯一索引避免重复项
-	CREATE UNIQUE INDEX IF NOT EXISTS idx_base_permission_groups_name ON base_permission_groups(name);
-	`
-
-	if err := db.Exec(addPermissionGroupsIndexSQL).Error; err != nil {
-		log.Error("添加 base_permission_groups 表索引失败", "error", err)
-	} else {
-		log.Info("base_permission_groups 表索引添加成功")
 	}
 
 	// 创建公告表
@@ -990,124 +926,6 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_notice_read_records 表索引添加成功")
 	}
 
-	// 创建事件表（EventBus 事件总线）
-	createEventsTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_events (
-		id BIGINT PRIMARY KEY,
-		name VARCHAR(255) NOT NULL,
-		payload TEXT,
-		status VARCHAR(32) NOT NULL DEFAULT '0',
-		priority INTEGER NOT NULL DEFAULT 0,
-		max_retries INTEGER NOT NULL DEFAULT 3,
-		retry_count INTEGER NOT NULL DEFAULT 0,
-		delay_seconds INTEGER NOT NULL DEFAULT 0,
-		scheduled_at TIMESTAMP,
-		processed_at TIMESTAMP,
-		next_retry_at TIMESTAMP,
-		error_message TEXT,
-		subscriber_count INTEGER NOT NULL DEFAULT 0,
-		metadata JSONB,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-	);
-	`
-
-	if err := db.Exec(createEventsTableSQL).Error; err != nil {
-		log.Error("创建 base_events 表失败", "error", err)
-	} else {
-		log.Info("base_events 表创建成功")
-	}
-
-	// 添加事件表索引
-	addEventsIndexSQL := `
-	-- 添加索引，用于快速查询事件
-	CREATE INDEX IF NOT EXISTS idx_base_events_name ON base_events(name);
-	CREATE INDEX IF NOT EXISTS idx_base_events_status ON base_events(status);
-	CREATE INDEX IF NOT EXISTS idx_base_events_priority ON base_events(priority);
-	CREATE INDEX IF NOT EXISTS idx_base_events_created_at ON base_events(created_at);
-	CREATE INDEX IF NOT EXISTS idx_base_events_scheduled_at ON base_events(scheduled_at);
-	`
-
-	if err := db.Exec(addEventsIndexSQL).Error; err != nil {
-		log.Error("添加 base_events 表索引失败", "error", err)
-	} else {
-		log.Info("base_events 表索引添加成功")
-	}
-
-	// 创建事件投递记录表
-	createEventDeliveriesTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_event_deliveries (
-		id BIGINT PRIMARY KEY,
-		event_id BIGINT NOT NULL,
-		subscriber_id BIGINT NOT NULL,
-		status VARCHAR(32) NOT NULL DEFAULT '0',
-		attempts INTEGER NOT NULL DEFAULT 0,
-		max_attempts INTEGER NOT NULL DEFAULT 3,
-		error_message TEXT,
-		delivered_at TIMESTAMP,
-		next_retry_at TIMESTAMP,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		FOREIGN KEY (event_id) REFERENCES base_events(id) ON DELETE CASCADE
-	);
-	`
-
-	if err := db.Exec(createEventDeliveriesTableSQL).Error; err != nil {
-		log.Error("创建 base_event_deliveries 表失败", "error", err)
-	} else {
-		log.Info("base_event_deliveries 表创建成功")
-	}
-
-	// 添加事件投递记录表索引
-	addEventDeliveriesIndexSQL := `
-	-- 添加索引，用于快速查询事件投递记录
-	CREATE INDEX IF NOT EXISTS idx_base_event_deliveries_event_id ON base_event_deliveries(event_id);
-	CREATE INDEX IF NOT EXISTS idx_base_event_deliveries_subscriber_id ON base_event_deliveries(subscriber_id);
-	CREATE INDEX IF NOT EXISTS idx_base_event_deliveries_status ON base_event_deliveries(status);
-	`
-
-	if err := db.Exec(addEventDeliveriesIndexSQL).Error; err != nil {
-		log.Error("添加 base_event_deliveries 表索引失败", "error", err)
-	} else {
-		log.Info("base_event_deliveries 表索引添加成功")
-	}
-
-	// 创建订阅者表
-	createSubscribersTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_subscribers (
-		id BIGINT PRIMARY KEY,
-		name VARCHAR(255) NOT NULL UNIQUE,
-		event_name VARCHAR(255) NOT NULL,
-		endpoint VARCHAR(2048),
-		is_active BOOLEAN NOT NULL DEFAULT true,
-		max_retries INTEGER NOT NULL DEFAULT 3,
-		timeout INTEGER NOT NULL DEFAULT 30,
-		priority INTEGER NOT NULL DEFAULT 0,
-		last_delivered_at TIMESTAMP,
-		failure_count INTEGER NOT NULL DEFAULT 0,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-	);
-	`
-
-	if err := db.Exec(createSubscribersTableSQL).Error; err != nil {
-		log.Error("创建 base_subscribers 表失败", "error", err)
-	} else {
-		log.Info("base_subscribers 表创建成功")
-	}
-
-	// 添加订阅者表索引
-	addSubscribersIndexSQL := `
-	-- 添加索引，用于快速查询订阅者
-	CREATE INDEX IF NOT EXISTS idx_base_subscribers_event_name ON base_subscribers(event_name);
-	CREATE INDEX IF NOT EXISTS idx_base_subscribers_is_active ON base_subscribers(is_active);
-	`
-
-	if err := db.Exec(addSubscribersIndexSQL).Error; err != nil {
-		log.Error("添加 base_subscribers 表索引失败", "error", err)
-	} else {
-		log.Info("base 应用数据库迁移完成")
-	}
 }
 
 // CreatePermissionLogsTable 创建权限审计日志表

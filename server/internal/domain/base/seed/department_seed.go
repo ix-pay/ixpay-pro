@@ -29,9 +29,9 @@ func (ds *DepartmentSeed) Name() string {
 	return "department_seed"
 }
 
-// Order 返回初始化顺序
+// Order 返回初始化顺序（第二个执行）
 func (ds *DepartmentSeed) Order() int {
-	return 3
+	return 2
 }
 
 // Init 初始化部门种子数据

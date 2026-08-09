@@ -74,18 +74,6 @@ export interface Menu {
   children?: Menu[]
 }
 
-// 按钮权限信息
-// 注意：所有 ID 字段使用 string 类型，避免 JavaScript Number 精度丢失问题
-export interface BtnPerm {
-  id: string
-  menuId: string
-  name: string
-  code: string
-  icon?: string
-  sort?: number
-  apis?: ApiRoute[]
-}
-
 // API 路由信息
 // 注意：所有 ID 字段使用 string 类型，避免 JavaScript Number 精度丢失问题
 export interface ApiRoute {
@@ -99,23 +87,21 @@ export interface ApiRoute {
 
 // 角色权限设置请求
 // 注意：所有 ID 字段使用 string 类型，避免 JavaScript Number 精度丢失问题
+// 按钮（type=3）已作为菜单项存储在 base_menus 表中，通过 menuIds 统一授权
 export interface RolePermissionRequest {
   menuIds: string[]
-  btnPermIds: string[]
   apiRouteIds: string[]
 }
 
 // 角色权限设置响应
 export interface RolePermissionResponse {
   menus: Menu[]
-  btnPerms: BtnPerm[]
   apiRoutes: ApiRoute[]
 }
 
 // 删除影响评估
 export interface DeleteImpact {
   childMenusCount: number
-  btnPermsCount: number
   affectedRolesCount: number
   affectedApisCount: number
   level: 'LOW' | 'MEDIUM' | 'HIGH'
@@ -127,8 +113,8 @@ export interface PermissionLog {
   id: number
   operatorId: number
   operatorName: string
-  actionType: string // SAVE_ROLE_PERMS, DELETE_MENU, DELETE_BTN_PERM, DELETE_API
-  targetType: string // ROLE, MENU, BTN_PERM, API
+  actionType: string // SAVE_ROLE_PERMS, DELETE_MENU, DELETE_API
+  targetType: string // ROLE, MENU, API
   targetId: number
   beforeData?: Record<string, unknown>
   afterData?: Record<string, unknown>

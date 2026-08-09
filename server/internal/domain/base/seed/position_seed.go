@@ -29,9 +29,9 @@ func (ps *PositionSeed) Name() string {
 	return "position_seed"
 }
 
-// Order 返回初始化顺序
+// Order 返回初始化顺序（第三个执行）
 func (ps *PositionSeed) Order() int {
-	return 4
+	return 3
 }
 
 // Init 初始化岗位种子数据

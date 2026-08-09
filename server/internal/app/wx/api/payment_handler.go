@@ -2,6 +2,7 @@ package wxapi
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 
 	wxService "github.com/ix-pay/ixpay-pro/internal/domain/wx/service"
@@ -101,6 +102,88 @@ func (c *PaymentController) CreatePayment(ctx *gin.Context) {
 	baseRes.OkWithDetailed(paymentResponse, "创建支付成功", ctx)
 }
 
+// CreateUnifiedOrder 创建微信统一下单
+// @Summary 微信统一下单
+// @Description 创建微信支付统一下单，返回 JSAPI 调起支付参数
+// @Tags 微信支付
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param body body request.CreateUnifiedOrderRequest true "统一下单请求参数"
+// @Success 200 {object} baseRes.Response{data=response.UnifiedOrderResponse,msg=string} "统一下单成功"
+// @Failure 400 {object} map[string]string "请求参数错误"
+// @Failure 401 {object} map[string]string "未授权"
+// @Failure 500 {object} map[string]string "服务器内部错误"
+// @Router /api/wx/pay/unified-order [post]
+func (c *PaymentController) CreateUnifiedOrder(ctx *gin.Context) {
+	var req request.CreateUnifiedOrderRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	// 从上下文中获取用户 ID 和 openID
+	userID, exists := ctx.Get("userID")
+	if !exists {
+		c.log.Error("未授权")
+		baseRes.NoAuth("未授权", ctx)
+		return
+	}
+
+	userIDInt, err := strconv.ParseInt(userID.(string), 10, 64)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
+	}
+
+	// 从上下文中获取 openID（由认证中间件设置）
+	openID, exists := ctx.Get("openID")
+	if !exists {
+		c.log.Error("缺少微信 openID")
+		baseRes.FailWithMessage("缺少微信 openID", ctx)
+		return
+	}
+	openIDStr := openID.(string)
+
+	// 获取客户端 IP
+	clientIP := ctx.ClientIP()
+
+	// 将金额从元转换为分
+	amount := int64(req.Amount * 100)
+
+	// 调用服务层创建微信支付
+	payment, jsapiParams, err := c.service.CreateWechatPayment(
+		userIDInt,
+		openIDStr,
+		req.OrderID,
+		amount,
+		req.Description,
+		clientIP,
+	)
+	if err != nil {
+		c.log.Error("创建微信支付失败", "error", err)
+		baseRes.FailWithMessage("创建微信支付失败", ctx)
+		return
+	}
+
+	// 构建响应
+	resp := response.UnifiedOrderResponse{
+		PrepayID: payment.WechatPayInfo.PrepayID,
+		JSAPIParams: response.JSAPIParamsResponse{
+			AppID:     jsapiParams.AppID,
+			TimeStamp: jsapiParams.TimeStamp,
+			NonceStr:  jsapiParams.NonceStr,
+			Package:   jsapiParams.Package,
+			SignType:  jsapiParams.SignType,
+			PaySign:   jsapiParams.PaySign,
+		},
+	}
+
+	baseRes.OkWithDetailed(resp, "创建微信支付成功", ctx)
+}
+
 // GetPayment 查询支付
 // @Summary 查询支付
 // @Description 根据 ID 查询支付详情
@@ -172,33 +255,75 @@ func (c *PaymentController) GetPayment(ctx *gin.Context) {
 
 // GetUserPayments 获取用户支付列表
 // @Summary 获取用户支付列表
-// @Description 获取当前登录用户的所有支付记录
+// @Description 获取当前登录用户的所有支付记录（按用户ID过滤）
 // @Tags 支付管理
 // @Accept json
 // @Produce json
 // @Security BearerAuth
+// @Param page query int false "页码（默认1）"
+// @Param pageSize query int false "每页条数（默认10）"
 // @Success 200 {object} map[string]interface{} "支付列表及分页信息"
 // @Failure 401 {object} map[string]string "未授权"
-// @Router /api//payment [get]
+// @Router /api/wx/payment [get]
 func (c *PaymentController) GetUserPayments(ctx *gin.Context) {
-	// 从上下文中获取用户 ID（实际未使用）
-	_, exists := ctx.Get("userID")
+	// 从上下文中获取用户 ID
+	userID, exists := ctx.Get("userID")
 	if !exists {
 		c.log.Error("未授权")
 		baseRes.NoAuth("未授权", ctx)
 		return
 	}
 
-	// 由于 service 中没有 GetUserPayments 方法，返回空列表
-	// 实际实现应该在 service 层添加这个方法
-	c.log.Error("GetUserPayments 方法在 service 层未实现")
-	response := baseRes.PageResult{
-		List:     []response.PaymentResponse{},
-		Total:    0,
-		Page:     1,
-		PageSize: 10,
+	userIDInt, err := strconv.ParseInt(userID.(string), 10, 64)
+	if err != nil {
+		c.log.Error("用户 ID 格式错误", "error", err)
+		baseRes.FailWithMessage("用户 ID 格式错误", ctx)
+		return
 	}
-	baseRes.OkWithDetailed(response, "查询支付成功", ctx)
+
+	// 解析分页参数
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	// 调用服务层按用户ID查询支付记录
+	payments, total, err := c.service.GetUserPayments(userIDInt, page, pageSize)
+	if err != nil {
+		c.log.Error("获取用户支付列表失败", "error", err)
+		baseRes.FailWithMessage("获取支付列表失败", ctx)
+		return
+	}
+
+	// 构建响应
+	paymentResponses := make([]response.PaymentResponse, 0, len(payments))
+	for _, payment := range payments {
+		paymentResponses = append(paymentResponses, response.PaymentResponse{
+			ID:            fmt.Sprintf("%d", payment.ID),
+			OrderID:       payment.OrderID,
+			UserID:        fmt.Sprintf("%d", payment.UserID),
+			Amount:        float64(payment.Amount) / 100.0,
+			Currency:      payment.Currency,
+			PaymentMethod: payment.Method,
+			Status:        string(payment.Status),
+			TransactionID: payment.TransactionID,
+			Description:   payment.Description,
+			CreatedAt:     payment.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:     payment.UpdatedAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+
+	result := baseRes.PageResult{
+		List:     paymentResponses,
+		Total:    int64(total),
+		Page:     page,
+		PageSize: pageSize,
+	}
+	baseRes.OkWithDetailed(result, "查询支付成功", ctx)
 }
 
 // CancelPayment 取消支付
@@ -297,17 +422,60 @@ func (c *PaymentController) CancelPayment(ctx *gin.Context) {
 // @Summary 微信支付通知
 // @Description 微信支付回调接口，用于处理支付结果通知
 // @Tags 支付管理
-// @Accept x-www-form-urlencoded
+// @Accept xml
 // @Produce xml
 // @Success 200 {string} string "成功响应"
-// @Router /api//pay/notify/wechat [post]
+// @Router /api/wx/pay/notify/wechat [post]
 func (c *PaymentController) HandleWechatPayNotify(ctx *gin.Context) {
-	// 解析微信支付通知数据
-	// 这里简化处理，实际应该根据微信支付API文档进行解析
+	// 读取 XML 请求体
+	body, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		c.log.Error("读取通知请求体失败", "error", err)
+		ctx.Data(200, "application/xml", wxService.BuildFailXMLResponse("读取请求体失败"))
+		return
+	}
 
-	// 处理支付结果
-	// 这里简化处理，实际应该根据微信支付通知内容更新支付状态
+	if len(body) == 0 {
+		c.log.Error("通知请求体为空")
+		ctx.Data(200, "application/xml", wxService.BuildFailXMLResponse("请求体为空"))
+		return
+	}
 
-	// 返回成功响应给微信服务器
-	_, _ = ctx.Writer.WriteString("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>")
+	// 调用服务层处理通知
+	_, err = c.service.HandleWechatPayNotify(body)
+	if err != nil {
+		c.log.Error("处理微信支付通知失败", "error", err)
+		ctx.Data(200, "application/xml", wxService.BuildFailXMLResponse(err.Error()))
+		return
+	}
+
+	// 返回成功响应
+	ctx.Data(200, "application/xml", wxService.BuildSuccessXMLResponse())
+}
+
+// GetJSAPIConfig 获取微信 JS-SDK 配置
+// @Summary 获取微信 JS-SDK 配置
+// @Description 返回用于 wx.config() 的配置参数（appId、timestamp、nonceStr、signature）
+// @Tags 微信支付
+// @Accept json
+// @Produce json
+// @Success 200 {object} baseRes.Response{data=response.WXJSAPIConfigResponse,msg=string} "获取配置成功"
+// @Failure 500 {object} map[string]string "服务器内部错误"
+// @Router /api/wx/pay/jsapi-config [get]
+func (c *PaymentController) GetJSAPIConfig(ctx *gin.Context) {
+	config, err := c.service.GetJSAPIConfig()
+	if err != nil {
+		c.log.Error("获取微信 JS-SDK 配置失败", "error", err)
+		baseRes.FailWithMessage("获取微信配置失败", ctx)
+		return
+	}
+
+	resp := response.WXJSAPIConfigResponse{
+		AppID:     config.AppID,
+		Timestamp: config.Timestamp,
+		NonceStr:  config.NonceStr,
+		Signature: config.Signature,
+	}
+
+	baseRes.OkWithDetailed(resp, "获取微信 JS-SDK 配置成功", ctx)
 }

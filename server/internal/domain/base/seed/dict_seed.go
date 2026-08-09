@@ -33,7 +33,7 @@ func (ds *DictSeed) Name() string {
 	return "dict_seed"
 }
 
-// Order 返回初始化顺序（第六个执行）
+// Order 返回初始化顺序（第六个执行，字典数据独立）
 func (ds *DictSeed) Order() int {
 	return 6
 }

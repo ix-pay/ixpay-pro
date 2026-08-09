@@ -19,7 +19,6 @@ type CreateAPIRequest struct {
 	Status       int      `json:"status" binding:"oneof=0 1"`
 	RoleIds      []string `json:"roleIds"`
 	MenuIds      []string `json:"menuIds"`
-	BtnPermIds   []string `json:"btnPermIds"`
 }
 
 // UpdateAPIRequest 更新 API 路由请求
@@ -34,5 +33,4 @@ type UpdateAPIRequest struct {
 	Status       int      `json:"status" binding:"oneof=0 1"`
 	RoleIds      []string `json:"roleIds"`
 	MenuIds      []string `json:"menuIds"`
-	BtnPermIds   []string `json:"btnPermIds"`
 }

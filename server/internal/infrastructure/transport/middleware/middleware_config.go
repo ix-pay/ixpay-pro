@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ix-pay/ixpay-pro/internal/config"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/cache"
 	auth "github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
@@ -46,6 +47,7 @@ func SetupMiddlewareConfig(
 	auth *auth.JWTAuth,
 	log logger.Logger,
 	cache cache.Cache,
+	corsCfg *config.CORSConfig,
 ) *MiddlewareConfig {
 	// 创建中间件配置实例
 	mc := &MiddlewareConfig{
@@ -60,7 +62,7 @@ func SetupMiddlewareConfig(
 	mc.SetupRequestLogMiddleware()
 	mc.SetupAuditLogMiddleware()
 	mc.SetupErrorMiddleware()
-	mc.SetupCorsMiddleware()
+	mc.SetupCorsMiddleware(corsCfg)
 	mc.SetupCacheMiddleware(0) // 默认缓存过期时间为 0
 	mc.SetupCacheControlMiddleware()
 	mc.SetupAuthMiddleware()
@@ -201,8 +203,8 @@ func (mc *MiddlewareConfig) SetupErrorMiddleware() {
 }
 
 // SetupCorsMiddleware 设置CORS中间件
-func (mc *MiddlewareConfig) SetupCorsMiddleware() {
-	mc.CORSMiddleware = CORSMiddleware()
+func (mc *MiddlewareConfig) SetupCorsMiddleware(cfg *config.CORSConfig) {
+	mc.CORSMiddleware = CORSMiddleware(cfg)
 }
 
 // SetupCacheControlMiddleware 设置缓存控制中间件

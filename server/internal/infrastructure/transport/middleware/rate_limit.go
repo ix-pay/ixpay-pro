@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
@@ -15,15 +16,57 @@ type RateLimiter struct {
 	mu       sync.Mutex
 	rate     rate.Limit
 	burst    int
+
+	// 清理相关
+	cleanupInterval time.Duration
+	lastAccess      map[string]time.Time
+	stopCh          chan struct{}
 }
 
 // NewRateLimiter 创建一个新的速率限制器
 func NewRateLimiter(r rate.Limit, b int) *RateLimiter {
-	return &RateLimiter{
-		limiters: make(map[string]*rate.Limiter),
-		rate:     r,
-		burst:    b,
+	rl := &RateLimiter{
+		limiters:        make(map[string]*rate.Limiter),
+		rate:            r,
+		burst:           b,
+		cleanupInterval: 10 * time.Minute,
+		lastAccess:      make(map[string]time.Time),
+		stopCh:          make(chan struct{}),
 	}
+
+	// 启动后台清理协程
+	go rl.cleanupLoop()
+
+	return rl
+}
+
+// cleanupLoop 定期清理过期条目
+func (rl *RateLimiter) cleanupLoop() {
+	ticker := time.NewTicker(rl.cleanupInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			rl.mu.Lock()
+			now := time.Now()
+			for key, last := range rl.lastAccess {
+				// 清理超过 30 分钟未访问的条目
+				if now.Sub(last) > 30*time.Minute {
+					delete(rl.limiters, key)
+					delete(rl.lastAccess, key)
+				}
+			}
+			rl.mu.Unlock()
+		case <-rl.stopCh:
+			return
+		}
+	}
+}
+
+// Stop 停止后台清理协程
+func (rl *RateLimiter) Stop() {
+	close(rl.stopCh)
 }
 
 // getLimiter 根据客户端IP获取或创建一个速率限制器
@@ -36,6 +79,7 @@ func (rl *RateLimiter) getLimiter(key string) *rate.Limiter {
 		limiter = rate.NewLimiter(rl.rate, rl.burst)
 		rl.limiters[key] = limiter
 	}
+	rl.lastAccess[key] = time.Now()
 
 	return limiter
 }
@@ -47,8 +91,6 @@ func RateLimitMiddleware(r rate.Limit, b int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 使用客户端IP作为限流键
 		clientIP := c.ClientIP()
-		// 也可以根据用户ID进行限流
-		// userID, exists := c.Get("userID")
 
 		// 获取速率限制器
 		rateLimiter := limiter.getLimiter(clientIP)

@@ -92,7 +92,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/modules/user'
-import { getUserInfo, setSelfInfo, changePassword } from '@/api/modules/user'
+import { getUserInfo, updateUserInfo, changePassword } from '@/api/modules/user'
 
 defineOptions({
   name: 'ProfilePage',
@@ -208,7 +208,7 @@ const handleUpdateProfile = async () => {
       email: profileForm.email,
       phone: profileForm.phone,
     }
-    await setSelfInfo(updateData)
+    await updateUserInfo({ ...updateData, id: profileForm.id })
     ElMessage.success('个人资料更新成功')
     // 更新用户存储
     await userStore.GetUserInfo()

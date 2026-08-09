@@ -1,6 +1,7 @@
 package baseapi
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -348,7 +349,22 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 		status = 1 // 默认激活
 	}
 
-	user, err := c.service.AddUser(req.Username, req.Password, req.Email, req.Nickname, req.Phone, req.Avatar, req.DepartmentID, req.PositionID, createdBy.(string), status)
+	// 将 createdBy 安全转换为 string
+	var createdByStr string
+	switch v := createdBy.(type) {
+	case string:
+		createdByStr = v
+	case int64:
+		createdByStr = strconv.FormatInt(v, 10)
+	case int:
+		createdByStr = strconv.Itoa(v)
+	case float64:
+		createdByStr = strconv.FormatInt(int64(v), 10)
+	default:
+		createdByStr = fmt.Sprintf("%v", v)
+	}
+
+	user, err := c.service.AddUser(req.Username, req.Password, req.Email, req.Nickname, req.Phone, req.Avatar, req.DepartmentID, req.PositionID, createdByStr, status)
 	if err != nil {
 		baseRes.FailWithMessage(err.Error(), ctx)
 		return
@@ -447,6 +463,8 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 	case int64:
 		updatedByInt = v
 	case int:
+		updatedByInt = int64(v)
+	case float64:
 		updatedByInt = int64(v)
 	}
 

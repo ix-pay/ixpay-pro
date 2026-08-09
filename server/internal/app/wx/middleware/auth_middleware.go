@@ -42,6 +42,7 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 		c.Set("userName", claims.Username)
 		c.Set("role", claims.Role)
 		c.Set("loginType", claims.LoginType)
+		c.Set("openID", claims.OpenID)
 		c.Set("claims", claims)
 
 		c.Next()

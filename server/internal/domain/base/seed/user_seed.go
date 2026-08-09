@@ -32,7 +32,7 @@ func (us *UserSeed) Name() string {
 	return "user_seed"
 }
 
-// Order 返回初始化顺序（第四个执行）
+// Order 返回初始化顺序（第四个执行，需要角色、部门、岗位先就绪）
 func (us *UserSeed) Order() int {
 	return 4
 }

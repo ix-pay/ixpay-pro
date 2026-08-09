@@ -322,13 +322,23 @@ func (c *OperationLogController) GetLogStatistics(ctx *gin.Context) {
 		return
 	}
 
-	// 转换为响应 DTO
+	// 安全地从 map 中提取统计数据
+	totalVal, _ := stats["total"].(int)
+	successVal, _ := stats["success"].(int)
+	failVal, _ := stats["fail"].(int)
+
+	// 计算成功率
+	var successRate int64
+	if totalVal > 0 {
+		successRate = int64(float64(successVal) / float64(totalVal) * 100)
+	}
+
 	statsResponse := response.OperationLogStatisticsResponse{
-		TotalCount:   int64(stats["total_count"].(float64)),
-		SuccessCount: int64(stats["success_count"].(float64)),
-		FailedCount:  int64(stats["failed_count"].(float64)),
-		SuccessRate:  int64(stats["success_rate"].(float64)),
-		AvgDuration:  int64(stats["avg_duration"].(float64)),
+		TotalCount:   int64(totalVal),
+		SuccessCount: int64(successVal),
+		FailedCount:  int64(failVal),
+		SuccessRate:  successRate,
+		AvgDuration:  0,
 	}
 
 	baseRes.OkWithDetailed(statsResponse, "获取统计信息成功", ctx)

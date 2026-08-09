@@ -225,7 +225,7 @@ func getResourceModuleName(resource string) string {
 		"user":            "用户管理",
 		"role":            "角色管理",
 		"menu":            "菜单管理",
-		"btn-perms":       "按钮权限",
+		
 		"apis":            "API管理",
 		"logs":            "操作日志",
 		"login-log":       "登录日志",

@@ -14,7 +14,6 @@ import (
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/cache"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
-	"github.com/ix-pay/ixpay-pro/internal/infrastructure/support/eventbus"
 	infraMiddleware "github.com/ix-pay/ixpay-pro/internal/infrastructure/transport/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +33,6 @@ type AppBase struct {
 	apiController            *baseapi.APIController
 	menuController           *baseapi.MenuController
 	roleController           *baseapi.RoleController
-	btnPermController        *baseapi.BtnPermController
 	configController         *baseapi.ConfigController
 	dictController           *baseapi.DictController
 	operationLogController   *baseapi.OperationLogController
@@ -46,13 +44,13 @@ type AppBase struct {
 	monitorController        *baseapi.MonitorController
 	permissionLogController  *baseapi.PermissionLogController
 	nodeController           *baseapi.NodeController
-	eventController          *baseapi.EventController
 	gatewayServiceController *baseapi.GatewayServiceController
 	userRepo                 repo.UserRepository
 	apiRepo                  repo.APIRepository
 	roleRepo                 repo.RoleRepository
 	menuRepo                 repo.MenuRepository
 	configRepo               repo.ConfigRepository
+	permissionRuleRepo       repo.PermissionRuleRepository
 	dictRepo                 repo.DictRepository
 	dictItemRepo             repo.DictItemRepository
 	departmentRepo           repo.DepartmentRepository
@@ -63,8 +61,7 @@ type AppBase struct {
 	taskExecutionLogRepo     repo.TaskExecutionLogRepository // 任务执行日志仓库
 	taskRepo                 repo.TaskRepository             // 任务仓库
 	cache                    cache.Cache
-	eventBus                 *eventbus.EventBus
-}
+	}
 
 // NewAppBase 创建应用程序实例
 func NewAppBase(
@@ -79,7 +76,6 @@ func NewAppBase(
 	apiController *baseapi.APIController,
 	menuController *baseapi.MenuController,
 	roleController *baseapi.RoleController,
-	btnPermController *baseapi.BtnPermController,
 	configController *baseapi.ConfigController,
 	dictController *baseapi.DictController,
 	operationLogController *baseapi.OperationLogController,
@@ -91,13 +87,13 @@ func NewAppBase(
 	monitorController *baseapi.MonitorController,
 	permissionLogController *baseapi.PermissionLogController,
 	nodeController *baseapi.NodeController,
-	eventController *baseapi.EventController,
 	gatewayServiceController *baseapi.GatewayServiceController,
 	userRepo repo.UserRepository,
 	apiRepo repo.APIRepository,
 	roleRepo repo.RoleRepository,
 	menuRepo repo.MenuRepository,
 	configRepo repo.ConfigRepository,
+	permissionRuleRepo repo.PermissionRuleRepository,
 	dictRepo repo.DictRepository,
 	dictItemRepo repo.DictItemRepository,
 	departmentRepo repo.DepartmentRepository,
@@ -107,8 +103,8 @@ func NewAppBase(
 	taskExecutionLogRepo repo.TaskExecutionLogRepository,
 	taskRepo repo.TaskRepository,
 	cache cache.Cache,
-	eventBus *eventbus.EventBus,
-) (*AppBase, error) {
+	permissionService *service.PermissionService,
+	) (*AppBase, error) {
 	// 创建应用实例
 	app := &AppBase{
 		router:                   nil,
@@ -123,7 +119,6 @@ func NewAppBase(
 		apiController:            apiController,
 		menuController:           menuController,
 		roleController:           roleController,
-		btnPermController:        btnPermController,
 		configController:         configController,
 		dictController:           dictController,
 		operationLogController:   operationLogController,
@@ -135,14 +130,14 @@ func NewAppBase(
 		monitorController:        monitorController,
 		permissionLogController:  permissionLogController,
 		nodeController:           nodeController,
-		eventController:          eventController,
 		gatewayServiceController: gatewayServiceController,
 		userRepo:                 userRepo,
 		apiRepo:                  apiRepo,
 		roleRepo:                 roleRepo,
 		menuRepo:                 menuRepo,
-		configRepo:               configRepo,
-		dictRepo:                 dictRepo,
+		configRepo:                 configRepo,
+		permissionRuleRepo:         permissionRuleRepo,
+		dictRepo:                   dictRepo,
 		dictItemRepo:             dictItemRepo,
 		departmentRepo:           departmentRepo,
 		positionRepo:             positionRepo,
@@ -151,8 +146,8 @@ func NewAppBase(
 		taskExecutionLogRepo:     taskExecutionLogRepo,
 		taskRepo:                 taskRepo,
 		cache:                    cache,
-		eventBus:                 eventBus,
-	}
+		permissionService:        permissionService,
+		}
 	return app, nil
 }
 
@@ -198,10 +193,12 @@ func (a *AppBase) initializeSeedData() {
 		seed.NewUserSeed(a.userRepo, a.roleRepo),
 		seed.NewAPISeed(a.apiRepo),
 		seed.NewMenuSeed(a.menuRepo, a.apiRepo),
+		seed.NewMenuAPIRouteSeed(a.menuRepo, a.apiRepo),
 		seed.NewDictSeed(a.dictRepo, a.dictItemRepo),
 		seed.NewDepartmentSeed(a.departmentRepo),
 		seed.NewPositionSeed(a.positionRepo),
 		seed.NewTaskSeed(a.taskRepo),
+		seed.NewPermissionRuleSeed(a.permissionRuleRepo, a.roleRepo),
 	})
 
 	// 初始化所有种子数据
@@ -259,25 +256,9 @@ func (a *AppBase) Init(router *gin.Engine) {
 		a.logger.Info("从数据库加载任务完成")
 	}
 
-	// 启动事件总线
-	if a.eventBus != nil {
-		if err := a.eventBus.Start(); err != nil {
-			a.logger.Error("启动事件总线失败", "error", err)
-		} else {
-			a.logger.Info("事件总线启动成功")
-		}
 	}
-}
 
 // Shutdown 关闭基础应用
 func (a *AppBase) Shutdown(ctx context.Context) error {
-	// 停止事件总线
-	if a.eventBus != nil {
-		if err := a.eventBus.Stop(); err != nil {
-			a.logger.Error("停止事件总线失败", "error", err)
-			return err
-		}
-		a.logger.Info("事件总线已停止")
-	}
 	return nil
 }

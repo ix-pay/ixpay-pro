@@ -29,7 +29,7 @@ func (ts *TaskSeed) Name() string {
 	return "task_seed"
 }
 
-// Order 返回初始化顺序（在基础配置之后执行）
+// Order 返回初始化顺序（第十个执行，任务数据最后初始化）
 func (ts *TaskSeed) Order() int {
 	return 10
 }

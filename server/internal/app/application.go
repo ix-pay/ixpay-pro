@@ -69,7 +69,7 @@ func SetupApplication(
 	}
 
 	// 创建中间件配置中心
-	middlewareConfig := middleware.SetupMiddlewareConfig(auth, log, cache)
+	middlewareConfig := middleware.SetupMiddlewareConfig(auth, log, cache, &cfg.CORS)
 
 	// 设置节点注册表到任务管理器
 	taskManager.SetNodeRegistry(nodeRegistry)

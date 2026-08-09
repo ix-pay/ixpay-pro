@@ -33,7 +33,6 @@ type User struct {
 	Department              *Department // 所属部门
 	Position                *Position   // 所属岗位
 	SpecialPermissionIds    []int64     // 用户特殊权限 ID 列表
-	SpecialBtnPermissionIds []int64     // 用户特殊按钮权限 ID 列表
 }
 
 // HasRole 检查用户是否拥有指定角色

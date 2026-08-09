@@ -29,9 +29,9 @@ func (rs *RoleSeed) Name() string {
 	return "role_seed"
 }
 
-// Order 返回初始化顺序（第二个执行）
+// Order 返回初始化顺序（第一个执行，角色是所有权限的基础）
 func (rs *RoleSeed) Order() int {
-	return 2
+	return 1
 }
 
 // Init 初始化角色种子数据

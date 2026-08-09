@@ -55,10 +55,6 @@ type Menu struct {
 	Meta         MenuMeta   // 菜单元数据
 	Children     []*Menu    // 子菜单
 	Parent       *Menu      // 父菜单（新增）
-	BtnPermIds   []int64    // 菜单下的按钮权限 ID 列表
-	BtnPerms     []*BtnPerm // 菜单下的按钮权限列表（新增）
-	RoleIds      []int64    // 关联的角色 ID 列表
-	Roles        []*Role    // 关联的角色列表（新增）
 	APIRouteIds  []int64    // 关联的 API 路由 ID 列表
 	APIRoutes    []*API     // 关联的 API 路由列表（新增）
 	CreatedBy    int64      // 创建人 ID

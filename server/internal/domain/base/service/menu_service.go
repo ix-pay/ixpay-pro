@@ -13,27 +13,24 @@ import (
 
 // MenuService 菜单服务实现
 type MenuService struct {
-	repo        repo.MenuRepository
-	btnPermRepo repo.BtnPermRepository
-	roleRepo    repo.RoleRepository
-	apiRepo     repo.APIRepository
-	log         logger.Logger
+	repo     repo.MenuRepository
+	roleRepo repo.RoleRepository
+	apiRepo  repo.APIRepository
+	log      logger.Logger
 }
 
 // NewMenuService 创建菜单服务实例
 func NewMenuService(
 	repo repo.MenuRepository,
-	btnPermRepo repo.BtnPermRepository,
 	roleRepo repo.RoleRepository,
 	apiRepo repo.APIRepository,
 	log logger.Logger,
 ) *MenuService {
 	return &MenuService{
-		repo:        repo,
-		btnPermRepo: btnPermRepo,
-		roleRepo:    roleRepo,
-		apiRepo:     apiRepo,
-		log:         log,
+		repo:     repo,
+		roleRepo: roleRepo,
+		apiRepo:  apiRepo,
+		log:      log,
 	}
 }
 
@@ -110,7 +107,14 @@ func convertToMenuResponse(menu *entity.Menu) *response.MenuResponse {
 	}
 
 	// 转换为响应结构
+	// 将 API Route IDs 转换为字符串数组
+	apiIdStrs := make([]string, len(menu.APIRouteIds))
+	for i, id := range menu.APIRouteIds {
+		apiIdStrs[i] = strconv.FormatInt(id, 10)
+	}
+
 	resp := &response.MenuResponse{
+		ApiIds:       apiIdStrs,
 		ID:           menu.ID,
 		ParentID:     menu.ParentID,
 		Path:         menu.Path,
@@ -384,6 +388,7 @@ func (s *MenuService) DeleteMenu(id int64) error {
 func (s *MenuService) GetMenuList(page, pageSize int, filters map[string]interface{}) ([]*entity.Menu, int64, error) {
 	s.log.Info("获取菜单列表", "page", page, "pageSize", pageSize)
 
+	// repo.List 已通过 Preload("APIRoutes") 一次性加载所有菜单的 API 关联，无需逐个查询
 	menus, total, err := s.repo.List(page, pageSize, filters)
 	if err != nil {
 		s.log.Error("获取菜单列表失败", "error", err)
@@ -421,8 +426,7 @@ func (s *MenuService) GetMenusByUserID(userID int64) ([]*entity.Menu, error) {
 func (s *MenuService) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 	s.log.Info("获取菜单树结构", "parentID", parentID)
 
-	// ⭐ 优化：先获取顶级菜单，然后使用 Preload 加载关联数据
-	// 使用 List 方法获取指定 parentID 的菜单列表
+	// 使用 List 方法获取指定 parentID 的菜单列表（已预加载 API 关联）
 	menus, _, err := s.repo.List(1, 1000, map[string]interface{}{"parent_id = ?": parentID})
 	if err != nil {
 		s.log.Error("获取菜单树失败", "error", err, "parentID", parentID)
@@ -442,7 +446,7 @@ func (s *MenuService) GetMenuTree(parentID int64) ([]*entity.Menu, error) {
 func (s *MenuService) GetAllMenuTree() ([]*entity.Menu, error) {
 	s.log.Info("获取所有菜单的树结构")
 
-	// 获取所有菜单
+	// 获取所有菜单（已通过 Preload("APIRoutes") 加载关联数据）
 	menus, _, err := s.repo.List(1, 1000, map[string]interface{}{})
 	if err != nil {
 		s.log.Error("获取所有菜单失败", "error", err)
@@ -580,25 +584,19 @@ func (s *MenuService) CalculateDeleteImpact(menuID int64) (*entity.DeleteImpact,
 		}
 	}
 
-	// 2. 统计按钮数量（通过菜单 ID 查询）
-	btnPerms, err := s.btnPermRepo.GetBtnPermsByMenu(menuID)
-	if err == nil {
-		impact.BtnPermsCount = int64(len(btnPerms))
-	}
-
-	// 3. 统计受影响的角色数量
+	// 2. 统计受影响的角色数量
 	roles, err := s.roleRepo.GetRolesByMenu(menuID)
 	if err == nil {
 		impact.AffectedRolesCount = int64(len(roles))
 	}
 
-	// 4. 统计影响的 API 数量（通过菜单关联的 API）
+	// 3. 统计影响的 API 数量（通过菜单关联的 API）
 	menu, err := s.repo.GetByID(menuID)
 	if err == nil && menu != nil {
 		impact.AffectedApisCount = int64(len(menu.APIRouteIds))
 	}
 
-	// 5. 评估影响等级
+	// 4. 评估影响等级
 	totalImpact := impact.AffectedRolesCount + impact.AffectedApisCount
 
 	if totalImpact > 20 || impact.AffectedRolesCount > 10 {

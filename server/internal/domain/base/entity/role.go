@@ -15,16 +15,13 @@ type Role struct {
 	Status             int                // 状态：1-启用，0-禁用
 	IsSystem           bool               // 是否系统角色
 	Sort               int                // 排序
+	DataScope          DataScope          // 数据权限范围：1-全部，2-本部门，3-本部门及子部门，4-仅本人，5-自定义
 	UserIds            []int64            // 角色关联的用户 ID 列表
 	Users              []*User            // 角色关联的用户对象列表
 	MenuIds            []int64            // 角色关联的菜单 ID 列表
 	Menus              []*Menu            // 角色关联的菜单对象列表
 	APIRouteIds        []int64            // 角色关联的接口路由 ID 列表
 	APIRoutes          []*API             // 角色关联的接口路由对象列表
-	BtnPermIds         []int64            // 角色关联的按钮权限 ID 列表
-	BtnPerms           []*BtnPerm         // 角色关联的按钮权限对象列表
-	PermissionGroupIds []int64            // 角色关联的权限组 ID 列表
-	PermissionGroups   []*PermissionGroup // 角色关联的权限组对象列表
 	Children           []*Role            // 子角色
 	Parent             *Role              // 父角色
 	CreatedBy          int64              // 创建人 ID
@@ -57,16 +54,6 @@ func (r *Role) HasMenu(menuID int64) bool {
 func (r *Role) HasAPIRoute(routeID int64) bool {
 	for _, rid := range r.APIRouteIds {
 		if rid == routeID {
-			return true
-		}
-	}
-	return false
-}
-
-// HasBtnPerm 检查角色是否包含指定按钮权限
-func (r *Role) HasBtnPerm(btnPermID int64) bool {
-	for _, bid := range r.BtnPermIds {
-		if bid == btnPermID {
 			return true
 		}
 	}

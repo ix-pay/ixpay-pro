@@ -73,7 +73,7 @@ ixpay-pro/
 
 - **🔐 用户认证**: 支持注册、登录、微信登录和令牌刷新，使用 JWT 进行身份验证
 - **👮 权限管理**: 基于 RBAC+ABAC 混合模型的权限管理，支持菜单、API 路由和按钮级权限控制
-- **👥 角色管理**: 角色的增删改查、权限分配、角色继承和权限组管理
+- **👥 角色管理**: 角色的增删改查、权限分配、角色继承和权限管理
 - **📋 菜单管理**: 菜单的增删改查、树形结构管理，支持动态菜单生成
 - **⚙️ 配置管理**: 系统配置的增删改查，支持多环境配置
 - **📚 字典管理**: 字典表和字典项的管理，支持数据分类和标准化
@@ -104,7 +104,6 @@ ixpay-pro/
 - **🔒 安全防护**: 内置输入验证、防 SQL 注入、防 XSS 攻击等安全措施
 - **⚡ 性能优化**: 使用 Redis 缓存、数据库索引等技术优化系统性能
 - **📦 容器化部署**: 支持 Docker 容器化部署，简化部署和运维
-- **📨 事件总线**: 内置事件总线机制，支持异步事件处理和死信队列
 - **⏰ 任务调度**: 强大的任务调度系统，支持缓存任务、数据库任务、HTTP 任务、脚本任务等多种任务类型
 
 ### 网关功能
@@ -246,6 +245,7 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 | 验证码 | POST | /api/admin/auth/captcha | 获取验证码 |
 | 刷新令牌 | POST | /api/admin/auth/refresh-token | 刷新访问令牌 |
 | 退出登录 | POST | /api/admin/auth/logout | 用户退出登录 |
+| JWT 拉黑 | POST | /api/admin/auth/jwt/jsonInBlacklist | JWT 加入黑名单 |
 
 #### 用户管理 API
 
@@ -258,47 +258,207 @@ swag init -g cmd/ixpay-pro/main.go --output ./docs --parseDependency --parseInte
 | 删除用户 | DELETE | /api/admin/user/:id | 删除用户 |
 | 修改密码 | PUT | /api/admin/user/password | 修改用户密码 |
 | 重置密码 | PUT | /api/admin/user/reset-password | 重置用户密码 |
-
-#### 部门管理 API
-
-| 接口名称 | 方法 | 路径 | 描述 |
-|---------|------|------|------|
-| 创建部门 | POST | /api/admin/departments | 创建新部门 |
-| 获取部门列表 | GET | /api/admin/departments | 获取部门列表 |
-| 获取部门详情 | GET | /api/admin/departments/detail | 获取部门详情 |
-| 更新部门 | PUT | /api/admin/departments | 更新部门信息 |
-| 删除部门 | DELETE | /api/admin/departments | 删除部门 |
-
-#### 岗位管理 API
-
-| 接口名称 | 方法 | 路径 | 描述 |
-|---------|------|------|------|
-| 创建岗位 | POST | /api/admin/positions | 创建新岗位 |
-| 获取岗位列表 | GET | /api/admin/positions | 获取岗位列表 |
-| 获取岗位详情 | GET | /api/admin/positions/detail | 获取岗位详情 |
-| 更新岗位 | PUT | /api/admin/positions | 更新岗位信息 |
-| 删除岗位 | DELETE | /api/admin/positions | 删除岗位 |
+| 切换角色 | POST | /api/admin/user/switch-role | 切换用户角色 |
+| 获取用户设置 | GET | /api/admin/user/get-user-settings | 获取用户个人设置 |
+| 更新用户设置 | PUT | /api/admin/user/update-user-settings | 更新用户个人设置 |
+| 设置用户权限 | POST | /api/admin/user/setUserAuthority | 设置用户权限（单角色） |
+| 设置用户权限 | POST | /api/admin/user/setUserAuthorities | 设置用户权限（多角色） |
 
 #### 角色管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 |---------|------|------|------|
-| 创建角色 | POST | /api/admin/roles | 创建新角色 |
-| 获取角色详情 | GET | /api/admin/roles/detail | 获取角色详情 |
-| 更新角色 | PUT | /api/admin/roles | 更新角色信息 |
-| 删除角色 | DELETE | /api/admin/roles | 删除角色 |
-| 获取角色列表 | GET | /api/admin/roles | 获取角色列表 |
-| 分配用户到角色 | POST | /api/admin/roles/assign-users | 分配用户到角色 |
-| 分配菜单到角色 | POST | /api/admin/roles/assign-menus | 分配菜单到角色 |
+| 创建角色 | POST | /api/admin/role | 创建新角色 |
+| 获取角色列表 | GET | /api/admin/role | 获取角色列表 |
+| 获取角色详情 | GET | /api/admin/role/:id/detail | 获取角色详情 |
+| 获取角色可授权API | GET | /api/admin/role/:id/available-apis | 获取角色可授权的API列表 |
+| 获取角色可授权菜单 | GET | /api/admin/role/:id/available-menus | 获取角色可授权的菜单树 |
+| 保存角色权限 | POST | /api/admin/role/:id/permissions | 保存角色权限 |
+| 更新角色 | PUT | /api/admin/role | 更新角色信息（ID 从请求体获取） |
+| 删除角色 | DELETE | /api/admin/role | 删除角色（ID 从请求体获取） |
+| 获取所有角色 | GET | /api/admin/role/all | 获取所有角色 |
+| 分配用户到角色 | POST | /api/admin/role/assign-users | 分配用户到角色 |
+| 分配菜单到角色 | POST | /api/admin/role/assign-menus | 分配菜单到角色 |
+| 分配API到角色 | POST | /api/admin/role/assign-api-routes | 分配API路由到角色 |
+
+#### 菜单管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取用户菜单树 | GET | /api/admin/menu | 获取用户菜单树 |
+| 创建菜单 | POST | /api/admin/menu | 创建新菜单 |
+| 更新菜单 | PUT | /api/admin/menu | 更新菜单信息 |
+| 删除菜单 | DELETE | /api/admin/menu/:id | 删除菜单 |
+| 获取菜单分页列表 | GET | /api/admin/menu/page | 获取菜单分页列表 |
+| 获取完整菜单树 | GET | /api/admin/menu/tree | 获取完整菜单树 |
+| 获取菜单删除影响 | GET | /api/admin/menu/:id/delete-impact | 获取菜单删除影响评估 |
+
+#### API 管理
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取API列表 | GET | /api/admin/apis | 获取API路由列表 |
+| 获取API详情 | GET | /api/admin/apis/:id | 获取API路由详情 |
+| 创建API | POST | /api/admin/apis | 创建API路由 |
+| 更新API | PUT | /api/admin/apis/:id | 更新API路由 |
+| 删除API | DELETE | /api/admin/apis/:id | 删除API路由 |
+
+#### 部门管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 创建部门 | POST | /api/admin/dept | 创建新部门 |
+| 获取部门列表 | GET | /api/admin/dept | 获取部门列表 |
+| 获取部门详情 | GET | /api/admin/dept/:id | 获取部门详情 |
+| 更新部门 | PUT | /api/admin/dept | 更新部门信息（ID 从请求体获取） |
+| 删除部门 | DELETE | /api/admin/dept/:id | 删除部门 |
+| 获取部门树 | GET | /api/admin/dept/tree | 获取部门树形结构 |
+| 更新部门负责人 | PUT | /api/admin/dept/:id/leader | 更新部门负责人 |
+
+#### 岗位管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 创建岗位 | POST | /api/admin/position | 创建新岗位 |
+| 获取岗位列表 | GET | /api/admin/position | 获取岗位列表 |
+| 获取岗位详情 | GET | /api/admin/position/:id | 获取岗位详情 |
+| 更新岗位 | PUT | /api/admin/position | 更新岗位信息（ID 从请求体获取） |
+| 删除岗位 | DELETE | /api/admin/position/:id | 删除岗位 |
+| 获取所有岗位 | GET | /api/admin/position/all | 获取所有岗位 |
+
+#### 字典管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取字典列表 | GET | /api/admin/dict | 获取字典列表 |
+| 创建字典 | POST | /api/admin/dict | 创建字典 |
+| 获取字典详情 | GET | /api/admin/dict/:id | 获取字典详情 |
+| 更新字典 | PUT | /api/admin/dict | 更新字典（ID 从请求体获取） |
+| 删除字典 | DELETE | /api/admin/dict/:id | 删除字典 |
+| 获取字典项列表 | GET | /api/admin/dict/items | 根据字典ID获取字典项列表 |
+| 创建字典项 | POST | /api/admin/dict/item | 创建字典项 |
+| 获取启用的字典项 | GET | /api/admin/dict/code/:code/active-items | 根据code获取启用的字典项 |
+
+#### 系统配置 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取配置列表 | GET | /api/admin/config | 获取系统配置列表 |
+| 创建配置 | POST | /api/admin/config | 创建系统配置 |
+| 获取配置详情 | GET | /api/admin/config/:id | 获取系统配置详情 |
+| 更新配置 | PUT | /api/admin/config | 更新系统配置 |
+| 删除配置 | DELETE | /api/admin/config/:id | 删除系统配置 |
+| 根据键获取配置 | GET | /api/admin/config/key | 根据键获取系统配置 |
+| 获取所有启用配置 | GET | /api/admin/config/active | 获取所有启用的配置 |
+
+#### 通知公告 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取公告列表 | GET | /api/admin/notices | 获取公告列表 |
+| 创建公告 | POST | /api/admin/notices | 创建公告 |
+| 获取公告详情 | GET | /api/admin/notices/:id | 获取公告详情 |
+| 更新公告 | PUT | /api/admin/notices | 更新公告（ID 从请求体获取） |
+| 删除公告 | DELETE | /api/admin/notices/:id | 删除公告 |
+| 发布公告 | POST | /api/admin/notices/:id/publish | 发布公告 |
+| 标记已读 | POST | /api/admin/notices/:id/read | 标记公告已读 |
+| 检查是否已读 | GET | /api/admin/notices/:id/is-read | 检查公告是否已读 |
+| 获取公告统计 | GET | /api/admin/notices/statistics | 获取公告统计 |
+
+#### 操作日志 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取操作日志列表 | GET | /api/admin/logs | 获取操作日志列表 |
+| 获取操作日志详情 | GET | /api/admin/logs/:id | 获取操作日志详情 |
+| 删除操作日志 | DELETE | /api/admin/logs/:id | 删除操作日志 |
+| 批量删除操作日志 | POST | /api/admin/logs/batch-delete | 批量删除操作日志 |
+| 获取操作日志统计 | GET | /api/admin/logs/statistics | 获取操作日志统计 |
+| 清空操作日志 | POST | /api/admin/logs/clear | 按时间范围清空操作日志 |
+
+#### 登录日志 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取登录日志列表 | GET | /api/admin/login-log | 获取登录日志列表 |
+| 获取登录日志详情 | GET | /api/admin/login-log/:id | 获取登录日志详情 |
+| 获取登录统计 | GET | /api/admin/login-log/statistics | 获取登录统计 |
+| 查询异常登录 | GET | /api/admin/login-log/abnormal | 查询异常登录记录 |
+| 记录登录日志 | POST | /api/admin/login-log | 记录登录日志 |
+| 批量删除登录日志 | POST | /api/admin/login-log/batch-delete | 批量删除登录日志 |
+| 清空登录日志 | POST | /api/admin/login-log/clear | 清空登录日志 |
+
+#### 在线用户 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取在线用户列表 | GET | /api/admin/online-user | 获取在线用户列表 |
+| 获取在线用户详情 | GET | /api/admin/online-user/:user_id | 获取在线用户详情 |
+| 获取在线用户数量 | GET | /api/admin/online-user/count | 获取在线用户数量 |
+| 检查用户是否在线 | GET | /api/admin/online-user/online | 检查用户是否在线 |
+| 强制用户下线 | DELETE | /api/admin/online-user/:user_id | 强制用户下线 |
+| 批量强制下线 | POST | /api/admin/online-user/batch | 批量强制用户下线 |
+
+#### 系统监控 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取系统监控 | GET | /api/admin/monitor/system | 获取系统资源监控信息 |
+| 获取缓存监控 | GET | /api/admin/monitor/cache | 获取缓存监控信息 |
+| 获取数据库监控 | GET | /api/admin/monitor/database | 获取数据库监控信息 |
+| 查询 Redis 键 | GET | /api/admin/monitor/redis-keys | 查询 Redis 中的键 |
+| 查询慢查询日志 | GET | /api/admin/monitor/slow-queries | 查询数据库慢查询日志 |
+
+#### 定时任务 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取任务列表 | GET | /api/admin/task | 获取定时任务列表 |
+| 创建任务 | POST | /api/admin/task | 创建定时任务 |
+| 获取任务详情 | GET | /api/admin/task/:id | 获取定时任务详情 |
+| 更新任务 | PUT | /api/admin/task/:id | 更新定时任务 |
+| 删除任务 | DELETE | /api/admin/task/:id | 删除定时任务 |
+| 启动任务 | POST | /api/admin/task/:id/start | 启动定时任务 |
+| 停止任务 | POST | /api/admin/task/:id/stop | 停止定时任务 |
+| 重试任务 | POST | /api/admin/task/:id/retry | 重试失败的任务 |
+| 启用任务 | POST | /api/admin/task/:id/enable | 启用定时任务 |
+| 禁用任务 | POST | /api/admin/task/:id/disable | 禁用定时任务 |
+| 获取任务执行日志 | GET | /api/admin/task/:id/execution-logs | 获取任务执行日志 |
+| 搜索执行日志 | GET | /api/admin/task/execution-logs | 搜索任务执行日志 |
+| 获取任务统计 | GET | /api/admin/task/statistics | 获取任务统计 |
+| 获取任务仪表盘 | GET | /api/admin/task/dashboard | 获取任务仪表盘数据 |
+| 设置任务分组 | POST | /api/admin/task/:id/group | 设置任务分组 |
+
+#### 权限审计日志 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取权限日志列表 | GET | /api/admin/permission-logs | 获取权限日志列表 |
+| 获取角色权限日志 | GET | /api/admin/permission-logs/roles/:roleId | 获取角色权限日志 |
+
+#### 节点管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取节点列表 | GET | /api/admin/nodes | 获取节点列表 |
+| 获取节点详情 | GET | /api/admin/nodes/:id | 获取节点详情 |
+| 下线节点 | POST | /api/admin/nodes/:id/offline | 下线节点 |
+| 获取节点统计 | GET | /api/admin/nodes/statistics | 获取节点统计 |
+
+#### 网关服务管理 API
+
+| 接口名称 | 方法 | 路径 | 描述 |
+|---------|------|------|------|
+| 获取服务列表 | GET | /api/admin/gateway/services | 获取网关注册服务列表 |
 
 #### 支付管理 API
 
 | 接口名称 | 方法 | 路径 | 描述 |
 |---------|------|------|------|
 | 创建支付 | POST | /api/payment | 创建支付订单 |
-| 查询支付 | GET | /api/payment/{id} | 查询支付详情 |
+| 查询支付 | GET | /api/payment/:id | 查询支付详情 |
 | 获取用户支付列表 | GET | /api/payment | 获取用户支付列表 |
-| 取消支付 | PUT | /api/payment/{id}/cancel | 取消支付订单 |
+| 取消支付 | PUT | /api/payment/:id/cancel | 取消支付订单 |
 
 ### API 文档说明
 

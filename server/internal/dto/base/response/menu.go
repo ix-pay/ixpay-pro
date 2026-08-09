@@ -26,6 +26,7 @@ type MenuResponse struct {
 	FrameLoading bool           `json:"frameLoading"`       // iframe 加载动画
 	Meta         *MenuMetaResp  `json:"meta,omitempty"`     // 菜单元数据
 	Children     []MenuResponse `json:"children,omitempty"` // 子菜单
+	ApiIds       []string       `json:"apiIds,omitempty"`   // 关联 API ID 列表
 }
 
 // MenuMetaResp 菜单元数据响应

@@ -15,7 +15,7 @@ $repositories = @(
     @{ Source = "internal/app/base/domain/repository/role_repository.go"; Destination = "internal/app/base/domain/repository/mock/role_repository_mock.go"; Interface = "RoleRepository" },
     @{ Source = "internal/app/base/domain/repository/menu_repository.go"; Destination = "internal/app/base/domain/repository/mock/menu_repository_mock.go"; Interface = "MenuRepository" },
     @{ Source = "internal/app/base/domain/repository/apis_repository.go"; Destination = "internal/app/base/domain/repository/mock/apis_repository_mock.go"; Interface = "APIRepository" },
-    @{ Source = "internal/app/base/domain/repository/btn_perm_repository.go"; Destination = "internal/app/base/domain/repository/mock/btn_perm_repository_mock.go"; Interface = "BtnPermRepository" },
+    
     @{ Source = "internal/app/base/domain/repository/department_repository.go"; Destination = "internal/app/base/domain/repository/mock/department_repository_mock.go"; Interface = "DepartmentRepository" },
     @{ Source = "internal/app/base/domain/repository/position_repository.go"; Destination = "internal/app/base/domain/repository/mock/position_repository_mock.go"; Interface = "PositionRepository" },
     @{ Source = "internal/app/base/domain/repository/config_repository.go"; Destination = "internal/app/base/domain/repository/mock/config_repository_mock.go"; Interface = "ConfigRepository" },

@@ -192,29 +192,23 @@ export const setSelfInfo = (_data: Record<string, unknown>): Promise<ApiResponse
   throw new Error('此接口与 updateUserInfo 重复')
 }
 
-// @Tags SysUser
-// @Summary 获取自身界面配置
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /user/getSelfSetting [get]
-// @Deprecated 此接口路径需要修正为 /user/get-user-settings
+// @Summary 获取用户个人设置
+// @Router /user/get-user-settings [get]
 export const getSelfSetting = (): Promise<ApiResponse> => {
-  throw new Error('此接口路径需要修正为 /user/get-user-settings')
+  return service({
+    url: '/user/get-user-settings',
+    method: 'get',
+  })
 }
 
-// @Tags SysUser
-// @Summary 设置自身界面配置
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body model.SysUser true "设置自身界面配置"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
-// @Router /user/setSelfSetting [put]
-// @Deprecated 此接口路径需要修正为 /user/update-user-settings
-export const setSelfSetting = (_data: Record<string, unknown>): Promise<ApiResponse> => {
-  throw new Error('此接口路径需要修正为 /user/update-user-settings')
+// @Summary 更新用户个人设置
+// @Router /user/update-user-settings [put]
+export const setSelfSetting = (data: Record<string, unknown>): Promise<ApiResponse> => {
+  return service({
+    url: '/user/update-user-settings',
+    method: 'put',
+    data: data,
+  })
 }
 
 // @Tags User

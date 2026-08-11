@@ -748,6 +748,46 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Info("base_user_settings 表索引添加成功")
 	}
 
+	// 创建权限规则表（必须先创建，因为关联表依赖它）
+	createPermissionRulesTableSQL := `
+	CREATE TABLE IF NOT EXISTS base_permission_rules (
+		id BIGINT PRIMARY KEY,
+		name VARCHAR(100) UNIQUE NOT NULL,
+		description VARCHAR(500),
+		effect VARCHAR(10) NOT NULL,
+		api_path VARCHAR(255) NOT NULL,
+		method VARCHAR(20) NOT NULL,
+		conditions TEXT,
+		status INTEGER NOT NULL DEFAULT 1,
+		sort INTEGER NOT NULL DEFAULT 0,
+		is_system BOOLEAN NOT NULL DEFAULT false,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	`
+
+	if err := db.Exec(createPermissionRulesTableSQL).Error; err != nil {
+		log.Error("创建 base_permission_rules 表失败", "error", err)
+	} else {
+		log.Info("base_permission_rules 表创建成功")
+	}
+
+	// 添加权限规则表索引
+	addPermissionRulesIndexSQL := `
+	-- 添加唯一索引避免重复项
+	CREATE UNIQUE INDEX IF NOT EXISTS idx_base_permission_rules_name ON base_permission_rules(name);
+	`
+
+	if err := db.Exec(addPermissionRulesIndexSQL).Error; err != nil {
+		log.Error("添加 base_permission_rules 表索引失败", "error", err)
+	} else {
+		log.Info("base_permission_rules 表索引添加成功")
+	}
+
 	// 创建权限规则-角色关联表
 	createPermissionRuleRolesTableSQL := `
 	CREATE TABLE IF NOT EXISTS base_permission_rule_roles (
@@ -806,46 +846,6 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Error("添加 base_permission_rule_users 表索引失败", "error", err)
 	} else {
 		log.Info("base_permission_rule_users 表索引添加成功")
-	}
-
-	// 创建权限规则表
-	createPermissionRulesTableSQL := `
-	CREATE TABLE IF NOT EXISTS base_permission_rules (
-		id BIGINT PRIMARY KEY,
-		name VARCHAR(100) UNIQUE NOT NULL,
-		description VARCHAR(500),
-		effect VARCHAR(10) NOT NULL,
-		api_path VARCHAR(255) NOT NULL,
-		method VARCHAR(20) NOT NULL,
-		conditions TEXT,
-		status INTEGER NOT NULL DEFAULT 1,
-		sort INTEGER NOT NULL DEFAULT 0,
-		is_system BOOLEAN NOT NULL DEFAULT false,
-		created_by BIGINT NOT NULL DEFAULT 0,
-		updated_by BIGINT NOT NULL DEFAULT 0,
-		deleted_by BIGINT NOT NULL DEFAULT 0,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		deleted_at TIMESTAMP
-	);
-	`
-
-	if err := db.Exec(createPermissionRulesTableSQL).Error; err != nil {
-		log.Error("创建 base_permission_rules 表失败", "error", err)
-	} else {
-		log.Info("base_permission_rules 表创建成功")
-	}
-
-	// 添加权限规则表索引
-	addPermissionRulesIndexSQL := `
-	-- 添加唯一索引避免重复项
-	CREATE UNIQUE INDEX IF NOT EXISTS idx_base_permission_rules_name ON base_permission_rules(name);
-	`
-
-	if err := db.Exec(addPermissionRulesIndexSQL).Error; err != nil {
-		log.Error("添加 base_permission_rules 表索引失败", "error", err)
-	} else {
-		log.Info("base_permission_rules 表索引添加成功")
 	}
 
 	// 创建公告表

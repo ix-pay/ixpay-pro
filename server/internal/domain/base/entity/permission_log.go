@@ -5,18 +5,21 @@ import (
 )
 
 // PermissionLog 权限日志实体
+// 对应数据库表 sys_permission_logs
+// 表结构：id, operator_id, operator_name, action_type, target_type, target_id,
+//
+//	before_data, after_data, ip_address, user_agent, created_at
 type PermissionLog struct {
 	database.SnowflakeBaseModelWithoutDeleted
-	UserID     int64  `json:"userId"`
-	Username   string `json:"userName"`
-	Operation  string `json:"operation"`
-	Module     string `json:"module"`
-	TargetType string `json:"targetType"`
-	TargetID   int64  `json:"targetId"`
-	OldValue   string `json:"oldValue"`
-	NewValue   string `json:"newValue"`
-	IP         string `json:"ip"`
-	UserAgent  string `json:"userAgent"`
+	OperatorID   int64  `gorm:"column:operator_id;not null" json:"operatorId"`
+	OperatorName string `gorm:"column:operator_name;size:100" json:"operatorName"`
+	ActionType   string `gorm:"column:action_type;size:50;not null" json:"actionType"`
+	TargetType   string `gorm:"column:target_type;size:50" json:"targetType"`
+	TargetID     int64  `gorm:"column:target_id" json:"targetId"`
+	BeforeData   string `gorm:"column:before_data;type:jsonb" json:"beforeData"`
+	AfterData    string `gorm:"column:after_data;type:jsonb" json:"afterData"`
+	IPAddress    string `gorm:"column:ip_address;size:50" json:"ipAddress"`
+	UserAgent    string `gorm:"column:user_agent;size:500" json:"userAgent"`
 }
 
 // TableName 指定表名

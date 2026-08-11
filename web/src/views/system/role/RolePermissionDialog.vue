@@ -1,49 +1,51 @@
 <template>
   <el-drawer v-model="dialogVisible" title="角色权限设置" direction="rtl" size="900px" :close-on-click-modal="false"
     @close="handleClose">
-    <el-tabs v-model="activeTab">
-      <!-- 菜单权限标签页 -->
-      <el-tab-pane label="菜单权限" name="menu">
-        <div class="tab-scroll-area">
-          <el-tree ref="menuTreeRef" :data="menuTree" :props="menuTreeProps" show-checkbox node-key="id"
-            :default-checked-keys="checkedMenuIds" @check="handleMenuCheck" />
-        </div>
-      </el-tab-pane>
-
-      <!-- API 权限标签页 -->
-      <el-tab-pane label="API 权限" name="api">
-        <el-card class="api-card">
-          <template #header>
-            <div class="card-header">
-              <span>API 路由列表（仅通用 API）</span>
-              <el-button size="small" @click="toggleAllApis">
-                {{ allApisChecked ? '取消全选' : '全选' }}
-              </el-button>
-            </div>
-          </template>
+    <div class="drawer-wrapper">
+      <el-tabs v-model="activeTab" class="permission-tabs">
+        <!-- 菜单权限标签页 -->
+        <el-tab-pane label="菜单权限" name="menu">
           <div class="tab-scroll-area">
-            <div v-for="group in groupedApis" :key="group.name" class="api-group">
-              <div class="group-title">
-                <el-checkbox :indeterminate="isGroupIndeterminate(group)" :model-value="isGroupChecked(group)"
-                  :disabled="group.allDisabled" @change="handleGroupCheck(group, $event)">
-                  {{ group.name }} ({{ group.apis.length }})
-                </el-checkbox>
-              </div>
-              <el-checkbox-group v-model="checkedApiIds" class="group-apis">
-                <el-checkbox v-for="api in group.apis" :key="`${api.id}-${api._index}`" :value="api.id"
-                  :disabled="api.disabled">
-                  <span class="method-tag" :class="`method-${api.method.toLowerCase()}`">{{
-                    api.method
-                  }}</span>
-                  <span class="api-path">{{ api.path }}</span>
-                  <span v-if="api.description" class="api-desc">- {{ api.description }}</span>
-                </el-checkbox>
-              </el-checkbox-group>
-            </div>
+            <el-tree ref="menuTreeRef" :data="menuTree" :props="menuTreeProps" show-checkbox node-key="id"
+              :default-checked-keys="checkedMenuIds" @check="handleMenuCheck" />
           </div>
-        </el-card>
-      </el-tab-pane>
-    </el-tabs>
+        </el-tab-pane>
+
+        <!-- API 权限标签页 -->
+        <el-tab-pane label="API 权限" name="api">
+          <el-card class="api-card">
+            <template #header>
+              <div class="card-header">
+                <span>API 路由列表（仅通用 API）</span>
+                <el-button size="small" @click="toggleAllApis">
+                  {{ allApisChecked ? '取消全选' : '全选' }}
+                </el-button>
+              </div>
+            </template>
+            <div class="tab-scroll-area">
+              <div v-for="group in groupedApis" :key="group.name" class="api-group">
+                <div class="group-title">
+                  <el-checkbox :indeterminate="isGroupIndeterminate(group)" :model-value="isGroupChecked(group)"
+                    :disabled="group.allDisabled" @change="handleGroupCheck(group, $event)">
+                    {{ group.name }} ({{ group.apis.length }})
+                  </el-checkbox>
+                </div>
+                <el-checkbox-group v-model="checkedApiIds" class="group-apis">
+                  <el-checkbox v-for="api in group.apis" :key="`${api.id}-${api._index}`" :value="api.id"
+                    :disabled="api.disabled">
+                    <span class="method-tag" :class="`method-${api.method.toLowerCase()}`">{{
+                      api.method
+                      }}</span>
+                    <span class="api-path">{{ api.path }}</span>
+                    <span v-if="api.description" class="api-desc">- {{ api.description }}</span>
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
+            </div>
+          </el-card>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
@@ -350,57 +352,53 @@ watch(
 </script>
 
 <style scoped lang="scss">
-/* drawer 主体 flex 布局，使 tabs 填满剩余高度 */
+/* 阻止 drawer body 自身的滚动条，所有滚动交给内部 .tab-scroll-area */
 :deep(.el-drawer__body) {
-  display: flex;
-  flex-direction: column;
+  overflow: hidden !important;
+}
+
+/* 外层包裹器：固定高度 = 视口 - drawer 头部 - drawer 底部 - body 内边距 */
+.drawer-wrapper {
+  height: calc(100vh - 180px);
   overflow: hidden;
 }
 
-:deep(.el-tabs) {
-  flex: 1;
+/* tabs 填满包裹器 */
+.permission-tabs {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 0;
 }
 
+/* tabs 内容区占满剩余高度，不产生滚动 */
 :deep(.el-tabs__content) {
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 
-/* 仅对活动状态的 tab-pane 设置 flex 布局，不影响隐藏的非活动 tab */
-:deep(.el-tab-pane[style*="display: none"]) {
-  /* 保持隐藏 */
-}
-
+/* 每个 tab-pane 填满内容区 */
 :deep(.el-tab-pane) {
   height: 100%;
+  overflow: hidden;
 }
 
-:deep(.el-tab-pane > .tab-scroll-area),
-:deep(.el-tab-pane > .api-card) {
-  height: 100%;
-}
-
-/* 可滚动内容区域 */
+/* 可滚动内容区域：高度 100% + 溢出滚动 */
 .tab-scroll-area {
-  flex: 1;
-  min-height: 0;
+  height: 100%;
   overflow-y: auto;
   padding: 4px 0;
 }
 
+/* API 卡片填满 tab-pane，内部 flex 布局 */
 .api-card {
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
   :deep(.el-card__body) {
     flex: 1;
-    display: flex;
-    flex-direction: column;
     min-height: 0;
     overflow: hidden;
   }

@@ -75,6 +75,7 @@ func convertToAPIResponse(route *entity.API) *response.APIResponse {
 		AuthType:     route.AuthType,
 		Description:  route.Description,
 		Status:       route.Status,
+		Disabled:     route.Disabled,
 		RoleIds:      route.RoleIds,
 		MenuIds:      route.MenuIds,
 		CreatedBy:    route.CreatedBy,

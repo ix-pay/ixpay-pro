@@ -5,6 +5,7 @@ type CreateRoleRequest struct {
 	Name        string `json:"name" binding:"required,min=2,max=50"`
 	Description string `json:"description" binding:"max=255"`
 	Status      int    `json:"status" binding:"oneof=0 1"`
+	Sort        int    `json:"sort"`
 }
 
 // UpdateRoleRequest 更新角色请求模型
@@ -13,6 +14,7 @@ type UpdateRoleRequest struct {
 	Name        string `json:"name" binding:"required,min=2,max=50"`
 	Description string `json:"description" binding:"max=255"`
 	Status      int    `json:"status" binding:"oneof=0 1"`
+	Sort        int    `json:"sort"`
 }
 
 // DeleteRoleRequest 删除角色请求模型

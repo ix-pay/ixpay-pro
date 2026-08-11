@@ -1,16 +1,9 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300">
     <div class="flex flex-col gap-3 p-4 border-b">
       <div class="flex flex-wrap items-center gap-3">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="请输入公告标题"
-          clearable
-          style="width: 192px"
-          @keyup.enter="loadNoticeList"
-        >
+        <el-input v-model="searchForm.keyword" placeholder="请输入公告标题" clearable style="width: 192px"
+          @keyup.enter="loadNoticeList">
           <template #prefix>
             <el-icon>
               <Search />
@@ -18,12 +11,8 @@
           </template>
         </el-input>
         <el-select v-model="searchForm.type" placeholder="公告类型" clearable style="width: 192px">
-          <el-option
-            v-for="item in noticeTypeOptions"
-            :key="item.itemKey"
-            :label="item.itemValue"
-            :value="item.itemKey"
-          />
+          <el-option v-for="item in noticeTypeOptions" :key="item.itemKey" :label="item.itemValue"
+            :value="item.itemKey" />
         </el-select>
         <el-select v-model="searchForm.status" placeholder="状态" clearable style="width: 192px">
           <el-option label="启用" :value="1" />
@@ -53,9 +42,7 @@
       </div>
     </div>
 
-    <div
-      class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
-    >
+    <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-6 text-sm">
         <span class="flex items-center gap-1">
           <el-icon class="text-blue-500">
@@ -69,7 +56,7 @@
           </el-icon>
           启用：<span class="font-medium">{{
             noticeList.filter((n) => n.status === 1).length
-          }}</span>
+            }}</span>
         </span>
         <span class="flex items-center gap-1">
           <el-icon class="text-orange-500">
@@ -77,34 +64,24 @@
           </el-icon>
           禁用：<span class="font-medium">{{
             noticeList.filter((n) => n.status === 0).length
-          }}</span>
+            }}</span>
         </span>
       </div>
     </div>
 
     <div class="flex-1 overflow-hidden">
-      <el-table
-        v-loading="loading"
-        :data="noticeList"
-        stripe
-        class="w-full h-full"
-        :height="'100%'"
-      >
+      <el-table v-loading="loading" :data="noticeList" stripe class="w-full h-full" :height="'100%'">
         <el-table-column prop="title" label="公告标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="120">
           <template #default="scope">
-            <el-tag
-              :type="
-                scope.row.type === 'system'
-                  ? 'primary'
-                  : scope.row.type === 'activity'
-                    ? 'success'
-                    : scope.row.type === 'notice'
-                      ? 'warning'
-                      : 'danger'
-              "
-              size="small"
-            >
+            <el-tag :type="scope.row.type === 'system'
+                ? 'primary'
+                : scope.row.type === 'activity'
+                  ? 'success'
+                  : scope.row.type === 'notice'
+                    ? 'warning'
+                    : 'danger'
+              " size="small">
               {{
                 scope.row.type === 'system'
                   ? '系统公告'
@@ -119,12 +96,8 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="scope">
-            <el-tag
-              :type="
-                scope.row.status === 1 ? 'success' : scope.row.status === 2 ? 'info' : 'warning'
-              "
-              size="small"
-            >
+            <el-tag :type="scope.row.status === 1 ? 'success' : scope.row.status === 2 ? 'info' : 'warning'
+              " size="small">
               {{ scope.row.status === 1 ? '已发布' : scope.row.status === 2 ? '已归档' : '草稿' }}
             </el-tag>
           </template>
@@ -145,20 +118,12 @@
               <el-button type="info" size="small" @click="handleViewNotice(scope.row)">
                 查看
               </el-button>
-              <el-button
-                v-auth-btn="'system:notice:edit'"
-                type="primary"
-                size="small"
-                @click="handleEditNotice(scope.row)"
-              >
+              <el-button v-auth-btn="'system:notice:edit'" type="primary" size="small"
+                @click="handleEditNotice(scope.row)">
                 编辑
               </el-button>
-              <el-button
-                v-auth-btn="'system:notice:delete'"
-                type="danger"
-                size="small"
-                @click="handleDeleteNotice(scope.row.id)"
-              >
+              <el-button v-auth-btn="'system:notice:delete'" type="danger" size="small"
+                @click="handleDeleteNotice(scope.row.id)">
                 删除
               </el-button>
             </div>
@@ -167,20 +132,11 @@
       </el-table>
     </div>
 
-    <div
-      class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700"
-    >
+    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
       <span class="text-sm text-gray-600 dark:text-gray-400">共 {{ pagination.total }} 条</span>
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="sizes, prev, pager, next"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        small
-      />
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" layout="sizes, prev, pager, next" :total="pagination.total"
+        @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
     </div>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
@@ -190,40 +146,20 @@
         </el-form-item>
         <el-form-item label="公告类型" prop="type">
           <el-select v-model="noticeForm.type" placeholder="请选择公告类型" class="w-full">
-            <el-option
-              v-for="item in noticeTypeOptions"
-              :key="item.itemKey"
-              :label="item.itemValue"
-              :value="item.itemKey"
-            />
+            <el-option v-for="item in noticeTypeOptions" :key="item.itemKey" :label="item.itemValue"
+              :value="item.itemKey" />
           </el-select>
         </el-form-item>
         <el-form-item label="公告内容" prop="content">
-          <el-input
-            v-model="noticeForm.content"
-            type="textarea"
-            :rows="8"
-            placeholder="请输入公告内容"
-          />
+          <el-input v-model="noticeForm.content" type="textarea" :rows="8" placeholder="请输入公告内容" />
         </el-form-item>
         <el-form-item label="发布时间" prop="publishTime">
-          <el-date-picker
-            v-model="noticeForm.publishTime"
-            type="datetime"
-            placeholder="请选择发布时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            class="w-full"
-          />
+          <el-date-picker v-model="noticeForm.publishTime" type="datetime" placeholder="请选择发布时间"
+            format="YYYY-MM-DD HH:mm:ss" value-format="YYYY-MM-DD HH:mm:ss" class="w-full" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-switch
-            v-model="noticeForm.status"
-            :active-value="1"
-            :inactive-value="0"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          />
+          <el-switch v-model="noticeForm.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
+            inactive-color="#ff4949" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -379,7 +315,7 @@ const handleAddNotice = () => {
     id: '',
     title: '',
     content: '',
-    type: 'system',
+    type: '1',
     publishTime: '',
     status: 1,
   })

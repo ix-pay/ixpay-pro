@@ -8,18 +8,21 @@ import (
 )
 
 // permissionLogModel 权限日志数据库模型
+// 对应数据库表 sys_permission_logs
+// 表结构：id, operator_id, operator_name, action_type, target_type, target_id,
+//
+//	before_data, after_data, ip_address, user_agent, created_at
 type permissionLogModel struct {
 	database.SnowflakeBaseModelWithoutDeleted
-	UserID     int64  `gorm:"column:user_id"`
-	Username   string `gorm:"column:user_name;size:64"`
-	Operation  string `gorm:"column:operation;size:128"`
-	Module     string `gorm:"column:module;size:64"`
-	TargetType string `gorm:"column:target_type;size:64"`
-	TargetID   int64  `gorm:"column:target_id"`
-	OldValue   string `gorm:"column:old_value;type:text"`
-	NewValue   string `gorm:"column:new_value;type:text"`
-	IP         string `gorm:"column:ip;size:64"`
-	UserAgent  string `gorm:"column:user_agent;size:512"`
+	OperatorID   int64  `gorm:"column:operator_id;not null"`
+	OperatorName string `gorm:"column:operator_name;size:100"`
+	ActionType   string `gorm:"column:action_type;size:50;not null"`
+	TargetType   string `gorm:"column:target_type;size:50"`
+	TargetID     int64  `gorm:"column:target_id"`
+	BeforeData   string `gorm:"column:before_data;type:jsonb"`
+	AfterData    string `gorm:"column:after_data;type:jsonb"`
+	IPAddress    string `gorm:"column:ip_address;size:50"`
+	UserAgent    string `gorm:"column:user_agent;size:500"`
 }
 
 // TableName 指定表名
@@ -40,16 +43,15 @@ func (m *permissionLogModel) toDomain() *entity.PermissionLog {
 			CreatedAt: m.CreatedAt,
 			UpdatedAt: m.UpdatedAt,
 		},
-		UserID:     m.UserID,
-		Username:   m.Username,
-		Operation:  m.Operation,
-		Module:     m.Module,
-		TargetType: m.TargetType,
-		TargetID:   m.TargetID,
-		OldValue:   m.OldValue,
-		NewValue:   m.NewValue,
-		IP:         m.IP,
-		UserAgent:  m.UserAgent,
+		OperatorID:   m.OperatorID,
+		OperatorName: m.OperatorName,
+		ActionType:   m.ActionType,
+		TargetType:   m.TargetType,
+		TargetID:     m.TargetID,
+		BeforeData:   m.BeforeData,
+		AfterData:    m.AfterData,
+		IPAddress:    m.IPAddress,
+		UserAgent:    m.UserAgent,
 	}
 }
 
@@ -63,16 +65,15 @@ func fromDomainPermissionLog(log *entity.PermissionLog) (*permissionLogModel, er
 			CreatedAt: log.CreatedAt,
 			UpdatedAt: log.UpdatedAt,
 		},
-		UserID:     log.UserID,
-		Username:   log.Username,
-		Operation:  log.Operation,
-		Module:     log.Module,
-		TargetType: log.TargetType,
-		TargetID:   log.TargetID,
-		OldValue:   log.OldValue,
-		NewValue:   log.NewValue,
-		IP:         log.IP,
-		UserAgent:  log.UserAgent,
+		OperatorID:   log.OperatorID,
+		OperatorName: log.OperatorName,
+		ActionType:   log.ActionType,
+		TargetType:   log.TargetType,
+		TargetID:     log.TargetID,
+		BeforeData:   log.BeforeData,
+		AfterData:    log.AfterData,
+		IPAddress:    log.IPAddress,
+		UserAgent:    log.UserAgent,
 	}, nil
 }
 
@@ -106,7 +107,7 @@ func (r *permissionLogRepository) FindByUserID(userID int64, page, pageSize int)
 	var total int64
 
 	offset := (page - 1) * pageSize
-	query := r.db.Model(&permissionLogModel{}).Where("user_id = ?", userID)
+	query := r.db.Model(&permissionLogModel{}).Where("operator_id = ?", userID)
 
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err

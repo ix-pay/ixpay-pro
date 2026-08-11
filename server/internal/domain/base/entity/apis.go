@@ -13,6 +13,7 @@ type API struct {
 	AuthType     int       // 授权类型：0-不需要授权（只要登录），1-需要授权（需要角色权限）
 	Description  string    // 描述
 	Status       int       // 状态：1-启用，0-禁用
+	Disabled     bool      // 运行时标记：是否已通过菜单关联授权，前端显示为禁用选中状态（不持久化）
 	RoleIds      []int64   // 关联的角色 ID 列表
 	MenuIds      []int64   // 关联的菜单 ID 列表
 	CreatedBy    int64     // 创建人 ID

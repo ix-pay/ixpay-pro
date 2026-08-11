@@ -449,7 +449,7 @@ func (r *roleRepository) RemoveMenuFromRole(roleID, menuID int64) error {
 // GetMenusByRole 获取角色下的所有菜单
 func (r *roleRepository) GetMenusByRole(roleID int64) ([]*entity.Menu, error) {
 	var menuModels []menuModel
-	err := r.db.Table("base_menus").
+	err := r.db.Model(&menuModel{}).Preload("APIRoutes").
 		Joins("JOIN base_role_menus ON base_role_menus.menu_id = base_menus.id").
 		Where("base_role_menus.role_id = ?", roleID).
 		Find(&menuModels).Error

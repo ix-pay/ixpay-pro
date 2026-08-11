@@ -51,6 +51,35 @@ func convertToRoleResponse(role *entity.Role) response.RoleResponse {
 	}
 }
 
+// convertToMenuInfo 将 entity.Menu 转换为 response.MenuInfo
+func convertToMenuInfo(menu *entity.Menu) response.MenuInfo {
+	return response.MenuInfo{
+		ID:       menu.ID,
+		Name:     menu.Name,
+		Path:     menu.Path,
+		ParentID: menu.ParentID,
+	}
+}
+
+// convertToRouteInfo 将 entity.API 转换为 response.RouteInfo
+func convertToRouteInfo(api *entity.API) response.RouteInfo {
+	return response.RouteInfo{
+		ID:     api.ID,
+		Path:   api.Path,
+		Method: api.Method,
+		Group:  api.Group,
+	}
+}
+
+// convertToUserInfo 将 entity.User 转换为 response.UserInfo
+func convertToUserInfo(user *entity.User) response.UserInfo {
+	return response.UserInfo{
+		ID:       user.ID,
+		Username: user.Username,
+		Nickname: user.Nickname,
+	}
+}
+
 // CreateRole 创建角色
 //
 //	@Summary		创建角色
@@ -84,8 +113,8 @@ func (c *RoleController) CreateRole(ctx *gin.Context) {
 
 	// 使用名称的小写加下划线作为默认编码
 	code := strings.ToLower(strings.ReplaceAll(req.Name, " ", "_"))
-	// 提供默认值：roleType=1（普通角色）, parentID=0（顶级角色）, sort=0, isSystem=false
-	role, err := c.roleService.CreateRole(req.Name, code, req.Description, 0, 1, userIDInt, req.Status, 0, false)
+	// 提供默认值：roleType=1（普通角色）, parentID=0（顶级角色）, isSystem=false
+	role, err := c.roleService.CreateRole(req.Name, code, req.Description, 0, 1, userIDInt, req.Status, req.Sort, false)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "创建角色失败", ctx)
 		return
@@ -137,7 +166,37 @@ func (c *RoleController) GetRoleByID(ctx *gin.Context) {
 		Routes:       []response.RouteInfo{},
 	}
 
-	c.log.Info("获取角色详情成功", "roleID", roleID)
+	// 获取角色关联的用户
+	users, err := c.roleService.GetUsersForRole(roleID)
+	if err != nil {
+		c.log.Warn("获取角色关联用户失败", "error", err, "roleID", roleID)
+	} else {
+		for _, user := range users {
+			roleDetailResponse.Users = append(roleDetailResponse.Users, convertToUserInfo(user))
+		}
+	}
+
+	// 获取角色关联的菜单
+	menus, err := c.roleService.GetMenusForRole(roleID)
+	if err != nil {
+		c.log.Warn("获取角色关联菜单失败", "error", err, "roleID", roleID)
+	} else {
+		for _, menu := range menus {
+			roleDetailResponse.Menus = append(roleDetailResponse.Menus, convertToMenuInfo(menu))
+		}
+	}
+
+	// 获取角色关联的 API 路由
+	routes, err := c.roleService.GetAPIsForRole(roleID)
+	if err != nil {
+		c.log.Warn("获取角色关联 API 路由失败", "error", err, "roleID", roleID)
+	} else {
+		for _, api := range routes {
+			roleDetailResponse.Routes = append(roleDetailResponse.Routes, convertToRouteInfo(api))
+		}
+	}
+
+	c.log.Info("获取角色详情成功", "roleID", roleID, "menuCount", len(roleDetailResponse.Menus), "apiCount", len(roleDetailResponse.Routes))
 	baseRes.OkWithDetailed(roleDetailResponse, "获取角色成功", ctx)
 }
 
@@ -174,8 +233,8 @@ func (c *RoleController) UpdateRole(ctx *gin.Context) {
 
 	// 使用名称的小写加下划线作为默认编码
 	code := strings.ToLower(strings.ReplaceAll(req.Name, " ", "_"))
-	// 更新角色时保持原有角色类型、父级、排序和系统标识不变
-	err := c.roleService.UpdateRole(req.ID, req.Name, code, req.Description, 0, 1, userIDInt, req.Status, 0, false)
+	// 更新角色时保持原有角色类型、父级和系统标识不变
+	err := c.roleService.UpdateRole(req.ID, req.Name, code, req.Description, 0, 1, userIDInt, req.Status, req.Sort, false)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "更新角色失败", ctx)
 		return
@@ -537,14 +596,44 @@ func (c *RoleController) GetRoleDetail(ctx *gin.Context) {
 		Routes:       []response.RouteInfo{},
 	}
 
-	c.log.Info("获取角色详情成功", "roleID", roleID)
+	// 获取角色关联的用户
+	users, err := c.roleService.GetUsersForRole(roleID)
+	if err != nil {
+		c.log.Warn("获取角色关联用户失败", "error", err, "roleID", roleID)
+	} else {
+		for _, user := range users {
+			roleDetailResponse.Users = append(roleDetailResponse.Users, convertToUserInfo(user))
+		}
+	}
+
+	// 获取角色关联的菜单
+	menus, err := c.roleService.GetMenusForRole(roleID)
+	if err != nil {
+		c.log.Warn("获取角色关联菜单失败", "error", err, "roleID", roleID)
+	} else {
+		for _, menu := range menus {
+			roleDetailResponse.Menus = append(roleDetailResponse.Menus, convertToMenuInfo(menu))
+		}
+	}
+
+	// 获取角色关联的 API 路由
+	routes, err := c.roleService.GetAPIsForRole(roleID)
+	if err != nil {
+		c.log.Warn("获取角色关联 API 路由失败", "error", err, "roleID", roleID)
+	} else {
+		for _, api := range routes {
+			roleDetailResponse.Routes = append(roleDetailResponse.Routes, convertToRouteInfo(api))
+		}
+	}
+
+	c.log.Info("获取角色详情成功", "roleID", roleID, "menuCount", len(roleDetailResponse.Menus), "apiCount", len(roleDetailResponse.Routes))
 	baseRes.OkWithDetailed(roleDetailResponse, "获取角色成功", ctx)
 }
 
 // GetAvailableAPIs 获取角色可用的 API 列表
 //
 //	@Summary		获取角色可用的 API 列表
-//	@Description	获取尚未分配给该角色的 API 路由列表
+//	@Description	获取所有 API 列表，标记已通过菜单关联授权的 API 为禁用选中状态
 //	@Tags			角色管理
 //	@Accept			json
 //	@Produce		json
@@ -568,7 +657,22 @@ func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 		return
 	}
 
-	// 获取该角色已分配的 API 列表
+	// 获取该角色关联的菜单（含菜单关联的 API）
+	menus, err := c.roleService.GetMenusForRole(roleID)
+	if err != nil {
+		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色菜单失败", ctx)
+		return
+	}
+
+	// 构建菜单关联的 API ID 集合（这些 API 不可手动取消选中）
+	menuAPIMap := make(map[int64]bool)
+	for _, menu := range menus {
+		for _, apiID := range menu.APIRouteIds {
+			menuAPIMap[apiID] = true
+		}
+	}
+
+	// 获取该角色手动授权的 API 列表
 	assignedAPIs, err := c.roleService.GetAPIsForRole(roleID)
 	if err != nil {
 		baseRes.FailWithDetailed(map[string]interface{}{"error": err.Error()}, "获取角色权限失败", ctx)
@@ -588,16 +692,28 @@ func (c *RoleController) GetAvailableAPIs(ctx *gin.Context) {
 		return
 	}
 
-	// 过滤出未分配的 API（排除 auth_type = 0 的基础 API）
-	availableAPIs := make([]*entity.API, 0)
+	// 返回所有 API（排除 auth_type = 0 的基础 API），标记已分配状态
+	// 菜单关联的 API：Disabled=true，前端显示为禁用选中状态（不可手动取消）
+	// 手动授权的 API：Disabled=false，前端显示为可选状态
+	// 未分配的 API：Disabled=false，前端显示为可选状态
+	resultAPIs := make([]*response.APIResponse, 0, len(allAPIs))
 	for _, api := range allAPIs {
-		if !assignedAPIMap[api.ID] && api.AuthType != 0 {
-			availableAPIs = append(availableAPIs, api)
+		if api.AuthType == 0 {
+			continue // 排除基础 API
 		}
+
+		// 标记菜单关联的 API 为禁用状态
+		if menuAPIMap[api.ID] {
+			api.Disabled = true
+		}
+
+		resultAPIs = append(resultAPIs, convertToAPIResponse(api))
 	}
 
-	c.log.Info("获取角色可用 API 列表成功", "roleID", roleID, "totalCount", len(allAPIs), "availableCount", len(availableAPIs))
-	baseRes.OkWithDetailed(availableAPIs, "获取可用 API 列表成功", ctx)
+	c.log.Info("获取角色 API 列表成功", "roleID", roleID,
+		"totalCount", len(allAPIs), "resultCount", len(resultAPIs),
+		"menuAPICount", len(menuAPIMap), "assignedAPICount", len(assignedAPIMap))
+	baseRes.OkWithDetailed(resultAPIs, "获取 API 列表成功", ctx)
 }
 
 // GetAvailableMenus 获取角色可授权的菜单树

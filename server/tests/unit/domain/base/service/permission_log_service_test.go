@@ -13,26 +13,24 @@ import (
 func TestPermissionLogService_LogEntry(t *testing.T) {
 	now := time.Now()
 	logEntry := &entity.PermissionLog{
-		UserID:     1,
-		Username:   "admin",
-		Operation:  "assign_permission",
-		Module:     "角色管理",
-		TargetType: "menu",
-		TargetID:   10,
-		OldValue:   "",
-		NewValue:   "10",
-		IP:         "127.0.0.1",
-		UserAgent:  "Mozilla/5.0",
+		OperatorID:   1,
+		OperatorName: "admin",
+		ActionType:   "assign_permission",
+		TargetType:   "menu",
+		TargetID:     10,
+		BeforeData:   "",
+		AfterData:    "10",
+		IPAddress:    "127.0.0.1",
+		UserAgent:    "Mozilla/5.0",
 	}
 	logEntry.CreatedAt = now
 
-	assert.Equal(t, int64(1), logEntry.UserID, "用户ID应正确")
-	assert.Equal(t, "admin", logEntry.Username, "用户名应正确")
-	assert.Equal(t, "assign_permission", logEntry.Operation, "操作类型应正确")
-	assert.Equal(t, "角色管理", logEntry.Module, "模块名应正确")
+	assert.Equal(t, int64(1), logEntry.OperatorID, "操作人ID应正确")
+	assert.Equal(t, "admin", logEntry.OperatorName, "操作人名称应正确")
+	assert.Equal(t, "assign_permission", logEntry.ActionType, "操作类型应正确")
 	assert.Equal(t, "menu", logEntry.TargetType, "目标类型应正确")
 	assert.Equal(t, int64(10), logEntry.TargetID, "目标ID应正确")
-	assert.Equal(t, "127.0.0.1", logEntry.IP, "IP地址应正确")
+	assert.Equal(t, "127.0.0.1", logEntry.IPAddress, "IP地址应正确")
 	assert.Equal(t, "Mozilla/5.0", logEntry.UserAgent, "UserAgent应正确")
 
 	// 验证 SnowflakeBaseModelWithoutDeleted 嵌入
@@ -53,9 +51,9 @@ func TestPermissionLogService_OperationTypes(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name           string
-		operation      string
-		shouldBeValid  bool
+		name          string
+		operation     string
+		shouldBeValid bool
 	}{
 		{name: "分配权限", operation: "assign_permission", shouldBeValid: true},
 		{name: "撤销权限", operation: "revoke_permission", shouldBeValid: true},
@@ -76,10 +74,10 @@ func TestPermissionLogService_OperationTypes(t *testing.T) {
 // TestPermissionLogService_ModuleTypes 测试模块类型验证
 func TestPermissionLogService_ModuleTypes(t *testing.T) {
 	validModules := map[string]bool{
-		"角色管理":   true,
-		"菜单管理":   true,
-		"用户管理":   true,
-		"API管理":   true,
+		"角色管理": true,
+		"菜单管理": true,
+		"用户管理": true,
+		"API管理": true,
 	}
 
 	testCases := []struct {
@@ -105,15 +103,13 @@ func TestPermissionLogService_ModuleTypes(t *testing.T) {
 // TestPermissionLogService_FilterValidation 测试权限日志过滤条件验证
 func TestPermissionLogService_FilterValidation(t *testing.T) {
 	filters := map[string]interface{}{
-		"user_id":    int64(1),
-		"operation":  "assign_permission",
-		"module":     "角色管理",
-		"start_time": "2024-01-01",
-		"end_time":   "2024-12-31",
+		"operator_id": int64(1),
+		"action_type": "assign_permission",
+		"start_time":  "2024-01-01",
+		"end_time":    "2024-12-31",
 	}
 
 	assert.NotEmpty(t, filters, "过滤条件不应为空")
-	assert.Contains(t, filters, "user_id", "应包含用户ID过滤")
-	assert.Contains(t, filters, "operation", "应包含操作类型过滤")
-	assert.Contains(t, filters, "module", "应包含模块过滤")
+	assert.Contains(t, filters, "operator_id", "应包含操作人ID过滤")
+	assert.Contains(t, filters, "action_type", "应包含操作类型过滤")
 }

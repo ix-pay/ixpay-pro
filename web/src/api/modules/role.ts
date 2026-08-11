@@ -19,6 +19,7 @@ export interface CreateRoleRequest {
   name: string
   description: string
   status: number
+  sort: number
 }
 
 // 更新角色请求参数
@@ -27,6 +28,7 @@ export interface UpdateRoleRequest {
   name: string
   description: string
   status: number
+  sort: number
 }
 
 // 获取角色列表

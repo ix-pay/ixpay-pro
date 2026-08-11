@@ -85,6 +85,7 @@
       <el-table v-loading="loading" :data="roleList" stripe class="w-full h-full" :height="'100%'">
         <el-table-column prop="name" label="角色名称" width="160" />
         <el-table-column prop="description" label="角色描述" min-width="200" />
+        <el-table-column prop="sort" label="排序" width="80" align="center" />
         <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="scope">
             <el-switch
@@ -176,6 +177,9 @@
             :inactive-value="0"
           />
         </el-form-item>
+        <el-form-item label="排序" prop="sort">
+          <el-input-number v-model="roleForm.sort" :min="0" :max="9999" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="flex justify-end gap-3">
@@ -252,6 +256,7 @@ const roleForm = reactive({
   name: '',
   description: '',
   status: 1,
+  sort: 0,
 })
 // 表单验证规则
 const formRules = reactive({
@@ -298,6 +303,7 @@ const handleStatusChange = async (role: Role) => {
       name: role.name,
       description: role.description,
       status: role.status,
+      sort: role.sort ?? 0,
     })
     ElMessage.success('状态更新成功')
   } catch (error) {
@@ -329,6 +335,7 @@ const handleAddRole = () => {
     name: '',
     description: '',
     status: 1,
+    sort: 0,
   })
   dialogVisible.value = true
 }
@@ -352,6 +359,7 @@ const handleSubmit = async () => {
         name: roleForm.name,
         description: roleForm.description,
         status: roleForm.status,
+        sort: roleForm.sort,
       })
     } else {
       // 添加角色，只提交必要字段
@@ -359,6 +367,7 @@ const handleSubmit = async () => {
         name: roleForm.name,
         description: roleForm.description,
         status: roleForm.status,
+        sort: roleForm.sort,
       })
     }
     ElMessage.success(roleForm.id ? '更新成功' : '添加成功')

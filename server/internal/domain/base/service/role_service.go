@@ -594,14 +594,49 @@ func (s *RoleService) RevokeAPIFromRole(roleID, apiID int64) error {
 	return nil
 }
 
-// GetAPIsForRole 获取角色的所有 API
+// GetAPIsForRole 获取角色的所有 API（合并菜单关联的 API 和手动授权的 API，去重返回）
 func (s *RoleService) GetAPIsForRole(roleID int64) ([]*entity.API, error) {
-	apis, err := s.roleRepo.GetsByRole(roleID)
+	// 1. 获取角色关联的菜单（含菜单关联的 API 路由，通过 Preload 加载）
+	menus, err := s.roleRepo.GetMenusByRole(roleID)
+	if err != nil {
+		s.log.Error("获取角色关联菜单失败", "error", err, "role_id", roleID)
+		// 不阻塞，继续获取手动授权的 API
+	}
+
+	// 2. 收集菜单关联的 API（去重 map）
+	apiMap := make(map[int64]*entity.API)
+	if menus != nil {
+		for _, menu := range menus {
+			for _, api := range menu.APIRoutes {
+				apiMap[api.ID] = api
+			}
+		}
+	}
+
+	// 3. 获取角色手动授权的 API（从 base_role_api_routes 表）
+	roleAPIs, err := s.roleRepo.GetsByRole(roleID)
 	if err != nil {
 		s.log.Error("获取角色关联 API 失败", "error", err, "role_id", roleID)
 		return nil, err
 	}
-	return apis, nil
+
+	// 4. 合并手动授权的 API（覆盖菜单关联的同 ID API，但通常 ID 唯一）
+	for _, api := range roleAPIs {
+		apiMap[api.ID] = api
+	}
+
+	// 5. 转换为切片返回
+	result := make([]*entity.API, 0, len(apiMap))
+	for _, api := range apiMap {
+		result = append(result, api)
+	}
+
+	s.log.Info("获取角色 API 权限成功", "role_id", roleID,
+		"menuAPI_count", len(apiMap)-len(roleAPIs),
+		"directAPI_count", len(roleAPIs),
+		"totalAPI_count", len(result))
+
+	return result, nil
 }
 
 // GetRolesForAPI 获取 API 的所有角色

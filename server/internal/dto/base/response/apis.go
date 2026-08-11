@@ -10,6 +10,7 @@ type APIResponse struct {
 	AuthType     int     `json:"authType"`
 	Description  string  `json:"description"`
 	Status       int     `json:"status"`
+	Disabled     bool    `json:"disabled"`
 	RoleIds      []int64 `json:"roleIds"`
 	MenuIds      []int64 `json:"menuIds"`
 	CreatedBy    int64   `json:"createdBy,string"`

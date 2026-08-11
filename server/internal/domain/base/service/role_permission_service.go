@@ -78,9 +78,10 @@ func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, apiId
 
 		// 4. 获取菜单关联的 API（base_menu_api_routes 表）
 		// 菜单（type=2）和按钮（type=3）都通过此表关联 API
+		// 需要 Preload APIRoutes 才能获取到菜单关联的 API 列表
 		menuAPIs := make(map[int64]bool)
 		for _, menuID := range menuIds {
-			menu, err := s.menuRepo.GetByID(menuID)
+			menu, err := s.menuRepo.GetByID(menuID, repo.MenuRelationAPIRoutes)
 			if err != nil {
 				continue
 			}
@@ -107,8 +108,33 @@ func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, apiId
 			}
 		}
 
-		// 7. 插入新的 API 直接授权
+		// 7. 过滤掉已在菜单关联中的 API，避免重复授权
+		// 用户在前端手动选中的 apiIds 中，如果某个 API 已通过菜单关联授权，则不再写入 base_role_api_routes
+		directAPIIds := make([]int64, 0, len(apiIds))
 		for _, apiID := range apiIds {
+			if !menuAPIs[apiID] {
+				directAPIIds = append(directAPIIds, apiID)
+			}
+		}
+
+		// 8. 校验 API ID 是否存在，跳过不存在的 ID 避免外键约束错误
+		validDirectAPIIds, err := s.filterValidAPIIDs(tx, directAPIIds)
+		if err != nil {
+			return err
+		}
+		validMenuAPIIds, err := s.filterValidAPIIDs(tx, func() []int64 {
+			ids := make([]int64, 0, len(menuAPIs))
+			for apiID := range menuAPIs {
+				ids = append(ids, apiID)
+			}
+			return ids
+		}())
+		if err != nil {
+			return err
+		}
+
+		// 9. 插入新的 API 直接授权（仅写入非菜单关联的有效 API）
+		for _, apiID := range validDirectAPIIds {
 			if err := tx.Table("base_role_api_routes").Create(map[string]interface{}{
 				"role_id":  roleID,
 				"route_id": apiID,
@@ -118,17 +144,9 @@ func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, apiId
 			}
 		}
 
-		// 8. 处理菜单/按钮关联的 API 自动授权
-		// 将菜单和按钮关联的 API 自动授权给角色，使用 source=2 或 source=3 区分来源
-		for apiID := range menuAPIs {
-			// 检查是否已存在关联（避免与直接授权的 API 重复）
-			var count int64
-			if err := tx.Table("base_role_api_routes").Where("role_id = ? AND route_id = ?", roleID, apiID).Count(&count).Error; err != nil {
-				return err
-			}
-			if count > 0 {
-				continue
-			}
+		// 10. 处理菜单/按钮关联的 API 自动授权
+		// 将菜单和按钮关联的 API 自动授权给角色，使用 source=2
+		for _, apiID := range validMenuAPIIds {
 			if err := tx.Table("base_role_api_routes").Create(map[string]interface{}{
 				"role_id":  roleID,
 				"route_id": apiID,
@@ -138,10 +156,10 @@ func (s *RolePermissionService) SaveRolePermissions(roleID int64, menuIds, apiId
 			}
 		}
 
-		// 9. 记录审计日志
+		// 11. 记录审计日志
 		s.logPermissionChange(tx, roleID, operatorID, oldMenus, oldAPIs, menuIds, apiIds)
 
-		// 10. 清除权限缓存
+		// 12. 清除权限缓存
 		s.cache.Delete(fmt.Sprintf("role:perms:%d", roleID))
 
 		return nil
@@ -238,20 +256,20 @@ func (s *RolePermissionService) logPermissionChange(tx *gorm.DB, roleID int64, o
 		"apis":  newAPIIds,
 	})
 
-	// 创建权限变更日志记录
+	// 使用实体创建权限变更日志记录，字段通过 gorm 标签映射到表列
+	// Omit 排除 SnowflakeBaseModelWithoutDeleted 中表中不存在的列（created_by, updated_by, updated_at）
 	log := &entity.PermissionLog{
-		UserID:     0, // 简化处理，实际应从用户服务获取
-		Username:   operatorID,
-		Operation:  "SAVE_ROLE_PERMISSIONS",
-		Module:     "角色权限",
-		TargetType: "role",
-		TargetID:   roleID,
-		OldValue:   string(beforeData),
-		NewValue:   string(afterData),
+		OperatorID:   0, // 简化处理，实际应从用户服务获取
+		OperatorName: operatorID,
+		ActionType:   "SAVE_ROLE_PERMISSIONS",
+		TargetType:   "role",
+		TargetID:     roleID,
+		BeforeData:   string(beforeData),
+		AfterData:    string(afterData),
 	}
 
 	// 记录日志不阻塞主流程，失败只记录警告
-	if err := tx.Create(log).Error; err != nil {
+	if err := tx.Omit("created_by", "updated_by", "updated_at").Create(log).Error; err != nil {
 		s.log.Warn("记录权限变更日志失败", "error", err, "roleID", roleID)
 	}
 }
@@ -368,4 +386,33 @@ func (s *RolePermissionService) ClearRoleCacheByAPIID(apiID int64) error {
 	}
 
 	return nil
+}
+
+// filterValidAPIIDs 过滤出在 base_apis 表中存在的 API ID，跳过不存在的 ID 避免外键约束错误
+func (s *RolePermissionService) filterValidAPIIDs(tx *gorm.DB, ids []int64) ([]int64, error) {
+	if len(ids) == 0 {
+		return ids, nil
+	}
+
+	var validIDs []int64
+	if err := tx.Table("base_apis").Where("id IN ? AND status = ?", ids, 1).Pluck("id", &validIDs).Error; err != nil {
+		return nil, err
+	}
+
+	// 如果有无效的 ID，记录警告日志
+	if len(validIDs) < len(ids) {
+		invalidIDs := make([]int64, 0, len(ids)-len(validIDs))
+		validMap := make(map[int64]bool, len(validIDs))
+		for _, id := range validIDs {
+			validMap[id] = true
+		}
+		for _, id := range ids {
+			if !validMap[id] {
+				invalidIDs = append(invalidIDs, id)
+			}
+		}
+		s.log.Warn("跳过不存在的 API ID", "valid_count", len(validIDs), "invalid_count", len(invalidIDs), "invalid_ids", invalidIDs)
+	}
+
+	return validIDs, nil
 }

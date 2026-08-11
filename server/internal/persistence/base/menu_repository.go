@@ -223,11 +223,12 @@ func (r *menuRepository) GetAll() ([]*entity.Menu, error) {
 	return menus, nil
 }
 
-// GetMenusByRole 根据角色获取菜单
+// GetMenusByRole 根据角色获取菜单（含关联的 API 路由）
 func (r *menuRepository) GetMenusByRole(roleID int64) ([]*entity.Menu, error) {
 	var dbModels []menuModel
-	// 通过角色 - 菜单关联表查询
-	result := r.db.Joins("JOIN base_role_menus ON base_role_menus.menu_id = base_menus.id").
+	// 通过角色 - 菜单关联表查询，并预加载关联的 API 路由
+	result := r.db.Preload("APIRoutes").
+		Joins("JOIN base_role_menus ON base_role_menus.menu_id = base_menus.id").
 		Where("base_role_menus.role_id = ?", roleID).
 		Where("base_menus.status = ?", 1).
 		Order("base_menus.sort ASC").

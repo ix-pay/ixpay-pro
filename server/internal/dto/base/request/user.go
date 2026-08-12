@@ -16,7 +16,7 @@ type UpdateUserRequest struct {
 	Avatar       string   `json:"avatar" binding:"max=255"`
 	DepartmentID int64    `json:"departmentId,string" binding:"omitempty"`
 	PositionID   int64    `json:"positionId,string" binding:"omitempty"`
-	Status       int      `json:"status" binding:"omitempty,min=0,max=1"` // 1: active, 0: inactive
+	Status       *int     `json:"status" binding:"omitempty,min=0,max=1"` // 1: active, 0: inactive
 	Roles        []string `json:"roles" binding:"omitempty"`              // 角色列表，支持多选
 }
 

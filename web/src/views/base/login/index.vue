@@ -1,118 +1,69 @@
 <template>
   <div
-    class="login-container min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-primary via-purple-500 to-pink-500 dark:from-primary-dark dark:via-purple-900 dark:to-pink-900"
-  >
+    class="login-container min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-primary via-purple-500 to-pink-500 dark:from-primary-dark dark:via-purple-900 dark:to-pink-900">
     <!-- 背景动画装饰 -->
     <div class="absolute inset-0 overflow-hidden">
       <div
-        class="floating-shape absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 dark:bg-white/5 rounded-full blur-3xl animate-float"
-      ></div>
+        class="floating-shape absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 dark:bg-white/5 rounded-full blur-3xl animate-float">
+      </div>
       <div
-        class="floating-shape absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-float delay-1000"
-      ></div>
+        class="floating-shape absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-float delay-1000">
+      </div>
       <div
-        class="floating-shape absolute top-1/3 right-1/3 w-64 h-64 bg-purple-500/20 dark:bg-purple-600/10 rounded-full blur-2xl animate-float delay-500"
-      ></div>
+        class="floating-shape absolute top-1/3 right-1/3 w-64 h-64 bg-purple-500/20 dark:bg-purple-600/10 rounded-full blur-2xl animate-float delay-500">
+      </div>
     </div>
 
     <!-- 登录卡片 -->
     <div class="relative z-10 w-full max-w-md mx-4 animate-fade-in-up">
       <div
-        class="login-card backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 rounded-3xl shadow-2xl p-8 border border-white/20 dark:border-gray-700/50 hover:shadow-primary-glow transition-all duration-500"
-      >
+        class="login-card backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 rounded-3xl shadow-2xl p-8 border border-white/20 dark:border-gray-700/50 hover:shadow-primary-glow transition-all duration-500">
         <!-- Logo 和标题 -->
         <div class="text-center mb-8">
           <div class="flex justify-center mb-6">
             <div
-              class="logo-wrapper relative w-20 h-20 rounded-2xl shadow-lg overflow-hidden hover:scale-110 transition-transform duration-300 group"
-            >
-              <img
-                :src="logoImage"
-                alt="IxPay Pro Logo"
-                class="w-full h-full object-cover group-hover:rotate-6 transition-transform duration-300"
-              />
+              class="logo-wrapper relative w-20 h-20 rounded-2xl shadow-lg overflow-hidden hover:scale-110 transition-transform duration-300 group">
+              <img :src="logoImage" alt="IxPay Pro Logo"
+                class="w-full h-full object-cover group-hover:rotate-6 transition-transform duration-300" />
               <div
-                class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              ></div>
+                class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              </div>
             </div>
           </div>
           <h1
-            class="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2 animate-fade-in"
-          >
+            class="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2 animate-fade-in">
             欢迎登录{{ $IXPAY_PRO.appName }}
           </h1>
           <p class="text-text-secondary dark:text-gray-400 text-sm">企业级支付管理系统</p>
         </div>
 
         <!-- 登录表单 -->
-        <el-form
-          ref="formRef"
-          :model="formData"
-          :rules="rules"
-          class="space-y-5"
-          autocomplete="on"
-          @submit.prevent="handleLogin"
-        >
+        <el-form ref="formRef" :model="formData" :rules="rules" class="space-y-5" autocomplete="on"
+          @submit.prevent="handleLogin">
           <!-- 用户名输入 -->
           <el-form-item prop="userName">
-            <el-input
-              v-model="formData.userName"
-              placeholder="请输入用户名"
-              :prefix-icon="User"
-              size="large"
-              clearable
-              :validate-event="false"
-              class="input-field rounded-xl"
-              @keyup.enter="handleLogin"
-            />
+            <el-input v-model="formData.userName" placeholder="请输入用户名" :prefix-icon="User" size="large" clearable
+              :validate-event="false" class="input-field rounded-xl" @keyup.enter="handleLogin" />
           </el-form-item>
 
           <!-- 密码输入 -->
           <el-form-item prop="password">
-            <el-input
-              v-model="formData.password"
-              placeholder="请输入密码"
-              type="password"
-              :prefix-icon="Key"
-              show-password
-              size="large"
-              clearable
-              :validate-event="false"
-              class="input-field rounded-xl"
-              @keyup.enter="handleLogin"
-            />
+            <el-input v-model="formData.password" placeholder="请输入密码" type="password" :prefix-icon="Key" show-password
+              size="large" clearable :validate-event="false" class="input-field rounded-xl"
+              @keyup.enter="handleLogin" />
           </el-form-item>
 
           <!-- 验证码输入 -->
           <el-form-item v-if="formData.openCaptcha" prop="captcha">
             <div class="flex items-center gap-2">
-              <el-input
-                v-model="formData.captcha"
-                placeholder="请输入验证码"
-                maxLength="4"
-                :prefix-icon="Lock"
-                size="large"
-                class="flex-1 input-field rounded-xl"
-                clearable
-                :validate-event="false"
-                @keyup.enter="handleLogin"
-              />
+              <el-input v-model="formData.captcha" placeholder="请输入验证码" maxLength="4" :prefix-icon="Lock" size="large"
+                class="flex-1 input-field rounded-xl" clearable :validate-event="false" @keyup.enter="handleLogin" />
               <div
-                class="captcha-wrapper w-28 h-11 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-md"
-                @click="refreshCaptcha"
-              >
-                <img
-                  v-if="picPath"
-                  class="w-full h-full object-cover"
-                  :src="picPath"
-                  alt="验证码"
-                  title="点击刷新验证码"
-                  :class="{ shaking: isRefreshing }"
-                />
-                <div
-                  v-else
-                  class="w-full h-full flex items-center justify-center bg-bg-tertiary dark:bg-gray-700"
-                >
+                class="captcha-wrapper w-36 h-11 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-md"
+                @click="refreshCaptcha">
+                <img v-if="picPath" class="w-full h-full object-cover" :src="picPath" alt="验证码" title="点击刷新验证码"
+                  :class="{ shaking: isRefreshing }" />
+                <div v-else class="w-full h-full flex items-center justify-center bg-bg-tertiary dark:bg-gray-700">
                   <el-icon class="refresh-icon" :class="{ rotating: isRefreshing }">
                     <Refresh />
                   </el-icon>
@@ -126,27 +77,16 @@
             <el-checkbox v-model="formData.rememberMe" size="small" class="text-text-secondary">
               记住密码
             </el-checkbox>
-            <el-link
-              type="primary"
-              :underline="false"
-              size="small"
-              class="hover:text-primary-light transition-colors"
-              @click="handleForgotPassword"
-            >
+            <el-link type="primary" :underline="false" size="small" class="hover:text-primary-light transition-colors"
+              @click="handleForgotPassword">
               忘记密码？
             </el-link>
           </div>
 
           <!-- 登录按钮 -->
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="handleLogin"
-              :loading="isLoading"
-              :disabled="isLoading"
-              size="large"
-              class="login-button w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-            >
+            <el-button type="primary" @click="handleLogin" :loading="isLoading" :disabled="isLoading" size="large"
+              class="login-button w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
               <span v-if="!isLoading">登录系统</span>
               <span v-else>登录中...</span>
             </el-button>
@@ -422,14 +362,17 @@ watch(
 
 /* 动画定义 */
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   20%,
   60% {
     transform: translateX(-4px);
   }
+
   40%,
   80% {
     transform: translateX(4px);
@@ -440,6 +383,7 @@ watch(
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

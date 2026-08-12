@@ -451,8 +451,8 @@ func (c *UserController) UpdateUserInfo(ctx *gin.Context) {
 	// 部门和岗位字段允许设置为 0（清空）
 	user.DepartmentID = req.DepartmentID
 	user.PositionID = req.PositionID
-	if req.Status >= 0 {
-		user.Status = req.Status
+	if req.Status != nil {
+		user.Status = *req.Status
 	}
 
 	// 将 updatedBy 转换为 int64

@@ -218,6 +218,7 @@ interface Role {
   createdAt: string
   isSystem?: boolean // 是否为系统角色
   code?: string // 角色编码
+  sort?: number // 排序
 }
 
 // 判断是否为管理员角色

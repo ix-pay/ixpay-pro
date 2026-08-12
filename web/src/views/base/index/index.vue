@@ -291,7 +291,7 @@ defineOptions({
   name: 'DashboardIndex',
 })
 
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/modules/user'
 import { ElMessage } from 'element-plus'

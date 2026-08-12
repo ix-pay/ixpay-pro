@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { UserInfo } from '@/types'
 import { useRouterStore } from './router'
+import { store } from '@/stores'
 
 export const useUserStore = defineStore('user', () => {
   // ElLoading 是一个包含 service 方法的对象，不是构造函数
@@ -206,19 +207,45 @@ export const useUserStore = defineStore('user', () => {
         throw new Error(res.msg || '登录失败')
       }
 
-      // 获取 routerStore，加载菜单数据并注册动态路由
-      const routerStore = useRouterStore()
-      await routerStore.SetAsyncRouter()
-
-      // 处理重定向（在路由加载完成后）
+      // 处理重定向
       const redirect = router.currentRoute.value.query.redirect
       if (redirect && typeof redirect === 'string') {
         await router.replace(redirect)
         return true
       }
 
-      // 跳转到首页（此时路由已加载完成）
-      await router.replace('/index')
+      // 加载动态路由（获取菜单数据），并设置 dynamicRoutesLoaded = true
+      const routerStore = useRouterStore(store)
+      await routerStore.SetAsyncRouter()
+
+      // 设置动态路由加载完成标志，避免路由守卫重复加载
+      routerStore.setDynamicRoutesLoaded(true)
+
+      // 将动态路由添加到 layout 下
+      const dynamicRoutes = routerStore.asyncRouters
+      for (const route of dynamicRoutes) {
+        if (route && route.name && !router.hasRoute(route.name)) {
+          router.addRoute('layout', route as any)
+        }
+      }
+
+      // 添加 404 路由
+      if (!router.hasRoute('NotFound')) {
+        router.addRoute('layout', {
+          path: '/:catchAll(.*)',
+          name: 'NotFound',
+          meta: { title: '404', closeTab: true, hidden: true },
+          component: () => import('@/components/business/Error/index.vue'),
+        })
+      }
+
+      // 跳转到第一个可用菜单页面，如果没有则跳转到无权限页
+      const firstPage = routerStore.getFirstPagePath()
+      if (firstPage) {
+        await router.replace(firstPage)
+      } else {
+        await router.replace('/no-permission')
+      }
 
       const isWindows = /windows/i.test(navigator.userAgent)
       window.localStorage.setItem('osType', isWindows ? 'WIN' : 'MAC')
@@ -255,22 +282,32 @@ export const useUserStore = defineStore('user', () => {
 
       if (res.code === 0) {
         // 获取 routerStore
-        const routerStore = useRouterStore()
+        const routerStore = useRouterStore(store)
 
-        // 1. 清理所有 tabs
-        routerStore.resetTabManager()
-
-        // 2. 清理 keep-alive 缓存
-        routerStore.clearAllKeepAlive()
-
-        // 3. 重置路由标志，允许重新加载动态路由
-        routerStore.setAsyncRouterFlag(0)
-
-        // 4. 重新获取用户信息
+        // 1. 重新获取用户信息
         await GetUserInfo()
 
-        // 5. 重新加载新角色的菜单数据
+        // 2. 重新加载动态路由（获取新角色的菜单数据）
         await routerStore.SetAsyncRouter()
+
+        // 3. 将动态路由添加到 layout 下
+        const dynamicRoutes = routerStore.asyncRouters
+        for (const route of dynamicRoutes) {
+          if (route && route.name && !router.hasRoute(route.name)) {
+            router.addRoute('layout', route as any)
+          }
+        }
+
+        // 4. 设置动态路由加载完成标志
+        routerStore.setDynamicRoutesLoaded(true)
+
+        // 5. 跳转到第一个可用菜单页面，无则跳转到无权限页
+        const firstPage = routerStore.getFirstPagePath()
+        if (firstPage) {
+          await router.replace(firstPage)
+        } else {
+          await router.replace('/no-permission')
+        }
 
         ElMessage.success('切换角色成功')
         return true
@@ -308,6 +345,10 @@ export const useUserStore = defineStore('user', () => {
       createdAt: '',
       updatedAt: '',
     }
+
+    // 重置路由加载标志
+    const routerStore = useRouterStore(store)
+    routerStore.setDynamicRoutesLoaded(false)
   }
 
   return {

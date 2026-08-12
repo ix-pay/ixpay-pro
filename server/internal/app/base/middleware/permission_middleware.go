@@ -24,7 +24,7 @@ import (
 // 3. RBAC 检查：角色是否有该 API 权限（从缓存读取）
 // 4. ABAC 拒绝规则检查：如果 RBAC 通过，检查是否有 ABAC 拒绝规则匹配
 // 5. ABAC 允许规则检查：如果 RBAC 未通过，检查 ABAC 允许规则是否匹配
-func PermissionMiddleware(permissionService *service.PermissionService, roleRepo repo.RoleRepository, log logger.Logger, cacheClient cache.Cache) gin.HandlerFunc {
+func PermissionMiddleware(permissionService *service.PermissionService, roleRepo repo.RoleRepository, apiRepo repo.APIRepository, log logger.Logger, cacheClient cache.Cache) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取请求路径和方法
 		path := c.Request.URL.Path
@@ -65,7 +65,7 @@ func PermissionMiddleware(permissionService *service.PermissionService, roleRepo
 		}
 
 		// 2. 检查 API 的授权类型
-		authType, err := getAPIAuthType(roleRepo, path, method, log, cacheClient)
+		authType, err := getAPIAuthType(roleRepo, apiRepo, path, method, log, cacheClient)
 		if err != nil {
 			log.Error("获取 API 授权类型失败", "error", err, "path", path, "method", method)
 			httpresponse.InternalServerErrorResponse(c, "获取 API 授权类型失败")
@@ -227,12 +227,29 @@ func matchAPIPath(pattern, requestPath string) bool {
 	return true
 }
 
+// getAPIByPathPattern 通过路径模式匹配查找 API
+// 当精确匹配失败时，加载所有同方法的路由并尝试模式匹配（处理路径参数如 :code）
+func getAPIByPathPattern(apiRepo repo.APIRepository, path, method string, log logger.Logger) (*entity.API, error) {
+	allRoutes, err := apiRepo.GetAllRoutes()
+	if err != nil {
+		return nil, fmt.Errorf("获取所有 API 路由失败：%w", err)
+	}
+
+	for _, api := range allRoutes {
+		if api.Method == method && matchAPIPath(api.Path, path) {
+			log.Debug("通过路径模式匹配找到 API", "pattern", api.Path, "request", path, "method", method)
+			return api, nil
+		}
+	}
+	return nil, fmt.Errorf("record not found")
+}
+
 // getAPIAuthType 获取 API 的授权类型
 // 返回值：
 // - 0: 不需要授权（只要登录就能用）
 // - 1: 需要授权（需要角色权限）
 // - -1: 获取失败或 API 不存在
-func getAPIAuthType(roleRepo repo.RoleRepository, path, method string, log logger.Logger, cacheClient cache.Cache) (int, error) {
+func getAPIAuthType(roleRepo repo.RoleRepository, apiRepo repo.APIRepository, path, method string, log logger.Logger, cacheClient cache.Cache) (int, error) {
 	// 构建缓存 Key
 	cacheKey := fmt.Sprintf("api:auth_type:%s:%s", method, path)
 
@@ -250,8 +267,12 @@ func getAPIAuthType(roleRepo repo.RoleRepository, path, method string, log logge
 	// 缓存未命中，从数据库查询
 	api, err := roleRepo.GetAPIByPathAndMethod(path, method)
 	if err != nil {
-		log.Error("查询 API 信息失败", "error", err, "path", path, "method", method)
-		return -1, err
+		// 精确匹配失败，尝试通过路径模式匹配查找（处理 :code 等路径参数）
+		api, err = getAPIByPathPattern(apiRepo, path, method, log)
+		if err != nil {
+			log.Error("查询 API 信息失败", "error", err, "path", path, "method", method)
+			return -1, err
+		}
 	}
 
 	var authType int
@@ -315,6 +336,17 @@ func checkPermissionFromCache(roleRepo repo.RoleRepository, role, method, path s
 	apiKey := method + ":" + path
 	hasPermission := perms.ApiSet[apiKey]
 
+	// apiSet 精确匹配失败时，尝试路径模式匹配（处理 :code 等路径参数）
+	if !hasPermission {
+		for _, api := range perms.ApiRoutes {
+			if api.Method == method && matchAPIPath(api.Path, path) {
+				hasPermission = true
+				log.Debug("通过模式匹配验证权限通过", "pattern", api.Path, "request", path, "method", method)
+				break
+			}
+		}
+	}
+
 	if hasPermission {
 		log.Debug("权限验证通过", "roleID", roleObj.ID, "role", role, "path", path, "method", method)
 	} else {
@@ -370,7 +402,20 @@ func loadAndCacheRolePermissions(roleID int64, roleRepo repo.RoleRepository, log
 
 	// 验证权限
 	apiKey := method + ":" + path
-	return apiSet[apiKey], nil
+	hasPermission := apiSet[apiKey]
+
+	// apiSet 精确匹配失败时，尝试路径模式匹配（处理 :code 等路径参数）
+	if !hasPermission {
+		for _, api := range apiRoutes {
+			if api.Method == method && matchAPIPath(api.Path, path) {
+				hasPermission = true
+				log.Debug("通过模式匹配验证权限通过（数据库加载）", "pattern", api.Path, "request", path, "method", method)
+				break
+			}
+		}
+	}
+
+	return hasPermission, nil
 }
 
 // RolePermissionMiddleware 基于角色的权限中间件

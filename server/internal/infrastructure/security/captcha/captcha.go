@@ -2,6 +2,7 @@ package captcha
 
 import (
 	"errors"
+	"image/color"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/config"
@@ -51,11 +52,18 @@ func SetupCaptcha(cfg *config.Config, redis *redis.RedisClient) (*Captcha, error
 // - Captcha指针: 验证码服务实例
 // - error: 错误信息
 func new(len int, expiry int, open bool, redis *redis.RedisClient) (*Captcha, error) {
-	// 创建数字验证码驱动配置
-	driver := base64Captcha.NewDriverDigit(
-		80,  // 验证码高度
-		240, // 验证码宽度
-		len, 0.7, 80)
+	// 创建字符串验证码驱动配置，使用白色背景保证在深色/浅色模式下都清晰可见
+	driver := base64Captcha.NewDriverString(
+		80,                                 // 验证码高度
+		240,                                // 验证码宽度
+		0,                                  // 噪声数量
+		base64Captcha.OptionShowHollowLine, // 干扰线选项（深色线条）
+		len,                                // 验证码长度
+		base64Captcha.TxtNumbers,           // 字符集（数字+字母，避免混淆字符）
+		&color.RGBA{255, 255, 255, 255},    // 白色背景，确保在任何模式下都清晰可见
+		nil,                                // 使用默认字体存储
+		nil,                                // 使用默认字体列表
+	)
 
 	// 创建独立的验证码存储，使用独立的前缀，不影响全局 Redis 配置
 	// 前缀格式："ixpay-pro:captcha:"，确保与其他业务隔离

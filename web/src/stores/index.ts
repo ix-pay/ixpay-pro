@@ -33,9 +33,6 @@ const createPersistPlugin = () => {
           state = {
             keepAliveRouters: state.keepAliveRouters,
             asyncRouters: state.asyncRouters,
-            topMenu: state.topMenu,
-            leftMenu: state.leftMenu,
-            topActive: state.topActive,
           }
         }
 

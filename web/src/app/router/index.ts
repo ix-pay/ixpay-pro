@@ -36,24 +36,27 @@ const baseLayoutRoute: AppRouteRecordRaw = {
   path: '/',
   name: 'layout',
   component: () => import('@/components/layout/BaseLayout.vue'),
-  redirect: '/index',
+  redirect: '/no-permission',
   meta: {
     title: '',
     hidden: false,
     keepAlive: true,
   },
   children: [
-    // ⚠️ 首页路由 - 所有登录用户都可访问 (即使没有菜单权限)
+    // 无权限页面 - 所有登录用户都可访问，作为登录后的默认页面
     {
-      path: 'index',
-      name: 'Index',
-      component: () => import('@/views/base/index/index.vue'),
+      path: 'no-permission',
+      name: 'NoPermission',
+      component: () => import('@/views/base/no-permission/index.vue'),
       meta: {
-        title: '首页',
-        hidden: false,
-        keepAlive: true,
+        title: '无权限',
+        hidden: true,
+        closeTab: true,
       },
     },
+    // 首页路由 - 不再默认添加，改为从接口动态加载
+    // 管理员登录后接口返回首页数据，首页路由自动添加
+    // 普通用户登录后接口不返回首页数据，首页路由不存在
     // 个人资料和系统设置路由作为 Layout 的子路由添加
     {
       path: 'profile',
@@ -89,7 +92,7 @@ router.beforeEach(async (to, from, next) => {
 
   const token = userStore.token
 
-  // 未登录状态下只能访问固定路由
+  // 未登录 - 只能访问登录页
   if (!token) {
     if (to.path === '/login') {
       next()
@@ -99,30 +102,19 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // 已登录状态下访问login页面，重定向到首页
+  // 已登录 - 访问登录页则重定向到默认页面
   if (to.path === '/login') {
-    next({ path: '/index', replace: true })
+    next({ path: '/no-permission', replace: true })
     return
   }
 
-  // 已登录状态下，确保动态路由已加载
-  // 检查是否已经添加过动态路由（通过检查 layout 下是否有动态路由）
-  const hasDynamicRoutes = router.getRoutes().some((route) => {
-    // 检查是否有系统管理相关的动态路由
-    return ['SystemManagement', 'TaskManagement', 'SystemMonitor', 'LogManagement'].includes(
-      route.name?.toString() || '',
-    )
-  })
-
-  if (!hasDynamicRoutes) {
+  // 已登录 - 确保动态路由已加载（页面刷新或直接访问 URL 时进入此分支）
+  if (!routerStore.dynamicRoutesLoaded) {
     try {
-      // 加载用户信息
       await userStore.GetUserInfo()
-
-      // 从接口获取并加载动态路由
       const dynamicRoutes = await routerStore.SetAsyncRouter()
 
-      // 将有效动态路由添加到 layout 下（过滤掉已存在的路由）
+      // 将动态路由添加到 layout 下（过滤掉已存在的路由）
       const validDynamicRoutes = dynamicRoutes.filter(
         (route) => route && route.name && !router.hasRoute(route.name),
       )
@@ -130,23 +122,28 @@ router.beforeEach(async (to, from, next) => {
         router.addRoute('layout', route as unknown as RouteRecordRaw)
       })
 
-      // 添加 404 路由，在动态路由加载完成后添加（只添加一次）
+      // 添加 404 路由
       if (!router.hasRoute('NotFound')) {
         router.addRoute('layout', {
           path: '/:catchAll(.*)',
           name: 'NotFound',
-          meta: {
-            title: '404',
-            closeTab: true,
-            hidden: true,
-          },
+          meta: { title: '404', closeTab: true, hidden: true },
           component: () => import('@/components/business/Error/index.vue'),
         })
       }
 
-      // 重新导航以应用新路由
-      // 确保导航到正确的路径，而不是默认的首页
-      next({ ...to, replace: true })
+      routerStore.setDynamicRoutesLoaded(true)
+
+      // 如果当前是根路径或默认页，跳转到第一个可用菜单页面
+      if (to.path === '/' || to.path === '/no-permission') {
+        const firstPage = routerStore.getFirstPagePath()
+        if (firstPage) {
+          next({ path: firstPage, replace: true })
+          return
+        }
+      }
+
+      next({ path: to.path, query: to.query, hash: to.hash, replace: true })
       return
     } catch {
       userStore.ClearStorage()
@@ -155,34 +152,16 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // 动态路由已加载，验证权限
-  // 检查当前路由是否在菜单数据中 (即是否有权限访问)
-  const routeName = to.name?.toString()
-
-  // 如果是固定路由 (如首页、个人资料、系统设置),直接放行
-  // ⚠️ 注意：Index 路由现在在 baseLayoutRoute 中定义，所有登录用户都可访问
-  const fixedRoutes = ['layout', 'UserProfile', 'SystemSetting', 'NotFound', 'Login', 'Index']
-  const fixedPaths = ['/', '/index', '/login', '/profile', '/settings']
-
-  // 检查是否是固定路由或固定路径
-  if (fixedRoutes.includes(routeName || '') || fixedPaths.includes(to.path)) {
-    console.log('router - 固定路由放行:', to.path)
-    next()
-    return
-  }
-
-  // 检查 Vue Router 中是否存在该路由（通过 getRoutes 检查）
-  const allRoutes = router.getRoutes()
-  const routeExists = allRoutes.some((route) => route.name === to.name)
+  // 动态路由已加载 - 检查路由是否存在
+  const routeExists = router.getRoutes().some(
+    (route) => route.name === to.name || route.path === to.path,
+  )
 
   if (!routeExists) {
-    // 没有权限访问，重定向到 404 页面
-    console.log('router - 没有权限访问，重定向到 404:', to.path)
     next({ name: 'NotFound' })
     return
   }
 
-  // 认证路由已加载且有权限，直接放行
   next()
 })
 

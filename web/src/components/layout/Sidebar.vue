@@ -14,7 +14,6 @@
       :collapse="isCollapsed"
       :collapse-transition="true"
       @select="handleMenuSelect"
-      router
     >
       <!-- 可滚动的菜单内容区域 -->
       <div class="menu-content">
@@ -149,70 +148,25 @@ const _props = defineProps({
 const emit = defineEmits(['toggle', 'menu-select'])
 
 // 从 routerStore 获取菜单数据
+// asyncRouters 在 store 中已过滤了 type:3 按钮数据和无效路由
 const menuList = computed<ExtendedRouteRecordRaw[]>(() => {
-  const defaultIndexMenu: ExtendedRouteRecordRaw = {
-    id: 1,
-    name: 'index',
-    path: '/index',
-    component: () => import('@/views/base/index/index.vue'),
-    meta: {
-      title: '首页',
-      icon: 'House',
-      hidden: false,
-      keepAlive: true,
-    },
-  }
-
-  const allMenus: ExtendedRouteRecordRaw[] = []
-  const indexMenuPaths = new Set<string>()
-
-  if (routerStore.asyncRouters.length > 0) {
-    const filteredMenus = routerStore.asyncRouters.filter((menu) => {
-      if (!menu || typeof menu !== 'object') {
-        return false
-      }
-
-      if (!menu.meta) {
-        menu.meta = { title: '' }
-      }
-
-      if (menu.hidden || menu.meta.hidden) {
-        return false
-      }
-
-      if (!menu.name || !menu.meta.title) {
-        return false
-      }
-
-      return true
-    })
-
-    filteredMenus.forEach((menu) => {
-      const isIndexMenu =
-        menu.path === 'index' ||
-        menu.path === '/index' ||
-        menu.name === 'index' ||
-        menu.meta?.title === '首页'
-
-      if (isIndexMenu) {
-        if (indexMenuPaths.has('/index')) {
-          return
+  // 过滤掉隐藏的菜单项（不修改原始响应式数据，避免无限递归）
+  const filterHidden = (items: ExtendedRouteRecordRaw[]): ExtendedRouteRecordRaw[] => {
+    return items.reduce<ExtendedRouteRecordRaw[]>((result, item) => {
+      if (item.meta?.hidden) return result
+      const newItem = { ...item }
+      if (newItem.children && newItem.children.length > 0) {
+        const filteredChildren = filterHidden(newItem.children)
+        if (filteredChildren.length > 0) {
+          newItem.children = filteredChildren
         }
-        if (menu.path === 'index') {
-          menu.path = '/index'
-        }
-        indexMenuPaths.add('/index')
       }
-
-      allMenus.push(menu)
-    })
+      result.push(newItem)
+      return result
+    }, [])
   }
 
-  if (allMenus.length === 0) {
-    allMenus.push(defaultIndexMenu)
-  }
-
-  return allMenus
+  return filterHidden(routerStore.asyncRouters)
 })
 
 const loading = computed(() => {

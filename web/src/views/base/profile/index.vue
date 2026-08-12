@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300 p-6"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300 p-6">
     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">个人资料</h2>
     <div class="max-w-3xl mx-auto w-full">
       <el-card shadow="hover">
@@ -10,13 +8,7 @@
             <span>基本信息</span>
           </div>
         </template>
-        <el-form
-          ref="profileFormRef"
-          :model="profileForm"
-          :rules="formRules"
-          label-width="120px"
-          class="profile-form"
-        >
+        <el-form ref="profileFormRef" :model="profileForm" :rules="formRules" label-width="120px" class="profile-form">
           <el-form-item label="用户名" prop="userName">
             <el-input v-model="profileForm.userName" placeholder="请输入用户名" disabled />
           </el-form-item>
@@ -35,9 +27,6 @@
           <el-form-item label="状态" prop="status">
             <el-input v-model="statusLabel" placeholder="请输入状态" disabled />
           </el-form-item>
-          <el-form-item label="创建时间" prop="createdAt">
-            <el-input v-model="profileForm.createdAt" placeholder="请输入创建时间" disabled />
-          </el-form-item>
         </el-form>
         <div class="form-actions">
           <el-button type="primary" @click="handleUpdateProfile">保存修改</el-button>
@@ -51,33 +40,16 @@
             <span>修改密码</span>
           </div>
         </template>
-        <el-form
-          ref="passwordFormRef"
-          :model="passwordForm"
-          :rules="passwordRules"
-          label-width="120px"
-          class="password-form"
-        >
+        <el-form ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-width="120px"
+          class="password-form">
           <el-form-item label="原密码" prop="oldPassword">
-            <el-input
-              type="password"
-              v-model="passwordForm.oldPassword"
-              placeholder="请输入原密码"
-            />
+            <el-input type="password" v-model="passwordForm.oldPassword" placeholder="请输入原密码" />
           </el-form-item>
           <el-form-item label="新密码" prop="newPassword">
-            <el-input
-              type="password"
-              v-model="passwordForm.newPassword"
-              placeholder="请输入新密码"
-            />
+            <el-input type="password" v-model="passwordForm.newPassword" placeholder="请输入新密码" />
           </el-form-item>
           <el-form-item label="确认密码" prop="confirmPassword">
-            <el-input
-              type="password"
-              v-model="passwordForm.confirmPassword"
-              placeholder="请确认新密码"
-            />
+            <el-input type="password" v-model="passwordForm.confirmPassword" placeholder="请确认新密码" />
           </el-form-item>
         </el-form>
         <div class="form-actions">
@@ -106,7 +78,6 @@ interface UserProfile {
   phone: string
   role: string
   status: number
-  createdAt: string
 }
 
 const userStore = useUserStore()
@@ -126,7 +97,6 @@ const profileForm = reactive<UserProfile>({
   phone: '',
   role: '',
   status: 1,
-  createdAt: '',
 })
 
 // 状态标签
@@ -153,7 +123,10 @@ const passwordForm = reactive({
 
 // 密码验证规则
 const passwordRules = reactive({
-  oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
+  oldPassword: [
+    { required: true, message: '请输入原密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' },
+  ],
   newPassword: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
     { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' },
@@ -178,8 +151,8 @@ const loadUserProfile = async () => {
   loading.value = true
   try {
     const res = await getUserInfo()
-    if (res.data?.userInfo) {
-      const userInfo = res.data.userInfo
+    if (res.data) {
+      const userInfo = res.data as Record<string, unknown>
       Object.assign(profileForm, {
         id: String(userInfo.id || ''),
         userName: userInfo.userName || '',
@@ -187,8 +160,7 @@ const loadUserProfile = async () => {
         email: userInfo.email || '',
         phone: userInfo.phone || '',
         role: userInfo.role || '',
-        status: userInfo.status || 1,
-        createdAt: userInfo.createdAt || '',
+        status: (userInfo.status as number) || 1,
       })
     }
   } catch (error) {

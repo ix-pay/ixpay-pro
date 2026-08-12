@@ -96,18 +96,28 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
           if (import.meta.env.DEV) {
             console.error('异步路由处理 - 加载组件失败:', item.component)
           }
-          // 无论是否有子路由，都需要将 component 设置为有效的值
-          // 对于有子路由的父路由，设置为 undefined，让 Vue Router 处理
-          item.component = undefined
+          // type:2 菜单必须有组件，即使加载失败也要保留（否则菜单不会显示）
+          // type:1 目录或有子路由的路由，设置为 undefined，让 Vue Router 处理
+          const menuItem = item as any
+          if (menuItem.type === 2) {
+            // type:2 菜单加载失败，保留原始字符串，让菜单能显示（点击时可能报错）
+            // 不设置为 undefined
+          } else if (item.children && item.children.length > 0) {
+            item.component = undefined
+          }
         }
       } catch (error) {
         // 只在开发环境输出错误日志
         if (import.meta.env.DEV) {
           console.error(`异步路由处理 - 加载组件 ${item.component} 出错:`, error)
         }
-        // 无论是否有子路由，都需要将 component 设置为有效的值
-        // 对于有子路由的父路由，设置为 undefined，让 Vue Router 处理
-        item.component = undefined
+        // type:2 菜单必须有组件，即使加载失败也要保留
+        const menuItem = item as any
+        if (menuItem.type === 2) {
+          // type:2 菜单加载失败，保留原始字符串
+        } else if (item.children && item.children.length > 0) {
+          item.component = undefined
+        }
       }
     } else if (item.component) {
       // 只在开发环境输出详细日志
@@ -128,15 +138,6 @@ export const asyncRouterHandle = (asyncRouter: ExtendedRouteRecordRaw[]) => {
       }
       // 递归处理子路由
       asyncRouterHandle(item.children)
-
-      // 如果父路由没有组件但有子路由，让 Vue Router 处理
-      if (item.component === undefined && item.children.length > 0) {
-        // 只在开发环境输出详细日志
-        if (import.meta.env.DEV) {
-          console.log('异步路由处理 - 父路由没有组件但有子路由:', item.path)
-        }
-        // 不设置默认组件，让 Vue Router 处理
-      }
     }
   })
 

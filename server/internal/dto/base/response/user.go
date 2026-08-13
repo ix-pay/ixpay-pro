@@ -19,17 +19,17 @@ type UserResponse struct {
 
 // UserSettingResponse 用户设置响应 DTO
 type UserSettingResponse struct {
-	ID               int64  `json:"id,string"`
-	UserID           int64  `json:"userId,string"`
-	ThemeColor       string `json:"themeColor"`
-	SidebarColor     string `json:"sidebarColor"`
-	NavbarColor      string `json:"navbarColor"`
-	FontSize         int    `json:"fontSize"`
-	Language         string `json:"language"`
-	AutoLogin        bool   `json:"autoLogin"`
-	RememberPassword bool   `json:"rememberPassword"`
-	CreatedAt        string `json:"createdAt"`
-	UpdatedAt        string `json:"updatedAt"`
+	ID              int64  `json:"id,string"`
+	UserID          int64  `json:"userId,string"`
+	DarkMode        string `json:"darkMode"`
+	PrimaryColor    string `json:"primaryColor"`
+	FontSize        int    `json:"fontSize"`
+	LayoutSideWidth int    `json:"layout_side_width"`
+	ShowWatermark   bool   `json:"show_watermark"`
+	Language        string `json:"language"`
+	MenuLayout      string `json:"menuLayout"`
+	CreatedAt       string `json:"createdAt"`
+	UpdatedAt       string `json:"updatedAt"`
 }
 
 // RoleInfo 角色信息响应结构

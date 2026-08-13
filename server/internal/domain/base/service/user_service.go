@@ -732,14 +732,14 @@ func (s *UserService) GetSelfSetting(userID int64) (*entity.UserSetting, error) 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		// 创建默认设置
 		defaultSetting := &entity.UserSetting{
-			UserID:           userID,
-			ThemeColor:       "#1890ff",
-			SidebarColor:     "#001529",
-			NavbarColor:      "#fff",
-			FontSize:         14,
-			Language:         "zh-CN",
-			AutoLogin:        false,
-			RememberPassword: false,
+			UserID:          userID,
+			DarkMode:        "auto",
+			PrimaryColor:    "#3b82f6",
+			FontSize:        14,
+			LayoutSideWidth: 256,
+			ShowWatermark:   true,
+			Language:        "zh-CN",
+			MenuLayout:      "left",
 		}
 
 		// 保存默认设置
@@ -787,13 +787,13 @@ func (s *UserService) SetSelfSetting(userID int64, setting *entity.UserSetting) 
 	}
 
 	// 更新现有设置
-	existingSetting.ThemeColor = setting.ThemeColor
-	existingSetting.SidebarColor = setting.SidebarColor
-	existingSetting.NavbarColor = setting.NavbarColor
+	existingSetting.DarkMode = setting.DarkMode
+	existingSetting.PrimaryColor = setting.PrimaryColor
 	existingSetting.FontSize = setting.FontSize
+	existingSetting.LayoutSideWidth = setting.LayoutSideWidth
+	existingSetting.ShowWatermark = setting.ShowWatermark
 	existingSetting.Language = setting.Language
-	existingSetting.AutoLogin = setting.AutoLogin
-	existingSetting.RememberPassword = setting.RememberPassword
+	existingSetting.MenuLayout = setting.MenuLayout
 
 	if err := s.settingRepo.Update(existingSetting); err != nil {
 		s.log.Error("更新用户设置失败", "userID", userID, "error", err)

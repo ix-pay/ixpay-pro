@@ -48,17 +48,17 @@ func convertToUserResponse(user *entity.User) response.UserResponse {
 // convertToUserSettingResponse 将 entity.UserSetting 转换为 response.UserSettingResponse
 func convertToUserSettingResponse(setting *entity.UserSetting) response.UserSettingResponse {
 	return response.UserSettingResponse{
-		ID:               setting.ID,
-		UserID:           setting.UserID,
-		ThemeColor:       setting.ThemeColor,
-		SidebarColor:     setting.SidebarColor,
-		NavbarColor:      setting.NavbarColor,
-		FontSize:         setting.FontSize,
-		Language:         setting.Language,
-		AutoLogin:        setting.AutoLogin,
-		RememberPassword: setting.RememberPassword,
-		CreatedAt:        setting.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        setting.UpdatedAt.Format(time.RFC3339),
+		ID:              setting.ID,
+		UserID:          setting.UserID,
+		DarkMode:        setting.DarkMode,
+		PrimaryColor:    setting.PrimaryColor,
+		FontSize:        setting.FontSize,
+		LayoutSideWidth: setting.LayoutSideWidth,
+		ShowWatermark:   setting.ShowWatermark,
+		Language:        setting.Language,
+		MenuLayout:      setting.MenuLayout,
+		CreatedAt:       setting.UpdatedAt.Format(time.RFC3339),
+		UpdatedAt:       setting.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

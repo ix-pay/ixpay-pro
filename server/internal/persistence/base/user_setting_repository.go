@@ -10,14 +10,14 @@ import (
 // userSettingModel 用户设置数据库模型
 type userSettingModel struct {
 	database.SnowflakeBaseModel
-	UserID           int64  `gorm:"uniqueIndex;not null"`
-	ThemeColor       string `gorm:"size:20"`
-	SidebarColor     string `gorm:"size:20"`
-	NavbarColor      string `gorm:"size:20"`
-	FontSize         *int   `gorm:"not null;default:14"`
-	Language         string `gorm:"size:20;default:zh-CN"`
-	AutoLogin        *bool  `gorm:"not null;default:false"`
-	RememberPassword *bool  `gorm:"not null;default:false"`
+	UserID          int64  `gorm:"uniqueIndex;not null"`
+	DarkMode        string `gorm:"size:10;default:auto"`
+	PrimaryColor    string `gorm:"size:20;default:#3b82f6"`
+	FontSize        *int   `gorm:"not null;default:14"`
+	LayoutSideWidth *int   `gorm:"not null;default:256"`
+	ShowWatermark   *bool  `gorm:"not null;default:true"`
+	Language        string `gorm:"size:20;default:zh-CN"`
+	MenuLayout      string `gorm:"size:10;default:left"`
 }
 
 // TableName 指定表名
@@ -33,12 +33,10 @@ func (m *userSettingModel) toDomain() *entity.UserSetting {
 	setting := &entity.UserSetting{
 		ID:           m.ID,
 		UserID:       m.UserID,
-		ThemeColor:   m.ThemeColor,
-		SidebarColor: m.SidebarColor,
-		NavbarColor:  m.NavbarColor,
+		DarkMode:     m.DarkMode,
+		PrimaryColor: m.PrimaryColor,
 		Language:     m.Language,
-		CreatedBy:    m.CreatedBy,
-		CreatedAt:    m.CreatedAt,
+		MenuLayout:   m.MenuLayout,
 		UpdatedBy:    m.UpdatedBy,
 		UpdatedAt:    m.UpdatedAt,
 	}
@@ -50,16 +48,16 @@ func (m *userSettingModel) toDomain() *entity.UserSetting {
 		setting.FontSize = 14
 	}
 
-	if m.AutoLogin != nil {
-		setting.AutoLogin = *m.AutoLogin
+	if m.LayoutSideWidth != nil {
+		setting.LayoutSideWidth = *m.LayoutSideWidth
 	} else {
-		setting.AutoLogin = false
+		setting.LayoutSideWidth = 256
 	}
 
-	if m.RememberPassword != nil {
-		setting.RememberPassword = *m.RememberPassword
+	if m.ShowWatermark != nil {
+		setting.ShowWatermark = *m.ShowWatermark
 	} else {
-		setting.RememberPassword = false
+		setting.ShowWatermark = true
 	}
 
 	return setting
@@ -70,17 +68,16 @@ func fromDomainUserSetting(setting *entity.UserSetting) (*userSettingModel, erro
 	return &userSettingModel{
 		SnowflakeBaseModel: database.SnowflakeBaseModel{
 			ID:        setting.ID,
-			CreatedBy: setting.CreatedBy,
 			UpdatedBy: setting.UpdatedBy,
 		},
-		UserID:           setting.UserID,
-		ThemeColor:       setting.ThemeColor,
-		SidebarColor:     setting.SidebarColor,
-		NavbarColor:      setting.NavbarColor,
-		FontSize:         common.IntPtr(setting.FontSize),
-		Language:         setting.Language,
-		AutoLogin:        common.BoolPtr(setting.AutoLogin),
-		RememberPassword: common.BoolPtr(setting.RememberPassword),
+		UserID:          setting.UserID,
+		DarkMode:        setting.DarkMode,
+		PrimaryColor:    setting.PrimaryColor,
+		FontSize:        common.IntPtr(setting.FontSize),
+		LayoutSideWidth: common.IntPtr(setting.LayoutSideWidth),
+		ShowWatermark:   common.BoolPtr(setting.ShowWatermark),
+		Language:        setting.Language,
+		MenuLayout:      setting.MenuLayout,
 	}, nil
 }
 

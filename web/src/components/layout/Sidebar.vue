@@ -1,5 +1,5 @@
 <template>
-  <el-aside :width="isCollapsed ? '64px' : '240px'" class="sidebar-container">
+  <el-aside :width="isCollapsed ? '64px' : `${config.layout_side_width}px`" class="sidebar-container">
     <!-- Logo 区域 -->
     <div class="logo-section">
       <img :src="ixpayLogo" alt="IxPay Pro Logo" class="logo-image" />
@@ -134,9 +134,14 @@ import ixpayLogo from '@/assets/images/ixpay.png'
 import type { ExtendedRouteRecordRaw } from '@/stores/modules/router'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { useRouterStore } from '@/stores/modules/router'
+import { useAppStore } from '@/stores'
+import { storeToRefs } from 'pinia'
+import { getFullPath, getMenuPath } from '@/utils/menu'
 
 const route = useRoute()
 const routerStore = useRouterStore()
+const appStore = useAppStore()
+const { config } = storeToRefs(appStore)
 
 const _props = defineProps({
   isCollapsed: {
@@ -218,21 +223,6 @@ const getIconComponent = (iconName?: string): Component => {
   if (iconComponent) return iconComponent as Component
 
   return iconMap.default
-}
-
-const getFullPath = (parentPath: string, childPath: string): string => {
-  const cleanParentPath = parentPath.endsWith('/') ? parentPath.slice(0, -1) : parentPath
-  const cleanChildPath = childPath.startsWith('/') ? childPath.slice(1) : childPath
-  return `/${cleanParentPath}/${cleanChildPath}`
-}
-
-// 获取正确的菜单路径
-const getMenuPath = (path: string): string => {
-  if (!path) return '/'
-  // 如果路径已经是绝对路径，直接返回
-  if (path.startsWith('/')) return path
-  // 否则添加前缀
-  return `/${path}`
 }
 
 watch(

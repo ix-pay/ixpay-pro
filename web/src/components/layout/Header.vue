@@ -97,6 +97,7 @@
 
       <!-- 主题切换 -->
       <div
+        ref="themeToggleRef"
         class="flex items-center h-full px-[var(--space-sm)] rounded-[var(--radius-md)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--bg-secondary)]"
       >
         <el-switch
@@ -185,6 +186,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import type { RoleInfo } from '@/types'
 import defaultAvatar from '@/assets/images/default-avatar.svg'
+import { setSelfSetting } from '@/api/modules/user'
+import { animateThemeTransition } from '@/utils/theme-transition'
 
 // 面包屑项接口
 interface BreadcrumbItem {
@@ -219,6 +222,9 @@ const currentRoleName = computed(() => {
 
 // 全屏状态
 const isFullscreen = ref(false)
+
+// 主题切换按钮容器引用
+const themeToggleRef = ref<HTMLElement | null>(null)
 
 // 通知相关
 const notificationCount = ref(3)
@@ -283,8 +289,27 @@ const markAllAsRead = () => {
 }
 
 // 切换主题
-const handleThemeChange = (value: string | number | boolean) => {
-  appStore.isDark = Boolean(value)
+const handleThemeChange = async (value: string | number | boolean) => {
+  const toDark = Boolean(value)
+  const newDarkMode = toDark ? 'dark' : 'light'
+
+  // 先切换主题（v-model 已更新 isDark，这里同步 config.darkMode）
+  appStore.config.darkMode = newDarkMode
+
+  // 用旧主题色遮罩从全屏缩小到 0，制造"新主题从按钮向外揭开"的效果
+  if (themeToggleRef.value) {
+    const rect = themeToggleRef.value.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    animateThemeTransition(centerX, centerY, toDark)
+  }
+
+  // 保存主题设置到后端
+  try {
+    await setSelfSetting({ darkMode: newDarkMode })
+  } catch (error) {
+    console.error('保存主题设置到后端失败:', error)
+  }
 }
 
 // 切换全屏

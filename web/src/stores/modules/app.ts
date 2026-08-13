@@ -9,13 +9,15 @@ interface ConfigType {
   weakness: boolean
   grey: boolean
   primaryColor: string
-  showTabs: boolean
   darkMode: string
+  fontSize: number
   layout_side_width: number
   layout_side_collapsed_width: number
   layout_side_item_height: number
   show_watermark: boolean
   side_mode: string
+  menuLayout: string
+  language: string
   transition_type: string
 }
 
@@ -24,13 +26,15 @@ const DEFAULT_CONFIG: ConfigType = {
   weakness: false,
   grey: false,
   primaryColor: '#3b82f6',
-  showTabs: true,
   darkMode: 'auto',
+  fontSize: 14,
   layout_side_width: 256,
   layout_side_collapsed_width: 80,
   layout_side_item_height: 48,
   show_watermark: true,
   side_mode: 'normal',
+  menuLayout: 'left',
+  language: 'zh-CN',
   transition_type: 'slide',
 }
 
@@ -135,11 +139,6 @@ export const useAppStore = defineStore('app', () => {
     config.primaryColor = e
   }
 
-  // 标签栏显示切换
-  const toggleTabs = (e: boolean) => {
-    config.showTabs = e
-  }
-
   // 侧边栏宽度设置
   const toggleConfigSideWidth = (e: number) => {
     config.layout_side_width = e
@@ -168,6 +167,21 @@ export const useAppStore = defineStore('app', () => {
   // 页面过渡动画切换
   const toggleTransition = (e: string) => {
     config.transition_type = e
+  }
+
+  // 字体大小设置
+  const toggleFontSize = (e: number) => {
+    config.fontSize = e
+  }
+
+  // 语言切换
+  const toggleLanguage = (e: string) => {
+    config.language = e
+  }
+
+  // 菜单布局切换
+  const toggleMenuLayout = (e: string) => {
+    config.menuLayout = e
   }
 
   // 重置配置
@@ -200,6 +214,12 @@ export const useAppStore = defineStore('app', () => {
     setBodyPrimaryColor(config.primaryColor, currentTheme.value)
   })
 
+  // 监听字体大小，设置全局 CSS 变量
+  watchEffect(() => {
+    document.documentElement.style.setProperty('--app-font-size', `${config.fontSize}px`)
+    document.documentElement.style.fontSize = `${config.fontSize}px`
+  })
+
   return {
     // 状态
     device,
@@ -219,13 +239,15 @@ export const useAppStore = defineStore('app', () => {
     toggleWeakness,
     toggleGrey,
     togglePrimaryColor,
-    toggleTabs,
     toggleConfigSideWidth,
     toggleConfigSideCollapsedWidth,
     toggleConfigSideItemHeight,
     toggleConfigWatermark,
     toggleSideMode,
     toggleTransition,
+    toggleFontSize,
+    toggleLanguage,
+    toggleMenuLayout,
     resetConfig,
   }
 })

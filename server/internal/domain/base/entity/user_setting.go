@@ -5,29 +5,21 @@ import "time"
 // UserSetting 用户设置领域实体
 // 存储用户的个性化系统设置
 // 与用户实体是一对一关系
-// 纯业务模型，无 GORM 标签
 type UserSetting struct {
-	ID               int64     // 用户设置 ID
-	UserID           int64     // 用户 ID
-	ThemeColor       string    // 主题颜色
-	SidebarColor     string    // 侧边栏颜色
-	NavbarColor      string    // 导航栏颜色
-	FontSize         int       // 字体大小
-	Language         string    // 语言
-	AutoLogin        bool      // 自动登录
-	RememberPassword bool      // 记住密码
-	CreatedBy        int64     // 创建人 ID
-	CreatedAt        time.Time // 创建时间
-	UpdatedBy        int64     // 更新人 ID
-	UpdatedAt        time.Time // 更新时间
+	ID              int64     `json:"id"`              // 用户设置 ID
+	UserID          int64     `json:"userId"`          // 用户 ID
+	DarkMode        string    `json:"darkMode"`        // 主题模式：light-浅色, dark-深色, auto-自动
+	PrimaryColor    string    `json:"primaryColor"`    // 主题颜色
+	FontSize        int       `json:"fontSize"`        // 字体大小
+	LayoutSideWidth int       `json:"layout_side_width"` // 侧边栏宽度
+	ShowWatermark   bool      `json:"show_watermark"`  // 是否显示水印
+	Language        string    `json:"language"`        // 语言
+	MenuLayout      string    `json:"menuLayout"`      // 菜单布局：left-左侧, top-顶部
+	UpdatedBy       int64     `json:"updatedBy"`       // 更新人 ID
+	UpdatedAt       time.Time `json:"updatedAt"`       // 更新时间
 }
 
-// IsAutoLogin 检查是否启用自动登录
-func (s *UserSetting) IsAutoLogin() bool {
-	return s.AutoLogin
-}
-
-// IsRememberPassword 检查是否启用记住密码
-func (s *UserSetting) IsRememberPassword() bool {
-	return s.RememberPassword
+// MenuLayoutOptions 返回菜单布局可选值
+func (s *UserSetting) MenuLayoutOptions() []string {
+	return []string{"left", "top"}
 }

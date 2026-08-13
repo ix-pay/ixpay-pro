@@ -112,6 +112,8 @@ router.beforeEach(async (to, from, next) => {
   if (!routerStore.dynamicRoutesLoaded) {
     try {
       await userStore.GetUserInfo()
+      // 从服务器加载用户个性化设置到 appStore
+      await userStore.LoadUserSettings()
       const dynamicRoutes = await routerStore.SetAsyncRouter()
 
       // 将动态路由添加到 layout 下（过滤掉已存在的路由）

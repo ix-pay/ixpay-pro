@@ -103,12 +103,16 @@
         </label>
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-600 dark:text-gray-400">显示标签栏</span>
-            <el-switch
-              v-model="config.showTabs"
-              @change="(val) => appStore.toggleTabs(val as boolean)"
+            <span class="text-sm text-gray-600 dark:text-gray-400">菜单布局</span>
+            <el-select
+              :model-value="config.menuLayout"
+              @change="(val) => appStore.toggleMenuLayout(val as string)"
               size="small"
-            />
+              class="w-24"
+            >
+              <el-option label="左侧" value="left" />
+              <el-option label="顶部" value="top" />
+            </el-select>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-600 dark:text-gray-400">显示水印</span>

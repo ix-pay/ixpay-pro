@@ -1,84 +1,175 @@
-<template>
-  <el-container class="h-screen w-screen overflow-hidden bg-[var(--bg-secondary)]">
-    <!-- 水印 -->
-    <el-watermark
-      v-if="config.show_watermark"
-      :font="watermarkFont"
-      :z-index="9999"
-      :gap="[180, 150]"
-      :content="userStore.userInfo.nickname"
-      class="pointer-events-none"
-    />
-
-    <!-- 侧边栏 -->
-    <el-aside
-      :width="sidebarWidth"
-      :class="[
+<template><!-- 水印 -->
+  <el-watermark v-if="config.show_watermark" :font="watermarkFont" :gap="[180, 150]"
+    :content="userStore.userInfo.nickname">
+    <el-container class="relative h-screen w-screen overflow-hidden bg-[var(--bg-secondary)]">
+      <!-- 侧边栏（左侧布局） -->
+      <div v-if="!isTopMenuLayout" :class="[
         'relative h-full overflow-hidden transition-all',
         isMobile ? 'fixed inset-y-0 left-0 z-[1000]' : '',
-        sidebarWidthClass,
         mobileSidebarClass,
-      ]"
-    >
-      <gva-aside
-        :is-collapsed="isSidebarCollapsed"
-        @toggle="toggleSidebar"
-        @menu-select="handleMenuSelect"
-      />
-    </el-aside>
+      ]">
+        <gva-aside :is-collapsed="isSidebarCollapsed" @toggle="toggleSidebar" @menu-select="handleMenuSelect" />
+      </div>
+
+      <!-- 移动端遮罩层 -->
+      <Transition enter-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        enter-from-class="opacity-0" enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="isMobile && !isSidebarCollapsed" class="fixed inset-0 bg-black/50 z-[999]" @click="toggleSidebar" />
+      </Transition>
+
+      <!-- 右侧区域：上中下布局 -->
+      <el-container class="flex flex-col h-full relative z-[1] overflow-hidden">
+        <!-- 页头 -->
+        <el-header :class="[
+          'flex-shrink-0 overflow-hidden bg-[var(--bg-primary)]',
+          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+          'border-b border-[var(--border-primary)]',
+        ]">
+          <gva-header :breadcrumb-list="breadcrumbList" :is-sidebar-collapsed="isSidebarCollapsed"
+            @toggle-sidebar="toggleSidebar" />
+        </el-header>
+
+        <!-- 顶部菜单栏（顶部布局） -->
+        <div v-if="isTopMenuLayout" :class="[
+          'flex-shrink-0 bg-[var(--bg-primary)] border-b border-[var(--border-primary)]',
+          'px-4 overflow-x-auto',
+        ]">
+          <div class="flex items-center h-12 gap-1">
+            <template v-for="menu in topMenuList" :key="menu.id">
+              <el-popover v-if="menu.children && menu.children.length > 0" :key="menu.id" trigger="hover" :width="200"
+                placement="bottom-start" :hide-after="100">
+                <div class="flex flex-col gap-0.5 p-1">
+                  <div v-for="child in menu.children" :key="child.id"
+                    class="px-3 py-2 rounded-md cursor-pointer hover:bg-[var(--el-color-primary-light-9)] text-sm text-[var(--text-primary)] transition-colors"
+                    @click="handleMenuSelect(getFullPath(menu.path, child.path))">
+                    {{ child.meta?.title || child.name }}
+                  </div>
+                </div>
+                <template #reference>
+                  <div
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-md cursor-pointer hover:bg-[var(--el-color-primary-light-9)] text-sm text-[var(--text-primary)] transition-colors whitespace-nowrap"
+                    :class="{ 'bg-[var(--el-color-primary-light-9)] text-[var(--el-color-primary)]': isTopMenuActive(menu) }">
+                    <span>{{ menu.meta?.title || menu.name }}</span>
+                    <el-icon class="text-xs">
+                      <ArrowDown />
+                    </el-icon>
+                  </div>
+                </template>
+              </el-popover>
+              <div v-else
+                class="flex items-center px-3 py-1.5 rounded-md cursor-pointer hover:bg-[var(--el-color-primary-light-9)] text-sm text-[var(--text-primary)] transition-colors whitespace-nowrap"
+                :class="{ 'bg-[var(--el-color-primary-light-9)] text-[var(--el-color-primary)]': isTopMenuActive(menu) }"
+                @click="handleMenuSelect(getMenuPath(menu.path))">
+                {{ menu.meta?.title || menu.name }}
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <el-main :class="[
+          'flex-1 overflow-hidden bg-[var(--bg-secondary)]',
+          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+        ]">
+          <tab-manager ref="tabManagerRef" />
+        </el-main>
+
+        <!-- 页脚 -->
+        <el-footer :class="[
+          'h-auto min-h-[40px] flex-shrink-0',
+          'bg-[var(--bg-primary)] text-[var(--text-primary)]',
+          'border-t border-[var(--border-primary)]',
+          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+        ]">
+          <BottomInfo />
+        </el-footer>
+      </el-container>
+    </el-container>
+  </el-watermark>
+  <el-container v-else class="relative h-screen w-screen overflow-hidden bg-[var(--bg-secondary)]">
+    <!-- 侧边栏（左侧布局） -->
+    <div v-if="!isTopMenuLayout" :class="[
+      'relative h-full overflow-hidden transition-all',
+      isMobile ? 'fixed inset-y-0 left-0 z-[1000]' : '',
+      mobileSidebarClass,
+    ]">
+      <gva-aside :is-collapsed="isSidebarCollapsed" @toggle="toggleSidebar" @menu-select="handleMenuSelect" />
+    </div>
 
     <!-- 移动端遮罩层 -->
-    <Transition
-      enter-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
+    <Transition enter-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      enter-from-class="opacity-0" enter-to-class="opacity-100"
       leave-active-class="transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isMobile && !isSidebarCollapsed"
-        class="fixed inset-0 bg-black/50 z-[999]"
-        @click="toggleSidebar"
-      />
+      leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <div v-if="isMobile && !isSidebarCollapsed" class="fixed inset-0 bg-black/50 z-[999]" @click="toggleSidebar" />
     </Transition>
 
     <!-- 右侧区域：上中下布局 -->
     <el-container class="flex flex-col h-full relative z-[1] overflow-hidden">
       <!-- 页头 -->
-      <el-header
-        :class="[
-          'flex-shrink-0 overflow-hidden bg-[var(--bg-primary)]',
-          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
-          'border-b border-[var(--border-primary)]',
-        ]"
-      >
-        <gva-header
-          :breadcrumb-list="breadcrumbList"
-          :is-sidebar-collapsed="isSidebarCollapsed"
-          @toggle-sidebar="toggleSidebar"
-        />
+      <el-header :class="[
+        'flex-shrink-0 overflow-hidden bg-[var(--bg-primary)]',
+        'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+        'border-b border-[var(--border-primary)]',
+      ]">
+        <gva-header :breadcrumb-list="breadcrumbList" :is-sidebar-collapsed="isSidebarCollapsed"
+          @toggle-sidebar="toggleSidebar" />
       </el-header>
 
+      <!-- 顶部菜单栏（顶部布局） -->
+      <div v-if="isTopMenuLayout" :class="[
+        'flex-shrink-0 bg-[var(--bg-primary)] border-b border-[var(--border-primary)]',
+        'px-4 overflow-x-auto',
+      ]">
+        <div class="flex items-center h-12 gap-1">
+          <template v-for="menu in topMenuList" :key="menu.id">
+            <el-popover v-if="menu.children && menu.children.length > 0" :key="menu.id" trigger="hover" :width="200"
+              placement="bottom-start" :hide-after="100">
+              <div class="flex flex-col gap-0.5 p-1">
+                <div v-for="child in menu.children" :key="child.id"
+                  class="px-3 py-2 rounded-md cursor-pointer hover:bg-[var(--el-color-primary-light-9)] text-sm text-[var(--text-primary)] transition-colors"
+                  @click="handleMenuSelect(getFullPath(menu.path, child.path))">
+                  {{ child.meta?.title || child.name }}
+                </div>
+              </div>
+              <template #reference>
+                <div
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-md cursor-pointer hover:bg-[var(--el-color-primary-light-9)] text-sm text-[var(--text-primary)] transition-colors whitespace-nowrap"
+                  :class="{ 'bg-[var(--el-color-primary-light-9)] text-[var(--el-color-primary)]': isTopMenuActive(menu) }">
+                  <span>{{ menu.meta?.title || menu.name }}</span>
+                  <el-icon class="text-xs">
+                    <ArrowDown />
+                  </el-icon>
+                </div>
+              </template>
+            </el-popover>
+            <div v-else
+              class="flex items-center px-3 py-1.5 rounded-md cursor-pointer hover:bg-[var(--el-color-primary-light-9)] text-sm text-[var(--text-primary)] transition-colors whitespace-nowrap"
+              :class="{ 'bg-[var(--el-color-primary-light-9)] text-[var(--el-color-primary)]': isTopMenuActive(menu) }"
+              @click="handleMenuSelect(getMenuPath(menu.path))">
+              {{ menu.meta?.title || menu.name }}
+            </div>
+          </template>
+        </div>
+      </div>
+
       <!-- 内容区域 -->
-      <el-main
-        :class="[
-          'flex-1 overflow-hidden bg-[var(--bg-secondary)]',
-          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
-        ]"
-      >
+      <el-main :class="[
+        'flex-1 overflow-hidden bg-[var(--bg-secondary)]',
+        'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+      ]">
         <tab-manager ref="tabManagerRef" />
       </el-main>
 
       <!-- 页脚 -->
-      <el-footer
-        :class="[
-          'h-auto min-h-[40px] flex-shrink-0',
-          'bg-[var(--bg-primary)] text-[var(--text-primary)]',
-          'border-t border-[var(--border-primary)]',
-          'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
-        ]"
-      >
+      <el-footer :class="[
+        'h-auto min-h-[40px] flex-shrink-0',
+        'bg-[var(--bg-primary)] text-[var(--text-primary)]',
+        'border-t border-[var(--border-primary)]',
+        'transition-all duration-[var(--duration-normal)] ease-[cubic-bezier(0.4,0,0.2,1)]',
+      ]">
         <BottomInfo />
       </el-footer>
     </el-container>
@@ -95,7 +186,11 @@ import { ref, reactive, watchEffect, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/modules/user'
 import { useAppStore } from '@/stores'
+import { useRouterStore } from '@/stores/modules/router'
+import type { ExtendedRouteRecordRaw } from '@/stores/modules/router'
 import { storeToRefs } from 'pinia'
+import { ArrowDown } from '@element-plus/icons-vue'
+import { getMenuPath, getFullPath } from '@/utils/menu'
 
 defineOptions({
   name: 'BaseLayout',
@@ -103,6 +198,7 @@ defineOptions({
 
 const appStore = useAppStore()
 const { config, isDark } = storeToRefs(appStore)
+const routerStore = useRouterStore()
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
@@ -163,20 +259,32 @@ const breadcrumbList = computed<BreadcrumbItem[]>(() => {
     }))
 })
 
-// 菜单选择处理
+// 菜单选择处理（左侧和顶部菜单路径格式统一，均带 / 前缀）
 const handleMenuSelect = (path: string) => {
   router.push(path)
 }
 
-// 侧边栏宽度计算
-const sidebarWidth = computed(() => {
-  return isSidebarCollapsed.value ? '64px' : '240px'
+// 是否为顶部菜单布局
+const isTopMenuLayout = computed(() => {
+  return config.value.menuLayout === 'top'
 })
 
-// 侧边栏宽度 class
-const sidebarWidthClass = computed(() => {
-  return isSidebarCollapsed.value ? 'w-[64px]' : 'w-[240px]'
+// 顶部菜单列表（从 routerStore 获取）
+const topMenuList = computed(() => {
+  return routerStore.asyncRouters || []
 })
+
+// 判断顶部菜单项是否激活
+const isTopMenuActive = (menu: ExtendedRouteRecordRaw): boolean => {
+  const currentPath = route.path
+  if (menu.path && currentPath.includes('/' + menu.path)) {
+    return true
+  }
+  if (menu.children) {
+    return menu.children.some((child) => child.path && currentPath.includes('/' + child.path))
+  }
+  return false
+}
 
 // 移动端侧边栏 class
 const mobileSidebarClass = computed(() => {

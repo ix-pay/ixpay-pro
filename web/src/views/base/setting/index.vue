@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300 p-6"
-  >
+  <div class="flex flex-col h-full bg-[var(--bg-color)] rounded-lg shadow-md transition-colors duration-300 p-6">
     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">系统设置</h2>
     <div class="max-w-3xl mx-auto w-full">
       <el-card shadow="hover">
@@ -10,13 +8,7 @@
             <span>界面设置</span>
           </div>
         </template>
-        <el-form
-          ref="settingFormRef"
-          :model="settingForm"
-          :rules="formRules"
-          label-width="120px"
-          class="setting-form"
-        >
+        <el-form ref="settingFormRef" :model="settingForm" :rules="formRules" label-width="120px" class="setting-form">
           <el-form-item label="主题模式" prop="darkMode">
             <el-radio-group v-model="settingForm.darkMode">
               <el-radio-button label="light">浅色</el-radio-button>
@@ -25,45 +17,32 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="主题颜色" prop="primaryColor">
-            <el-color-picker
-              v-model="settingForm.primaryColor"
-              show-color-palette
-              :predefine="themeColorOptions"
-            />
+            <el-color-picker v-model="settingForm.primaryColor" show-color-palette :predefine="themeColorOptions" />
           </el-form-item>
           <el-form-item label="字体大小" prop="fontSize">
             <el-slider v-model="settingForm.fontSize" :min="12" :max="20" :step="1" />
           </el-form-item>
           <el-form-item label="侧边栏宽度" prop="layout_side_width">
-            <el-slider
-              v-model="settingForm.layout_side_width"
-              :min="180"
-              :max="300"
-              :step="10"
-              :marks="{
-                180: '窄',
-                240: '标准',
-                300: '宽',
-              }"
-            />
-          </el-form-item>
-          <el-form-item label="显示标签栏">
-            <el-switch v-model="settingForm.showTabs" />
+            <el-slider v-model="settingForm.layout_side_width" :min="180" :max="300" :step="10" :marks="{
+              180: '窄',
+              240: '标准',
+              300: '宽',
+            }" />
           </el-form-item>
           <el-form-item label="显示水印">
             <el-switch v-model="settingForm.show_watermark" />
+          </el-form-item>
+          <el-form-item label="菜单布局" prop="menuLayout">
+            <el-radio-group v-model="settingForm.menuLayout">
+              <el-radio-button label="left">左侧</el-radio-button>
+              <el-radio-button label="top">顶部</el-radio-button>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="语言" prop="language">
             <el-select v-model="settingForm.language" placeholder="请选择语言">
               <el-option label="简体中文" value="zh-CN" />
               <el-option label="English" value="en-US" />
             </el-select>
-          </el-form-item>
-          <el-form-item label="自动登录">
-            <el-switch v-model="settingForm.autoLogin" />
-          </el-form-item>
-          <el-form-item label="记住密码">
-            <el-switch v-model="settingForm.rememberPassword" />
           </el-form-item>
         </el-form>
         <div class="form-actions">
@@ -103,12 +82,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useAppStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
 import { getSelfSetting, setSelfSetting } from '@/api/modules/user'
+import { animateThemeTransition } from '@/utils/theme-transition'
 
 defineOptions({
   name: 'SettingPage',
@@ -119,11 +99,9 @@ interface SettingForm {
   primaryColor: string
   fontSize: number
   layout_side_width: number
-  showTabs: boolean
   show_watermark: boolean
+  menuLayout: string
   language: string
-  autoLogin: boolean
-  rememberPassword: boolean
 }
 
 interface SystemInfo {
@@ -158,11 +136,9 @@ const settingForm = reactive<SettingForm>({
   primaryColor: '#3b82f6',
   fontSize: 14,
   layout_side_width: 256,
-  showTabs: true,
-  show_watermark: true,
+  show_watermark: false,
+  menuLayout: 'left',
   language: 'zh-CN',
-  autoLogin: false,
-  rememberPassword: true,
 })
 
 // 系统信息
@@ -184,27 +160,32 @@ const formRules = reactive({
 const loadSettings = async () => {
   loading.value = true
   try {
-    // 从 appStore 获取配置
-    settingForm.darkMode = config.value.darkMode
-    settingForm.primaryColor = config.value.primaryColor
-    settingForm.fontSize = 14 // 字体大小不从 store 获取，使用默认值
-    settingForm.layout_side_width = config.value.layout_side_width
-    settingForm.showTabs = config.value.showTabs
-    settingForm.show_watermark = config.value.show_watermark
-
-    // 从服务器获取用户设置
+    // 从服务器获取用户设置作为主要来源
     try {
       const res = await getSelfSetting()
       if ((res.data as Record<string, unknown>)?.settings) {
-        const userSettings = (res.data as Record<string, unknown>).settings as SettingForm
-        settingForm.language = userSettings.language || 'zh-CN'
-        settingForm.autoLogin = userSettings.autoLogin || false
-        settingForm.rememberPassword =
-          userSettings.rememberPassword !== undefined ? userSettings.rememberPassword : true
+        const userSettings = (res.data as Record<string, unknown>).settings as Record<string, unknown>
+        settingForm.darkMode = (userSettings.darkMode as string) || 'auto'
+        settingForm.primaryColor = (userSettings.primaryColor as string) || '#3b82f6'
+        settingForm.fontSize = (userSettings.fontSize as number) || 14
+        settingForm.layout_side_width = (userSettings.layout_side_width as number) || 256
+        settingForm.show_watermark = userSettings.show_watermark !== undefined ? (userSettings.show_watermark as boolean) : true
+        settingForm.menuLayout = (userSettings.menuLayout as string) || 'left'
+        settingForm.language = (userSettings.language as string) || 'zh-CN'
       }
     } catch (apiError) {
       console.error('从服务器获取设置失败:', apiError)
+      // 服务器不可用时，从 appStore 获取配置作为备选
+      settingForm.darkMode = config.value.darkMode
+      settingForm.primaryColor = config.value.primaryColor
+      settingForm.fontSize = 14
+      settingForm.layout_side_width = config.value.layout_side_width
+      settingForm.show_watermark = config.value.show_watermark
+      settingForm.menuLayout = config.value.menuLayout || 'left'
     }
+
+    // 同步到 appStore
+    applySettingsToStore()
   } catch (error) {
     console.error('获取设置信息失败:', error)
   } finally {
@@ -212,34 +193,62 @@ const loadSettings = async () => {
   }
 }
 
+// 将表单设置同步到 appStore
+const applySettingsToStore = () => {
+  if (settingForm.darkMode === 'light') {
+    appStore.toggleLightMode()
+  } else if (settingForm.darkMode === 'dark') {
+    appStore.toggleDarkModeForce()
+  } else if (settingForm.darkMode === 'auto') {
+    appStore.toggleAutoTheme()
+  }
+  appStore.togglePrimaryColor(settingForm.primaryColor)
+  appStore.toggleFontSize(settingForm.fontSize)
+  appStore.toggleConfigSideWidth(settingForm.layout_side_width)
+  appStore.toggleConfigWatermark(settingForm.show_watermark)
+  appStore.toggleLanguage(settingForm.language)
+  appStore.toggleMenuLayout(settingForm.menuLayout)
+}
+
 // 保存设置
 const handleSaveSettings = async () => {
   try {
     await settingFormRef.value.validate()
 
-    // 使用 appStore 的方法更新配置
-    if (settingForm.darkMode === 'light') {
-      appStore.toggleLightMode()
-    } else if (settingForm.darkMode === 'dark') {
-      appStore.toggleDarkModeForce()
-    } else if (settingForm.darkMode === 'auto') {
-      appStore.toggleAutoTheme()
+    // 如果主题模式发生变化，触发圆形扩散动画
+    const oldDarkMode = config.value.darkMode
+    const newDarkMode = settingForm.darkMode
+    if (oldDarkMode !== newDarkMode) {
+      const toDark = newDarkMode === 'dark' || (newDarkMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      const centerX = window.innerWidth / 2
+      const centerY = window.innerHeight / 2
+      animateThemeTransition(centerX, centerY, toDark)
+
+      // 延迟应用主题，让动画先扩散
+      setTimeout(() => {
+        appStore.toggleDarkMode(newDarkMode)
+      }, 150)
     }
 
+    // 同步其他设置到 appStore
     appStore.togglePrimaryColor(settingForm.primaryColor)
+    appStore.toggleFontSize(settingForm.fontSize)
     appStore.toggleConfigSideWidth(settingForm.layout_side_width)
-    appStore.toggleTabs(settingForm.showTabs)
     appStore.toggleConfigWatermark(settingForm.show_watermark)
+    appStore.toggleLanguage(settingForm.language)
+    appStore.toggleMenuLayout(settingForm.menuLayout)
 
-    // 保存用户设置到 localStorage
+    // 保存所有设置到服务器
     const userSettings = {
+      darkMode: settingForm.darkMode,
+      primaryColor: settingForm.primaryColor,
+      fontSize: settingForm.fontSize,
+      layout_side_width: settingForm.layout_side_width,
+      show_watermark: settingForm.show_watermark,
+      menuLayout: settingForm.menuLayout,
       language: settingForm.language,
-      autoLogin: settingForm.autoLogin,
-      rememberPassword: settingForm.rememberPassword,
     }
-    localStorage.setItem('userSettings', JSON.stringify(userSettings))
 
-    // 调用 API 保存到服务器
     try {
       await setSelfSetting(userSettings)
     } catch (error) {
@@ -261,17 +270,23 @@ const handleResetSettings = () => {
     primaryColor: '#3b82f6',
     fontSize: 14,
     layout_side_width: 256,
-    showTabs: true,
     show_watermark: true,
+    menuLayout: 'left',
     language: 'zh-CN',
-    autoLogin: false,
-    rememberPassword: true,
   })
 }
 
 onMounted(() => {
   loadSettings()
 })
+
+// 监听 appStore 中 darkMode 的变化，同步到表单（例如 Header 切换主题时）
+watch(
+  () => config.value.darkMode,
+  (newDarkMode) => {
+    settingForm.darkMode = newDarkMode
+  },
+)
 </script>
 
 <style scoped>

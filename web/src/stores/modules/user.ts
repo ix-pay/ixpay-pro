@@ -1,10 +1,11 @@
-import { login, getUserInfo, logout, switchRole } from '@/api/modules/user'
+import { login, getUserInfo, logout, switchRole, getSelfSetting } from '@/api/modules/user'
 import router from '@/app/router/index'
 import { ElLoading, ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { UserInfo } from '@/types'
 import { useRouterStore } from './router'
+import { useAppStore } from '@/stores'
 import { store } from '@/stores'
 
 export const useUserStore = defineStore('user', () => {
@@ -179,6 +180,43 @@ export const useUserStore = defineStore('user', () => {
       setUserInfo(res.data as Partial<UserInfo>)
     }
   }
+
+  /* 从服务器加载用户个性化设置并同步到 appStore */
+  const LoadUserSettings = async (): Promise<void> => {
+    try {
+      const res = await getSelfSetting()
+      const settings = (res.data as Record<string, unknown>)?.settings as Record<string, unknown>
+      if (settings) {
+        const appStore = useAppStore(store)
+        // 将服务器设置同步到 appStore 配置
+        if (settings.darkMode) {
+          appStore.toggleDarkMode(settings.darkMode as string)
+        }
+        if (settings.primaryColor) {
+          appStore.togglePrimaryColor(settings.primaryColor as string)
+        }
+        if (settings.fontSize !== undefined && settings.fontSize !== null) {
+          appStore.toggleFontSize(settings.fontSize as number)
+        }
+        if (settings.layout_side_width !== undefined && settings.layout_side_width !== null) {
+          appStore.toggleConfigSideWidth(settings.layout_side_width as number)
+        }
+        if (settings.show_watermark !== undefined) {
+          appStore.toggleConfigWatermark(settings.show_watermark as boolean)
+        }
+        if (settings.menuLayout) {
+          appStore.toggleMenuLayout(settings.menuLayout as string)
+        }
+        if (settings.language) {
+          appStore.toggleLanguage(settings.language as string)
+        }
+        console.log('用户个性化设置已从服务器加载到 appStore')
+      }
+    } catch (error) {
+      console.error('从服务器加载用户设置失败:', error)
+      // 失败时使用 localStorage 中的配置（已由 appStore 初始化时加载）
+    }
+  }
   /* 登录*/
   const LoginIn = async (loginInfo: { userName: string; password: string; captcha?: string }) => {
     try {
@@ -246,6 +284,9 @@ export const useUserStore = defineStore('user', () => {
       } else {
         await router.replace('/no-permission')
       }
+
+      // 登录成功后从服务器加载用户个性化设置
+      await LoadUserSettings()
 
       const isWindows = /windows/i.test(navigator.userAgent)
       window.localStorage.setItem('osType', isWindows ? 'WIN' : 'MAC')
@@ -330,6 +371,8 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('refreshToken')
     // 清理其他可能存在的用户相关数据
     localStorage.removeItem('osType')
+    // 清理应用配置，避免旧用户设置残留
+    localStorage.removeItem('ixpay-app-config')
 
     // 重置 pinia store 中的数据
     token.value = ''
@@ -356,6 +399,7 @@ export const useUserStore = defineStore('user', () => {
     NeedInit,
     ResetUserInfo,
     GetUserInfo,
+    LoadUserSettings,
     LoginIn,
     LoginOut,
     SwitchRole,

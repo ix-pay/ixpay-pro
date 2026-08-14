@@ -249,6 +249,14 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		return
 	}
 
+	// 转换公告类型
+	noticeType, ok := entity.ParseNoticeType(req.Type)
+	if !ok {
+		c.log.Error("无效的公告类型", "type", req.Type)
+		baseRes.FailWithMessage("无效的公告类型", ctx)
+		return
+	}
+
 	// 提供默认值：sort=0（不置顶）
 	sort := req.Sort
 
@@ -256,7 +264,7 @@ func (c *NoticeController) CreateNotice(ctx *gin.Context) {
 		req.Title,
 		req.Content,
 		req.Description,
-		entity.NoticeType(req.Type),
+		noticeType,
 		entity.NoticeStatus(req.Status),
 		req.PublishTime,
 		publisherIDInt,
@@ -341,13 +349,21 @@ func (c *NoticeController) UpdateNotice(ctx *gin.Context) {
 		return
 	}
 
+	// 转换公告类型
+	noticeType, ok := entity.ParseNoticeType(req.Type)
+	if !ok {
+		c.log.Error("无效的公告类型", "type", req.Type)
+		baseRes.FailWithMessage("无效的公告类型", ctx)
+		return
+	}
+
 	// 调用服务层更新公告
 	notice, err := c.service.UpdateNotice(
 		req.ID,
 		req.Title,
 		req.Content,
 		req.Description,
-		entity.NoticeType(req.Type),
+		noticeType,
 		publisherIDInt,
 		req.IsTop,
 		req.Sort,

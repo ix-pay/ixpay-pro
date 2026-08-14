@@ -75,12 +75,12 @@
         <el-table-column prop="type" label="类型" width="120">
           <template #default="scope">
             <el-tag :type="scope.row.type === 'system'
-                ? 'primary'
-                : scope.row.type === 'activity'
-                  ? 'success'
-                  : scope.row.type === 'notice'
-                    ? 'warning'
-                    : 'danger'
+              ? 'primary'
+              : scope.row.type === 'activity'
+                ? 'success'
+                : scope.row.type === 'notice'
+                  ? 'warning'
+                  : 'danger'
               " size="small">
               {{
                 scope.row.type === 'system'
@@ -139,7 +139,7 @@
         @size-change="handleSizeChange" @current-change="handleCurrentChange" small />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="800px" :close-on-click-modal="false">
       <el-form ref="noticeFormRef" :model="noticeForm" :rules="formRules" label-width="100px">
         <el-form-item label="公告标题" prop="title">
           <el-input v-model="noticeForm.title" placeholder="请输入公告标题" />
@@ -150,8 +150,9 @@
               :value="item.itemKey" />
           </el-select>
         </el-form-item>
-        <el-form-item label="公告内容" prop="content">
-          <el-input v-model="noticeForm.content" type="textarea" :rows="8" placeholder="请输入公告内容" />
+        <el-form-item label="公告内容" prop="content" class="rich-editor-form-item">
+          <QuillEditor v-model:content="noticeForm.content" contentType="html" theme="snow" toolbar="full"
+            placeholder="请输入公告内容" :style="{ height: '300px', width: '100%' }" />
         </el-form-item>
         <el-form-item label="发布时间" prop="publishTime">
           <el-date-picker v-model="noticeForm.publishTime" type="datetime" placeholder="请选择发布时间"
@@ -170,8 +171,8 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="detailDialogVisible" title="公告内容" width="600px">
-      <div class="whitespace-pre-wrap">{{ currentNotice.content }}</div>
+    <el-dialog v-model="detailDialogVisible" title="公告内容" width="700px">
+      <div class="notice-content-preview" v-html="currentNotice.content" />
       <template #footer>
         <el-button @click="detailDialogVisible = false">关闭</el-button>
       </template>
@@ -183,6 +184,8 @@
 import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { Plus, Search, Refresh, Bell, SuccessFilled, CircleClose } from '@element-plus/icons-vue'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { getNoticeList, createNotice, updateNotice, deleteNotice } from '@/api/modules/notice'
 import { getDictItemsByCode } from '@/api/modules/dict'
 import { formatDate } from '@/utils/format'
@@ -419,5 +422,31 @@ onMounted(() => {
 
 :deep(.el-table__body-wrapper) {
   overflow: auto !important;
+}
+
+/* 公告内容预览 */
+.notice-content-preview {
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.notice-content-preview :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+.notice-content-preview :deep(a) {
+  color: var(--primary-color);
+}
+
+.notice-content-preview :deep(blockquote) {
+  border-left: 3px solid var(--primary-color);
+  padding-left: 12px;
+  margin: 8px 0;
+  color: var(--text-secondary);
 }
 </style>

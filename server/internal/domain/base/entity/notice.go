@@ -56,6 +56,23 @@ func (n *Notice) IsArchived() bool {
 	return n.Status == NoticeStatusArchived
 }
 
+// ParseNoticeType 将字符串类型值转换为 NoticeType 常量
+// 支持数字字符串（"1"="system", "2"="activity", "3"="notice", "4"="emergency"）和字符串常量值
+func ParseNoticeType(typeStr string) (NoticeType, bool) {
+	switch typeStr {
+	case "1", "system":
+		return NoticeTypeSystem, true
+	case "2", "activity":
+		return NoticeTypeActivity, true
+	case "3", "notice":
+		return NoticeTypeNotice, true
+	case "4", "emergency":
+		return NoticeTypeEmergency, true
+	default:
+		return "", false
+	}
+}
+
 // NoticeReadRecord 公告阅读记录领域实体
 // 纯业务模型，无 GORM 标签
 type NoticeReadRecord struct {

@@ -53,47 +53,8 @@
         </template>
       </el-dropdown>
 
-      <!-- 消息通知 -->
-      <el-dropdown :hide-on-click="false" trigger="click">
-        <el-button
-          type="text"
-          class="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] px-[var(--space-sm)] py-[var(--space-md)] rounded-[var(--radius-md)] hover:bg-[var(--bg-secondary)] hover:text-[var(--primary-color)]"
-        >
-          <el-icon>
-            <Bell />
-          </el-icon>
-          <el-badge v-if="notificationCount > 0" :value="notificationCount" type="danger" />
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item disabled>
-              <div class="flex justify-between items-center">
-                <span>消息通知</span>
-                <el-button type="text" size="small" @click="markAllAsRead">全部已读</el-button>
-              </div>
-            </el-dropdown-item>
-            <el-dropdown-item v-if="notifications.length === 0" disabled>
-              <div class="text-center py-4 text-[var(--text-secondary)]">暂无新消息</div>
-            </el-dropdown-item>
-            <el-dropdown-item v-for="(notification, index) in notifications" :key="index">
-              <el-card shadow="hover">
-                <div>
-                  <div class="flex justify-between items-start">
-                    <div>{{ notification.title }}</div>
-                    <el-tag size="small" type="success">新</el-tag>
-                  </div>
-                  <div class="text-[13px] text-[var(--text-secondary)] my-1">
-                    {{ notification.desc }}
-                  </div>
-                  <div class="text-[12px] text-[var(--text-placeholder)]">
-                    {{ notification.time }}
-                  </div>
-                </div>
-              </el-card>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      <!-- 公告通知 -->
+      <NoticeDropdown />
 
       <!-- 主题切换 -->
       <div
@@ -172,7 +133,6 @@ defineOptions({
 import { useUserStore } from '@/stores/modules/user'
 import { useAppStore } from '@/stores/modules/app'
 import {
-  Bell,
   User,
   Setting,
   SwitchButton,
@@ -188,6 +148,7 @@ import type { RoleInfo } from '@/types'
 import defaultAvatar from '@/assets/images/default-avatar.svg'
 import { setSelfSetting } from '@/api/modules/user'
 import { animateThemeTransition } from '@/utils/theme-transition'
+import NoticeDropdown from '@/components/business/NoticeDropdown/index.vue'
 
 // 面包屑项接口
 interface BreadcrumbItem {
@@ -226,26 +187,6 @@ const isFullscreen = ref(false)
 // 主题切换按钮容器引用
 const themeToggleRef = ref<HTMLElement | null>(null)
 
-// 通知相关
-const notificationCount = ref(3)
-const notifications = ref([
-  {
-    title: '新订单通知',
-    desc: '您有一笔新订单需要处理',
-    time: '10 分钟前',
-  },
-  {
-    title: '系统更新提醒',
-    desc: '系统将于今晚 23:00 进行维护更新',
-    time: '1 小时前',
-  },
-  {
-    title: '安全提示',
-    desc: '您的账户在新设备上登录',
-    time: '3 小时前',
-  },
-])
-
 // 个人资料
 const handleProfile = () => {
   router.push('/profile')
@@ -279,13 +220,6 @@ const handleSwitchRole = async (roleId: string | number) => {
     console.error('切换角色失败:', error)
     ElMessage.error('角色切换失败，请重试')
   }
-}
-
-// 全部已读
-const markAllAsRead = () => {
-  notificationCount.value = 0
-  notifications.value = []
-  ElMessage.success('所有消息已标记为已读')
 }
 
 // 切换主题

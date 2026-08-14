@@ -79,6 +79,7 @@ declare module 'vue' {
     Header: typeof import('./components/layout/Header.vue')['default']
     IconSelector: typeof import('./components/IconSelector/index.vue')['default']
     IxEcharts: typeof import('./components/business/Chart/IxEcharts.vue')['default']
+    NoticeDropdown: typeof import('./components/business/NoticeDropdown/index.vue')['default']
     PageTemplate: typeof import('./components/business/PageTemplate/index.vue')['default']
     Reload: typeof import('./components/business/Error/reload.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

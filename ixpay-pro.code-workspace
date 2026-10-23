@@ -80,5 +80,8 @@
       "streetsidesoftware.code-spell-checker",
       "ms-azuretools.vscode-docker"
     ]
-  }
+},
+"trae": {
+	"workspaceId": "b1d0ed700d9e5ff51357e30feee6bb7d"
+}
 }

@@ -14,11 +14,11 @@ IXPay Pro is a high-performance payment management system based on Go language a
 ixpay-pro/
 ├── common/             # Common modules (documentation, standards, skills, etc.)
 ├── gxy/                # Gateway service (Go, pure standard library)
-├── h5app/              # H5 application frontend (initialized)
+├── wxapp/              # H5 application frontend (initialized)
 ├── miniapp/            # Mini-program frontend (initialized)
 ├── server/             # Backend service (Go, DDD architecture)
 ├── weapp/              # Enterprise WeChat H5 application (initialized)
-└── web/                # Vue3 + TypeScript frontend management backend
+└── admin/                # Vue3 + TypeScript frontend management backend
 ```
 
 ## Tech Stack
@@ -45,7 +45,7 @@ ixpay-pro/
 | **Snowflake Algorithm** | Snowflake | - | Distributed ID generation algorithm, ensuring data uniqueness |
 | **Captcha** | base64Captcha | v1.3.8 | Captcha generation and verification library, improving system security |
 
-### Frontend (web)
+### Frontend (admin)
 
 | Category | Technology/Framework | Version | Description |
 |----------|---------------------|---------|-------------|
@@ -186,7 +186,7 @@ http://127.0.0.1:8081/swagger/index.html
 
 ```bash
 # Enter frontend directory
-cd web
+cd admin
 
 # Install dependencies
 npm install

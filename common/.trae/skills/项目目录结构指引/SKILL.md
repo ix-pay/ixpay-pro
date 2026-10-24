@@ -24,9 +24,9 @@ description: 当 AI 需要创建任何文件（代码文件、配置文件、文
 | 项目 | 路径 | 说明 |
 |------|------|------|
 | 后端服务 | `server/` | Go DDD 架构后端 |
-| 前端管理后台 | `web/` | Vue3 + TypeScript |
+| 前端管理后台 | `admin/` | Vue3 + TypeScript |
 | API 网关 | `gxy/` | Go 标准库网关 |
-| H5 应用 | `h5app/` | 待开发 |
+| H5 应用 | `wxapp/` | 待开发 |
 | 企业微信 H5 | `weapp/` | 待开发 |
 | 小程序 | `miniapp/` | 待开发 |
 | 公共资源 | `common/` | 规则、技能、文档 |
@@ -90,12 +90,12 @@ server/
 | 单元测试 | `tests/unit/[层]/[模块]/` | `tests/unit/domain/base/service/user_test.go` |
 | 需求文档 | `server/.trae/documents/` | `server/.trae/documents/用户管理需求.md` |
 
-## 前端目录结构（web/）
+## 前端目录结构（admin/）
 
 ### 核心架构
 
 ```
-web/
+admin/
 ├── src/
 │   ├── api/modules/               # API 接口（按模块）
 │   ├── views/                     # 页面视图
@@ -131,7 +131,7 @@ web/
 | Store | `src/stores/modules/` | `src/stores/modules/user.ts` |
 | 类型定义 | `src/types/` | `src/types/user.ts` |
 | 工具函数 | `src/utils/` | `src/utils/request.ts` |
-| 需求文档 | `web/.trae/documents/` | `web/.trae/documents/用户界面需求.md` |
+| 需求文档 | `admin/.trae/documents/` | `admin/.trae/documents/用户界面需求.md` |
 
 ## 网关目录结构（gxy/）
 
@@ -193,7 +193,7 @@ gxy/
 ## 项目说明
 
 - **server/**：Go DDD 架构后端，包含 base（基础管理）和 wx（微信支付）模块
-- **web/**：Vue3 + TypeScript 管理后台，使用 Pinia + Vue Router + Tailwind CSS
+- **admin/**：Vue3 + TypeScript 管理后台，使用 Pinia + Vue Router + Tailwind CSS
 - **gxy/**：Go 标准库 API 网关，实现服务发现、负载均衡、集群同步
-- **h5app/weapp/miniapp/**：移动端项目，当前为初始化状态
+- **wxapp/weapp/miniapp/**：移动端项目，当前为初始化状态
 - **common/**：规则、技能、文档等共享资源

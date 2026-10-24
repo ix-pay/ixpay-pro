@@ -14,11 +14,11 @@ IXPay Pro 是一个基于 Go 语言和 Gin 框架的高性能支付管理系统�
 ixpay-pro/
 ├── common/             # 公共模块（文档、规范、技能等）
 ├── gxy/                # 网关服务（Go 语言，纯标准库）
-├── h5app/              # H5 应用前端（初始化状态）
+├── wxapp/              # H5 应用前端（初始化状态）
 ├── miniapp/            # 小程序前端（初始化状态）
 ├── server/             # 后端服务（Go 语言，DDD 架构）
 ├── weapp/              # 企业微信 H5 应用（初始化状态）
-└── web/                # Vue3 + TypeScript 前端管理后台
+└── admin/                # Vue3 + TypeScript 前端管理后台
 ```
 
 ## 技术栈
@@ -45,7 +45,7 @@ ixpay-pro/
 | **雪花算法** | Snowflake | - | 分布式 ID 生成算法，确保数据唯一性 |
 | **验证码** | base64Captcha | v1.3.8 | 验证码生成和验证库，提高系统安全性 |
 
-### 前端 (web)
+### 前端 (admin)
 
 | 类别 | 技术/框架 | 版本 | 说明 |
 |------|-----------|------|------|
@@ -188,7 +188,7 @@ http://127.0.0.1:8081/swagger/index.html
 
 ```bash
 # 进入前端目录
-cd web
+cd admin
 
 # 安装依赖
 npm install

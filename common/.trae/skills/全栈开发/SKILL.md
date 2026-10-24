@@ -1055,6 +1055,28 @@ type userModel struct {
 2. **GORM 更新语义明确**：指针为 `nil` 时 GORM 忽略，非 `nil` 时更新（包括零值）
 3. **字段默认值使用 Go 零值**：`int`=0, `bool`=false, `string`="", `*int`=nil
 
+**⭐⭐⭐ 审计字段保护规范（强制）⭐⭐⭐**
+
+**问题背景**：仓储 Update 统一为 `db.Save(fromDomain(entity))` 全字段更新，`fromDomain` 通常
+不回填 `CreatedAt`，零值时间会把库中 `created_at` 覆盖为 `'0001-01-01 00:00:00'`，
+`created_by` 等审计列同理被污染（base_tenants 曾发生创建时间丢失）。
+
+**强制规则**（新增仓储必须遵守，已由全局钩子兜底）：
+1. **禁止**在 `fromDomain` 中手工塞审计字段（如 `CreatedBy: t.CreatedAt.Unix()` 这类 hack）
+2. `fromDomain` 应**回填** `CreatedAt: t.CreatedAt`（实体来自 `toDomain` 时即数据库原值）
+3. `Update` 方法推荐显式豁免审计列（双保险）：
+   ```go
+   func (r *xxxRepository) Update(e *entity.Xxx) error {
+       return r.db.Omit("created_at", "created_by", "updated_by", "deleted_by", "deleted_at").
+           Save(fromDomain(e)).Error
+   }
+   ```
+4. **全局兜底**：`database.RegisterAuditPreserveHooks(db)` 已在主库/租户库 gorm.Open 后注册，
+   Update 时模型 `created_at` 为零值自动跳过该列；新表无需额外处理，但规范 2/3 仍须遵守
+5. **建表对齐**：含 `SnowflakeBaseModel` 的模型，建表 SQL 必须包含
+   `created_by/updated_by BIGINT NOT NULL DEFAULT 0` 与 `deleted_at TIMESTAMP`，
+   并为存量表追加幂等 `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`
+
 **字段类型选择规则**：
 
 | 字段类型 | 使用场景 | 示例 |
@@ -1987,7 +2009,7 @@ Git 提交与推送工具（提交代码）
 #### 2. 关键代码位置
 
 ```TypeScript
-// web/src/stores/modules/router.ts
+// admin/src/stores/modules/router.ts
 // 按钮权限提取逻辑
 const extractButtonPermissions = (menus: ApiMenuItem[]): string[] => {
   const buttons: string[] = []
@@ -2040,9 +2062,9 @@ if ((route as ApiMenuItem).type === 3) {
 
 #### 3. 核心文件
 
-- `web/src/directive/authBtn.ts` - 按钮权限指令
-- `web/src/utils/permission.ts` - 权限检查函数 `hasButtonPermission()`
-- `web/src/stores/modules/router.ts` - 按钮权限存储 `buttonPermissions`
+- `admin/src/directive/authBtn.ts` - 按钮权限指令
+- `admin/src/utils/permission.ts` - 权限检查函数 `hasButtonPermission()`
+- `admin/src/stores/modules/router.ts` - 按钮权限存储 `buttonPermissions`
 
 ***
 

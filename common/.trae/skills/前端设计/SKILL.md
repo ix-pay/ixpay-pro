@@ -366,5 +366,5 @@ description: 当用户需要创建 Web 组件、页面、界面或应用时触�
 
 ## 相关文档
 
-- [设计令牌定义](../../web/src/assets/styles/design-tokens.scss)
-- [全局样式](../../web/src/assets/styles/global.scss)
+- [设计令牌定义](../../admin/src/assets/styles/design-tokens.scss)
+- [全局样式](../../admin/src/assets/styles/global.scss)

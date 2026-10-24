@@ -29,7 +29,7 @@ ixpay-pro 是一个基于 Vue 3 + TypeScript + Vite 构建的企业级中后台�
 ### 2.1 目录结构
 
 ```
-web/
+admin/
 ├── public/                    # 静态资源目录
 ├── src/
 │   ├── api/                   # API 接口层
@@ -113,7 +113,7 @@ web/
 
 #### 3.1.1 路由配置
 
-路由系统位于 [`src/app/router/index.ts`](file:///d:/g/ixpay-pro/web/src/app/router/index.ts)，采用动态路由 + 静态路由结合的方式：
+路由系统位于 [`src/app/router/index.ts`](file:///d:/g/ixpay-pro/admin/src/app/router/index.ts)，采用动态路由 + 静态路由结合的方式：
 
 - **固定路由**：登录页、基础布局等不需要权限的路由
 - **动态路由**：根据用户权限从后端获取的菜单路由
@@ -145,17 +145,17 @@ router.beforeEach(async (to, from, next) => {
 
 项目使用 Pinia 进行状态管理，主要包含三个核心 store：
 
-1. **user store** ([`src/stores/modules/user.ts`](file:///d:/g/ixpay-pro/web/src/stores/modules/user.ts))
+1. **user store** ([`src/stores/modules/user.ts`](file:///d:/g/ixpay-pro/admin/src/stores/modules/user.ts))
    - 用户信息管理
    - Token 管理
    - 登录/登出功能
 
-2. **router store** ([`src/stores/modules/router.ts`](file:///d:/g/ixpay-pro/web/src/stores/modules/router.ts))
+2. **router store** ([`src/stores/modules/router.ts`](file:///d:/g/ixpay-pro/admin/src/stores/modules/router.ts))
    - 动态路由管理
    - 菜单管理（顶部菜单、左侧菜单）
    - Keep-alive 路由管理
 
-3. **app store** ([`src/stores/modules/app.ts`](file:///d:/g/ixpay-pro/web/src/stores/modules/app.ts))
+3. **app store** ([`src/stores/modules/app.ts`](file:///d:/g/ixpay-pro/admin/src/stores/modules/app.ts))
    - 应用配置管理
    - 主题管理
    - 全局状态
@@ -174,7 +174,7 @@ Pinia 插件实现状态持久化：
 
 #### 3.3.1 核心功能
 
-[`src/utils/request.ts`](file:///d:/g/ixpay-pro/web/src/utils/request.ts) 提供了完整的 HTTP 请求封装：
+[`src/utils/request.ts`](file:///d:/g/ixpay-pro/admin/src/utils/request.ts) 提供了完整的 HTTP 请求封装：
 
 - **请求拦截器**：
   - 自动添加 Token（Bearer 认证）
@@ -228,7 +228,7 @@ class LoadingManager {
 
 #### 3.4.2 权限工具函数
 
-[`src/utils/permission.ts`](file:///d:/g/ixpay-pro/web/src/utils/permission.ts) 提供：
+[`src/utils/permission.ts`](file:///d:/g/ixpay-pro/admin/src/utils/permission.ts) 提供：
 
 ```typescript
 // 检查单个权限（从路由 store 的 buttonPermissions 中查找）
@@ -263,7 +263,7 @@ getRoles()
 
 #### 3.5.1 路由格式化
 
-[`src/utils/asyncRouter.ts`](file:///d:/g/ixpay-pro/web/src/utils/asyncRouter.ts) 负责动态路由处理：
+[`src/utils/asyncRouter.ts`](file:///d:/g/ixpay-pro/admin/src/utils/asyncRouter.ts) 负责动态路由处理：
 
 ```typescript
 // 1. 使用 import.meta.glob 动态导入组件
@@ -307,7 +307,7 @@ asyncRouterHandle(asyncRouter: ExtendedRouteRecordRaw[])
 
 #### 4.1.1 BaseLayout
 
-[`src/components/layout/BaseLayout.vue`](file:///d:/g/ixpay-pro/web/src/components/layout/BaseLayout.vue) 是主布局组件：
+[`src/components/layout/BaseLayout.vue`](file:///d:/g/ixpay-pro/admin/src/components/layout/BaseLayout.vue) 是主布局组件：
 
 ```vue
 <el-container>
@@ -361,7 +361,7 @@ asyncRouterHandle(asyncRouter: ExtendedRouteRecordRaw[])
 
 #### 4.3.1 权限指令
 
-[`src/directive/auth-btn.ts`](file:///d:/g/ixpay-pro/web/src/directive/auth-btn.ts) 提供 `v-auth-btn` 指令（旧指令 `v-auth` 已废弃，仅保留兼容性占位）：
+[`src/directive/auth-btn.ts`](file:///d:/g/ixpay-pro/admin/src/directive/auth-btn.ts) 提供 `v-auth-btn` 指令（旧指令 `v-auth` 已废弃，仅保留兼容性占位）：
 
 ```typescript
 // 使用方式
@@ -442,7 +442,7 @@ export const getUserList = (params: PageParams): Promise<ApiResponse> => {
 
 ### 6.1 核心类型定义
 
-[`src/types/index.ts`](file:///d:/g/ixpay-pro/web/src/types/index.ts) 定义了通用类型：
+[`src/types/index.ts`](file:///d:/g/ixpay-pro/admin/src/types/index.ts) 定义了通用类型：
 
 ```typescript
 // API 响应类型
@@ -490,7 +490,7 @@ declare module '@vue/runtime-core' {
 
 ### 7.1 Vite 配置
 
-[`vite.config.mts`](file:///d:/g/ixpay-pro/web/vite.config.mts) 关键配置：
+[`vite.config.mts`](file:///d:/g/ixpay-pro/admin/vite.config.mts) 关键配置：
 
 #### 7.1.1 路径别名
 

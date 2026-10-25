@@ -1,0 +1,58 @@
+<view class="list-page">
+  <!-- 待支付列表 -->
+  <block wx:if="{{list.length > 0}}">
+    <view
+      class="card pay-item"
+      wx:for="{{list}}"
+      wx:key="id"
+      bindtap="goDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="item-top">
+        <view class="item-desc">{{ item.description || '待支付项目' }}</view>
+        <view class="item-status">待支付</view>
+      </view>
+      <view class="item-mid">
+        <view class="item-order">单号 {{ item.orderId }}</view>
+        <view class="item-amount">¥ {{ item.amount }}</view>
+      </view>
+      <view class="item-bottom">
+        <view class="item-time">{{ item.createdAt }}</view>
+        <view class="item-actions">
+          <button class="mini-btn cancel" catchtap="cancelItem" data-id="{{item.id}}">取消</button>
+          <button class="mini-btn pay" catchtap="payItem" data-id="{{item.id}}">去支付</button>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state">
+    <view class="empty-icon">🧾</view>
+    <view>暂无待支付项目</view>
+    <view class="empty-sub">点击下方按钮创建一笔测试待支付项目</view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="footer-area">
+    <button class="btn-primary" bindtap="showCreateModal">新增待支付项目</button>
+  </view>
+
+  <!-- 新增待支付项目弹窗 -->
+  <view wx:if="{{showModal}}" class="modal-mask" bindtap="hideCreateModal">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-title">新增待支付项目</view>
+      <view class="form-item">
+        <text class="form-label">项目名称</text>
+        <input class="form-input" value="{{form.description}}" placeholder="如：商品购买" bindinput="onDescInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">金额（元）</text>
+        <input class="form-input" type="digit" value="{{form.amount}}" placeholder="如：9.90" bindinput="onAmountInput" />
+      </view>
+      <button class="btn-primary" loading="{{creating}}" disabled="{{creating}}" bindtap="submitCreate">
+        {{ creating ? '创建中...' : '创建' }}
+      </button>
+    </view>
+  </view>
+</view>

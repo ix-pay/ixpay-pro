@@ -43,8 +43,8 @@ type contextKey string
 const traceIDKey contextKey = "trace_id"
 
 type zapLogger struct {
-	logger        *zap.Logger
-	errorLogger   *zap.Logger
+	logger      *zap.Logger
+	errorLogger *zap.Logger
 }
 
 type MultiLogger struct {
@@ -189,7 +189,7 @@ func setupLoggerWithType(cfg *config.Config, loggerType LoggerType) Logger {
 	errorLogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
 
 	return &zapLogger{
-		logger: logger,
+		logger:      logger,
 		errorLogger: errorLogger,
 	}
 }

@@ -33,9 +33,9 @@ type wechatPayInfoModel struct {
 	NotifyData    string `gorm:"type:text"`
 }
 
-// TableName 指定表名
+// TableName 指定表名（与 migrations 中的 wx_wechat_pay_infos 表对齐）
 func (wechatPayInfoModel) TableName() string {
-	return "wechat_pay_infos"
+	return "wx_wechat_pay_infos"
 }
 
 // toDomain 将数据库模型转换为领域实体
@@ -133,8 +133,8 @@ func (r *wechatPayInfoRepository) GetByID(id int64) (*entity.WechatPayInfo, erro
 // GetByOrderID 根据订单 ID 查询（通过 payment 关联）
 func (r *wechatPayInfoRepository) GetByOrderID(orderID string) (*entity.WechatPayInfo, error) {
 	var dbModel wechatPayInfoModel
-	result := r.db.Joins("JOIN payments ON payments.id = wechat_pay_infos.payment_id").
-		Where("payments.order_id = ?", orderID).
+	result := r.db.Joins("JOIN wx_payments ON wx_payments.id = wx_wechat_pay_infos.payment_id").
+		Where("wx_payments.order_id = ?", orderID).
 		First(&dbModel)
 	if result.Error != nil {
 		return nil, result.Error
@@ -167,7 +167,9 @@ func (r *wechatPayInfoRepository) Create(info *entity.WechatPayInfo) error {
 // Update 更新微信支付信息
 func (r *wechatPayInfoRepository) Update(info *entity.WechatPayInfo) error {
 	dbModel := fromDomainWechatPayInfo(info)
-	return r.db.Save(dbModel).Error
+	// Omit 审计列：更新业务字段时不覆盖 created_at/created_by 等创建审计信息
+	return r.db.Omit("created_at", "created_by", "updated_by", "deleted_by", "deleted_at").
+		Save(dbModel).Error
 }
 
 // Delete 删除微信支付信息

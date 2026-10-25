@@ -97,7 +97,9 @@ func (p *PermissionManager) GetPermission(method, path string) (*Permission, err
 // CheckPermission 检查用户是否有权限访问指定路径
 func (p *PermissionManager) CheckPermission(ctx context.Context, method, path string) bool {
 	// 从上下文中获取角色信息
-	roleValue := ctx.Value("role")
+	// 说明：中间件使用 auth.RoleKey（ContextKey 类型）写入，
+	// Go context 的 key 比较要求类型完全一致，必须用同类型 key 读取
+	roleValue := ctx.Value(RoleKey)
 	if roleValue == nil {
 		p.log.Warn("上下文中未找到角色信息")
 		return false
@@ -154,14 +156,14 @@ func (p *PermissionManager) CheckRolePermission(role string, method, path string
 // CheckButtonPermission 检查用户是否有按钮权限
 // buttonCode: 按钮权限编码
 func (p *PermissionManager) CheckButtonPermission(ctx context.Context, buttonCode string) bool {
-	// 从上下文中获取用户拥有的按钮权限
-	userButtons, exists := ctx.Value("userButtons").([]string)
+	// 从上下文中获取用户拥有的按钮权限（key 类型须与写入侧 UserButtonsKey 一致）
+	userButtons, exists := ctx.Value(UserButtonsKey).([]string)
 	if !exists {
 		p.log.Warn("上下文中未找到用户按钮权限")
 		return false
 	}
 
-	// 检查用户是否拥有该按钮权限
+	// 检查用户是否拥有该按钮权限（key 类型须与写入侧 UserButtonsKey 一致）
 	for _, btn := range userButtons {
 		if btn == buttonCode {
 			return true
@@ -174,8 +176,8 @@ func (p *PermissionManager) CheckButtonPermission(ctx context.Context, buttonCod
 // CheckAPIPermissionWithButton 检查用户是否有权限访问带按钮权限的API
 // 先检查基础的角色权限，如果有则进一步检查按钮权限
 func (p *PermissionManager) CheckAPIPermissionWithButton(ctx context.Context, method, path string) bool {
-	// 从上下文中获取角色信息
-	roleValue := ctx.Value("role")
+	// 从上下文中获取角色信息（key 类型须与写入侧 RoleKey 一致）
+	roleValue := ctx.Value(RoleKey)
 	var role string
 	var roleExists bool
 
@@ -220,8 +222,8 @@ func (p *PermissionManager) CheckAPIPermissionWithButton(ctx context.Context, me
 		return true
 	}
 
-	// 检查用户是否拥有至少一个所需的按钮权限
-	userButtons, exists := ctx.Value("userButtons").([]string)
+	// 检查用户是否拥有至少一个所需的按钮权限（key 类型须与写入侧 UserButtonsKey 一致）
+	userButtons, exists := ctx.Value(UserButtonsKey).([]string)
 	if !exists {
 		p.log.Warn("上下文中未找到用户按钮权限")
 		return false

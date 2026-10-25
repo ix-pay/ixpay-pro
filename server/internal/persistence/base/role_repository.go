@@ -12,14 +12,14 @@ import (
 // roleModel 角色数据库模型
 type roleModel struct {
 	database.SnowflakeBaseModel
-	Name        string      `gorm:"size:50;not null;unique"`
-	Code        string      `gorm:"size:50;not null;unique"`
-	Description string      `gorm:"size:255"`
-	Type        *int        `gorm:"not null;default:1"`
-	ParentID    *int64      `gorm:"not null;default:0"`
-	Status      *int        `gorm:"not null;default:1"`
-	IsSystem    *bool       `gorm:"not null;default:false"`
-	Sort        *int        `gorm:"not null;default:0"`
+	Name        string            `gorm:"size:50;not null;unique"`
+	Code        string            `gorm:"size:50;not null;unique"`
+	Description string            `gorm:"size:255"`
+	Type        *int              `gorm:"not null;default:1"`
+	ParentID    *int64            `gorm:"not null;default:0"`
+	Status      *int              `gorm:"not null;default:1"`
+	IsSystem    *bool             `gorm:"not null;default:false"`
+	Sort        *int              `gorm:"not null;default:0"`
 	DataScope   *entity.DataScope `gorm:"not null;default:4"`
 
 	// GORM 关联关系 - 多对多（通过中间表）
@@ -558,5 +558,3 @@ func (r *roleRepository) GetAPIByPathAndMethod(path, method string) (*entity.API
 
 	return apiModel.toDomain(), nil
 }
-
-

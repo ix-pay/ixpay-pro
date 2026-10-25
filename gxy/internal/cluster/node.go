@@ -19,23 +19,23 @@ type ClusterNode struct {
 	ID                string    `json:"id"`
 	Address           string    `json:"address"`
 	Port              int       `json:"port"`
-	NodeDiscoveryPort int       `json:"node_discovery_port"`
-	LastSeen          time.Time `json:"last_seen"`
+	NodeDiscoveryPort int       `json:"nodeDiscoveryPort"`
+	LastSeen          time.Time `json:"lastSeen"`
 	Status            string    `json:"status"`
 }
 
 type ClusterDiscoveryMessage struct {
-	Type              string `json:"type"`                // 消息类型：discovery, heartbeat
-	NodeID            string `json:"node_id"`             // 节点ID
-	NodeAddr          string `json:"node_addr"`           // 节点地址
-	NodePort          int    `json:"node_port"`           // 节点端口
-	NodeDiscoveryPort int    `json:"node_discovery_port"` // 节点发现服务端口
-	Timestamp         int64  `json:"timestamp"`           // 时间戳
+	Type              string `json:"type"`              // 消息类型：discovery, heartbeat
+	NodeID            string `json:"nodeID"`            // 节点ID
+	NodeAddr          string `json:"nodeAddr"`          // 节点地址
+	NodePort          int    `json:"nodePort"`          // 节点端口
+	NodeDiscoveryPort int    `json:"nodeDiscoveryPort"` // 节点发现服务端口
+	Timestamp         int64  `json:"timestamp"`         // 时间戳
 }
 
 type DataSyncRequest struct {
 	Type         string                                  `json:"type"`      // sync_request, sync_response
-	NodeID       string                                  `json:"node_id"`   // 节点ID
+	NodeID       string                                  `json:"nodeID"`    // 节点ID
 	Services     map[string][]*discovery.ServiceInstance `json:"services"`  // 服务注册信息
 	ClusterNodes map[string]*ClusterNode                 `json:"nodes"`     // 集群节点信息
 	Timestamp    int64                                   `json:"timestamp"` // 时间戳
@@ -403,10 +403,10 @@ func (cs *ClusterSync) startSyncHTTPServer() {
 		// 处理节点发现
 		cs.handleNodeDiscovery(&registerMsg, nil)
 
-		// 返回成功响应
+		// 返回成功响应（统一响应格式 {code, data, msg}）
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+		json.NewEncoder(w).Encode(map[string]any{"code": 0, "data": nil, "msg": "节点注册成功"})
 	})
 }
 

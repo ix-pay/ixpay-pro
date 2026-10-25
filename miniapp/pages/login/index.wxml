@@ -1,0 +1,15 @@
+<view class="login-page">
+  <view class="brand-area">
+    <view class="brand-icon">¥</view>
+    <view class="brand-title">ixpay 支付</view>
+    <view class="brand-desc">微信授权登录后即可管理待支付项目并发起支付</view>
+  </view>
+
+  <view class="action-area">
+    <!-- 点击授权登录：wx.login 静默获取 code，无需弹窗授权 -->
+    <button class="btn-primary login-btn" loading="{{logging}}" disabled="{{logging}}" bindtap="handleLogin">
+      {{ logging ? '登录中...' : '微信授权登录' }}
+    </button>
+    <view class="tips">点击登录即代表同意《用户协议》与《支付服务协议》</view>
+  </view>
+</view>

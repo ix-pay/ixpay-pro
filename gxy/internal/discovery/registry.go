@@ -11,8 +11,8 @@ type ServiceInstance struct {
 	Address           string            `json:"address"`
 	Port              int               `json:"port"`
 	Metadata          map[string]string `json:"metadata"`
-	LastSeen          time.Time         `json:"last_seen"`
-	ActiveConnections int               `json:"active_connections"`
+	LastSeen          time.Time         `json:"lastSeen"`
+	ActiveConnections int               `json:"activeConnections"`
 }
 
 type Registry struct {

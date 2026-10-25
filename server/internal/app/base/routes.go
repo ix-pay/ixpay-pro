@@ -296,6 +296,69 @@ func (a *AppBase) setupRoutes() {
 			{
 				gateway.GET("/services", a.gatewayServiceController.GetGatewayServices)
 			}
+
+			// 租户管理路由（多租户平台管理：生命周期/应用路由/授权/审计）
+			tenant := authenticated.Group("/tenant")
+			{
+				// 当前用户可见租户（admin 全量/普通用户按授权；租户切换器数据源）
+				tenant.GET("/granted", a.tenantController.Granted)
+				tenant.GET("", a.tenantController.List)
+				tenant.GET("/:id", a.tenantController.Get)
+				tenant.POST("", a.tenantController.Create)
+				tenant.PUT("/:id", a.tenantController.Update)
+				tenant.POST("/:id/retry", a.tenantController.Retry)
+				tenant.POST("/:id/disable", a.tenantController.Disable)
+				tenant.POST("/:id/enable", a.tenantController.Enable)
+				tenant.POST("/:id/archive", a.tenantController.Archive)
+				// 应用路由（app_key → 租户）
+				tenant.GET("/:id/routes", a.tenantController.ListRoutes)
+				tenant.POST("/:id/routes", a.tenantController.CreateRoute)
+				tenant.DELETE("/routes/:route_id", a.tenantController.DeleteRoute)
+				// 用户授权（非 admin 用户按授权查租户）
+				tenant.GET("/:id/grants", a.tenantController.ListGrants)
+				tenant.POST("/:id/grants", a.tenantController.CreateGrant)
+				tenant.DELETE("/:id/grants/:user_id", a.tenantController.DeleteGrant)
+				// 运维审计
+				tenant.GET("/:id/ops-logs", a.tenantController.ListOpLogs)
+			}
+
+			// 微信渠道管理路由（管理平台端；控制器由 wx 模块提供，鉴权统一走 base 管理端：
+			// AuthMiddleware + PermissionMiddleware admin 直通 + AdminOnly 语义化拦截；
+			// AdminTenantAuth 支持 ?tenant_id= 单租户切换查询：admin 全量放行，
+			// 其他角色按 base_tenant_grants 授权校验，ctx 注入后仓储路由到租户库）
+			wxAdmin := authenticated.Group("/wx")
+			wxAdmin.Use(middleware.AdminOnly())
+			wxAdmin.Use(middleware.AdminTenantAuth(a.tenantRepo, a.logger))
+			{
+				// 应用配置
+				wxAdmin.GET("/apps", a.wxChannelController.ListApps)
+				wxAdmin.GET("/apps/:id", a.wxChannelController.GetApp)
+				wxAdmin.POST("/apps", a.wxChannelController.CreateApp)
+				wxAdmin.PUT("/apps/:id", a.wxChannelController.UpdateApp)
+				wxAdmin.DELETE("/apps/:id", a.wxChannelController.DeleteApp)
+				// 授权登录入口
+				wxAdmin.GET("/apps/:id/auth-url", a.wxChannelController.GetAppAuthURL)
+				// 授权入口二维码（服务号类型应用专属）
+				wxAdmin.GET("/apps/:id/auth-qrcode", a.wxChannelController.GetAppAuthQrcode)
+				// 小程序入口码（小程序类型应用专属）
+				wxAdmin.GET("/apps/:id/miniapp-qrcode", a.wxChannelController.GetAppMiniappQrcode)
+				// 租户 UI 配置（菜单/图片/主题）
+				wxAdmin.GET("/apps/:id/ui", a.wxChannelController.GetAppUI)
+				wxAdmin.PUT("/apps/:id/ui", a.wxChannelController.SaveAppUI)
+				// 应用-商户关联
+				wxAdmin.GET("/apps/:id/merchants", a.wxChannelController.ListAppMerchants)
+				wxAdmin.POST("/apps/:id/merchants", a.wxChannelController.BindAppMerchant)
+				wxAdmin.DELETE("/apps/:id/merchants/:merchant_id", a.wxChannelController.UnbindAppMerchant)
+				// 商户配置
+				wxAdmin.GET("/merchants", a.wxChannelController.ListMerchants)
+				wxAdmin.GET("/merchants/:id", a.wxChannelController.GetMerchant)
+				wxAdmin.POST("/merchants", a.wxChannelController.CreateMerchant)
+				wxAdmin.PUT("/merchants/:id", a.wxChannelController.UpdateMerchant)
+				wxAdmin.DELETE("/merchants/:id", a.wxChannelController.DeleteMerchant)
+				// 对账
+				wxAdmin.GET("/recon/summary", a.wxChannelController.ReconSummary)
+				wxAdmin.GET("/recon/payments", a.wxChannelController.ReconPayments)
+			}
 		}
 	}
 }

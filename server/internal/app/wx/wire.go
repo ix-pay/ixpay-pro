@@ -14,6 +14,9 @@ var ProviderSetWXRepo = wire.NewSet(
 	repository.NewWechatPayInfoRepository,
 	repository.NewWXUserRepository,
 	repository.NewWXAuthSessionRepository,
+	repository.NewRefundRepository,
+	repository.NewMedRefundRepository,
+	repository.NewWxChannelRepository,
 )
 
 var ProviderSetWXService = wire.NewSet(
@@ -22,12 +25,21 @@ var ProviderSetWXService = wire.NewSet(
 	service.NewWechatPayInfoService,
 	service.NewWXAuthService,
 	service.NewWechatPayService,
+	service.NewRefundService,
+	service.NewBillService,
+	service.NewMedicalService,
+	service.NewMedRefundService,
+	service.NewWxChannelService,
 )
 
 var ProviderSetWXController = wire.NewSet(
 	// 控制器层
 	wxapi.NewPaymentController,
 	wxapi.NewAuthController,
+	wxapi.NewMedicalController,
+	wxapi.NewRefundController,
+	wxapi.NewBillController,
+	wxapi.NewWxPublicAppController,
 )
 
 var ProviderSetWXApp = wire.NewSet(

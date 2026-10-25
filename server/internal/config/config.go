@@ -23,6 +23,7 @@ type Config struct {
 	DBPool   DBPoolConfig   `mapstructure:"db_pool"`
 	Gateway  GatewayConfig  `mapstructure:"gateway"`
 	CORS     CORSConfig     `mapstructure:"cors"`
+	Security SecurityConfig `mapstructure:"security"`
 }
 
 // GatewayConfig 网关配置
@@ -67,7 +68,7 @@ type ServerConfig struct {
 	NodeRole            string `mapstructure:"node_role"`           // 节点角色：api / task / all
 	NodeID              string `mapstructure:"node_id"`             // 节点唯一标识
 	TaskMaxConcurrent   int    `mapstructure:"task_max_concurrent"` // 任务最大并发数
-	Environment         string `mapstructure:"environment"`          // 运行环境: development / staging / production
+	Environment         string `mapstructure:"environment"`         // 运行环境: development / staging / production
 }
 
 // PostgresConfig PostgreSQL配置
@@ -127,6 +128,41 @@ type WechatConfig struct {
 	RedirectURL      string `mapstructure:"redirect_url"`
 	OAuthCallbackURL string `mapstructure:"oauth_callback_url"` // 微信 OAuth 回调地址（后端接口），如 https://api.ixpay.com/api/wx/auth/callback
 	FrontendURL      string `mapstructure:"frontend_url"`       // 前端页面地址，如 http://localhost:5173
+	// 微信支付 APIv3（参考 Gpay 项目，V2 XML 统一下单已停更）
+	MchSerialNo    string `mapstructure:"mch_serial_no"`    // 商户 API 证书序列号
+	APIv3Key       string `mapstructure:"apiv3_key"`        // APIv3 密钥（回调解密）
+	PrivateKeyPath string `mapstructure:"private_key_path"` // 商户私钥文件路径（apiclient_key.pem）
+	PublicKeyID    string `mapstructure:"public_key_id"`    // 微信支付公钥 ID（如 PUB_KEY_ID_xxx）
+	PublicKeyPath  string `mapstructure:"public_key_path"`  // 微信支付公钥文件路径（wxp_pub.pem）
+	// 支付参数数据库直存（官方工具类支持按 PEM 文本加载，优先级高于文件路径）
+	PrivateKeyPEM string `mapstructure:"-"` // 商户私钥 PEM 内容（数据库 wechat_private_key）
+	PublicKeyPEM  string `mapstructure:"-"` // 微信支付公钥 PEM 内容（数据库 wechat_public_key）
+	// 微信小程序
+	MiniAppID     string `mapstructure:"mini_app_id"`     // 小程序 AppID（与公众号不同）
+	MiniAppSecret string `mapstructure:"mini_app_secret"` // 小程序 AppSecret
+	// 支付模式与回调（对齐 Gpay wxpay 配置）
+	Mode            string `mapstructure:"mode"`              // direct直连(默认) | partner服务商
+	SpAppID         string `mapstructure:"sp_appid"`          // 服务商 APPID
+	SpMchID         string `mapstructure:"sp_mchid"`          // 服务商商户号（签名主体）
+	SubAppID        string `mapstructure:"sub_appid"`         // 子商户 APPID（可选）
+	SubMchID        string `mapstructure:"sub_mchid"`         // 子商户号（收款商户）
+	RefundNotifyURL string `mapstructure:"refund_notify_url"` // 退款结果回调地址
+	MedNotifyURL    string `mapstructure:"med_notify_url"`    // 医保收款回调地址
+	// 医保支付（medical.*，来源于国家局《医保移动支付反馈单》与腾讯 wecity 平台）
+	MedCityID          string `mapstructure:"med_city_id"`            // 城市ID（腾讯侧对接时提供）
+	MedInstName        string `mapstructure:"med_inst_name"`          // 医疗机构名称
+	MedInstNo          string `mapstructure:"med_inst_no"`            // 医疗机构编码（医保局提供）
+	MedChannelNo       string `mapstructure:"med_channel_no"`         // 渠道号（可选）
+	MedTestEnv         bool   `mapstructure:"med_test_env"`           // 是否医保局测试环境
+	MedPartnerID       string `mapstructure:"med_partner_id"`         // 授权查询合作方ID（wecity 平台分配）
+	MedPartnerSecret   string `mapstructure:"med_partner_secret"`     // 授权查询密钥（HmacSHA256 签名）
+	MedOrgChnlCrtfCodg string `mapstructure:"med_org_chnl_crtf_codg"` // 机构渠道认证编码（反馈单）
+	MedOrgAppID        string `mapstructure:"med_org_app_id"`         // 定点医药机构应用ID（反馈单）
+}
+
+// SecurityConfig 安全配置
+type SecurityConfig struct {
+	ConfigEncryptKey string `mapstructure:"config_encrypt_key"` // 数据库敏感配置加密密钥（AES-256-GCM，密钥任意长度经SHA-256派生；为空则不加密）
 }
 
 // SwaggerConfig Swagger配置

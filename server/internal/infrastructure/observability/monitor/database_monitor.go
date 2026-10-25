@@ -10,46 +10,46 @@ import (
 
 // DatabaseStatus 数据库状态信息
 type DatabaseStatus struct {
-	Connected   bool        `json:"connected"`    // 连接状态
-	PoolStats   PoolStats   `json:"pool_stats"`   // 连接池统计
-	QueryStats  QueryStats  `json:"query_stats"`  // SQL 查询统计
-	SlowQueries []SlowQuery `json:"slow_queries"` // 慢查询列表
-	ServerInfo  ServerInfo  `json:"server_info"`  // 服务器信息
-	Timestamp   time.Time   `json:"timestamp"`    // 采集时间
+	Connected   bool        `json:"connected"`   // 连接状态
+	PoolStats   PoolStats   `json:"poolStats"`   // 连接池统计
+	QueryStats  QueryStats  `json:"queryStats"`  // SQL 查询统计
+	SlowQueries []SlowQuery `json:"slowQueries"` // 慢查询列表
+	ServerInfo  ServerInfo  `json:"serverInfo"`  // 服务器信息
+	Timestamp   time.Time   `json:"timestamp"`   // 采集时间
 }
 
 // PoolStats 连接池统计信息
 type PoolStats struct {
-	MaxOpenConns      int   `json:"max_open_conns"`      // 最大打开连接数
-	OpenConnections   int   `json:"open_connections"`    // 当前打开的连接数
-	InUse             int   `json:"in_use"`              // 正在使用的连接数
-	Idle              int   `json:"idle"`                // 空闲连接数
-	WaitCount         int64 `json:"wait_count"`          // 等待连接数
-	WaitDurationMs    int64 `json:"wait_duration_ms"`    // 等待总时长 (毫秒)
-	MaxIdleClosed     int64 `json:"max_idle_closed"`     // 因超过空闲时间关闭的连接数
-	MaxLifetimeClosed int64 `json:"max_lifetime_closed"` // 因超过生命周期关闭的连接数
+	MaxOpenConns      int   `json:"maxOpenConns"`      // 最大打开连接数
+	OpenConnections   int   `json:"openConnections"`   // 当前打开的连接数
+	InUse             int   `json:"inUse"`             // 正在使用的连接数
+	Idle              int   `json:"idle"`              // 空闲连接数
+	WaitCount         int64 `json:"waitCount"`         // 等待连接数
+	WaitDurationMs    int64 `json:"waitDurationMs"`    // 等待总时长 (毫秒)
+	MaxIdleClosed     int64 `json:"maxIdleClosed"`     // 因超过空闲时间关闭的连接数
+	MaxLifetimeClosed int64 `json:"maxLifetimeClosed"` // 因超过生命周期关闭的连接数
 }
 
 // QueryStats SQL 查询统计信息
 type QueryStats struct {
-	TotalQueries   int64   `json:"total_queries"`     // 总查询数
-	ActiveQueries  int64   `json:"active_queries"`    // 活跃查询数
-	AvgQueryTimeMs float64 `json:"avg_query_time_ms"` // 平均查询时间 (毫秒)
-	MaxQueryTimeMs float64 `json:"max_query_time_ms"` // 最大查询时间 (毫秒)
-	SlowQueryCount int64   `json:"slow_query_count"`  // 慢查询数量
+	TotalQueries   int64   `json:"totalQueries"`   // 总查询数
+	ActiveQueries  int64   `json:"activeQueries"`  // 活跃查询数
+	AvgQueryTimeMs float64 `json:"avgQueryTimeMs"` // 平均查询时间 (毫秒)
+	MaxQueryTimeMs float64 `json:"maxQueryTimeMs"` // 最大查询时间 (毫秒)
+	SlowQueryCount int64   `json:"slowQueryCount"` // 慢查询数量
 }
 
 // SlowQuery 慢查询信息
 type SlowQuery struct {
-	QueryID    int64     `json:"query_id"`    // 查询 ID
-	Query      string    `json:"query"`       // SQL 查询语句
-	Database   string    `json:"database"`    // 数据库名
-	User       string    `json:"user"`        // 执行用户
-	Client     string    `json:"client"`      // 客户端地址
-	Start      time.Time `json:"start"`       // 开始时间
-	DurationMs float64   `json:"duration_ms"` // 执行时长 (毫秒)
-	WaitEvent  string    `json:"wait_event"`  // 等待事件
-	State      string    `json:"state"`       // 查询状态
+	QueryID    int64     `json:"queryID"`    // 查询 ID
+	Query      string    `json:"query"`      // SQL 查询语句
+	Database   string    `json:"database"`   // 数据库名
+	User       string    `json:"user"`       // 执行用户
+	Client     string    `json:"client"`     // 客户端地址
+	Start      time.Time `json:"start"`      // 开始时间
+	DurationMs float64   `json:"durationMs"` // 执行时长 (毫秒)
+	WaitEvent  string    `json:"waitEvent"`  // 等待事件
+	State      string    `json:"state"`      // 查询状态
 }
 
 // ServerInfo 数据库服务器信息

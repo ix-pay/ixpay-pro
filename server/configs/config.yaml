@@ -58,6 +58,23 @@ swagger:
   enabled: true
   path: "/swagger"
 
+# 微信配置说明
+# 微信相关所有配置（app_id/app_secret/小程序/商户号/证书序列号/APIv3密钥/私钥/公钥/服务商/回调地址/医保）
+# 全部保存在数据库 base_configs 配置表（启动时由种子初始化，可在管理端「配置管理」中修改），
+# 其中敏感配置（wechat_app_secret/wechat_miniapp_app_secret/wechat_apiv3_key/wechat_private_key/wechat_med_partner_secret）
+# 使用 security.config_encrypt_key 进行 AES-256-GCM 加密后存储，读取时自动解密为明文使用。
+# 数据库配置键清单：wechat_app_id、wechat_app_secret、wechat_mch_id、wechat_mch_serial_no、wechat_apiv3_key、
+# wechat_private_key、wechat_private_key_path、wechat_public_key、wechat_public_key_id、wechat_public_key_path、
+# wechat_miniapp_app_id、wechat_miniapp_app_secret、wechat_mode、wechat_sp_appid、wechat_sp_mchid、
+# wechat_sub_appid、wechat_sub_mchid、wechat_notify_url、wechat_refund_notify_url、wechat_med_notify_url、
+# wechat_oauth_callback_url、wechat_frontend_url、wechat_med_city_id、wechat_med_inst_name、wechat_med_inst_no、
+# wechat_med_channel_no、wechat_med_test_env、wechat_med_partner_id、wechat_med_partner_secret、
+# wechat_med_org_chnl_crtf_codg、wechat_med_org_app_id
+
+# 安全配置
+security:
+  config_encrypt_key: "ixpay-pro-config-encrypt-key-2026"  # 数据库敏感配置加密密钥（更换后历史密文无法解密，需重存配置）
+
 gateway:
   enabled: false
   gateway_url: "http://127.0.0.1:8085"

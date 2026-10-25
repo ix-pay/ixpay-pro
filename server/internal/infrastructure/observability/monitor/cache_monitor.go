@@ -9,44 +9,44 @@ import (
 
 // CacheStatus 缓存状态信息
 type CacheStatus struct {
-	Connected    bool          `json:"connected"`     // 连接状态
-	RedisInfo    RedisInfo     `json:"redis_info"`    // Redis 服务器信息
-	KeyStats     KeyStats      `json:"key_stats"`     // 键统计
-	CommandStats []CommandStat `json:"command_stats"` // 命令统计
-	HitRate      float64       `json:"hit_rate"`      // 缓存命中率
-	Timestamp    time.Time     `json:"timestamp"`     // 采集时间
+	Connected    bool          `json:"connected"`    // 连接状态
+	RedisInfo    RedisInfo     `json:"redisInfo"`    // Redis 服务器信息
+	KeyStats     KeyStats      `json:"keyStats"`     // 键统计
+	CommandStats []CommandStat `json:"commandStats"` // 命令统计
+	HitRate      float64       `json:"hitRate"`      // 缓存命中率
+	Timestamp    time.Time     `json:"timestamp"`    // 采集时间
 }
 
 // RedisInfo Redis 服务器信息
 type RedisInfo struct {
-	Version          string `json:"version"`           // Redis 版本
-	Mode             string `json:"mode"`              // 运行模式（standalone/cluster/sentinel）
-	ConnectedClients int64  `json:"connected_clients"` // 已连接客户端数
-	UsedMemoryMB     uint64 `json:"used_memory_mb"`    // 已使用内存 (MB)
-	MaxMemoryMB      uint64 `json:"max_memory_mb"`     // 最大内存限制 (MB)
-	UptimeSeconds    int64  `json:"uptime_seconds"`    // 运行时间 (秒)
-	TotalCommands    int64  `json:"total_commands"`    // 总命令数
-	TotalConnections int64  `json:"total_connections"` // 总连接数
-	ExpiredKeys      int64  `json:"expired_keys"`      // 过期键数
-	EvictedKeys      int64  `json:"evicted_keys"`      // 被驱逐键数
-	KeyspaceHits     int64  `json:"keyspace_hits"`     // 命中次数
-	KeyspaceMisses   int64  `json:"keyspace_misses"`   // 未命中次数
+	Version          string `json:"version"`          // Redis 版本
+	Mode             string `json:"mode"`             // 运行模式（standalone/cluster/sentinel）
+	ConnectedClients int64  `json:"connectedClients"` // 已连接客户端数
+	UsedMemoryMB     uint64 `json:"usedMemoryMb"`     // 已使用内存 (MB)
+	MaxMemoryMB      uint64 `json:"maxMemoryMb"`      // 最大内存限制 (MB)
+	UptimeSeconds    int64  `json:"uptimeSeconds"`    // 运行时间 (秒)
+	TotalCommands    int64  `json:"totalCommands"`    // 总命令数
+	TotalConnections int64  `json:"totalConnections"` // 总连接数
+	ExpiredKeys      int64  `json:"expiredKeys"`      // 过期键数
+	EvictedKeys      int64  `json:"evictedKeys"`      // 被驱逐键数
+	KeyspaceHits     int64  `json:"keyspaceHits"`     // 命中次数
+	KeyspaceMisses   int64  `json:"keyspaceMisses"`   // 未命中次数
 }
 
 // KeyStats 键统计信息
 type KeyStats struct {
-	TotalKeys   int64            `json:"total_keys"`   // 总键数
-	KeysByDB    map[string]int64 `json:"keys_by_db"`   // 按数据库分组的键数
-	ExpiredKeys int64            `json:"expired_keys"` // 过期键数
-	EvictedKeys int64            `json:"evicted_keys"` // 被驱逐键数
+	TotalKeys   int64            `json:"totalKeys"`   // 总键数
+	KeysByDB    map[string]int64 `json:"keysByDb"`    // 按数据库分组的键数
+	ExpiredKeys int64            `json:"expiredKeys"` // 过期键数
+	EvictedKeys int64            `json:"evictedKeys"` // 被驱逐键数
 }
 
 // CommandStat 命令统计信息
 type CommandStat struct {
-	Command   string `json:"command"`     // 命令名称
-	Calls     int64  `json:"calls"`       // 调用次数
-	UseTimeUs int64  `json:"use_time_us"` // 耗时 (微秒)
-	AvgTimeUs int64  `json:"avg_time_us"` // 平均耗时 (微秒)
+	Command   string `json:"command"`   // 命令名称
+	Calls     int64  `json:"calls"`     // 调用次数
+	UseTimeUs int64  `json:"useTimeUs"` // 耗时 (微秒)
+	AvgTimeUs int64  `json:"avgTimeUs"` // 平均耗时 (微秒)
 }
 
 // CacheMonitor 缓存监控服务

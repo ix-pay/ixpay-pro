@@ -31,7 +31,7 @@ func startTestService() {
 	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":"ok","message":"test response"}`))
+		w.Write([]byte(`{"code":0,"data":null,"msg":"测试响应"}`))
 	})
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

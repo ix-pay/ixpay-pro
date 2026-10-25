@@ -45,23 +45,28 @@ type AppBase struct {
 	permissionLogController  *baseapi.PermissionLogController
 	nodeController           *baseapi.NodeController
 	gatewayServiceController *baseapi.GatewayServiceController
-	userRepo                 repo.UserRepository
-	apiRepo                  repo.APIRepository
-	roleRepo                 repo.RoleRepository
-	menuRepo                 repo.MenuRepository
-	configRepo               repo.ConfigRepository
-	permissionRuleRepo       repo.PermissionRuleRepository
-	dictRepo                 repo.DictRepository
-	dictItemRepo             repo.DictItemRepository
-	departmentRepo           repo.DepartmentRepository
-	positionRepo             repo.PositionRepository
-	permissionService        *service.PermissionService
-	operationLogService      *service.OperationLogService
-	onlineUserService        *service.OnlineUserService
-	taskExecutionLogRepo     repo.TaskExecutionLogRepository // 任务执行日志仓库
-	taskRepo                 repo.TaskRepository             // 任务仓库
-	cache                    cache.Cache
-	}
+	tenantController         *baseapi.TenantController
+	// wx 渠道管理控制器（管理平台渠道配置功能：控制器在 base 模块实现，依赖 wx Domain Service，路由挂载在 base 管理端统一鉴权）
+	wxChannelController *baseapi.WxChannelController
+	// 租户仓库（AdminTenantAuth 租户切换授权校验用）
+	tenantRepo           repo.TenantRepository
+	userRepo             repo.UserRepository
+	apiRepo              repo.APIRepository
+	roleRepo             repo.RoleRepository
+	menuRepo             repo.MenuRepository
+	configRepo           repo.ConfigRepository
+	permissionRuleRepo   repo.PermissionRuleRepository
+	dictRepo             repo.DictRepository
+	dictItemRepo         repo.DictItemRepository
+	departmentRepo       repo.DepartmentRepository
+	positionRepo         repo.PositionRepository
+	permissionService    *service.PermissionService
+	operationLogService  *service.OperationLogService
+	onlineUserService    *service.OnlineUserService
+	taskExecutionLogRepo repo.TaskExecutionLogRepository // 任务执行日志仓库
+	taskRepo             repo.TaskRepository             // 任务仓库
+	cache                cache.Cache
+}
 
 // NewAppBase 创建应用程序实例
 func NewAppBase(
@@ -88,6 +93,9 @@ func NewAppBase(
 	permissionLogController *baseapi.PermissionLogController,
 	nodeController *baseapi.NodeController,
 	gatewayServiceController *baseapi.GatewayServiceController,
+	tenantController *baseapi.TenantController,
+	wxChannelController *baseapi.WxChannelController,
+	tenantRepo repo.TenantRepository,
 	userRepo repo.UserRepository,
 	apiRepo repo.APIRepository,
 	roleRepo repo.RoleRepository,
@@ -104,7 +112,7 @@ func NewAppBase(
 	taskRepo repo.TaskRepository,
 	cache cache.Cache,
 	permissionService *service.PermissionService,
-	) (*AppBase, error) {
+) (*AppBase, error) {
 	// 创建应用实例
 	app := &AppBase{
 		router:                   nil,
@@ -131,13 +139,16 @@ func NewAppBase(
 		permissionLogController:  permissionLogController,
 		nodeController:           nodeController,
 		gatewayServiceController: gatewayServiceController,
+		tenantController:         tenantController,
+		wxChannelController:      wxChannelController,
+		tenantRepo:               tenantRepo,
 		userRepo:                 userRepo,
 		apiRepo:                  apiRepo,
 		roleRepo:                 roleRepo,
 		menuRepo:                 menuRepo,
-		configRepo:                 configRepo,
-		permissionRuleRepo:         permissionRuleRepo,
-		dictRepo:                   dictRepo,
+		configRepo:               configRepo,
+		permissionRuleRepo:       permissionRuleRepo,
+		dictRepo:                 dictRepo,
 		dictItemRepo:             dictItemRepo,
 		departmentRepo:           departmentRepo,
 		positionRepo:             positionRepo,
@@ -147,7 +158,7 @@ func NewAppBase(
 		taskRepo:                 taskRepo,
 		cache:                    cache,
 		permissionService:        permissionService,
-		}
+	}
 	return app, nil
 }
 
@@ -256,7 +267,7 @@ func (a *AppBase) Init(router *gin.Engine) {
 		a.logger.Info("从数据库加载任务完成")
 	}
 
-	}
+}
 
 // Shutdown 关闭基础应用
 func (a *AppBase) Shutdown(ctx context.Context) error {

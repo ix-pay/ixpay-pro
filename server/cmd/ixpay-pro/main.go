@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/app"
+	"github.com/ix-pay/ixpay-pro/internal/app/cli"
 	"github.com/ix-pay/ixpay-pro/internal/config"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
 
@@ -42,6 +43,12 @@ func main() {
 	appLoggerManager := logger.SetupMultiLogger(cfg)
 	logger.SetGlobalMultiLogger(appLoggerManager)
 	appLogger := appLoggerManager.GetLogger(logger.DefaultLogger)
+
+	// 租户运维 CLI 子命令（tenant list/init/drop/migrate-data，见设计文档 01 P5）
+	// 不启动 HTTP 服务，执行完即退出
+	if len(os.Args) > 1 && os.Args[1] == "tenant" {
+		os.Exit(cli.RunTenantCLI(os.Args[2:], cfg, appLogger))
+	}
 
 	// 初始化应用程序
 	application, err := app.InitializeApp()

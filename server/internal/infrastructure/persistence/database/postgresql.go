@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -13,9 +14,11 @@ import (
 	gormLogger "gorm.io/gorm/logger"
 )
 
-// PostgresDB 提供PostgreSQL数据库连接
+// PostgresDB 提供PostgreSQL数据库连接（支持多租户库路由）
+// WithTenant(ctx) 按 ctx 中的租户ID返回对应租户库 GORM 实例（默认租户返回主库实例）
 type PostgresDB struct {
 	*gorm.DB
+	TenantManager *TenantManager
 }
 
 // NewPostgresDB 创建新的PostgreSQL数据库连接
@@ -63,8 +66,33 @@ func SetupPostgresDB(cfg *config.Config, log logger.Logger) (*PostgresDB, error)
 		return nil, err
 	}
 
+	// 全局审计字段保护：Save 全字段更新时零值 created_at 不覆盖库中原值
+	RegisterAuditPreserveHooks(db)
+
+	// 租户连接管理器（多租户库路由）
+	manager := NewTenantManager(sqlDB, cfg, log)
+	manager.StartIdleRecycler()
+
 	log.Info("PostgreSQL database connected successfully")
 
-	return &PostgresDB{DB: db},
+	return &PostgresDB{DB: db, TenantManager: manager},
 		nil
+}
+
+// TenantGorm 返回租户库 GORM 实例（多租户业务数据路由入口）
+// ctx 无租户上下文或默认租户（dbname 空）时返回主库实例
+func (p *PostgresDB) TenantGorm(ctx context.Context) (*gorm.DB, error) {
+	tenantID, ok := TenantIDFromContext(ctx)
+	if !ok {
+		return p.DB, nil
+	}
+	gdb, err := p.TenantManager.GormDB(ctx, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	if gdb == nil {
+		// 默认租户（dbname 空）→ 主库
+		return p.DB, nil
+	}
+	return gdb, nil
 }

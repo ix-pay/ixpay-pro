@@ -12,11 +12,11 @@ import (
 
 // RoleService 角色服务实现
 type RoleService struct {
-	roleRepo            repo.RoleRepository
-	userRepo            repo.UserRepository
-	menuRepo            repo.MenuRepository
-	apiRepo             repo.APIRepository
-	log                 logger.Logger
+	roleRepo repo.RoleRepository
+	userRepo repo.UserRepository
+	menuRepo repo.MenuRepository
+	apiRepo  repo.APIRepository
+	log      logger.Logger
 }
 
 // NewRoleService 创建角色服务实例

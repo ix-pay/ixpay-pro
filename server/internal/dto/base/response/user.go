@@ -24,8 +24,8 @@ type UserSettingResponse struct {
 	DarkMode        string `json:"darkMode"`
 	PrimaryColor    string `json:"primaryColor"`
 	FontSize        int    `json:"fontSize"`
-	LayoutSideWidth int    `json:"layout_side_width"`
-	ShowWatermark   bool   `json:"show_watermark"`
+	LayoutSideWidth int    `json:"layoutSideWidth"`
+	ShowWatermark   bool   `json:"showWatermark"`
 	Language        string `json:"language"`
 	MenuLayout      string `json:"menuLayout"`
 	CreatedAt       string `json:"createdAt"`

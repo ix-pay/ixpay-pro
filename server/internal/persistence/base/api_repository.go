@@ -195,6 +195,10 @@ func (r *apiRepository) List(page, pageSize int, filters map[string]interface{})
 				query = query.Where(key, value)
 			}
 		} else {
+			// group 是 PostgreSQL 保留字，需要加双引号转义
+			if key == "group" {
+				key = `"group"`
+			}
 			query = query.Where(key+" = ?", value)
 		}
 	}

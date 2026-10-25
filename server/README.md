@@ -360,7 +360,7 @@ go build -o cmd/build/ixpay-pro cmd/ixpay-pro/main.go
 
 ```bash
 # 进入前端目录
-cd ../web
+cd ../admin
 
 # 安装依赖
 npm install
@@ -812,14 +812,14 @@ kill -9 <进程ID>
 #### 开发模式
 
 ```bash
-cd web
+cd admin
 npm run dev
 ```
 
 #### 生产模式
 
 ```bash
-cd web
+cd admin
 # 构建生产版本
 npm run build
 
@@ -845,7 +845,7 @@ cd server
 cat logs/info.log
 
 # 查看前端日志
-cd web
+cd admin
 npm run dev
 ```
 
@@ -1041,7 +1041,7 @@ npm run dev
 
 1. **获取最新代码**
    ```bash
-   cd web
+   cd admin
    git pull
    ```
 

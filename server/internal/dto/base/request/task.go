@@ -21,7 +21,7 @@ type SetTaskGroupRequest struct {
 
 // GetTaskExecutionLogsRequest 获取任务执行日志请求参数
 type GetTaskExecutionLogsRequest struct {
-	TaskID   string `json:"task_id" form:"task_id"`
+	TaskID   string `json:"taskId" form:"taskId"`
 	Page     int    `json:"page" form:"page" binding:"required,min=1"`
 	PageSize int    `json:"pageSize" form:"pageSize" binding:"required,min=1,max=100"`
 }

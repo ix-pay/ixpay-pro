@@ -252,16 +252,16 @@ func (c *LoginLogController) RecordLogin(ctx *gin.Context) {
 	}
 
 	var req struct {
-		UserID    string `json:"user_id,string" binding:"required"`
+		UserID    string `json:"userId,string" binding:"required"`
 		Username  string `json:"userName" binding:"required"`
 		IP        string `json:"ip" binding:"required"`
 		Place     string `json:"place"`
 		Device    string `json:"device"`
 		Browser   string `json:"browser"`
 		OS        string `json:"os"`
-		UserAgent string `json:"user_agent"`
+		UserAgent string `json:"userAgent"`
 		Success   bool   `json:"success"`
-		ErrorMsg  string `json:"error_msg"`
+		ErrorMsg  string `json:"errorMsg"`
 	}
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {

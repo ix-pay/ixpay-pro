@@ -1,0 +1,32 @@
+<view class="home-page">
+  <!-- 品牌区（租户 UI 配置驱动） -->
+  <view class="brand" :style="{ background: primaryColor }">
+    <image wx:if="{{logoUrl}}" src="{{logoUrl}}" class="brand-logo" mode="aspectFit" />
+    <view class="brand-title">{{ brandTitle }}</view>
+    <view class="brand-user" wx:if="{{nickname}}">您好，{{nickname}}</view>
+  </view>
+
+  <!-- 公告 -->
+  <view wx:if="{{notice}}" class="notice">{{notice}}</view>
+
+  <!-- 未登录 -->
+  <view wx:if="{{!loggedIn}}" class="login-area">
+    <button class="btn-primary" loading="{{logging}}" disabled="{{logging}}" bindtap="doLogin">
+      {{ logging ? '登录中...' : '微信一键登录' }}
+    </button>
+  </view>
+
+  <!-- 已登录：宫格导航（ui.home.grid 驱动） -->
+  <view wx:else class="grid">
+    <view
+      wx:for="{{gridItems}}"
+      wx:key="path"
+      class="grid-item"
+      bindtap="goGrid"
+      data-path="{{item.path}}"
+    >
+      <view class="grid-icon">{{item.icon}}</view>
+      <view class="grid-title">{{item.title}}</view>
+    </view>
+  </view>
+</view>

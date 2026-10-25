@@ -124,7 +124,7 @@ func TestGetPermission_NotInCache(t *testing.T) {
 func TestCheckPermission_AdminRole(t *testing.T) {
 	pm := newTestPermissionManager(t)
 
-	ctx := context.WithValue(context.Background(), "role", "admin")
+	ctx := context.WithValue(context.Background(), a.RoleKey, "admin")
 
 	hasPermission := pm.CheckPermission(ctx, "GET", "/api/users")
 	assert.True(t, hasPermission)
@@ -143,7 +143,7 @@ func TestCheckPermission_UserRole(t *testing.T) {
 
 	pm.CachePermissions(permissions)
 
-	ctx := context.WithValue(context.Background(), "role", "user")
+	ctx := context.WithValue(context.Background(), a.RoleKey, "user")
 
 	hasPermission := pm.CheckPermission(ctx, "GET", "/api/users")
 	assert.True(t, hasPermission)
@@ -162,7 +162,7 @@ func TestCheckPermission_UserRoleDenied(t *testing.T) {
 
 	pm.CachePermissions(permissions)
 
-	ctx := context.WithValue(context.Background(), "role", "user")
+	ctx := context.WithValue(context.Background(), a.RoleKey, "user")
 
 	hasPermission := pm.CheckPermission(ctx, "GET", "/api/admin")
 	assert.False(t, hasPermission)
@@ -203,7 +203,7 @@ func TestCheckRolePermission(t *testing.T) {
 func TestCheckButtonPermission(t *testing.T) {
 	pm := newTestPermissionManager(t)
 
-	ctx := context.WithValue(context.Background(), "userButtons", []string{"user:view", "user:edit"})
+	ctx := context.WithValue(context.Background(), a.UserButtonsKey, []string{"user:view", "user:edit"})
 
 	hasPermission := pm.CheckButtonPermission(ctx, "user:view")
 	assert.True(t, hasPermission)
@@ -235,7 +235,7 @@ func TestCheckAPIPermissionWithButton_Admin(t *testing.T) {
 
 	pm.CachePermissions(permissions)
 
-	ctx := context.WithValue(context.Background(), "role", "admin")
+	ctx := context.WithValue(context.Background(), a.RoleKey, "admin")
 
 	hasPermission := pm.CheckAPIPermissionWithButton(ctx, "POST", "/api/users")
 	assert.True(t, hasPermission)
@@ -255,8 +255,8 @@ func TestCheckAPIPermissionWithButton_UserWithButton(t *testing.T) {
 
 	pm.CachePermissions(permissions)
 
-	ctx := context.WithValue(context.Background(), "role", "user")
-	ctx = context.WithValue(ctx, "userButtons", []string{"user:create"})
+	ctx := context.WithValue(context.Background(), a.RoleKey, "user")
+	ctx = context.WithValue(ctx, a.UserButtonsKey, []string{"user:create"})
 
 	hasPermission := pm.CheckAPIPermissionWithButton(ctx, "POST", "/api/users")
 	assert.True(t, hasPermission)
@@ -276,8 +276,8 @@ func TestCheckAPIPermissionWithButton_UserWithoutButton(t *testing.T) {
 
 	pm.CachePermissions(permissions)
 
-	ctx := context.WithValue(context.Background(), "role", "user")
-	ctx = context.WithValue(ctx, "userButtons", []string{"user:view"})
+	ctx := context.WithValue(context.Background(), a.RoleKey, "user")
+	ctx = context.WithValue(ctx, a.UserButtonsKey, []string{"user:view"})
 
 	hasPermission := pm.CheckAPIPermissionWithButton(ctx, "POST", "/api/users")
 	assert.False(t, hasPermission)
@@ -297,8 +297,8 @@ func TestCheckAPIPermissionWithButton_NoButtonsRequired(t *testing.T) {
 
 	pm.CachePermissions(permissions)
 
-	ctx := context.WithValue(context.Background(), "role", "user")
-	ctx = context.WithValue(ctx, "userButtons", []string{})
+	ctx := context.WithValue(context.Background(), a.RoleKey, "user")
+	ctx = context.WithValue(ctx, a.UserButtonsKey, []string{})
 
 	hasPermission := pm.CheckAPIPermissionWithButton(ctx, "GET", "/api/users")
 	assert.True(t, hasPermission)

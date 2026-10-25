@@ -11,6 +11,8 @@ import (
 )
 
 // Application 应用程序结构
+// 说明：wx 模块仅提供 wxapp/miniapp 前端使用的接口（认证/支付/退款/医保/账单）；
+// 管理平台使用的渠道配置接口已迁移至 base 模块（/api/admin/wx/*），鉴权统一由 base 负责
 type AppWX struct {
 	router            *gin.Engine
 	db                *database.PostgresDB
@@ -19,6 +21,12 @@ type AppWX struct {
 	logger            logger.Logger
 	authController    *wxapi.AuthController
 	paymentController *wxapi.PaymentController
+	medicalController *wxapi.MedicalController
+	refundController  *wxapi.RefundController
+	billController    *wxapi.BillController
+	// 渠道公开控制器：wx 模块仅使用其公开配置接口 GetPublicApp（wxapp/miniapp 前端空壳启动加载）；
+	// 管理端渠道接口已迁移至 base 模块（internal/app/base/api/wx_channel_handler.go）
+	channelController *wxapi.WxPublicAppController
 }
 
 // NewApplication 创建应用程序实例
@@ -29,12 +37,13 @@ func NewAppWX(
 	permissions *auth.PermissionManager,
 	authController *wxapi.AuthController,
 	paymentController *wxapi.PaymentController,
+	medicalController *wxapi.MedicalController,
+	refundController *wxapi.RefundController,
+	billController *wxapi.BillController,
+	channelController *wxapi.WxPublicAppController,
 ) (*AppWX, error) {
-	// 执行数据库迁移，创建所有需要的表
-	// if err := db.Migrate(log); err != nil {
-	// 	log.Error("数据库迁移失败", "error", err)
-	// 	return nil, err
-	// }
+	// 注册 wx 模块到租户模块注册表（租户库初始化任务按注册表执行迁移）
+	migrations.RegisterTenantModule()
 
 	// 创建应用实例
 	app := &AppWX{
@@ -44,6 +53,10 @@ func NewAppWX(
 		logger:            log,
 		authController:    authController,
 		paymentController: paymentController,
+		medicalController: medicalController,
+		refundController:  refundController,
+		billController:    billController,
+		channelController: channelController,
 	}
 
 	return app, nil

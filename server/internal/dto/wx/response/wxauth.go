@@ -2,7 +2,7 @@ package response
 
 // WXUserInfoResponse 用户信息响应
 type WXUserInfoResponse struct {
-	ID       string `json:"id"`
+	ID       int64  `json:"id,string"` // 用户 ID（int64 + ,string 避免前端精度丢失）
 	Username string `json:"userName"`
 	Nickname string `json:"nickname"`
 	Email    string `json:"email"`
@@ -21,6 +21,8 @@ type WXLoginResponse struct {
 }
 
 // WechatAuthResult 微信授权结果
+// 注意：本结构体用于解析微信官方 API 应答（openid/unionid/access_token 等为微信协议字段名），
+// 豁免 camelCase 规范；不应直接作为接口响应返回
 type WechatAuthResult struct {
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int    `json:"expires_in"`
@@ -32,7 +34,7 @@ type WechatAuthResult struct {
 	ErrMsg       string `json:"errmsg"`
 }
 
-// WechatUserInfo 微信用户信息
+// WechatUserInfo 微信用户信息（解析微信官方 API 应答，字段名为微信协议约定，豁免 camelCase 规范）
 type WechatUserInfo struct {
 	OpenID    string `json:"openid"`
 	UnionID   string `json:"unionid"`

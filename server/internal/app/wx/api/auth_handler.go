@@ -1,7 +1,6 @@
 package wxapi
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -49,8 +48,8 @@ func (c *AuthController) LoginByCode(ctx *gin.Context) {
 		return
 	}
 
-	// 调用服务层登录方法，返回用户信息、访问令牌、刷新令牌和错误
-	wxUser, accessToken, refreshToken, accessExpire, _, err := c.service.LoginByCode(req.Code)
+	// 调用服务层登录方法（按 app_key 路由到对应服务号），返回用户信息、访问令牌、刷新令牌和错误
+	wxUser, accessToken, refreshToken, accessExpire, _, err := c.service.LoginByCode(req.Code, req.AppKey)
 	if err != nil {
 		baseRes.FailWithMessage("微信登录失败", ctx)
 		return
@@ -58,7 +57,7 @@ func (c *AuthController) LoginByCode(ctx *gin.Context) {
 
 	// 转换为响应格式
 	userInfoResponse := response.WXUserInfoResponse{
-		ID:       fmt.Sprintf("%d", wxUser.ID),
+		ID:       wxUser.ID,
 		Username: wxUser.Nickname,
 		Nickname: wxUser.Nickname,
 		Avatar:   wxUser.Avatar,
@@ -75,6 +74,54 @@ func (c *AuthController) LoginByCode(ctx *gin.Context) {
 	}
 
 	baseRes.OkWithDetailed(loginResponse, "微信登录成功", ctx)
+}
+
+// MiniappLogin 微信小程序授权登录
+// @Summary 微信小程序授权登录
+// @Description 小程序端 wx.login() 获取 js_code 后调用本接口，后端经 jscode2session 换取 openid 完成登录，返回用户信息和本系统令牌
+// @Tags 微信认证
+// @Accept json
+// @Produce json
+// @Param code body request.WechatMiniappLoginRequest true "小程序登录请求参数（code 为 wx.login 返回的 js_code）"
+// @Success 200 {object} baseRes.Response{data=response.WXLoginResponse,msg=string} "登录成功，包含用户信息和令牌"
+// @Failure 400 {object} map[string]string "请求参数错误"
+// @Failure 401 {object} map[string]string "认证失败"
+// @Router /api/wx/auth/miniprogram-login [post]
+func (c *AuthController) MiniappLogin(ctx *gin.Context) {
+	var req request.WechatMiniappLoginRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.log.Error("请求参数错误", "error", err)
+		baseRes.FailWithMessage("请求参数错误", ctx)
+		return
+	}
+
+	// 调用服务层小程序登录方法（按 app_key 路由到对应小程序）
+	wxUser, accessToken, refreshToken, accessExpire, _, err := c.service.LoginByMiniappCode(req.Code, req.AppKey)
+	if err != nil {
+		c.log.Error("小程序登录失败", "error", err)
+		baseRes.FailWithMessage(err.Error(), ctx)
+		return
+	}
+
+	// 转换为响应格式
+	userInfoResponse := response.WXUserInfoResponse{
+		ID:       wxUser.ID,
+		Username: wxUser.Nickname,
+		Nickname: wxUser.Nickname,
+		Avatar:   wxUser.Avatar,
+		Role:     "user", // 默认角色
+		Status:   1,      // 默认为启用状态
+	}
+
+	// 创建登录响应
+	loginResponse := response.WXLoginResponse{
+		User:         userInfoResponse,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		AccessExpire: accessExpire.Unix(),
+	}
+
+	baseRes.OkWithDetailed(loginResponse, "小程序登录成功", ctx)
 }
 
 // RefreshToken 刷新令牌
@@ -133,7 +180,8 @@ func (c *AuthController) OAuthCallback(ctx *gin.Context) {
 	redirectURL, err := c.service.OAuthCallback(code, state)
 	if err != nil {
 		c.log.Error("处理微信回调失败", "error", err)
-		baseRes.FailWithMessage("授权失败", ctx)
+		// 透出真实失败原因（code 过期/state 校验失败/配置缺失等），便于扫码排障
+		baseRes.FailWithMessage("授权失败: "+err.Error(), ctx)
 		return
 	}
 
@@ -141,10 +189,11 @@ func (c *AuthController) OAuthCallback(ctx *gin.Context) {
 	ctx.Redirect(http.StatusFound, redirectURL)
 }
 
-// Authorize 微信 OAuth 静默授权（直接重定向）
+// Authorize 微信 OAuth 静默授权（直接重定向，多服务号版）
 // @Summary 微信 OAuth 静默授权重定向
-// @Description 直接生成微信静默授权链接并重定向，无需前端先请求 API 再跳转
+// @Description 直接生成微信静默授权链接并重定向；app_key 指定服务号应用（多渠道），空则用全局配置
 // @Tags 微信认证
+// @Param app_key query string false "微信应用实例标志（多服务号渠道）"
 // @Param redirect_uri query string false "授权成功后跳转的前端页面路径（默认 /payment）"
 // @Success 302 {string} string "重定向到微信授权页面"
 // @Failure 400 {object} map[string]string "配置错误"
@@ -154,8 +203,9 @@ func (c *AuthController) Authorize(ctx *gin.Context) {
 	if redirectURI == "" {
 		redirectURI = "/payment"
 	}
+	appKey := ctx.Query("app_key")
 
-	oauthURL, err := c.service.GetOAuthURL(redirectURI)
+	oauthURL, err := c.service.GetOAuthURL(ctx.Request.Context(), redirectURI, appKey)
 	if err != nil {
 		c.log.Error("生成 OAuth 授权链接失败", "error", err)
 		baseRes.FailWithMessage("授权服务异常", ctx)
@@ -168,10 +218,11 @@ func (c *AuthController) Authorize(ctx *gin.Context) {
 
 // GetOAuthURL 获取微信 OAuth 静默授权链接
 // @Summary 获取微信 OAuth 授权链接
-// @Description 生成微信静默授权（snsapi_base）链接，前端跳转此链接后自动回调到指定页面
+// @Description 生成微信静默授权链接（app_key 指定服务号应用，多渠道），前端跳转此链接后自动回调到指定页面
 // @Tags 微信认证
 // @Accept json
 // @Produce json
+// @Param app_key query string false "微信应用实例标志（多服务号渠道）"
 // @Param redirect_uri query string true "授权后跳转的前端页面路径（如 /payment）"
 // @Success 200 {object} baseRes.Response{data=response.OAuthURLResponse,msg=string} "授权链接生成成功"
 // @Failure 400 {object} map[string]string "请求参数错误"
@@ -182,8 +233,9 @@ func (c *AuthController) GetOAuthURL(ctx *gin.Context) {
 		baseRes.FailWithMessage("redirect_uri 参数不能为空", ctx)
 		return
 	}
+	appKey := ctx.Query("app_key")
 
-	oauthURL, err := c.service.GetOAuthURL(redirectURI)
+	oauthURL, err := c.service.GetOAuthURL(ctx.Request.Context(), redirectURI, appKey)
 	if err != nil {
 		c.log.Error("生成 OAuth 授权链接失败", "error", err)
 		baseRes.FailWithMessage("生成授权链接失败", ctx)

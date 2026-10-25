@@ -314,6 +314,39 @@ func (ms *MenuAPIRouteSeed) Init(db *database.PostgresDB, logger logger.Logger) 
 		"TaskNodes": {
 			{Path: "/api/admin/nodes", Method: "GET"},
 		},
+
+		// ==================== 多租户管理菜单 ====================
+		// 页面加载时获取租户列表/详情/路由/授权/审计数据
+		"TenantManagement": {
+			{Path: "/api/admin/tenant", Method: "GET"},
+			{Path: "/api/admin/tenant/granted", Method: "GET"},
+			{Path: "/api/admin/tenant/:id", Method: "GET"},
+			{Path: "/api/admin/tenant/:id/routes", Method: "GET"},
+			{Path: "/api/admin/tenant/:id/grants", Method: "GET"},
+			{Path: "/api/admin/tenant/:id/ops-logs", Method: "GET"},
+		},
+		// 新增租户（含应用路由绑定/用户授权）
+		"TenantAdd": {
+			{Path: "/api/admin/tenant", Method: "POST"},
+			{Path: "/api/admin/tenant/:id/routes", Method: "POST"},
+			{Path: "/api/admin/tenant/:id/grants", Method: "POST"},
+		},
+		// 编辑租户（基础信息/独立实例连接）
+		"TenantEdit": {
+			{Path: "/api/admin/tenant/:id", Method: "PUT"},
+		},
+		// 生命周期操作（重试初始化/禁用/启用/归档）
+		"TenantLifecycle": {
+			{Path: "/api/admin/tenant/:id/retry", Method: "POST"},
+			{Path: "/api/admin/tenant/:id/disable", Method: "POST"},
+			{Path: "/api/admin/tenant/:id/enable", Method: "POST"},
+			{Path: "/api/admin/tenant/:id/archive", Method: "POST"},
+		},
+		// 授权管理（解绑应用路由/取消用户授权）
+		"TenantGrantManage": {
+			{Path: "/api/admin/tenant/routes/:route_id", Method: "DELETE"},
+			{Path: "/api/admin/tenant/:id/grants/:user_id", Method: "DELETE"},
+		},
 	}
 
 	// 遍历关联关系，建立菜单-API 关联

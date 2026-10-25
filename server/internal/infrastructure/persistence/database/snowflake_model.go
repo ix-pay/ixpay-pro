@@ -41,10 +41,10 @@ func (m *SnowflakeBaseModel) BeforeCreate(tx *gorm.DB) error {
 
 type SnowflakeBaseModelWithoutDeleted struct {
 	ID        int64     `gorm:"primaryKey;type:bigint;autoIncrement:false" json:"id,string"`
-	CreatedBy int64     `gorm:"default:0;type:bigint" json:"created_by,string"` // 创建者 ID
-	UpdatedBy int64     `gorm:"default:0;type:bigint" json:"updated_by,string"` // 修改者 ID
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedBy int64     `gorm:"default:0;type:bigint" json:"createdBy,string"` // 创建者 ID
+	UpdatedBy int64     `gorm:"default:0;type:bigint" json:"updatedBy,string"` // 修改者 ID
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // BeforeCreate GORM钩子函数，在创建记录前自动生成雪花算法ID

@@ -242,7 +242,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:position:edit",
+		Permission: "system:position:update",
 	})
 	if err != nil {
 		return err
@@ -302,7 +302,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:dict:edit",
+		Permission: "system:dict:update",
 	})
 	if err != nil {
 		return err
@@ -344,7 +344,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       5,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:dict:item:edit",
+		Permission: "system:dict:item:update",
 	})
 	if err != nil {
 		return err
@@ -404,7 +404,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:config:edit",
+		Permission: "system:config:update",
 	})
 	if err != nil {
 		return err
@@ -464,7 +464,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:notice:edit",
+		Permission: "system:notice:update",
 	})
 	if err != nil {
 		return err
@@ -524,7 +524,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:api-route:edit",
+		Permission: "system:api-route:update",
 	})
 	if err != nil {
 		return err
@@ -679,7 +679,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:user:edit",
+		Permission: "system:user:update",
 	})
 	if err != nil {
 		return err
@@ -736,7 +736,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:role:edit",
+		Permission: "system:role:update",
 	})
 	if err != nil {
 		return err
@@ -793,7 +793,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:menu:edit",
+		Permission: "system:menu:update",
 	})
 	if err != nil {
 		return err
@@ -836,7 +836,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "system:department:edit",
+		Permission: "system:department:update",
 	})
 	if err != nil {
 		return err
@@ -879,7 +879,7 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		Sort:       2,
 		Status:     1,
 		Type:       entity.MenuTypeButton,
-		Permission: "task:task:edit",
+		Permission: "task:task:update",
 	})
 	if err != nil {
 		return err
@@ -1084,6 +1084,181 @@ func (ms *MenuSeed) Init(db *database.PostgresDB, logger logger.Logger) error {
 		return err
 	}
 
+	// ==================== 多租户管理 ====================
+	// 页面菜单（一级）：租户生命周期/应用路由/用户授权/运维审计
+	tenantMenu, err := ms.createOrGetMenu(logger, &entity.Menu{
+		Path:        "tenant",
+		Name:        "TenantManagement",
+		Component:   "views/base/tenant/index",
+		Title:       "多租户管理",
+		Icon:        "OfficeBuilding",
+		Hidden:      false,
+		Sort:        4,
+		Status:      1,
+		KeepAlive:   false,
+		DefaultMenu: false,
+		Type:        entity.MenuTypeMenu,
+	})
+	if err != nil {
+		return err
+	}
+
+	// 新增租户按钮（含应用路由绑定/用户授权）
+	_, err = ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:   tenantMenu.ID,
+		Name:       "TenantAdd",
+		Title:      "新增租户",
+		Icon:       "Plus",
+		Sort:       1,
+		Status:     1,
+		Type:       entity.MenuTypeButton,
+		Permission: "tenant:tenant:add",
+	})
+	if err != nil {
+		return err
+	}
+
+	// 编辑租户按钮（基础信息/独立实例连接）
+	_, err = ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:   tenantMenu.ID,
+		Name:       "TenantEdit",
+		Title:      "编辑租户",
+		Icon:       "Edit",
+		Sort:       2,
+		Status:     1,
+		Type:       entity.MenuTypeButton,
+		Permission: "tenant:tenant:update",
+	})
+	if err != nil {
+		return err
+	}
+
+	// 生命周期操作按钮（重试初始化/禁用/启用/归档）
+	_, err = ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:   tenantMenu.ID,
+		Name:       "TenantLifecycle",
+		Title:      "生命周期操作",
+		Icon:       "RefreshRight",
+		Sort:       3,
+		Status:     1,
+		Type:       entity.MenuTypeButton,
+		Permission: "tenant:tenant:lifecycle",
+	})
+	if err != nil {
+		return err
+	}
+
+	// 授权管理按钮（用户授权/取消/应用路由解绑）
+	_, err = ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:   tenantMenu.ID,
+		Name:       "TenantGrantManage",
+		Title:      "授权管理",
+		Icon:       "Key",
+		Sort:       4,
+		Status:     1,
+		Type:       entity.MenuTypeButton,
+		Permission: "tenant:tenant:grant",
+	})
+	if err != nil {
+		return err
+	}
+
+	// ==================== 微信支付 ====================
+	// 渠道配置升级为一级菜单（与多租户管理同级）：租户管理与渠道配置同属平台级管理业务，
+	// 切换租户后需在渠道配置维护对应租户的应用/商户，挂同一层级减少跳转层级
+	wxChannelMenu, err := ms.createOrGetMenu(logger, &entity.Menu{
+		Path:      "wx/channel",
+		Name:      "WxChannel",
+		Component: "views/wx/channel/index",
+		Title:     "渠道配置",
+		Icon:      "Setting",
+		Hidden:    false,
+		Sort:      5,
+		Status:    1,
+		KeepAlive: false,
+		Type:      entity.MenuTypeMenu,
+	})
+	if err != nil {
+		return err
+	}
+
+	// 渠道配置按钮权限（type:3）：应用/商户/UI/绑定四类操作
+	channelButtons := []struct {
+		name       string
+		title      string
+		icon       string
+		sort       int
+		permission string
+	}{
+		{"WxChannelApp", "应用配置管理", "Setting", 1, "wx:channel:app"},
+		{"WxChannelMerchant", "商户配置管理", "Shop", 2, "wx:channel:merchant"},
+		{"WxChannelBind", "应用商户绑定", "Link", 3, "wx:channel:bind"},
+		{"WxChannelUI", "租户UI配置", "Brush", 4, "wx:channel:ui"},
+	}
+	for _, btn := range channelButtons {
+		if _, err := ms.createOrGetMenu(logger, &entity.Menu{
+			ParentID:   wxChannelMenu.ID,
+			Name:       btn.name,
+			Title:      btn.title,
+			Icon:       btn.icon,
+			Sort:       btn.sort,
+			Status:     1,
+			Type:       entity.MenuTypeButton,
+			Permission: btn.permission,
+		}); err != nil {
+			return err
+		}
+	}
+
+	// 微信支付目录（对账中心的父级；渠道配置已升级为一级菜单）
+	wxPayDir, err := ms.createOrGetMenu(logger, &entity.Menu{
+		Path:        "wx",
+		Name:        "WxPayRoot",
+		Title:       "微信支付",
+		Icon:        "Wallet",
+		Hidden:      false,
+		Sort:        6,
+		Status:      1,
+		KeepAlive:   false,
+		DefaultMenu: false,
+		Type:        entity.MenuTypeDirectory,
+	})
+	if err != nil {
+		return err
+	}
+
+	// 对账中心菜单（对账汇总 + 支付单明细）
+	wxReconMenu, err := ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:  wxPayDir.ID,
+		Path:      "recon",
+		Name:      "WxRecon",
+		Component: "views/wx/recon/index",
+		Title:     "对账中心",
+		Icon:      "DataAnalysis",
+		Hidden:    false,
+		Sort:      1,
+		Status:    1,
+		KeepAlive: false,
+		Type:      entity.MenuTypeMenu,
+	})
+	if err != nil {
+		return err
+	}
+
+	// 对账中心按钮权限（type:3）：对账查询
+	if _, err := ms.createOrGetMenu(logger, &entity.Menu{
+		ParentID:   wxReconMenu.ID,
+		Name:       "WxReconView",
+		Title:      "对账查询",
+		Icon:       "View",
+		Sort:       1,
+		Status:     1,
+		Type:       entity.MenuTypeButton,
+		Permission: "wx:recon:view",
+	}); err != nil {
+		return err
+	}
+
 	logger.Info("菜单种子数据初始化完成")
 	return nil
 }
@@ -1093,7 +1268,32 @@ func (ms *MenuSeed) createOrGetMenu(logger logger.Logger, menu *entity.Menu) (*e
 	// 先根据名称检查是否已存在
 	existing, err := ms.menuRepo.GetByCode(menu.Name)
 	if err == nil {
-		logger.Info("菜单已存在，跳过创建", "name", menu.Name, "id", existing.ID)
+		// 已存在：校正关键字段（挂载位置/排序/标题/图标/组件/权限标识），支持菜单结构调整后存量库自愈
+		needsUpdate := existing.ParentID != menu.ParentID ||
+			existing.Sort != menu.Sort ||
+			existing.Title != menu.Title ||
+			existing.Icon != menu.Icon ||
+			existing.Component != menu.Component ||
+			existing.Path != menu.Path ||
+			existing.Hidden != menu.Hidden ||
+			existing.Permission != menu.Permission
+		if needsUpdate {
+			existing.ParentID = menu.ParentID
+			existing.Sort = menu.Sort
+			existing.Title = menu.Title
+			existing.Icon = menu.Icon
+			existing.Component = menu.Component
+			existing.Path = menu.Path
+			existing.Hidden = menu.Hidden
+			existing.Permission = menu.Permission
+			if err := ms.menuRepo.Update(existing); err != nil {
+				logger.Error("校正已有菜单失败", "name", menu.Name, "error", err)
+				return nil, err
+			}
+			logger.Info("菜单已存在，校正挂载位置/排序等字段", "name", menu.Name, "id", existing.ID)
+		} else {
+			logger.Info("菜单已存在，跳过创建", "name", menu.Name, "id", existing.ID)
+		}
 		return existing, nil
 	}
 

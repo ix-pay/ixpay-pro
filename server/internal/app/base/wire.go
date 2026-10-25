@@ -40,6 +40,7 @@ var ProviderSetBaseRepo = wire.NewSet(
 	repository.NewOnlineUserRepository,
 	repository.NewPermissionLogRepository,
 	repository.NewNodeRepository,
+	repository.NewTenantRepository,
 )
 
 var ProviderSetBaseService = wire.NewSet(
@@ -64,6 +65,7 @@ var ProviderSetBaseService = wire.NewSet(
 	service.NewOnlineUserService,
 	service.NewPermissionLogService,
 	service.NewNodeService,
+	service.NewTenantService,
 )
 
 var ProviderSetBaseConverter = wire.NewSet(
@@ -92,6 +94,8 @@ var ProviderSetBaseController = wire.NewSet(
 	baseapi.NewPermissionLogController,
 	baseapi.NewNodeController,
 	baseapi.NewGatewayServiceHandler,
+	baseapi.NewTenantController,
+	baseapi.NewWxChannelController,
 )
 var ProviderSetBaseApp = wire.NewSet(
 	// 应用层

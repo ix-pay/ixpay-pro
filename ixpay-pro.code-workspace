@@ -13,16 +13,16 @@
       "path": "server"
     },
     {
-      "name": "web",
-      "path": "web"
+      "name": "admin",
+      "path": "admin"
     },   
    {
       "name": "miniapp",
       "path": "miniapp"
     },
     {
-      "name": "h5app",
-      "path": "h5app"
+      "name": "wxapp",
+      "path": "wxapp"
     },
     {
       "name": "weapp",

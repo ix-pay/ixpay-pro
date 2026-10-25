@@ -1,0 +1,24 @@
+<view class="profile-page">
+  <view class="page-header">
+    <text class="title">个人中心</text>
+  </view>
+
+  <view class="card user-card">
+    <view class="avatar">{{avatarText}}</view>
+    <view class="user-info">
+      <view class="nickname">{{nickname || '微信用户'}}</view>
+      <view class="uid">ID: {{userId || '-'}}</view>
+    </view>
+  </view>
+
+  <view class="card menu-card">
+    <view class="menu-item" bindtap="goPending">
+      <text>待支付列表</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <view class="btn-area">
+    <button class="logout-btn" bindtap="onLogout">退出登录</button>
+  </view>
+</view>

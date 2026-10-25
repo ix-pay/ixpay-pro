@@ -74,9 +74,9 @@ func TestPermissionLogService_OperationTypes(t *testing.T) {
 // TestPermissionLogService_ModuleTypes 测试模块类型验证
 func TestPermissionLogService_ModuleTypes(t *testing.T) {
 	validModules := map[string]bool{
-		"角色管理": true,
-		"菜单管理": true,
-		"用户管理": true,
+		"角色管理":  true,
+		"菜单管理":  true,
+		"用户管理":  true,
 		"API管理": true,
 	}
 

@@ -19,22 +19,22 @@ func (a *Application) setupRoutes() {
 func (a *Application) setupHealthCheck() {
 	a.router.GET("/health", func(c *gin.Context) {
 		status := gin.H{
-			"status":    "UP",
-			"service":   a.cfg.Gateway.ServiceName,
-			"node_role": a.cfg.Server.NodeRole,
-			"node_id":   a.cfg.Server.NodeID,
+			"status":   "UP",
+			"service":  a.cfg.Gateway.ServiceName,
+			"nodeRole": a.cfg.Server.NodeRole,
+			"nodeID":   a.cfg.Server.NodeID,
 		}
 
 		if a.cfg.Gateway.Enabled && a.gatewayClient != nil {
 			instance := a.gatewayClient.GetInstance()
 			if instance != nil {
-				status["gateway_registered"] = true
-				status["instance_id"] = instance.ID
+				status["gatewayRegistered"] = true
+				status["instanceID"] = instance.ID
 			} else {
-				status["gateway_registered"] = false
+				status["gatewayRegistered"] = false
 			}
 		} else {
-			status["gateway_registered"] = false
+			status["gatewayRegistered"] = false
 		}
 
 		c.JSON(200, status)

@@ -6,11 +6,11 @@ import "github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
 type RoleRelation string
 
 const (
-	RoleRelationUsers            RoleRelation = "Users"            // 用户
-	RoleRelationMenus            RoleRelation = "Menus"            // 菜单
-	RoleRelationAPIRoutes        RoleRelation = "APIRoutes"        // API 路由
-	RoleRelationChildren         RoleRelation = "Children"         // 子角色
-	RoleRelationParent           RoleRelation = "Parent"           // 父角色
+	RoleRelationUsers     RoleRelation = "Users"     // 用户
+	RoleRelationMenus     RoleRelation = "Menus"     // 菜单
+	RoleRelationAPIRoutes RoleRelation = "APIRoutes" // API 路由
+	RoleRelationChildren  RoleRelation = "Children"  // 子角色
+	RoleRelationParent    RoleRelation = "Parent"    // 父角色
 )
 
 // RoleRepository 角色仓库接口

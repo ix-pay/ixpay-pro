@@ -68,6 +68,14 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 		statusCode := c.Writer.Status()
 		responseBody := blw.body.String()
 
+		// 二进制响应（图片/文件流等）不记录操作日志：
+		// 1. 响应体无审计价值；2. 二进制字节写入 UTF8 文本列会导致 PostgreSQL 编码错误（invalid byte sequence）
+		contentType := blw.Header().Get("Content-Type")
+		if !strings.Contains(contentType, "json") && !strings.Contains(contentType, "text") &&
+			!strings.Contains(contentType, "html") {
+			return
+		}
+
 		// 判断请求是否成功
 		isSuccess := statusCode < 400
 
@@ -125,6 +133,12 @@ func OperationLogMiddleware(operationLogService *service.OperationLogService, lo
 					errorMessage = responseBody
 				}
 			}
+		}
+
+		// 响应体超长截断（审计留痕足够即可，避免长列表响应撑爆日志表）
+		const maxResultLen = 4096
+		if len(responseBody) > maxResultLen {
+			responseBody = responseBody[:maxResultLen] + "...(truncated)"
 		}
 
 		// 异步记录操作日志
@@ -222,10 +236,10 @@ func getModule(path string) string {
 func getResourceModuleName(resource string) string {
 	// 路径与模块名称映射表
 	moduleMap := map[string]string{
-		"user":            "用户管理",
-		"role":            "角色管理",
-		"menu":            "菜单管理",
-		
+		"user": "用户管理",
+		"role": "角色管理",
+		"menu": "菜单管理",
+
 		"apis":            "API管理",
 		"logs":            "操作日志",
 		"login-log":       "登录日志",

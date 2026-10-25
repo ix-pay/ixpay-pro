@@ -1,0 +1,168 @@
+.detail-page {
+  min-height: 100vh;
+  padding: 24rpx 0 48rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+}
+
+.label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.value {
+  font-size: 28rpx;
+  color: #1a1a1a;
+  font-weight: 500;
+  max-width: 420rpx;
+  text-align: right;
+  word-break: break-all;
+}
+
+.value.order-no {
+  font-family: monospace;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.value.price {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #e64545;
+}
+
+.value.status {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.value.status.pending {
+  color: #fa8c16;
+  background: #fff7e6;
+}
+
+.value.status.success {
+  color: #07c160;
+  background: #e8f8ee;
+}
+
+.value.status.failed,
+.value.status.cancelled {
+  color: #999;
+  background: #f0f0f0;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+
+.method-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.method-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 28rpx;
+}
+
+.wechat-icon {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #fff;
+  background: #07c160;
+  border-radius: 10rpx;
+}
+
+.method-check {
+  color: #07c160;
+  font-weight: 700;
+}
+
+.btn-area {
+  margin: 32rpx 24rpx 0;
+}
+
+.btn-primary.done {
+  background: #c8c8c8;
+  box-shadow: none;
+}
+
+.back-row {
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.back-btn {
+  background: transparent;
+  color: #666;
+  font-size: 26rpx;
+}
+
+.back-btn::after {
+  border: none;
+}
+
+/* 结果弹窗 */
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.result-card {
+  width: 560rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 56rpx 40rpx 40rpx;
+  text-align: center;
+}
+
+.result-icon {
+  width: 112rpx;
+  height: 112rpx;
+  line-height: 112rpx;
+  margin: 0 auto 24rpx;
+  border-radius: 50%;
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.result-icon.success {
+  background: #07c160;
+}
+
+.result-icon.fail {
+  background: #e64545;
+}
+
+.result-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.result-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 40rpx;
+}

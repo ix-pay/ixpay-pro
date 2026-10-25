@@ -371,8 +371,8 @@ npm run lint
 
 - [ ] API 路径是否使用 `/` 前缀
 - [ ] 响应格式是否为 `{code, data, msg}`
-- [ ] 列表字段是否使用 `items`
-- [ ] 分页参数是否使用 `page, page_size`
+- [ ] 列表字段是否使用 `list`
+- [ ] 分页参数是否使用 `page, pageSize`
 - [ ] **ID 字段是否使用 string** ⭐
 
 **示例问题**：

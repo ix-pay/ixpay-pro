@@ -1842,8 +1842,8 @@ const handleEdit = (user: UserInfo) => {
 - [ ] 表单提交是否使用正确的字段名
 - [ ] API 路径是否使用 `/base/` 前缀
 - [ ] 响应格式是否为 `{code, data, msg}`
-- [ ] 列表字段是否使用 `items`
-- [ ] 分页参数是否使用 `page, page_size`
+- [ ] 列表字段是否使用 `list`
+- [ ] 分页参数是否使用 `page, pageSize`
 
 ### 前后端对齐检查
 

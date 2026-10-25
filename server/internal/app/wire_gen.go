@@ -96,7 +96,10 @@ func InitializeApp() (*Application, error) {
 	roleController := baseapi.NewRoleController(roleService, rolePermissionService, apiService, menuService, loggerLogger)
 	permissionRuleRepository := persistence.NewPermissionRuleRepository(postgresDB)
 	permissionService := service.NewPermissionService(roleService, userService, roleRepository, apiRepository, permissionRuleRepository, loggerLogger)
-	configRepository := persistence.NewConfigRepository(postgresDB)
+	configRepository, err := persistence.NewConfigRepository(postgresDB, configConfig)
+	if err != nil {
+		return nil, err
+	}
 	configService := service.NewConfigService(configRepository, loggerLogger)
 	configController := baseapi.NewConfigController(configService, loggerLogger)
 	dictRepository := persistence.NewDictRepository(postgresDB)
@@ -133,19 +136,41 @@ func InitializeApp() (*Application, error) {
 	nodeService := service.NewNodeService(nodeRepository, loggerLogger)
 	nodeController := baseapi.NewNodeController(nodeService, loggerLogger)
 	gatewayServiceController := baseapi.NewGatewayServiceHandler(loggerLogger, configConfig)
-	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, permissionLogController, nodeController, gatewayServiceController, userRepository, apiRepository, roleRepository, menuRepository, configRepository, permissionRuleRepository, dictRepository, dictItemRepository, departmentRepository, positionRepository, operationLogService, onlineUserService, taskExecutionLogRepository, taskRepository, cacheCache, permissionService)
-	if err != nil {
-		return nil, err
-	}
+	// 多租户装配：租户仓库/服务（生命周期+授权+路由）/管理控制器
+	tenantRepository := persistence.NewTenantRepository(postgresDB)
+	tenantService := service.NewTenantService(tenantRepository, postgresDB.TenantManager, taskManager, configConfig, loggerLogger)
+	tenantController := baseapi.NewTenantController(tenantService, loggerLogger)
+	// wx 服务装配（渠道配置控制器由 base 管理端路由挂载，wx 模块仅保留 wxapp/miniapp 接口）
 	wxUserRepository := persistence2.NewWXUserRepository(postgresDB)
 	wxAuthSessionRepository := persistence2.NewWXAuthSessionRepository(postgresDB)
 	paymentRepository := persistence2.NewPaymentRepository(postgresDB)
-	wechatPayService := service2.NewWechatPayService(configConfig, configRepository, loggerLogger)
-	wxAuthService := service2.NewWXAuthService(jwtAuth, loggerLogger, wxUserRepository, wxAuthSessionRepository, configRepository, cacheCache, wechatPayService)
+	wechatPayInfoRepository := persistence2.NewWechatPayInfoRepository(postgresDB)
+	refundRepository := persistence2.NewRefundRepository(postgresDB)
+	medRefundRepository := persistence2.NewMedRefundRepository(postgresDB)
+	wxChannelRepository, err := persistence2.NewWxChannelRepository(postgresDB, configConfig)
+	if err != nil {
+		return nil, err
+	}
+	wechatPayService := service2.NewWechatPayService(configConfig, configRepository, wxChannelRepository, tenantRepository, cacheCache, loggerLogger)
+	wxAuthService := service2.NewWXAuthService(jwtAuth, loggerLogger, wxUserRepository, wxAuthSessionRepository, configRepository, tenantRepository, cacheCache, wechatPayService, wxChannelRepository)
 	wxapiAuthController := wxapi.NewAuthController(wxAuthService, loggerLogger)
-	paymentService := service2.NewPaymentService(paymentRepository, taskManager, configRepository, loggerLogger, wechatPayService)
+	paymentService := service2.NewPaymentService(paymentRepository, wechatPayInfoRepository, configRepository, loggerLogger, wechatPayService)
+	refundService := service2.NewRefundService(paymentRepository, refundRepository, wechatPayService, loggerLogger)
+	billService := service2.NewBillService(wechatPayService, loggerLogger)
+	medicalService := service2.NewMedicalService(paymentRepository, wechatPayService, loggerLogger)
+	medRefundService := service2.NewMedRefundService(paymentRepository, medRefundRepository, wechatPayService, loggerLogger)
+	wxChannelService := service2.NewWxChannelService(wxChannelRepository, paymentRepository, wxAuthService, tenantRepository, loggerLogger)
 	paymentController := wxapi.NewPaymentController(paymentService, loggerLogger)
-	appWX, err := wx.NewAppWX(loggerLogger, postgresDB, jwtAuth, permissionManager, wxapiAuthController, paymentController)
+	wxapiMedicalController := wxapi.NewMedicalController(medicalService, loggerLogger)
+	wxapiRefundController := wxapi.NewRefundController(refundService, medRefundService, loggerLogger)
+	wxapiBillController := wxapi.NewBillController(billService, paymentService, loggerLogger)
+	wxapiPublicAppController := wxapi.NewWxPublicAppController(wxChannelService, loggerLogger)
+	baseapiWxChannelController := baseapi.NewWxChannelController(wxChannelService, loggerLogger)
+	appBase, err := base.NewAppBase(loggerLogger, configConfig, postgresDB, jwtAuth, permissionManager, authController, userController, taskController, apiController, menuController, roleController, configController, dictController, operationLogController, departmentController, positionController, noticeController, loginLogController, onlineUserController, monitorController, permissionLogController, nodeController, gatewayServiceController, tenantController, baseapiWxChannelController, tenantRepository, userRepository, apiRepository, roleRepository, menuRepository, configRepository, permissionRuleRepository, dictRepository, dictItemRepository, departmentRepository, positionRepository, operationLogService, onlineUserService, taskExecutionLogRepository, taskRepository, cacheCache, permissionService)
+	if err != nil {
+		return nil, err
+	}
+	appWX, err := wx.NewAppWX(loggerLogger, postgresDB, jwtAuth, permissionManager, wxapiAuthController, paymentController, wxapiMedicalController, wxapiRefundController, wxapiBillController, wxapiPublicAppController)
 	if err != nil {
 		return nil, err
 	}

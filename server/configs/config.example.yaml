@@ -71,16 +71,16 @@ logging:
   max_age: 30                    # 日志保留天数
   separate_log: true             # 是否分离日志文件
 
-# 微信支付配置
-wechat:
-  app_id: ""                     # 微信应用ID（AppID）
-  app_secret: ""                 # 微信应用密钥（AppSecret）
-  mch_id: ""                     # 微信商户号ID
-  api_key: ""                    # 微信支付API密钥
-  notify_url: ""                 # 支付通知回调URL
-  redirect_url: ""               # 微信OAuth重定向URL
-  oauth_callback_url: ""         # 微信OAuth授权回调地址（后端接口），如 https://api.ixpay.com/api/wx/auth/callback
-  frontend_url: ""               # 前端页面地址，如 http://localhost:5173
+# 微信配置说明
+# 微信相关所有配置（app_id/app_secret/小程序/商户号/证书序列号/APIv3密钥/私钥/公钥/服务商/回调地址/医保）
+# 全部保存在数据库 base_configs 配置表（启动时由种子初始化，可在管理端「配置管理」中修改），
+# 其中敏感配置（wechat_app_secret/wechat_miniapp_app_secret/wechat_apiv3_key/wechat_private_key/wechat_med_partner_secret）
+# 使用 security.config_encrypt_key 进行 AES-256-GCM 加密后存储，读取时自动解密为明文使用。
+# 数据库配置键清单见 internal/domain/base/seed/config_seed.go
+
+# 安全配置
+security:
+  config_encrypt_key: ""         # 数据库敏感配置加密密钥（AES-256-GCM；为空则不加密，建议设置为随机长字符串）
 
 # Swagger 文档配置
 swagger:

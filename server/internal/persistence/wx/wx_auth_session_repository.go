@@ -111,7 +111,9 @@ func (r *wxAuthSessionRepository) Create(session *entity.WXAuthSession) error {
 // Update 更新会话
 func (r *wxAuthSessionRepository) Update(session *entity.WXAuthSession) error {
 	dbModel := fromDomainWXAuthSession(session)
-	return r.db.Save(dbModel).Error
+	// Omit 审计列：更新业务字段时不覆盖 created_at/created_by 等创建审计信息
+	return r.db.Omit("created_at", "created_by", "updated_by", "deleted_by", "deleted_at").
+		Save(dbModel).Error
 }
 
 // InvalidateSession 使会话失效

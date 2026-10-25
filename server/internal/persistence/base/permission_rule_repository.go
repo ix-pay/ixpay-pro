@@ -361,8 +361,9 @@ func (r *permissionRuleRepository) GetRulesByUser(userID int64) ([]*entity.Permi
 // FindMatchingRules 查找匹配的权限规则
 // 匹配规则：API 路径和方法匹配，且用户属性满足规则条件
 // 支持新旧两种条件格式：
-//   旧格式：[{"key":"dept_id","value":"1","type":"user"}]
-//   新格式：{"operator":"AND","conditions":[{"attribute":{"key":"dept_id","value":"1","type":"user","operator":"EQ"}}]}
+//
+//	旧格式：[{"key":"dept_id","value":"1","type":"user"}]
+//	新格式：{"operator":"AND","conditions":[{"attribute":{"key":"dept_id","value":"1","type":"user","operator":"EQ"}}]}
 func (r *permissionRuleRepository) FindMatchingRules(apiPath, method string, attributes []entity.PermissionAttribute) ([]*entity.PermissionRule, error) {
 	// 1. 查询启用的、匹配 API 路径和方法的规则
 	var dbModels []permissionRuleModel

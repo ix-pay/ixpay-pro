@@ -7,16 +7,16 @@ import (
 )
 
 type Config struct {
-	ListenAddr          string        `json:"listen_addr"`
-	ListenPort          int           `json:"listen_port"`
-	RegisterTTL         time.Duration `json:"register_ttl"`
-	HealthCheckInterval time.Duration `json:"health_check_interval"`
-	HealthCheckTimeout  time.Duration `json:"health_check_timeout"`
-	SeedNodes           []string      `json:"seed_nodes"`
-	HeartbeatInterval   time.Duration `json:"heartbeat_interval"`
-	RegisterAuthKey     string        `json:"register_auth_key"`
-	EnableAutoDiscovery bool          `json:"enable_auto_discovery"`
-	NodeDiscoveryPort   int           `json:"node_discovery_port"`
+	ListenAddr          string        `json:"listenAddr"`
+	ListenPort          int           `json:"listenPort"`
+	RegisterTTL         time.Duration `json:"registerTTL"`
+	HealthCheckInterval time.Duration `json:"healthCheckInterval"`
+	HealthCheckTimeout  time.Duration `json:"healthCheckTimeout"`
+	SeedNodes           []string      `json:"seedNodes"`
+	HeartbeatInterval   time.Duration `json:"heartbeatInterval"`
+	RegisterAuthKey     string        `json:"registerAuthKey"`
+	EnableAutoDiscovery bool          `json:"enableAutoDiscovery"`
+	NodeDiscoveryPort   int           `json:"nodeDiscoveryPort"`
 }
 
 func LoadConfig(filePath string) (*Config, error) {

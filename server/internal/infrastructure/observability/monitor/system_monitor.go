@@ -23,7 +23,7 @@ func truncateFloat(val float64) float64 {
 
 // SystemStatus 系统状态信息
 type SystemStatus struct {
-	OSInfo    OSInfo        `json:"os_info"`   // 操作系统信息
+	OSInfo    OSInfo        `json:"osInfo"`    // 操作系统信息
 	CPU       CPUStatus     `json:"cpu"`       // CPU 使用状态
 	Memory    MemoryStatus  `json:"memory"`    // 内存使用状态
 	Disk      []DiskStatus  `json:"disk"`      // 磁盘使用状态（支持多磁盘）
@@ -44,71 +44,71 @@ type OSInfo struct {
 
 // CPUStatus CPU 使用状态
 type CPUStatus struct {
-	UsagePercent float64   `json:"usage_percent"` // CPU 使用率百分比
-	Cores        int       `json:"cores"`         // CPU 核心数
-	PerCPUUsage  []float64 `json:"per_cpu_usage"` // 每个 CPU 核心的使用率
-	Frequency    float64   `json:"frequency"`     // CPU 频率（MHz）
+	UsagePercent float64   `json:"usagePercent"` // CPU 使用率百分比
+	Cores        int       `json:"cores"`        // CPU 核心数
+	PerCPUUsage  []float64 `json:"perCPUUsage"`  // 每个 CPU 核心的使用率
+	Frequency    float64   `json:"frequency"`    // CPU 频率（MHz）
 }
 
 // MemoryStatus 内存使用状态
 type MemoryStatus struct {
-	Total        uint64  `json:"total"`         // 总内存（字节）
-	Used         uint64  `json:"used"`          // 已使用内存（字节）
-	Free         uint64  `json:"free"`          // 空闲内存（字节）
-	Available    uint64  `json:"available"`     // 可用内存（字节）
-	UsagePercent float64 `json:"usage_percent"` // 内存使用率百分比
-	Buffers      uint64  `json:"buffers"`       // 缓冲区内存（字节）
-	Cached       uint64  `json:"cached"`        // 缓存内存（字节）
-	SwapTotal    uint64  `json:"swap_total"`    // Swap 总空间（字节）
-	SwapUsed     uint64  `json:"swap_used"`     // Swap 已使用（字节）
-	SwapFree     uint64  `json:"swap_free"`     // Swap 空闲（字节）
+	Total        uint64  `json:"total"`        // 总内存（字节）
+	Used         uint64  `json:"used"`         // 已使用内存（字节）
+	Free         uint64  `json:"free"`         // 空闲内存（字节）
+	Available    uint64  `json:"available"`    // 可用内存（字节）
+	UsagePercent float64 `json:"usagePercent"` // 内存使用率百分比
+	Buffers      uint64  `json:"buffers"`      // 缓冲区内存（字节）
+	Cached       uint64  `json:"cached"`       // 缓存内存（字节）
+	SwapTotal    uint64  `json:"swapTotal"`    // Swap 总空间（字节）
+	SwapUsed     uint64  `json:"swapUsed"`     // Swap 已使用（字节）
+	SwapFree     uint64  `json:"swapFree"`     // Swap 空闲（字节）
 }
 
 // DiskStatus 磁盘使用状态
 type DiskStatus struct {
-	Device       string  `json:"device"`        // 设备名称
-	Mountpoint   string  `json:"mountpoint"`    // 挂载点
-	Fstype       string  `json:"fstype"`        // 文件系统类型
-	Total        uint64  `json:"total"`         // 总磁盘空间（字节）
-	Used         uint64  `json:"used"`          // 已使用磁盘空间（字节）
-	Free         uint64  `json:"free"`          // 空闲磁盘空间（字节）
-	UsagePercent float64 `json:"usage_percent"` // 磁盘使用率百分比
+	Device       string  `json:"device"`       // 设备名称
+	Mountpoint   string  `json:"mountpoint"`   // 挂载点
+	Fstype       string  `json:"fstype"`       // 文件系统类型
+	Total        uint64  `json:"total"`        // 总磁盘空间（字节）
+	Used         uint64  `json:"used"`         // 已使用磁盘空间（字节）
+	Free         uint64  `json:"free"`         // 空闲磁盘空间（字节）
+	UsagePercent float64 `json:"usagePercent"` // 磁盘使用率百分比
 }
 
 // NetworkStatus 网络使用状态
 type NetworkStatus struct {
-	BytesSent   uint64 `json:"bytes_sent"`   // 发送字节数
-	BytesRecv   uint64 `json:"bytes_recv"`   // 接收字节数
-	PacketsSent uint64 `json:"packets_sent"` // 发送数据包数
-	PacketsRecv uint64 `json:"packets_recv"` // 接收数据包数
-	Errin       uint64 `json:"errin"`        // 接收错误数
-	Errout      uint64 `json:"errout"`       // 发送错误数
-	Dropin      uint64 `json:"dropin"`       // 接收丢弃数
-	Dropout     uint64 `json:"dropout"`      // 发送丢弃数
+	BytesSent   uint64 `json:"bytesSent"`   // 发送字节数
+	BytesRecv   uint64 `json:"bytesRecv"`   // 接收字节数
+	PacketsSent uint64 `json:"packetsSent"` // 发送数据包数
+	PacketsRecv uint64 `json:"packetsRecv"` // 接收数据包数
+	Errin       uint64 `json:"errin"`       // 接收错误数
+	Errout      uint64 `json:"errout"`      // 发送错误数
+	Dropin      uint64 `json:"dropin"`      // 接收丢弃数
+	Dropout     uint64 `json:"dropout"`     // 发送丢弃数
 }
 
 // LoadStatus 系统负载状态
 type LoadStatus struct {
-	Load1       float64 `json:"load1"`        // 1 分钟平均负载（或 CPU 使用率）
-	Load5       float64 `json:"load5"`        // 5 分钟平均负载（或 CPU 使用率）
-	Load15      float64 `json:"load15"`       // 15 分钟平均负载（或 CPU 使用率）
-	IsSimulated bool    `json:"is_simulated"` // 是否为模拟值（Windows）
-	CPUPercent  float64 `json:"cpu_percent"`  // 当前 CPU 使用率（Windows 时有效）
+	Load1       float64 `json:"load1"`       // 1 分钟平均负载（或 CPU 使用率）
+	Load5       float64 `json:"load5"`       // 5 分钟平均负载（或 CPU 使用率）
+	Load15      float64 `json:"load15"`      // 15 分钟平均负载（或 CPU 使用率）
+	IsSimulated bool    `json:"isSimulated"` // 是否为模拟值（Windows）
+	CPUPercent  float64 `json:"cpuPercent"`  // 当前 CPU 使用率（Windows 时有效）
 }
 
 // ProcessStatus 进程信息
 type ProcessStatus struct {
-	Total     int           `json:"total"`      // 进程总数
-	TopCPU    []ProcessInfo `json:"top_cpu"`    // CPU 使用率最高的进程
-	TopMemory []ProcessInfo `json:"top_memory"` // 内存使用率最高的进程
+	Total     int           `json:"total"`     // 进程总数
+	TopCPU    []ProcessInfo `json:"topCPU"`    // CPU 使用率最高的进程
+	TopMemory []ProcessInfo `json:"topMemory"` // 内存使用率最高的进程
 }
 
 // ProcessInfo 进程信息
 type ProcessInfo struct {
-	PID        int32   `json:"pid"`         // 进程 ID
-	Name       string  `json:"name"`        // 进程名称
-	CPUPercent float64 `json:"cpu_percent"` // CPU 使用率
-	MemPercent float64 `json:"mem_percent"` // 内存使用率
+	PID        int32   `json:"pid"`        // 进程 ID
+	Name       string  `json:"name"`       // 进程名称
+	CPUPercent float64 `json:"cpuPercent"` // CPU 使用率
+	MemPercent float64 `json:"memPercent"` // 内存使用率
 }
 
 // SystemMonitor 系统监控服务

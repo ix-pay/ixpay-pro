@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/observability/logger"
+	"github.com/ix-pay/ixpay-pro/internal/infrastructure/persistence/database"
 	"github.com/ix-pay/ixpay-pro/internal/infrastructure/security/auth"
 
 	"github.com/gin-gonic/gin"
@@ -43,7 +44,14 @@ func AuthMiddleware(jwtAuth *auth.JWTAuth, log logger.Logger) gin.HandlerFunc {
 		c.Set("role", claims.Role)
 		c.Set("loginType", claims.LoginType)
 		c.Set("openID", claims.OpenID)
+		c.Set("appKey", claims.AppKey)     // 微信应用实例标志（多服务号/多小程序渠道）
+		c.Set("tenantID", claims.TenantID) // 租户ID（多租户库路由）
 		c.Set("claims", claims)
+
+		// 注入租户上下文（GORM 查询按 ctx 路由到租户库；TenantID=0 表示未租户化走主库）
+		if claims.TenantID > 0 {
+			c.Request = c.Request.WithContext(database.WithTenantID(c.Request.Context(), claims.TenantID))
+		}
 
 		c.Next()
 	}

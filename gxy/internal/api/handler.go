@@ -26,18 +26,25 @@ func NewHandler(registry *discovery.Registry, proxy *proxy.Proxy, config *config
 	}
 }
 
+// writeJSON 统一响应格式 {code, data, msg}
+func writeJSON(w http.ResponseWriter, httpStatus, code int, data interface{}, msg string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(httpStatus)
+	json.NewEncoder(w).Encode(map[string]any{"code": code, "data": data, "msg": msg})
+}
+
 func (h *Handler) RegisterService(w http.ResponseWriter, r *http.Request) {
 	// 1. 验证注册凭证
 	authHeader := r.Header.Get("Authorization")
 	if !h.validateRegistrationAuth(authHeader) {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		writeJSON(w, http.StatusUnauthorized, http.StatusUnauthorized, nil, "未授权：注册凭证无效")
 		return
 	}
 
 	// 2. 解析服务注册请求
 	var instance discovery.ServiceInstance
 	if err := json.NewDecoder(r.Body).Decode(&instance); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, http.StatusBadRequest, nil, "解析服务注册请求失败: "+err.Error())
 		return
 	}
 	defer r.Body.Close()
@@ -58,27 +65,25 @@ func (h *Handler) RegisterService(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. 返回注册结果
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Service registered successfully"})
+	writeJSON(w, http.StatusOK, 0, nil, "服务注册成功")
 }
 
 func (h *Handler) DeregisterService(w http.ResponseWriter, r *http.Request) {
 	// 1. 验证注册凭证
 	authHeader := r.Header.Get("Authorization")
 	if !h.validateRegistrationAuth(authHeader) {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		writeJSON(w, http.StatusUnauthorized, http.StatusUnauthorized, nil, "未授权：注册凭证无效")
 		return
 	}
 
 	// 2. 解析服务注销请求
 	var req struct {
-		ServiceName string `json:"service_name"`
-		InstanceID  string `json:"instance_id"`
+		ServiceName string `json:"serviceName"`
+		InstanceID  string `json:"instanceID"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		writeJSON(w, http.StatusBadRequest, http.StatusBadRequest, nil, "解析服务注销请求失败: "+err.Error())
 		return
 	}
 	defer r.Body.Close()
@@ -90,9 +95,7 @@ func (h *Handler) DeregisterService(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. 返回注销结果
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Service deregistered successfully"})
+	writeJSON(w, http.StatusOK, 0, nil, "服务注销成功")
 }
 
 func (h *Handler) GetServices(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +103,7 @@ func (h *Handler) GetServices(w http.ResponseWriter, r *http.Request) {
 	services := h.registry.GetAllServices()
 
 	// 2. 返回服务列表
+	// 注意：该接口为服务间内部协议，后端按结构化类型直接解析裸数据，不包装 {code, data, msg}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(services)

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/ix-pay/ixpay-pro/internal/domain/base/entity"
@@ -16,6 +17,8 @@ type OnlineUserService struct {
 	repo  repo.OnlineUserRepository
 	cache cache.Cache
 	log   logger.Logger
+	// offlineMu 强制下线互斥锁：保证"检查在线-移除"两步操作的原子性，避免并发重复下线
+	offlineMu sync.Mutex
 }
 
 // NewOnlineUserService 创建在线用户服务实例
@@ -134,6 +137,10 @@ func (s *OnlineUserService) GetOnlineUserBySessionID(sessionID string) (*entity.
 // ForceOffline 强制用户下线
 // 该方法会移除用户的在线状态，并将 JWT token 加入黑名单使其失效
 func (s *OnlineUserService) ForceOffline(userID int64, operatorID string) error {
+	// 互斥保护"检查在线-移除"临界区，保证并发下线同一用户时仅一个操作成功
+	s.offlineMu.Lock()
+	defer s.offlineMu.Unlock()
+
 	// 检查用户是否在线
 	online, err := s.repo.Exists(userID)
 	if err != nil {

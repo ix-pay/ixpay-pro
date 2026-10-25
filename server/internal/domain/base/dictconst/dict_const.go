@@ -13,7 +13,8 @@ const (
 const (
 	UserTypeAdmin  = "admin"
 	UserTypeNormal = "normal"
-	UserTypeWechat = "wechat"
+	UserTypeWechat = "wechat"    // 微信服务号（H5 网页授权）
+	UserTypeWxMini = "wxminiapp" // 微信小程序（jscode2session 登录）
 	UserTypeAlipay = "alipay"
 )
 

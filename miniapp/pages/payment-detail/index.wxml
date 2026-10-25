@@ -1,0 +1,66 @@
+<view class="detail-page">
+  <!-- 支付信息卡片 -->
+  <view class="card">
+    <view class="row">
+      <text class="label">订单编号</text>
+      <text class="value order-no">{{ detail.orderId }}</text>
+    </view>
+    <view class="row">
+      <text class="label">项目名称</text>
+      <text class="value">{{ detail.description || '待支付项目' }}</text>
+    </view>
+    <view class="row">
+      <text class="label">支付金额</text>
+      <text class="value price">¥ {{ detail.amount }}</text>
+    </view>
+    <view class="row">
+      <text class="label">订单状态</text>
+      <text class="value status {{ detail.status }}">{{ statusMap[detail.status] || detail.status }}</text>
+    </view>
+    <view class="row" wx:if="{{ detail.transactionId }}">
+      <text class="label">微信交易号</text>
+      <text class="value order-no">{{ detail.transactionId }}</text>
+    </view>
+    <view class="row">
+      <text class="label">创建时间</text>
+      <text class="value">{{ detail.createdAt }}</text>
+    </view>
+  </view>
+
+  <!-- 支付方式 -->
+  <view class="card" wx:if="{{detail.status === 'pending'}}">
+    <view class="section-title">支付方式</view>
+    <view class="method-item">
+      <view class="method-left">
+        <view class="wechat-icon">微</view>
+        <text>微信支付</text>
+      </view>
+      <text class="method-check">✓</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="btn-area" wx:if="{{detail.status === 'pending'}}">
+    <button class="btn-primary" loading="{{paying}}" disabled="{{paying}}" bindtap="handlePay">
+      {{ paying ? '正在拉起支付...' : '立即支付' }}
+    </button>
+  </view>
+
+  <view class="btn-area" wx:if="{{detail.status === 'success'}}">
+    <button class="btn-primary done" disabled bindtap="noop">已支付</button>
+  </view>
+
+  <view class="back-row">
+    <button class="back-btn" bindtap="goBack">返回列表</button>
+  </view>
+
+  <!-- 支付结果弹窗 -->
+  <view wx:if="{{showResult}}" class="result-overlay" bindtap="closeResult">
+    <view class="result-card" catchtap="noop">
+      <view class="result-icon {{ paySuccess ? 'success' : 'fail' }}">{{ paySuccess ? '✓' : '✕' }}</view>
+      <view class="result-title">{{ paySuccess ? '支付成功' : '支付未完成' }}</view>
+      <view class="result-desc">{{ resultMessage }}</view>
+      <button class="btn-primary" bindtap="closeResult">{{ paySuccess ? '完成' : '关闭' }}</button>
+    </view>
+  </view>
+</view>

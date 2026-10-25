@@ -526,6 +526,7 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		config_value TEXT,
 		config_type INTEGER NOT NULL DEFAULT 1,
 		description VARCHAR(255),
+		encrypted BOOLEAN NOT NULL DEFAULT false,
 		status INTEGER NOT NULL DEFAULT 1,
 		created_by BIGINT NOT NULL DEFAULT 0,
 		updated_by BIGINT NOT NULL DEFAULT 0,
@@ -540,6 +541,89 @@ func MigrateDatabase(db *database.PostgresDB, log logger.Logger) {
 		log.Error("创建 base_configs 表失败", "error", err)
 	} else {
 		log.Info("base_configs 表创建成功")
+	}
+
+	// 多租户四表（租户注册 / app_key路由 / 用户授权 / 运维审计）
+	createTenantTablesSQL := `
+	CREATE TABLE IF NOT EXISTS base_tenants (
+		id BIGINT PRIMARY KEY,
+		tenant_code VARCHAR(50) UNIQUE NOT NULL,
+		tenant_name VARCHAR(100) NOT NULL,
+		db_name VARCHAR(63) NOT NULL DEFAULT '',
+		db_host VARCHAR(100) NOT NULL DEFAULT '',
+		db_port INTEGER NOT NULL DEFAULT 0,
+		db_user VARCHAR(63) NOT NULL DEFAULT '',
+		db_password TEXT NOT NULL DEFAULT '',
+		status VARCHAR(20) NOT NULL DEFAULT 'init',
+		init_error TEXT NOT NULL DEFAULT '',
+		description VARCHAR(255) NOT NULL DEFAULT '',
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		deleted_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	CREATE INDEX IF NOT EXISTS idx_base_tenants_status ON base_tenants(status);
+
+	CREATE TABLE IF NOT EXISTS base_tenant_apps (
+		id BIGINT PRIMARY KEY,
+		app_key VARCHAR(50) UNIQUE NOT NULL,
+		tenant_id BIGINT NOT NULL,
+		module_code VARCHAR(20) NOT NULL DEFAULT 'wx',
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	CREATE INDEX IF NOT EXISTS idx_base_tenant_apps_tenant ON base_tenant_apps(tenant_id);
+
+	CREATE TABLE IF NOT EXISTS base_tenant_grants (
+		id BIGINT PRIMARY KEY,
+		user_id BIGINT NOT NULL,
+		tenant_id BIGINT NOT NULL,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP,
+		CONSTRAINT uk_tenant_grant UNIQUE (user_id, tenant_id)
+	);
+	CREATE INDEX IF NOT EXISTS idx_base_tenant_grants_user ON base_tenant_grants(user_id);
+
+	CREATE TABLE IF NOT EXISTS base_tenant_ops_log (
+		id BIGINT PRIMARY KEY,
+		tenant_id BIGINT NOT NULL DEFAULT 0,
+		action VARCHAR(50) NOT NULL,
+		detail TEXT NOT NULL DEFAULT '',
+		operator_id BIGINT NOT NULL DEFAULT 0,
+		created_by BIGINT NOT NULL DEFAULT 0,
+		updated_by BIGINT NOT NULL DEFAULT 0,
+		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+		deleted_at TIMESTAMP
+	);
+	CREATE INDEX IF NOT EXISTS idx_base_tenant_ops_log_tenant ON base_tenant_ops_log(tenant_id);
+
+	-- 商户号→租户映射（支付回调租户定位，设计文档 01 §九推荐方案）：
+	-- 管理平台在切租户模式下保存商户配置时登记；回调按 Wechatpay-Serial 定位租户库商户
+	CREATE TABLE IF NOT EXISTS base_tenant_mch_refs (
+		mch_id VARCHAR(32) PRIMARY KEY,
+		public_key_id VARCHAR(64) NOT NULL DEFAULT '',
+		tenant_id BIGINT NOT NULL DEFAULT 0,
+		updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+	);
+	CREATE INDEX IF NOT EXISTS idx_base_tenant_mch_refs_serial ON base_tenant_mch_refs(public_key_id);
+
+	-- 默认租户（dbname 空 = 主库；存量数据与现有行为完全一致，零中断）
+	INSERT INTO base_tenants (id, tenant_code, tenant_name, db_name, status, description)
+	VALUES (1, 'default', '默认租户', '', 'active', '默认租户（主库），存量业务数据归属')
+	ON CONFLICT (tenant_code) DO NOTHING;
+	`
+	if err := db.Exec(createTenantTablesSQL).Error; err != nil {
+		log.Error("多租户表创建失败", "error", err)
+	} else {
+		log.Info("多租户表创建成功（base_tenants/base_tenant_apps/base_tenant_grants/base_tenant_ops_log/base_tenant_mch_refs）")
 	}
 	// 添加配置表索引
 	addConfigIndexSQL := `

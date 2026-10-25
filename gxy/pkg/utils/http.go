@@ -5,18 +5,21 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 )
 
-// 全局复用的HTTP客户端，避免每次请求创建新客户端
-var httpClient = &http.Client{
-	Timeout: 10 * time.Second,
-	Transport: &http.Transport{
-		MaxIdleConns:        100,
-		MaxIdleConnsPerHost: 20,
-		IdleConnTimeout:     90 * time.Second,
-	},
-}
+// httpClientOnce 惰性初始化并复用 HTTP 客户端（避免每次请求创建新客户端，同时消除包级可变全局变量）
+var httpClientOnce = sync.OnceValue(func() *http.Client {
+	return &http.Client{
+		Timeout: 10 * time.Second,
+		Transport: &http.Transport{
+			MaxIdleConns:        100,
+			MaxIdleConnsPerHost: 20,
+			IdleConnTimeout:     90 * time.Second,
+		},
+	}
+})
 
 func MakeHTTPRequest(method, url string, headers map[string]string, body interface{}) (*http.Response, error) {
 	var requestBody []byte
@@ -42,8 +45,8 @@ func MakeHTTPRequest(method, url string, headers map[string]string, body interfa
 		req.Header.Set(key, value)
 	}
 
-	// 使用全局复用的HTTP客户端
-	return httpClient.Do(req)
+	// 使用复用的HTTP客户端
+	return httpClientOnce().Do(req)
 }
 
 func ParseHTTPResponse(resp *http.Response, v interface{}) error {
